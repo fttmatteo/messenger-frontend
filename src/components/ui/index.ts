@@ -22,3 +22,5 @@ export {
     TableCell,
     TableCaption
 } from './table'
+export { Spinner, FullPageSpinner } from './spinner'
+

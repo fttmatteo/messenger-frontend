@@ -4,6 +4,7 @@
  * Punto de entrada que configura:
  * - React Router para navegación
  * - AuthProvider para estado de autenticación
+ * - ErrorBoundary para captura de errores
  * - PWAPrompt para actualizaciones
  * 
  * Flujo de autenticación:
@@ -14,6 +15,7 @@
 
 import { RouterProvider } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { router } from '@/routes'
 import { PWAPrompt } from '@/components/PWAPrompt'
 
@@ -33,13 +35,17 @@ function AppContent() {
  * App - Componente raíz
  * 
  * Envuelve toda la aplicación con los providers necesarios.
+ * ErrorBoundary captura errores para evitar que la app crashee.
  */
 function App() {
     return (
-        <AuthProvider>
-            <AppContent />
-        </AuthProvider>
+        <ErrorBoundary>
+            <AuthProvider>
+                <AppContent />
+            </AuthProvider>
+        </ErrorBoundary>
     )
 }
 
 export default App
+
