@@ -5,9 +5,9 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createService, updateServiceStatus, completeService, updateObservations } from '@/api/services.service'
+import { createService, updateServiceStatus } from '@/api/services.service'
 import { servicesKeys } from './useServices'
-import type { CreateServiceRequest, UpdateServiceStatusRequest, UpdateObservationsRequest, ServiceDelivery } from '@/types'
+import type { CreateServiceRequest, UpdateServiceStatusRequest, ServiceDelivery } from '@/types'
 
 /**
  * Hook para crear una nueva entrega con imagen
@@ -33,35 +33,6 @@ export function useUpdateServiceStatus() {
         mutationFn: ({ id, data }) => updateServiceStatus(id, data),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: servicesKeys.lists() })
-            queryClient.invalidateQueries({ queryKey: servicesKeys.detail(variables.id) })
-        },
-    })
-}
-
-/**
- * Hook para marcar entrega como completada
- */
-export function useCompleteService() {
-    const queryClient = useQueryClient()
-
-    return useMutation<ServiceDelivery, Error, number>({
-        mutationFn: completeService,
-        onSuccess: (_, id) => {
-            queryClient.invalidateQueries({ queryKey: servicesKeys.lists() })
-            queryClient.invalidateQueries({ queryKey: servicesKeys.detail(id) })
-        },
-    })
-}
-
-/**
- * Hook para agregar observaciones a una entrega
- */
-export function useUpdateObservations() {
-    const queryClient = useQueryClient()
-
-    return useMutation<ServiceDelivery, Error, { id: number; data: UpdateObservationsRequest }>({
-        mutationFn: ({ id, data }) => updateObservations(id, data),
-        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: servicesKeys.detail(variables.id) })
         },
     })

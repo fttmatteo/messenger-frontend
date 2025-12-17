@@ -16,7 +16,7 @@ export const servicesKeys = {
     lists: () => [...servicesKeys.all, 'list'] as const,
     list: (filters?: Record<string, unknown>) => [...servicesKeys.lists(), filters] as const,
     byStatus: (status: ServiceStatus) => [...servicesKeys.lists(), { status }] as const,
-    byMessenger: (document: string) => [...servicesKeys.lists(), { messenger: document }] as const,
+    byMessenger: (messengerId: number) => [...servicesKeys.lists(), { messenger: messengerId }] as const,
     details: () => [...servicesKeys.all, 'detail'] as const,
     detail: (id: number) => [...servicesKeys.details(), id] as const,
 }
@@ -55,10 +55,10 @@ export function useServicesByStatus(status: ServiceStatus) {
 /**
  * Hook para obtener entregas de un mensajero (para MESSENGER role)
  */
-export function useMyServices(document: string) {
+export function useMyServices(messengerId: number) {
     return useQuery<ServiceDelivery[], Error>({
-        queryKey: servicesKeys.byMessenger(document),
-        queryFn: () => getServicesByMessenger(document),
-        enabled: !!document,
+        queryKey: servicesKeys.byMessenger(messengerId),
+        queryFn: () => getServicesByMessenger(messengerId),
+        enabled: messengerId > 0,
     })
 }

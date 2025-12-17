@@ -16,14 +16,14 @@ import { MapPin, AlertCircle, Package } from 'lucide-react'
  */
 export function MessengerDashboard() {
     const { user } = useAuth()
-    
+
     // Obtener entregas del mensajero actual
-    // Nota: El documento del mensajero viene del usuario autenticado
-    const messengerDocument = user?.userName || '' // Asumiendo que userName es el documento
-    const { data: services, isLoading, error, refetch } = useMyServices(messengerDocument)
+    // Nota: El ID del mensajero viene del usuario autenticado
+    const messengerId = user?.id || 0
+    const { data: services, isLoading, error, refetch } = useMyServices(messengerId)
 
     // Filtrar solo entregas activas (no completadas ni canceladas)
-    const activeServices = services?.filter(s => 
+    const activeServices = services?.filter(s =>
         s.status !== 'COMPLETED' && s.status !== 'CANCELLED'
     ) ?? []
 
@@ -68,7 +68,7 @@ export function MessengerDashboard() {
                         </div>
                         <p className="text-red-400 font-medium">Error al cargar entregas</p>
                         <p className="text-slate-500 text-sm mt-1">{error.message}</p>
-                        <button 
+                        <button
                             onClick={() => refetch()}
                             className="mt-3 text-blue-400 text-sm hover:underline"
                         >

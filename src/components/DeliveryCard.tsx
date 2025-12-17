@@ -9,7 +9,7 @@ import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { ServiceDelivery, SERVICE_STATUS_CONFIG } from '@/types'
-import { useCompleteService } from '@/hooks/useServiceMutations'
+import { useUpdateServiceStatus } from '@/hooks/useServiceMutations'
 import {
     MapPin,
     Phone,
@@ -42,7 +42,7 @@ function formatDate(dateString: string): string {
     const date = new Date(dateString)
     const now = new Date()
     const isToday = date.toDateString() === now.toDateString()
-    
+
     if (isToday) {
         return `Hoy ${date.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}`
     }
@@ -59,15 +59,18 @@ export function DeliveryCard({
     onCall,
     onCompleted,
 }: DeliveryCardProps) {
-    const { mutate: completeService, isPending: isCompleting } = useCompleteService()
-    
+    const { mutate: updateStatus, isPending: isCompleting } = useUpdateServiceStatus()
+
     const statusConfig = SERVICE_STATUS_CONFIG[service.status] || SERVICE_STATUS_CONFIG.PENDING
 
     // Determinar si se puede completar (solo ASSIGNED o IN_PROGRESS)
     const canComplete = service.status === 'ASSIGNED' || service.status === 'IN_PROGRESS'
 
     const handleComplete = () => {
-        completeService(service.id, {
+        updateStatus({
+            id: service.id,
+            data: { status: 'COMPLETED' }
+        }, {
             onSuccess: () => {
                 onCompleted?.()
             }
