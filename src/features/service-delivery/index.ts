@@ -1,12 +1,18 @@
 /**
- * Exportaciones del módulo de Service Delivery (Entregas)
- *
- * Este módulo gestiona los servicios de entrega:
- * creación, actualización de estado, evidencias, etc.
- *
- * Submódulos:
- * - api/: Servicios HTTP para entregas
+ * Feature: Service Delivery (Entregas)
+ * 
+ * Módulo completo para gestión de entregas de placas.
+ * Soporta OCR para extracción de placas desde imágenes.
  */
 
-// Los exports se agregarán cuando se implementen los módulos
-// export * from './api'
+// Types
+export * from './types'
+
+// API Service
+export * from './api'
+
+// Hooks
+export * from './hooks'
+
+// Components
+export * from './components'

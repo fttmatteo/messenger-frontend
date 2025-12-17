@@ -1,14 +1,18 @@
 /**
- * Exportaciones del módulo de Concesionarios
- *
- * Este módulo gestiona los concesionarios:
- * CRUD, geocodificación, visualización en mapa.
- *
- * Submódulos:
- * - api/: Servicios HTTP para concesionarios
- * - components/: DealershipList, DealershipCard
+ * Feature: Dealerships (Concesionarios)
+ * 
+ * Módulo completo para gestión de concesionarios.
+ * Incluye geocodificación de direcciones.
  */
 
-// Los exports se agregarán cuando se implementen los módulos
-// export * from './api'
+// Types
+export * from './types'
+
+// API Service
+export * from './api'
+
+// Hooks
+export * from './hooks'
+
+// Components (se agregarán cuando se creen)
 // export * from './components'

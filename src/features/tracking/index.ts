@@ -1,16 +1,15 @@
 /**
- * Exportaciones del módulo de Tracking
- *
- * Este módulo maneja el tracking en tiempo real de mensajeros
- * usando WebSockets y Google Maps.
- *
- * Submódulos:
- * - api/: Servicios HTTP y WebSocket para tracking
- * - components/: LiveMap, TrackingStatus, MessengerMarker
- * - hooks/: useLiveTracking, useMessengerLocation
+ * Feature: Tracking (Seguimiento GPS)
+ * 
+ * Módulo para tracking en tiempo real de mensajeros.
+ * Incluye consulta de ubicaciones y envío de posición GPS.
  */
 
-// Los exports se agregarán cuando se implementen los módulos
-// export * from './api'
-// export * from './components'
-// export * from './hooks'
+// Types
+export * from './types'
+
+// API Service
+export * from './api'
+
+// Hooks
+export * from './hooks'
