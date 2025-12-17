@@ -1,12 +1,8 @@
 /**
- * Componentes de Service Delivery
- * 
- * Componentes UI para gestión de entregas:
- * - DeliveryCard: Tarjeta grande para mensajeros (mobile)
- * - ServiceList: Lista/tabla de servicios (admin)
- * - StatusUpdateModal: Modal para cambiar estado
+ * Exports de Componentes de Service Delivery
  */
 
-export { DeliveryCard } from './DeliveryCard'
+export { DeliveryCard, DeliveryCardSkeleton } from './DeliveryCard'
+
 
 // Los demás componentes se exportarán cuando se implementen
