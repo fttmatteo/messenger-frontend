@@ -1,13 +1,13 @@
 /**
- * Componente Principal de la Aplicación
+ * Componente Principal de la Aplicación E-PLACA
  * 
  * Este es el componente raíz que contiene la estructura principal
- * y el enrutamiento de la aplicación Messenger Frontend.
+ * y el enrutamiento de la aplicación.
  * 
- * Actualmente muestra una página de bienvenida con:
- * - Encabezado con logo y título
- * - Cards de características principales
- * - Botones de acción (Login, Demo)
+ * Características:
+ * - PWA con soporte offline
+ * - Prompt de actualización automática
+ * - Landing page con información del sistema
  * 
  * TODO: Integrar React Router para navegación
  * TODO: Agregar AuthProvider para estado de autenticación
@@ -15,13 +15,15 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MapPin, Truck, Users } from 'lucide-react'
+import { PWAPrompt } from '@/components/PWAPrompt'
+import { MapPin, Bike, Users } from 'lucide-react'
 
 /**
  * App - Componente raíz de la aplicación
  * 
  * Renderiza la landing page con el diseño principal.
  * Usa un fondo con gradiente oscuro y componentes de Shadcn/UI.
+ * Incluye el componente PWAPrompt para notificaciones de actualización.
  * 
  * @returns JSX.Element - Página de bienvenida
  */
@@ -33,10 +35,10 @@ function App() {
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-3 mb-4">
                         <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/25">
-                            <Truck className="w-8 h-8 text-white" />
+                            <Bike className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                            Messenger
+                            E-PLACA
                         </h1>
                     </div>
                     <p className="text-slate-400 text-lg">
@@ -68,7 +70,7 @@ function App() {
                     <Card className="border-slate-700/50 bg-slate-800/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1">
                         <CardHeader>
                             <div className="p-2 w-fit bg-purple-500/10 rounded-lg mb-2">
-                                <Truck className="w-5 h-5 text-purple-400" />
+                                <Bike className="w-5 h-5 text-purple-400" />
                             </div>
                             <CardTitle className="text-white">Gestión de Entregas</CardTitle>
                             <CardDescription className="text-slate-400">
@@ -113,9 +115,12 @@ function App() {
 
                 {/* Pie de página */}
                 <p className="text-slate-600 text-sm mt-16">
-                    © 2025 Messenger. Todos los derechos reservados.
+                    © 2025 E-PLACA. Todos los derechos reservados.
                 </p>
             </main>
+
+            {/* Componente PWA para actualizaciones y estado offline */}
+            <PWAPrompt />
         </div>
     )
 }
