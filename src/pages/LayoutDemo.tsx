@@ -40,32 +40,32 @@ const mockDealerships = [
  * Datos de ejemplo para las tarjetas de entregas
  */
 const mockDeliveries: ServiceDelivery[] = [
-    { 
-        id: 1, 
-        licensePlate: 'ABC-123', 
-        dealershipName: 'Toyota Centro', 
-        dealershipAddress: 'Av. Principal 123, Col. Centro', 
-        status: 'ASSIGNED', 
+    {
+        id: 1,
+        licensePlate: 'ABC-123',
+        dealershipName: 'Toyota Centro',
+        dealershipAddress: 'Av. Principal 123, Col. Centro',
+        status: 'ASSIGNED',
         createdAt: '2023-12-01T09:30:00',
         dealershipId: 1,
         messengerId: 1,
         messengerName: 'Juan Pérez'
     },
-    { 
-        id: 2, 
-        licensePlate: 'XYZ-789', 
-        dealershipName: 'Honda Norte', 
-        dealershipAddress: 'Calle Norte 456, Col. Industrial', 
-        status: 'PENDING', 
+    {
+        id: 2,
+        licensePlate: 'XYZ-789',
+        dealershipName: 'Honda Norte',
+        dealershipAddress: 'Calle Norte 456, Col. Industrial',
+        status: 'PENDING',
         createdAt: '2023-12-01T10:15:00',
-        dealershipId: 2 
+        dealershipId: 2
     },
-    { 
-        id: 3, 
-        licensePlate: 'DEF-456', 
-        dealershipName: 'Nissan Sur', 
-        dealershipAddress: 'Av. Sur 789, Col. Residencial', 
-        status: 'COMPLETED', 
+    {
+        id: 3,
+        licensePlate: 'DEF-456',
+        dealershipName: 'Nissan Sur',
+        dealershipAddress: 'Av. Sur 789, Col. Residencial',
+        status: 'COMPLETED',
         createdAt: '2023-11-30T14:45:00',
         dealershipId: 3,
         messengerId: 1,
@@ -182,9 +182,15 @@ function DemoMessengerContent() {
                     <DeliveryCard
                         key={delivery.id}
                         service={delivery}
-                        onViewDetails={() => console.log('Ver detalles', delivery.id)}
-                        onNavigate={() => console.log('Navegar a', delivery.dealershipAddress)}
-                        onCall={() => console.log('Llamar')}
+                        onViewDetails={() => {
+                            // TODO: Implement details navigation
+                        }}
+                        onNavigate={() => {
+                            // TODO: Open Google Maps with address
+                        }}
+                        onCall={() => {
+                            // TODO: Initiate phone call
+                        }}
                     />
                 ))}
             </div>

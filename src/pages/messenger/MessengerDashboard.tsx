@@ -97,7 +97,10 @@ export function MessengerDashboard() {
                             <DeliveryCard
                                 key={service.id}
                                 service={service}
-                                onViewDetails={() => console.log('Ver detalles', service.id)}
+                                onViewDetails={() => {
+                                    // TODO: Navigate to service details page
+                                    // navigate(`/messenger/services/${service.id}`)
+                                }}
                                 onNavigate={() => {
                                     // Abrir Google Maps con la dirección
                                     if (service.dealershipAddress) {
