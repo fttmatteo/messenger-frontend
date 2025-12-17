@@ -42,7 +42,7 @@ export async function getEmployeeById(id: number): Promise<Employee> {
  * @returns Empleado creado
  */
 export async function createEmployee(data: CreateEmployeeRequest): Promise<Employee> {
-    const response = await axiosClient.post<Employee>(EMPLOYEES_URL, data)
+    const response = await axiosClient.post<Employee>(`${EMPLOYEES_URL}/create`, data)
     return response.data
 }
 

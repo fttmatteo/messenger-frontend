@@ -43,7 +43,7 @@ export async function getDealershipById(id: number): Promise<Dealership> {
  * @returns Concesionario creado
  */
 export async function createDealership(data: CreateDealershipRequest): Promise<Dealership> {
-    const response = await axiosClient.post<Dealership>(DEALERSHIPS_URL, data)
+    const response = await axiosClient.post<Dealership>(`${DEALERSHIPS_URL}/create`, data)
     return response.data
 }
 

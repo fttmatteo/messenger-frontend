@@ -8,7 +8,7 @@
 /**
  * Estados posibles de una entrega
  */
-export type ServiceStatus = 
+export type ServiceStatus =
     | 'PENDING'      // Pendiente de asignación
     | 'ASSIGNED'     // Asignada a mensajero
     | 'IN_PROGRESS'  // En camino
@@ -67,6 +67,9 @@ export interface CreateServiceRequest {
  */
 export interface UpdateServiceStatusRequest {
     status: ServiceStatus
+    observation?: string
+    signature?: File
+    photos?: File[]
 }
 
 /**

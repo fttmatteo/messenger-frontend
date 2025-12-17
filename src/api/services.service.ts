@@ -2,23 +2,20 @@
  * Servicio API de Service Delivery (Entregas)
  * 
  * Funciones para comunicarse con el backend:
- * - GET /services - Listar entregas
- * - GET /services/{id} - Obtener por ID
+ * - GET /services/all - Listar entregas
+ * - GET /services/find/{id} - Obtener por ID
  * - POST /services/create - Crear con imagen (OCR)
- * - PUT /services/{id}/status - Cambiar estado
- * - GET /services/messenger/{document} - Por mensajero
- * - GET /services/status/{status} - Por estado
- * - POST /services/{id}/complete - Marcar como completada
- * - PUT /services/{id}/observations - Agregar observaciones
+ * - PUT /services/update/{id} - Cambiar estado (status, obs, fotos)
+ * - GET /services/find/{messengerId} - Por mensajero (ambiguo en backend, intentamos ID)
+ * - GET /services/find/{status} - Por estado
  */
 
 import axiosClient from '@/config/axios-client'
-import { 
-    ServiceDelivery, 
-    CreateServiceRequest, 
+import {
+    ServiceDelivery,
+    CreateServiceRequest,
     UpdateServiceStatusRequest,
-    UpdateObservationsRequest,
-    ServiceStatus 
+    ServiceStatus
 } from '@/types'
 
 /**
@@ -31,7 +28,7 @@ const SERVICES_URL = '/services'
  * @returns Lista de entregas
  */
 export async function getServices(): Promise<ServiceDelivery[]> {
-    const response = await axiosClient.get<ServiceDelivery[]>(SERVICES_URL)
+    const response = await axiosClient.get<ServiceDelivery[]>(`${SERVICES_URL}/all`)
     return response.data
 }
 
@@ -41,7 +38,7 @@ export async function getServices(): Promise<ServiceDelivery[]> {
  * @returns Entrega encontrada
  */
 export async function getServiceById(id: number): Promise<ServiceDelivery> {
-    const response = await axiosClient.get<ServiceDelivery>(`${SERVICES_URL}/${id}`)
+    const response = await axiosClient.get<ServiceDelivery>(`${SERVICES_URL}/find/${id}`)
     return response.data
 }
 
@@ -51,24 +48,25 @@ export async function getServiceById(id: number): Promise<ServiceDelivery> {
  * @returns Lista de entregas con ese estado
  */
 export async function getServicesByStatus(status: ServiceStatus): Promise<ServiceDelivery[]> {
-    const response = await axiosClient.get<ServiceDelivery[]>(`${SERVICES_URL}/status/${status}`)
+    // Nota: El backend usa /find/{status} que podría conflictuar con ID si no se distingue bien.
+    const response = await axiosClient.get<ServiceDelivery[]>(`${SERVICES_URL}/find/${status}`)
     return response.data
 }
 
 /**
  * Obtiene entregas asignadas a un mensajero
- * @param document - Documento del mensajero
+ * @param messengerId - ID del mensajero (backend pide ID, no documento string en path var)
  * @returns Lista de entregas del mensajero
  */
-export async function getServicesByMessenger(document: string): Promise<ServiceDelivery[]> {
-    const response = await axiosClient.get<ServiceDelivery[]>(`${SERVICES_URL}/messenger/${document}`)
+export async function getServicesByMessenger(messengerId: number): Promise<ServiceDelivery[]> {
+    const response = await axiosClient.get<ServiceDelivery[]>(`${SERVICES_URL}/find/${messengerId}`)
     return response.data
 }
 
 /**
  * Crea una nueva entrega con imagen de placa (OCR)
  * @param data - Datos de la entrega incluyendo imagen
- * @returns Entrega creada (con placa extraída por OCR)
+ * @returns Entrega creada
  */
 export async function createService(data: CreateServiceRequest): Promise<ServiceDelivery> {
     const formData = new FormData()
@@ -89,31 +87,34 @@ export async function createService(data: CreateServiceRequest): Promise<Service
 /**
  * Actualiza el estado de una entrega
  * @param id - ID de la entrega
- * @param data - Nuevo estado
+ * @param data - Nuevo estado y evidencias (si las hay)
  * @returns Entrega actualizada
  */
 export async function updateServiceStatus(id: number, data: UpdateServiceStatusRequest): Promise<ServiceDelivery> {
-    const response = await axiosClient.put<ServiceDelivery>(`${SERVICES_URL}/${id}/status`, data)
+    const formData = new FormData()
+    formData.append('status', data.status)
+
+    if (data.observation) {
+        formData.append('observation', data.observation)
+    }
+
+    if (data.signature) {
+        formData.append('signature', data.signature)
+    }
+
+    if (data.photos && data.photos.length > 0) {
+        data.photos.forEach((photo) => {
+            formData.append('photos', photo)
+        })
+    }
+
+    // El backend usa PUT /services/update/{id}
+    const response = await axiosClient.put<ServiceDelivery>(`${SERVICES_URL}/update/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
     return response.data
 }
 
-/**
- * Marca una entrega como completada
- * @param id - ID de la entrega
- * @returns Entrega completada
- */
-export async function completeService(id: number): Promise<ServiceDelivery> {
-    const response = await axiosClient.post<ServiceDelivery>(`${SERVICES_URL}/${id}/complete`)
-    return response.data
-}
-
-/**
- * Agrega observaciones a una entrega
- * @param id - ID de la entrega
- * @param data - Observaciones
- * @returns Entrega actualizada
- */
-export async function updateObservations(id: number, data: UpdateObservationsRequest): Promise<ServiceDelivery> {
-    const response = await axiosClient.put<ServiceDelivery>(`${SERVICES_URL}/${id}/observations`, data)
-    return response.data
-}
+// Eliminadas querys de observations y complete que no existen en backend

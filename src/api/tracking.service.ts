@@ -2,11 +2,11 @@
  * Servicio API de Tracking
  * 
  * Funciones para comunicarse con el backend:
- * - POST /api/tracking/update - Actualizar ubicación
- * - GET /api/tracking/messenger/{id} - Última ubicación
- * - GET /api/tracking/active - Mensajeros activos
- * - GET /api/tracking/history/{id} - Historial
- * - GET /api/tracking/service/{id} - Historial por servicio
+ * - POST /tracking/update - Actualizar ubicación
+ * - GET /tracking/messenger/{id} - Última ubicación
+ * - GET /tracking/active - Mensajeros activos
+ * - GET /tracking/history/{id} - Historial
+ * - GET /tracking/service/{id} - Historial por servicio
  */
 
 import axiosClient from '@/config/axios-client'
@@ -15,7 +15,7 @@ import { LocationUpdate, ActiveMessenger, LocationHistory } from '@/types'
 /**
  * Base URL para endpoints de tracking
  */
-const TRACKING_URL = '/api/tracking'
+const TRACKING_URL = '/tracking'
 
 /**
  * Actualiza la ubicación de un mensajero
