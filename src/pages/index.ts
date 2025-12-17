@@ -1,12 +1,9 @@
 /**
  * Módulo de Páginas
- *
- * Contiene las páginas principales de la aplicación:
- * - LoginPage
- * - DashboardPage
- * - LiveTrackingPage
- * - ServicesPage
- * - NotFoundPage
+ * 
+ * Contiene las páginas principales de la aplicación.
  */
 
-// Las páginas se exportarán aquí cuando se implementen
+export { LoginPage } from './LoginPage'
+export { AdminDashboard } from './admin/AdminDashboard'
+export { MessengerDashboard } from './messenger/MessengerDashboard'

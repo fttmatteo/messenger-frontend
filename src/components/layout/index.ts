@@ -1,11 +1,10 @@
 /**
  * Módulo de Layouts
- *
+ * 
  * Contiene componentes de estructura de página:
- * - MainLayout: Layout principal con sidebar
- * - AuthLayout: Layout para páginas de autenticación
- * - Sidebar: Navegación lateral
- * - Header: Barra superior
+ * - AdminLayout: Layout con sidebar para administradores (web)
+ * - MessengerLayout: Layout con bottom nav para mensajeros (mobile)
  */
 
-// Los layouts se exportarán aquí cuando se implementen
+export { AdminLayout } from './AdminLayout'
+export { MessengerLayout } from './MessengerLayout'

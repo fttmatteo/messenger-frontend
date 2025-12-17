@@ -5,9 +5,36 @@
  * - Importación de Tailwind CSS v4
  * - Variables CSS para theming (modo claro/oscuro)
  * - Clases utilitarias para colores del tema
+ * - Estilos para PWA (safe-area, animaciones)
  */
 
 @import "tailwindcss";
+
+/* Safe Area para PWA en dispositivos con notch */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Animación sutil de rebote para iconos activos */
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 0.3s ease-out;
+}
 
 /* Variables CSS de Shadcn/UI - Modo Claro por Defecto */
 :root {

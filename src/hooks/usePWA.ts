@@ -28,7 +28,7 @@ interface PWAState {
  */
 interface PWAActions {
     /** Actualizar el Service Worker a la nueva versión */
-    updateServiceWorker: () => void
+    updateServiceWorker: (reloadPage?: boolean) => Promise<void>
     /** Cerrar el prompt de actualización */
     closePrompt: () => void
 }
