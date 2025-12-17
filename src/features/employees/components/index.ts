@@ -1,6 +1,0 @@
-/**
- * Exports de Componentes de Empleados
- */
-
-export { EmployeeList } from './EmployeeList'
-export { EmployeeForm } from './EmployeeForm'

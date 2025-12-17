@@ -10,10 +10,13 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
-import { EmployeeList, EmployeeForm, Employee, useEmployees } from '@/features/employees'
-import { useDealerships } from '@/features/dealerships'
-import { useServices } from '@/features/service-delivery'
-import { useActiveMessengers } from '@/features/tracking'
+import { EmployeeList } from '@/components/EmployeeList'
+import { EmployeeForm } from '@/components/EmployeeForm'
+import { useEmployees } from '@/hooks/useEmployees'
+import { Employee } from '@/types'
+import { useDealerships } from '@/hooks/useDealerships'
+import { useServices } from '@/hooks/useServices'
+import { useActiveMessengers } from '@/hooks/useTracking'
 import { 
     Truck, CheckCircle, Clock, AlertTriangle, Users, Building2, 
     MapPin, X, Plus

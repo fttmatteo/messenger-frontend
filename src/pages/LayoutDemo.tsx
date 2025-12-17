@@ -10,7 +10,7 @@
 
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { MessengerLayout } from '@/components/layout/MessengerLayout'
-import { DeliveryCard } from '@/features/service-delivery/components/DeliveryCard'
+import { DeliveryCard } from '@/components/DeliveryCard'
 import {
     Table,
     TableBody,
@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { Plus, Search, Filter } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import type { ServiceDelivery } from '@/types'
 
 /**
  * Datos de ejemplo para la tabla de concesionarios
@@ -38,10 +39,38 @@ const mockDealerships = [
 /**
  * Datos de ejemplo para las tarjetas de entregas
  */
-const mockDeliveries = [
-    { id: 1, plateNumber: 'ABC-123', dealershipName: 'Toyota Centro', address: 'Av. Principal 123, Col. Centro', status: 'ASSIGNED' as const, createdAt: 'Hoy 09:30', phone: '555-0001' },
-    { id: 2, plateNumber: 'XYZ-789', dealershipName: 'Honda Norte', address: 'Calle Norte 456, Col. Industrial', status: 'PENDING' as const, createdAt: 'Hoy 10:15', phone: '555-0002' },
-    { id: 3, plateNumber: 'DEF-456', dealershipName: 'Nissan Sur', address: 'Av. Sur 789, Col. Residencial', status: 'DELIVERED' as const, createdAt: 'Ayer 14:45' },
+const mockDeliveries: ServiceDelivery[] = [
+    { 
+        id: 1, 
+        licensePlate: 'ABC-123', 
+        dealershipName: 'Toyota Centro', 
+        dealershipAddress: 'Av. Principal 123, Col. Centro', 
+        status: 'ASSIGNED', 
+        createdAt: '2023-12-01T09:30:00',
+        dealershipId: 1,
+        messengerId: 1,
+        messengerName: 'Juan Pérez'
+    },
+    { 
+        id: 2, 
+        licensePlate: 'XYZ-789', 
+        dealershipName: 'Honda Norte', 
+        dealershipAddress: 'Calle Norte 456, Col. Industrial', 
+        status: 'PENDING', 
+        createdAt: '2023-12-01T10:15:00',
+        dealershipId: 2 
+    },
+    { 
+        id: 3, 
+        licensePlate: 'DEF-456', 
+        dealershipName: 'Nissan Sur', 
+        dealershipAddress: 'Av. Sur 789, Col. Residencial', 
+        status: 'COMPLETED', 
+        createdAt: '2023-11-30T14:45:00',
+        dealershipId: 3,
+        messengerId: 1,
+        completedAt: '2023-11-30T15:30:00'
+    },
 ]
 
 /**
@@ -152,10 +181,10 @@ function DemoMessengerContent() {
                 {mockDeliveries.map((delivery) => (
                     <DeliveryCard
                         key={delivery.id}
-                        {...delivery}
+                        service={delivery}
                         onViewDetails={() => console.log('Ver detalles', delivery.id)}
-                        onNavigate={() => console.log('Navegar a', delivery.address)}
-                        onCall={() => delivery.phone && console.log('Llamar a', delivery.phone)}
+                        onNavigate={() => console.log('Navegar a', delivery.dealershipAddress)}
+                        onCall={() => console.log('Llamar')}
                     />
                 ))}
             </div>

@@ -6,7 +6,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
-import { AuthContextType, AuthState, LoginCredentials, User } from '@/features/auth/types'
+import { AuthContextType, AuthState, LoginCredentials, User } from '@/types'
 import { tokenManager } from '@/config/axios-client'
 import axiosClient from '@/config/axios-client'
 
@@ -91,10 +91,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 token: string
                 refreshToken: string
                 role: string
-                username: string
+                userName: string
             }>('/auth/login', credentials)
 
-            const { token, refreshToken, role, username } = response.data
+            const { token, refreshToken, role, userName } = response.data
 
             // Guardar tokens
             tokenManager.setTokens(token, refreshToken)
@@ -102,8 +102,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             // Crear objeto de usuario
             const user: User = {
                 id: 0, // El backend podría retornar esto
-                username: username,
-                fullName: username, // Podría venir del backend
+                userName: userName,
+                fullName: userName, // Usar userName como fullName hasta que el backend lo provea
                 role: role as 'ADMIN' | 'MESSENGER',
             }
 

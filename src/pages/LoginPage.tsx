@@ -7,8 +7,9 @@
  * - MESSENGER → App de mensajero (/messenger)
  */
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,9 +20,21 @@ import { Bike, Loader2, AlertCircle } from 'lucide-react'
  * LoginPage Component
  */
 export function LoginPage() {
-    const { login, isLoading, error, clearError } = useAuth()
+    const { login, isLoading, error, clearError, isAuthenticated, user } = useAuth()
+    const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+
+    /**
+     * Redirigir al usuario cuando se autentica exitosamente
+     */
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            // Redirigir según el rol del usuario
+            const redirectPath = user.role === 'ADMIN' ? '/admin' : '/messenger'
+            navigate(redirectPath, { replace: true })
+        }
+    }, [isAuthenticated, user, navigate])
 
     /**
      * Manejar envío del formulario
@@ -31,8 +44,8 @@ export function LoginPage() {
         clearError()
 
         try {
-            await login({ username, password })
-            // La redirección se manejará en el componente padre (App)
+            await login({ userName: username, password })
+            // La redirección se manejará en el useEffect de arriba
         } catch {
             // El error ya está en el estado del contexto
         }

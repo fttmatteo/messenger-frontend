@@ -6,8 +6,8 @@
  */
 
 import { MessengerLayout } from '@/components/layout/MessengerLayout'
-import { DeliveryCard, DeliveryCardSkeleton } from '@/features/service-delivery/components'
-import { useMyServices } from '@/features/service-delivery/hooks'
+import { DeliveryCard, DeliveryCardSkeleton } from '@/components/DeliveryCard'
+import { useMyServices } from '@/hooks/useServices'
 import { useAuth } from '@/context/AuthContext'
 import { MapPin, AlertCircle, Package } from 'lucide-react'
 
@@ -19,7 +19,7 @@ export function MessengerDashboard() {
     
     // Obtener entregas del mensajero actual
     // Nota: El documento del mensajero viene del usuario autenticado
-    const messengerDocument = user?.username || '' // Asumiendo que username es el documento
+    const messengerDocument = user?.userName || '' // Asumiendo que userName es el documento
     const { data: services, isLoading, error, refetch } = useMyServices(messengerDocument)
 
     // Filtrar solo entregas activas (no completadas ni canceladas)
