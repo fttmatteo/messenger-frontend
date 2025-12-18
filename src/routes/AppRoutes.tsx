@@ -18,6 +18,7 @@ import EditConcesionario from '../pages/admin/EditConcesionario';
 import Servicios from '../pages/admin/Servicios';
 import CreateServicio from '../pages/admin/CreateServicio';
 import ViewServicio from '../pages/admin/ViewServicio';
+import LiveTracking from '../pages/admin/LiveTracking';
 
 // Messenger Pages
 import MessengerDashboard from '../pages/messenger/Dashboard';
@@ -97,7 +98,7 @@ export function AppRoutes() {
                 <Route path="servicios/crear" element={<CreateServicio />} />
                 <Route path="servicios/:id" element={<ViewServicio />} />
                 {/* Other routes */}
-                <Route path="tracking" element={<div className="p-4">Mapa - Próximamente</div>} />
+                <Route path="tracking" element={<LiveTracking />} />
                 <Route path="configuracion" element={<div className="p-4">Configuración - Próximamente</div>} />
             </Route>
 

@@ -72,6 +72,7 @@ export default function EditEmployee() {
             } catch (error: any) {
                 toast.error("Error al cargar empleado", {
                     description: error.message,
+                    id: "error-cargar-empleado"
                 })
                 navigate("/admin/empleados")
             } finally {
@@ -97,6 +98,7 @@ export default function EditEmployee() {
         } catch (error: any) {
             toast.error("Error al actualizar empleado", {
                 description: error.message,
+                id: "error-actualizar-empleado"
             })
         }
     }

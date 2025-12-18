@@ -36,7 +36,7 @@ export function PlacaBadge({
     return (
         <div
             className={cn(
-                "inline-flex items-center font-bold tracking-wider border-2 border-black shadow-sm",
+                "inline-flex items-center font-bold tracking-wider border-2 border-black dark:border-white shadow-sm",
                 // Colombian plate colors: yellow background, black text
                 "bg-yellow-400 text-black",
                 sizeClasses[size],

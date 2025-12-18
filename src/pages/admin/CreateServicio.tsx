@@ -105,7 +105,8 @@ export default function CreateServicio() {
                 setMessengers(messengersList)
             } catch (error: any) {
                 toast.error("Error al cargar datos", {
-                    description: error.message
+                    description: error.message,
+                    id: "error-cargar-datos-servicio"
                 })
             } finally {
                 setLoadingData(false)
@@ -161,7 +162,8 @@ export default function CreateServicio() {
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {
-                description: error.message || "No se pudo acceder a la cámara"
+                description: error.message || "No se pudo acceder a la cámara",
+                id: "error-camara"
             })
         }
     }
@@ -172,12 +174,12 @@ export default function CreateServicio() {
         const canvas = canvasRef.current
 
         if (!video || !canvas) {
-            toast.error("Error", { description: "Componentes no disponibles" })
+            toast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
             return
         }
 
         if (video.videoWidth === 0 || video.videoHeight === 0) {
-            toast.error("Error", { description: "El video aún no está listo" })
+            toast.error("Error", { description: "El video aún no está listo", id: "error-video" })
             return
         }
 
@@ -187,7 +189,7 @@ export default function CreateServicio() {
 
         const ctx = canvas.getContext('2d')
         if (!ctx) {
-            toast.error("Error", { description: "No se pudo crear contexto de canvas" })
+            toast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
             return
         }
 
@@ -207,7 +209,7 @@ export default function CreateServicio() {
                 stopCamera()
                 toast.success("📸 Foto capturada exitosamente")
             } else {
-                toast.error("Error al capturar foto")
+                toast.error("Error al capturar foto", { id: "error-captura" })
             }
         }, 'image/jpeg', 0.9)
     }
@@ -232,7 +234,8 @@ export default function CreateServicio() {
             navigate("/admin/servicios")
         } catch (error: any) {
             toast.error("Error al crear servicio", {
-                description: error.response?.data?.message || error.message
+                description: error.response?.data?.message || error.message,
+                id: "error-crear-servicio"
             })
         } finally {
             setLoading(false)
@@ -245,7 +248,8 @@ export default function CreateServicio() {
             // Validate file type
             if (!file.type.startsWith('image/')) {
                 toast.error("Archivo inválido", {
-                    description: "Por favor selecciona una imagen"
+                    description: "Por favor selecciona una imagen",
+                    id: "error-archivo-invalido"
                 })
                 return
             }
@@ -253,7 +257,8 @@ export default function CreateServicio() {
             // Validate file size (5MB max)
             if (file.size > 5 * 1024 * 1024) {
                 toast.error("Archivo muy grande", {
-                    description: "El tamaño máximo es 5MB"
+                    description: "El tamaño máximo es 5MB",
+                    id: "error-archivo-grande"
                 })
                 return
             }
@@ -595,7 +600,7 @@ export default function CreateServicio() {
                                 </Button>
                                 <Button
                                     type="button"
-                                    
+
                                     onClick={() => {
                                         stopCamera()
                                         navigate("/admin/servicios")

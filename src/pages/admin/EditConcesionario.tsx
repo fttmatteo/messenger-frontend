@@ -65,6 +65,7 @@ export default function EditConcesionario() {
             } catch (error: any) {
                 toast.error("Error al cargar concesionario", {
                     description: error.message,
+                    id: "error-cargar-concesionario-edit"
                 })
                 navigate("/admin/concesionarios")
             } finally {
@@ -83,6 +84,7 @@ export default function EditConcesionario() {
         } catch (error: any) {
             toast.error("Error al actualizar concesionario", {
                 description: error.message,
+                id: "error-actualizar-concesionario"
             })
         }
     }
@@ -101,6 +103,7 @@ export default function EditConcesionario() {
         } catch (error: any) {
             toast.error("Error al geocodificar", {
                 description: error.message,
+                id: "error-geocodificar-edit"
             })
         } finally {
             setGeocoding(false)

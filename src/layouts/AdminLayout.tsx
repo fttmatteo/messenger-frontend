@@ -23,6 +23,7 @@ import {
     LogOut,
     Settings,
     Search,
+    Map,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,6 +34,7 @@ const menuItems = [
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
+    { title: "Mapa", icon: Map, url: "/admin/tracking" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
@@ -41,6 +43,7 @@ const mobileNavItems = [
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Conces.", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
+    { title: "Mapa", icon: Map, url: "/admin/tracking" },
     { title: "Config", icon: Settings, url: "/admin/configuracion" },
 ]
 

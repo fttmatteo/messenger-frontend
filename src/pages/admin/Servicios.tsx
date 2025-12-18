@@ -158,16 +158,26 @@ const ITEMS_PER_PAGE = 10
 // Status badge configuration
 const getStatusBadge = (status: ServiceStatus) => {
     const config: Record<ServiceStatus, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500' },
-        PENDING: { label: "Pendiente", className: "bg-indigo-500" },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500' },
-        FAILED: { label: 'Fallido', className: 'bg-red-500' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500' },
-        CANCELED: { label: 'Cancelado', className: 'bg-gray-500' },
-        OBSERVED: { label: 'Observado', className: 'bg-purple-500' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
+        PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
+        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
+        FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
+        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
+        CANCELED: { label: 'Cancelado', className: 'bg-gray-500 text-white' },
+        OBSERVED: { label: 'Observado', className: 'bg-purple-500 text-white' },
+        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
-    return config[status] || { label: status, className: 'bg-gray-500' }
+    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
+}
+
+// Plate type translation
+const getPlateTypeLabel = (plateType: string) => {
+    const types: Record<string, string> = {
+        CAR: 'Carro',
+        MOTORCYCLE: 'Moto',
+        MOTORCAR: 'Motocarro',
+    }
+    return types[plateType] || plateType
 }
 
 // Available statuses for selection
@@ -269,6 +279,7 @@ export default function Servicios() {
         } catch (error: any) {
             toast.error("Error al cargar servicios", {
                 description: error.message,
+                id: "error-cargar-servicios"
             })
         } finally {
             setLoading(false)
@@ -317,7 +328,7 @@ export default function Servicios() {
         if (files.length > 0) {
             const validFiles = files.filter(f => f.type.startsWith('image/'))
             if (validFiles.length !== files.length) {
-                toast.error("Algunos archivos no son imágenes")
+                toast.error("Algunos archivos no son imágenes", { id: "error-archivos-invalidos" })
             }
             setPhotoFiles(prev => [...prev, ...validFiles])
 
@@ -343,7 +354,8 @@ export default function Servicios() {
 
         if (newStatus === 'DELIVERED' && !signatureFile) {
             toast.error("Firma requerida", {
-                description: "Para marcar como Entregado, debe incluir la firma."
+                description: "Para marcar como Entregado, debe incluir la firma.",
+                id: "error-firma-requerida"
             })
             return
         }
@@ -365,7 +377,8 @@ export default function Servicios() {
             fetchServices() // Reload list
         } catch (error: any) {
             toast.error("Error al actualizar estado", {
-                description: error.response?.data?.message || error.message
+                description: error.response?.data?.message || error.message,
+                id: "error-actualizar-estado"
             })
         } finally {
             setUpdating(false)
@@ -427,17 +440,16 @@ export default function Servicios() {
                     <CardContent className="pt-4">
                         <div className="flex items-start justify-between">
                             <div className="flex-1 space-y-2 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex items-center gap-1.5">
-
-                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
-                                    </div>
-                                    <Badge variant="outline" className="text-xs">
-                                        {service.plate.plateType}
-                                    </Badge>
+                                <div className="flex flex-col items-start gap-2">
                                     <Badge className={statusConfig.className}>
                                         {statusConfig.label}
                                     </Badge>
+                                    <div className="flex flex-col items-center w-fit">
+                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
+                                        <span className="text-[10px] text-muted-foreground mt-0.5 uppercase font-semibold">
+                                            {getPlateTypeLabel(service.plate.plateType)}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="space-y-1 text-sm text-muted-foreground">
                                     <div className="flex items-center gap-2">
@@ -454,33 +466,24 @@ export default function Servicios() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-1 shrink-0">
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => openUpdateDialog(service)}
-                                            aria-label="Actualizar estado"
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Actualizar estado</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
-                                            aria-label="Ver detalles del servicio"
-                                        >
-                                            <Eye className="h-4 w-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Ver detalles</TooltipContent>
-                                </Tooltip>
+                            <div className="flex flex-col gap-2 shrink-0">
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={() => openUpdateDialog(service)}
+                                    className="bg-primary hover:bg-primary/90"
+                                >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Actualizar
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
+                                >
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Detalles
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
@@ -659,7 +662,7 @@ export default function Servicios() {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[100px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("plateNumber")}
                                                 >
                                                     <div className="flex items-center">
@@ -673,8 +676,8 @@ export default function Servicios() {
                                                     onClick={() => handleSort("dealershipName")}
                                                 >
                                                     <div className="flex items-center">
-                                                        <Building2 className="h-4 w-4 mr-1" />
-                                                        Concesionario
+                                                        <Building2 className="h-4 w-4 mr-1 shrink-0" />
+                                                        <span className="truncate">Concesionario</span>
                                                         <SortIndicator field="dealershipName" />
                                                     </div>
                                                 </TableHead>
@@ -683,13 +686,13 @@ export default function Servicios() {
                                                     onClick={() => handleSort("messengerName")}
                                                 >
                                                     <div className="flex items-center">
-                                                        <User className="h-4 w-4 mr-1" />
-                                                        Mensajero
+                                                        <User className="h-4 w-4 mr-1 shrink-0" />
+                                                        <span className="truncate">Mensajero</span>
                                                         <SortIndicator field="messengerName" />
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[100px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("currentStatus")}
                                                 >
                                                     <div className="flex items-center">
@@ -699,7 +702,7 @@ export default function Servicios() {
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[120px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("createdAt")}
                                                 >
                                                     <div className="flex items-center">
@@ -708,7 +711,7 @@ export default function Servicios() {
                                                         <SortIndicator field="createdAt" />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="text-right w-[100px]"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
+                                                <TableHead className="text-right"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
                                                     Acciones</div>
                                                 </TableHead>
                                             </TableRow>
@@ -732,39 +735,35 @@ export default function Servicios() {
                                                             <TableCell>
                                                                 <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
                                                             </TableCell>
-                                                            <TableCell className="max-w-[200px] truncate" title={service.dealership.name}>
+                                                            <TableCell className="truncate" title={service.dealership.name}>
                                                                 {service.dealership.name}
                                                             </TableCell>
-                                                            <TableCell className="max-w-[150px] truncate" title={service.messenger.fullName}>
+                                                            <TableCell className="truncate" title={service.messenger.fullName}>
                                                                 {service.messenger.fullName}
                                                             </TableCell>
                                                             <TableCell>
-                                                                <Badge className={statusConfig.className}>
+                                                                <Badge className={`${statusConfig.className} text-sm px-3 py-1`}>
                                                                     {statusConfig.label}
                                                                 </Badge>
                                                             </TableCell>
                                                             <TableCell className="whitespace-nowrap text-sm">
-                                                                {format(new Date(service.createdAt), "dd/MM/yy", { locale: es })}
+                                                                {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                             </TableCell>
                                                             <TableCell className="text-right">
-                                                                <div className="flex items-center justify-end gap-1">
+                                                                <div className="flex items-center justify-end gap-2">
+                                                                    <Button
+                                                                        variant="default"
+                                                                        size="sm"
+                                                                        onClick={() => openUpdateDialog(service)}
+                                                                        className="bg-primary hover:bg-primary/90"
+                                                                    >
+                                                                        <Edit className="h-4 w-4 mr-1" />
+                                                                        Actualizar
+                                                                    </Button>
                                                                     <Tooltip>
                                                                         <TooltipTrigger asChild>
                                                                             <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                onClick={() => openUpdateDialog(service)}
-                                                                                aria-label="Actualizar estado"
-                                                                            >
-                                                                                <Edit className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent>Actualizar estado</TooltipContent>
-                                                                    </Tooltip>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <Button
-                                                                                variant="ghost"
+                                                                                variant="outline"
                                                                                 size="icon"
                                                                                 onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
                                                                                 aria-label="Ver detalles del servicio"

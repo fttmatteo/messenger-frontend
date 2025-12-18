@@ -24,12 +24,13 @@ export interface PlateInfo {
 
 export interface SignatureInfo {
     idSignature: number
-    signatureUrl: string
+    signaturePath: string
 }
 
 export interface PhotoInfo {
     idPhoto: number
-    photoUrl: string
+    photoPath: string
+    photoType?: 'PLATE_DETECTION' | 'EVIDENCE'
 }
 
 export interface DealershipInfo {
