@@ -24,20 +24,23 @@ export default function LiveTracking() {
         try {
             setLoading(true)
             const data = await trackingApiService.getActiveMessengers()
-            setMessengers(data)
+            setMessengers(data || [])
 
             // Center map on first messenger if available
-            if (data.length > 0 && data[0].latitude && data[0].longitude) {
+            if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
                 setMapCenter({ lat: data[0].latitude, lng: data[0].longitude })
             }
         } catch (error: any) {
             console.error("Error fetching messengers:", error)
-            // Don't show error toast for 404 (no active messengers)
-            if (error.response?.status !== 404) {
+            // Don't show error for expected cases (404, 403, empty list)
+            const status = error.response?.status
+            if (status !== 404 && status !== 403 && status !== 500) {
                 toast.error("Error al cargar mensajeros", {
                     description: error.response?.data?.message || error.message
                 })
             }
+            // Set empty array on error
+            setMessengers([])
         } finally {
             setLoading(false)
         }
