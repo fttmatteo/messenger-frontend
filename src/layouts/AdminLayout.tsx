@@ -19,7 +19,7 @@ import {
     LayoutDashboard,
     Users,
     Store,
-    Truck,
+    Bike,
     LogOut,
     Settings,
     Search,
@@ -32,7 +32,7 @@ const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
-    { title: "Mapa", icon: Truck, url: "/admin/tracking" },
+    { title: "Servicios", icon: Bike, url: "/admin/servicios" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
@@ -41,7 +41,7 @@ const mobileNavItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Conces.", icon: Store, url: "/admin/concesionarios" },
-    { title: "Mapa", icon: Truck, url: "/admin/tracking" },
+    { title: "Servicios", icon: Bike, url: "/admin/servicios" },
     { title: "Config", icon: Settings, url: "/admin/configuracion" },
 ]
 
