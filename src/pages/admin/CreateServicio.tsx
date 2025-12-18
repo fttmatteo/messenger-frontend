@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -36,7 +36,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Home, Bike, Upload, X, Loader2 } from "lucide-react"
+import { Home, Bike, Upload, X, Loader2, Camera, CameraOff } from "lucide-react"
 import { toast } from "sonner"
 
 // Form validation schema
@@ -58,6 +58,14 @@ export default function CreateServicio() {
     const [loadingData, setLoadingData] = useState(true)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
 
+    // Camera states
+    const [cameraActive, setCameraActive] = useState(false)
+    const [cameraReady, setCameraReady] = useState(false)
+    const [cameraError, setCameraError] = useState<string | null>(null)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const streamRef = useRef<MediaStream | null>(null)
+
     const isAdmin = user?.role === 'ADMIN'
 
     const form = useForm<FormValues>({
@@ -68,6 +76,19 @@ export default function CreateServicio() {
             manualPlateNumber: "",
         },
     })
+
+    // Stop camera function
+    const stopCamera = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop())
+            streamRef.current = null
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null
+        }
+        setCameraActive(false)
+        setCameraReady(false)
+    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -92,7 +113,104 @@ export default function CreateServicio() {
         }
 
         fetchData()
-    }, [])
+
+        // Cleanup camera on unmount
+        return () => {
+            stopCamera()
+        }
+    }, [stopCamera])
+
+    // Start camera
+    const startCamera = async () => {
+        try {
+            setCameraError(null)
+            setCameraReady(false)
+            setCameraActive(true) // Show video element first
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: { ideal: 'environment' }, // Prefer rear camera
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            })
+
+            streamRef.current = stream
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream
+
+                // Wait for video to be ready
+                videoRef.current.onloadedmetadata = () => {
+                    if (videoRef.current) {
+                        videoRef.current.play()
+                            .then(() => {
+                                setCameraReady(true)
+                                toast.success("Cámara lista", { duration: 1500 })
+                            })
+                            .catch(err => {
+                                console.error('Video play error:', err)
+                                setCameraError('Error al reproducir video')
+                            })
+                    }
+                }
+            }
+        } catch (error: any) {
+            console.error('Camera error:', error)
+            setCameraActive(false)
+            setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
+            toast.error("Error de cámara", {
+                description: error.message || "No se pudo acceder a la cámara"
+            })
+        }
+    }
+
+    // Capture photo from camera
+    const capturePhoto = () => {
+        const video = videoRef.current
+        const canvas = canvasRef.current
+
+        if (!video || !canvas) {
+            toast.error("Error", { description: "Componentes no disponibles" })
+            return
+        }
+
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+            toast.error("Error", { description: "El video aún no está listo" })
+            return
+        }
+
+        // Set canvas size to video size
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+            toast.error("Error", { description: "No se pudo crear contexto de canvas" })
+            return
+        }
+
+        // Draw video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+        // Convert to blob
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const file = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
+                form.setValue("image", file)
+
+                // Create preview from canvas
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
+                setImagePreview(dataUrl)
+
+                stopCamera()
+                toast.success("📸 Foto capturada exitosamente")
+            } else {
+                toast.error("Error al capturar foto")
+            }
+        }, 'image/jpeg', 0.9)
+    }
 
     const onSubmit = async (values: FormValues) => {
         try {
@@ -154,13 +272,17 @@ export default function CreateServicio() {
     const clearImage = () => {
         form.setValue("image", undefined as any)
         setImagePreview(null)
+        stopCamera()
         // Reset file input
-        const fileInput = document.getElementById('image-upload') as HTMLInputElement
+        const fileInput = document.getElementById('file-upload') as HTMLInputElement
         if (fileInput) fileInput.value = ''
     }
 
     return (
         <div className="space-y-6">
+            {/* Hidden canvas for capturing */}
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -198,7 +320,7 @@ export default function CreateServicio() {
                 <CardHeader>
                     <CardTitle>Información del Servicio</CardTitle>
                     <CardDescription>
-                        Sube una imagen de la placa para detección automática o ingresa el número manualmente
+                        Toma una foto de la placa para detección automática o ingresa el número manualmente
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -213,40 +335,130 @@ export default function CreateServicio() {
                                         <FormLabel>Imagen de la Placa *</FormLabel>
                                         <FormControl>
                                             <div className="space-y-4">
-                                                {!imagePreview ? (
-                                                    <div className="flex items-center justify-center w-full">
-                                                        <label
-                                                            htmlFor="image-upload"
-                                                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
+                                                {!imagePreview && !cameraActive ? (
+                                                    <div className="w-full space-y-3">
+                                                        {/* Primary: Camera button */}
+                                                        <Button
+                                                            type="button"
+                                                            onClick={startCamera}
+                                                            className="w-full h-48 flex flex-col items-center justify-center gap-3 text-lg bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary"
+                                                            size="lg"
                                                         >
-                                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                                <Upload className="w-10 h-10 mb-3 text-muted-foreground" />
-                                                                <p className="mb-2 text-sm text-muted-foreground">
-                                                                    <span className="font-semibold">Click para subir</span> o arrastra y suelta
-                                                                </p>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    PNG, JPG, WEBP (MAX. 5MB)
-                                                                </p>
+                                                            <Camera className="w-16 h-16" />
+                                                            <span className="font-semibold">📷 Abrir Cámara</span>
+                                                            <span className="text-xs opacity-80">
+                                                                Tomar foto de la placa
+                                                            </span>
+                                                        </Button>
+
+                                                        {cameraError && (
+                                                            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-destructive text-sm">
+                                                                <CameraOff className="w-4 h-4 shrink-0" />
+                                                                <span>{cameraError}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Secondary: File upload */}
+                                                        <label
+                                                            htmlFor="file-upload"
+                                                            className="flex items-center justify-center w-full h-14 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                <Upload className="w-5 h-5 text-muted-foreground" />
+                                                                <span className="text-sm text-muted-foreground">
+                                                                    o seleccionar archivo de galería
+                                                                </span>
                                                             </div>
                                                             <input
-                                                                id="image-upload"
+                                                                id="file-upload"
                                                                 type="file"
                                                                 className="hidden"
                                                                 accept="image/*"
                                                                 onChange={handleImageChange}
                                                             />
                                                         </label>
+
+                                                        <p className="text-xs text-muted-foreground text-center">
+                                                            PNG, JPG, WEBP (MAX. 5MB)
+                                                        </p>
+                                                    </div>
+                                                ) : cameraActive ? (
+                                                    <div className="space-y-3">
+                                                        {/* Live camera view */}
+                                                        <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
+                                                            <video
+                                                                ref={videoRef}
+                                                                autoPlay
+                                                                playsInline
+                                                                muted
+                                                                className="w-full h-full object-cover"
+                                                                style={{ transform: 'scaleX(1)' }}
+                                                            />
+
+                                                            {/* Loading overlay */}
+                                                            {!cameraReady && (
+                                                                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                                                                    <div className="text-center text-white">
+                                                                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                                                                        <p className="text-sm">Cargando cámara...</p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Camera frame overlay */}
+                                                            {cameraReady && (
+                                                                <div className="absolute inset-4 border-2 border-white/60 rounded-lg pointer-events-none">
+                                                                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-white" />
+                                                                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-white" />
+                                                                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-white" />
+                                                                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-white" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Camera controls */}
+                                                        <div className="flex gap-2 justify-center">
+                                                            <Button
+                                                                type="button"
+                                                                onClick={capturePhoto}
+                                                                disabled={!cameraReady}
+                                                                className="flex-1 h-14 text-lg"
+                                                                size="lg"
+                                                            >
+                                                                {cameraReady ? (
+                                                                    <>
+                                                                        <Camera className="mr-2 h-6 w-6" />
+                                                                        📸 Capturar Foto
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                                        Cargando...
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                onClick={stopCamera}
+                                                                className="h-14"
+                                                                size="lg"
+                                                            >
+                                                                <X className="h-5 w-5" />
+
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <div className="relative">
                                                         <img
-                                                            src={imagePreview}
+                                                            src={imagePreview || ""}
                                                             alt="Preview"
-                                                            className="w-full h-64 object-contain rounded-lg border"
+                                                            className="w-full h-64 object-contain rounded-lg border bg-muted/10"
                                                         />
                                                         <Button
                                                             type="button"
-                                                            variant="destructive"
+                                                            variant="outline"
                                                             size="icon"
                                                             className="absolute top-2 right-2"
                                                             onClick={clearImage}
@@ -366,7 +578,7 @@ export default function CreateServicio() {
                             <div className="flex gap-4">
                                 <Button
                                     type="submit"
-                                    disabled={loading || loadingData}
+                                    disabled={loading || loadingData || cameraActive}
                                     className="flex-1 sm:flex-none"
                                 >
                                     {loading ? (
@@ -383,8 +595,11 @@ export default function CreateServicio() {
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    onClick={() => navigate("/admin/servicios")}
+                                    
+                                    onClick={() => {
+                                        stopCamera()
+                                        navigate("/admin/servicios")
+                                    }}
                                     disabled={loading}
                                 >
                                     Cancelar
