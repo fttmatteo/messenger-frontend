@@ -50,6 +50,7 @@ coverage/
 
 # Vite
 *.local
+.vite
 
 # Debug
 .debug/
@@ -58,3 +59,7 @@ coverage/
 *.tmp
 *.temp
 .vercel
+
+# VSCode
+.vscode
+
