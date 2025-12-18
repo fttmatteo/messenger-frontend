@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react"
+import { SignaturePad } from "@/components/SignaturePad"
 import { useNavigate, useOutletContext, Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { serviceDeliveryService } from "@/services/service.service"
@@ -75,7 +76,7 @@ import {
     Settings,
     Edit,
     X,
-    Upload,
+
     Image as ImageIcon,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -311,20 +312,6 @@ export default function Servicios() {
         setPhotosPreviews([])
     }
 
-    // Handle signature file change
-    const handleSignatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                toast.error("Archivo inválido", { description: "Selecciona una imagen" })
-                return
-            }
-            setSignatureFile(file)
-            const reader = new FileReader()
-            reader.onloadend = () => setSignaturePreview(reader.result as string)
-            reader.readAsDataURL(file)
-        }
-    }
 
     // Handle photos change
     const handlePhotosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -842,34 +829,26 @@ Acciones</div>
 
                         {/* Signature Upload */}
                         <div className="space-y-2">
-                            <Label htmlFor="signature">Firma Digital (Opcional)</Label>
+                            <Label>Firma Digital (Opcional)</Label>
                             {!signaturePreview ? (
-                                <div className="flex items-center justify-center w-full">
-                                    <label
-                                        htmlFor="signature"
-                                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
-                                    >
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                                            <p className="text-sm text-muted-foreground">
-                                                <span className="font-semibold">Click para subir firma</span>
-                                            </p>
-                                        </div>
-                                        <input
-                                            id="signature"
-                                            type="file"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleSignatureChange}
-                                        />
-                                    </label>
-                                </div>
+                                <SignaturePad
+                                    onSave={(file) => {
+                                        setSignatureFile(file)
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => setSignaturePreview(reader.result as string)
+                                        reader.readAsDataURL(file)
+                                    }}
+                                    onClear={() => {
+                                        setSignatureFile(null)
+                                        setSignaturePreview(null)
+                                    }}
+                                />
                             ) : (
                                 <div className="relative">
                                     <img
                                         src={signaturePreview}
                                         alt="Firma"
-                                        className="w-full h-32 object-contain border rounded-lg"
+                                        className="w-full h-32 object-contain border rounded-lg bg-white"
                                     />
                                     <Button
                                         type="button"
