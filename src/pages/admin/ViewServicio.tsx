@@ -47,7 +47,7 @@ import { es } from "date-fns/locale"
 // Status badge configuration
 const getStatusBadge = (status: string) => {
     const config: Record<string, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
         PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
         FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
@@ -57,6 +57,16 @@ const getStatusBadge = (status: string) => {
         RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
+}
+
+// Plate type translation
+const getPlateTypeLabel = (plateType: string) => {
+    const types: Record<string, string> = {
+        CAR: 'Carro',
+        MOTORCYCLE: 'Moto',
+        MOTORCAR: 'Motocarro',
+    }
+    return types[plateType] || plateType
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -128,23 +138,90 @@ export default function ViewServicio() {
     if (loading) {
         return (
             <div className="space-y-6">
-                <Skeleton className="h-6 w-64" />
-                <div className="space-y-2">
-                    <Skeleton className="h-10 w-96" />
-                    <Skeleton className="h-5 w-64" />
+                {/* Breadcrumb skeleton */}
+                <Skeleton className="h-5 w-64" />
+
+                {/* Header skeleton */}
+                <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-8 w-24" />
+                            <Skeleton className="h-6 w-20 rounded-full" />
+                        </div>
+                        <Skeleton className="h-5 w-80" />
+                    </div>
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-28" />
+                    </div>
                 </div>
+
+                {/* Content grid skeleton */}
                 <div className="grid gap-6 md:grid-cols-2">
+                    {/* Detalles del Servicio */}
                     <Card>
                         <CardHeader>
-                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-6 w-40" />
+                            <Skeleton className="h-4 w-56" />
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-full" />
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <Skeleton className="h-5 w-5" />
+                                    <div className="flex-1 space-y-1">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-4 w-full" />
+                                    </div>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+
+                    {/* Imágenes del Servicio */}
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-6 w-44" />
+                            <Skeleton className="h-4 w-48" />
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-5 w-5" />
+                                    <Skeleton className="h-4 w-32" />
+                                </div>
+                                <Skeleton className="h-32 w-full" />
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-5 w-5" />
+                                    <Skeleton className="h-4 w-28" />
+                                </div>
+                                <Skeleton className="h-32 w-48" />
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Historial skeleton */}
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-40" />
+                        <Skeleton className="h-4 w-64" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex gap-4 pl-8">
+                                <div className="flex-1 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Skeleton className="h-6 w-20 rounded-full" />
+                                        <Skeleton className="h-4 w-4" />
+                                        <Skeleton className="h-6 w-20 rounded-full" />
+                                    </div>
+                                    <Skeleton className="h-4 w-64" />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
             </div>
         )
     }
@@ -193,17 +270,16 @@ export default function ViewServicio() {
             {/* Header */}
             <div className="flex items-start justify-between">
                 <div>
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="mb-4 flex flex-col items-start gap-4">
+                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
-
-                        <Badge className={statusConfig.className}>{statusConfig.label}</Badge>
                     </div>
                     <p className="text-muted-foreground">
                         Servicio #{service.idServiceDelivery} • Creado el {format(new Date(service.createdAt), "PPP", { locale: es })}
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    {isAdmin && (
+                    {isAdmin && service.currentStatus !== 'DELIVERED' && (
                         <Button
                             variant="destructive"
                             onClick={() => setDeleteDialogOpen(true)}
@@ -232,9 +308,9 @@ export default function ViewServicio() {
                             <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Placa</p>
-                                <p className="text-sm text-muted-foreground font-mono">
+                                <div className="mt-1">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                </p>
+                                </div>
                             </div>
                         </div>
 
@@ -403,7 +479,7 @@ export default function ViewServicio() {
                                                 <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
                                                 <span>•</span>
                                                 <User className="h-3.5 w-3.5" />
-                                                <span>{entry.changedBy.fullName}</span>
+                                                <span>@{entry.changedBy.userName}</span>
                                             </div>
 
                                             {entry.photos && entry.photos.length > 0 && (

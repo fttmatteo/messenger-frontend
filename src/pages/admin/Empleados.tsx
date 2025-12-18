@@ -251,8 +251,12 @@ export default function Empleados() {
         }
     }
 
-    const getRoleBadgeVariant = (role: string) => {
-        return role === 'ADMIN' ? 'default' : 'secondary'
+    const getRoleBadgeClass = (role: string) => {
+        // Use different colors than service statuses (blue, green, red, etc.)
+        // ADMIN: cyan/teal, MESSENGER: amber/yellow
+        return role === 'ADMIN'
+            ? 'bg-cyan-600 text-white hover:bg-cyan-700'
+            : 'bg-amber-500 text-white hover:bg-amber-600'
     }
 
     // Sorting handler
@@ -319,7 +323,7 @@ export default function Empleados() {
                         <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-2 flex-wrap">
                                 <h3 className="font-semibold text-lg">{employee.fullName}</h3>
-                                <Badge variant={getRoleBadgeVariant(employee.role)}>
+                                <Badge className={getRoleBadgeClass(employee.role)}>
                                     {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                 </Badge>
                             </div>
@@ -347,36 +351,27 @@ export default function Empleados() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
-                                        aria-label="Editar empleado"
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Editar</TooltipContent>
-                            </Tooltip>
+                        <div className="flex flex-col gap-2">
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
+                                className="bg-primary hover:bg-primary/90"
+                            >
+                                <Pencil className="h-4 w-4 mr-1" />
+                                Editar
+                            </Button>
                             <AlertDialog>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
-                                                aria-label="Eliminar empleado"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Eliminar</TooltipContent>
-                                </Tooltip>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Eliminar
+                                    </Button>
+                                </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>
@@ -660,40 +655,36 @@ export default function Empleados() {
                                                     </TableCell>
                                                     <TableCell>{employee.userName}</TableCell>
                                                     <TableCell>
-                                                        <Badge variant={getRoleBadgeVariant(employee.role)}>
+                                                        <Badge className={getRoleBadgeClass(employee.role)}>
                                                             {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
-                                                                        aria-label="Editar empleado"
-                                                                    >
-                                                                        <Pencil className="h-4 w-4" />
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>Editar empleado</TooltipContent>
-                                                            </Tooltip>
+                                                            <Button
+                                                                variant="default"
+                                                                size="sm"
+                                                                onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
+                                                                className="bg-primary hover:bg-primary/90"
+                                                            >
+                                                                <Pencil className="h-4 w-4 mr-1" />
+                                                                Editar
+                                                            </Button>
                                                             <AlertDialog>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <AlertDialogTrigger asChild>
                                                                             <Button
-                                                                                variant="ghost"
+                                                                                variant="outline"
                                                                                 size="icon"
-                                                                                className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
+                                                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
                                                                                 aria-label="Eliminar empleado"
                                                                             >
                                                                                 <Trash2 className="h-4 w-4" />
                                                                             </Button>
                                                                         </AlertDialogTrigger>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent>Eliminar empleado</TooltipContent>
+                                                                    <TooltipContent>Eliminar</TooltipContent>
                                                                 </Tooltip>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>

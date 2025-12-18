@@ -158,7 +158,7 @@ const ITEMS_PER_PAGE = 10
 // Status badge configuration
 const getStatusBadge = (status: ServiceStatus) => {
     const config: Record<ServiceStatus, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
         PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
         FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
@@ -168,6 +168,16 @@ const getStatusBadge = (status: ServiceStatus) => {
         RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
+}
+
+// Plate type translation
+const getPlateTypeLabel = (plateType: string) => {
+    const types: Record<string, string> = {
+        CAR: 'Carro',
+        MOTORCYCLE: 'Moto',
+        MOTORCAR: 'Motocarro',
+    }
+    return types[plateType] || plateType
 }
 
 // Available statuses for selection
@@ -430,17 +440,16 @@ export default function Servicios() {
                     <CardContent className="pt-4">
                         <div className="flex items-start justify-between">
                             <div className="flex-1 space-y-2 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex items-center gap-1.5">
-
-                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
-                                    </div>
-                                    <Badge variant="outline" className="text-xs">
-                                        {service.plate.plateType}
-                                    </Badge>
+                                <div className="flex flex-col items-start gap-2">
                                     <Badge className={statusConfig.className}>
                                         {statusConfig.label}
                                     </Badge>
+                                    <div className="flex flex-col items-center w-fit">
+                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
+                                        <span className="text-[10px] text-muted-foreground mt-0.5 uppercase font-semibold">
+                                            {getPlateTypeLabel(service.plate.plateType)}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="space-y-1 text-sm text-muted-foreground">
                                     <div className="flex items-center gap-2">
@@ -457,33 +466,24 @@ export default function Servicios() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-1 shrink-0">
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => openUpdateDialog(service)}
-                                            aria-label="Actualizar estado"
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Actualizar estado</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
-                                            aria-label="Ver detalles del servicio"
-                                        >
-                                            <Eye className="h-4 w-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Ver detalles</TooltipContent>
-                                </Tooltip>
+                            <div className="flex flex-col gap-2 shrink-0">
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={() => openUpdateDialog(service)}
+                                    className="bg-primary hover:bg-primary/90"
+                                >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Actualizar
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
+                                >
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Detalles
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
@@ -742,7 +742,7 @@ export default function Servicios() {
                                                                 {service.messenger.fullName}
                                                             </TableCell>
                                                             <TableCell>
-                                                                <Badge className={statusConfig.className}>
+                                                                <Badge className={`${statusConfig.className} text-sm px-3 py-1`}>
                                                                     {statusConfig.label}
                                                                 </Badge>
                                                             </TableCell>
@@ -750,24 +750,20 @@ export default function Servicios() {
                                                                 {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                             </TableCell>
                                                             <TableCell className="text-right">
-                                                                <div className="flex items-center justify-end gap-1">
+                                                                <div className="flex items-center justify-end gap-2">
+                                                                    <Button
+                                                                        variant="default"
+                                                                        size="sm"
+                                                                        onClick={() => openUpdateDialog(service)}
+                                                                        className="bg-primary hover:bg-primary/90"
+                                                                    >
+                                                                        <Edit className="h-4 w-4 mr-1" />
+                                                                        Actualizar
+                                                                    </Button>
                                                                     <Tooltip>
                                                                         <TooltipTrigger asChild>
                                                                             <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                onClick={() => openUpdateDialog(service)}
-                                                                                aria-label="Actualizar estado"
-                                                                            >
-                                                                                <Edit className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent>Actualizar estado</TooltipContent>
-                                                                    </Tooltip>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <Button
-                                                                                variant="ghost"
+                                                                                variant="outline"
                                                                                 size="icon"
                                                                                 onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
                                                                                 aria-label="Ver detalles del servicio"

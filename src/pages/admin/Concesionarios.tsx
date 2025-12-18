@@ -382,56 +382,42 @@ export default function Concesionarios() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-2">
                             {!dealership.isGeolocated && (
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleGeocode(dealership.idDealership)}
-                                            disabled={geocoding === dealership.idDealership}
-                                            aria-label="Geocodificar concesionario"
-                                        >
-                                            {geocoding === dealership.idDealership ? (
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <MapPin className="h-4 w-4" />
-                                            )}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Geocodificar</TooltipContent>
-                                </Tooltip>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleGeocode(dealership.idDealership)}
+                                    disabled={geocoding === dealership.idDealership}
+                                >
+                                    {geocoding === dealership.idDealership ? (
+                                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                                    ) : (
+                                        <MapPin className="h-4 w-4 mr-1" />
+                                    )}
+                                    Ubicar
+                                </Button>
                             )}
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
-                                        aria-label="Editar concesionario"
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Editar</TooltipContent>
-                            </Tooltip>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
+                                className="bg-primary hover:bg-primary/90"
+                            >
+                                <Pencil className="h-4 w-4 mr-1" />
+                                Editar
+                            </Button>
                             <AlertDialog>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
-                                                aria-label="Eliminar concesionario"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Eliminar</TooltipContent>
-                                </Tooltip>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Eliminar
+                                    </Button>
+                                </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>
@@ -753,11 +739,20 @@ export default function Concesionarios() {
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
+                                                            <Button
+                                                                variant="default"
+                                                                size="sm"
+                                                                onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
+                                                                className="bg-primary hover:bg-primary/90"
+                                                            >
+                                                                <Pencil className="h-4 w-4 mr-1" />
+                                                                Editar
+                                                            </Button>
                                                             {!dealership.isGeolocated && (
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <Button
-                                                                            variant="ghost"
+                                                                            variant="outline"
                                                                             size="icon"
                                                                             onClick={() => handleGeocode(dealership.idDealership)}
                                                                             disabled={geocoding === dealership.idDealership}
@@ -770,37 +765,24 @@ export default function Concesionarios() {
                                                                             )}
                                                                         </Button>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent>Geocodificar ubicación</TooltipContent>
+                                                                    <TooltipContent>Ubicar</TooltipContent>
                                                                 </Tooltip>
                                                             )}
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
-                                                                        aria-label="Editar concesionario"
-                                                                    >
-                                                                        <Pencil className="h-4 w-4" />
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>Editar concesionario</TooltipContent>
-                                                            </Tooltip>
                                                             <AlertDialog>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <AlertDialogTrigger asChild>
                                                                             <Button
-                                                                                variant="ghost"
+                                                                                variant="outline"
                                                                                 size="icon"
-                                                                                className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
+                                                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
                                                                                 aria-label="Eliminar concesionario"
                                                                             >
                                                                                 <Trash2 className="h-4 w-4" />
                                                                             </Button>
                                                                         </AlertDialogTrigger>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent>Eliminar concesionario</TooltipContent>
+                                                                    <TooltipContent>Eliminar</TooltipContent>
                                                                 </Tooltip>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>
