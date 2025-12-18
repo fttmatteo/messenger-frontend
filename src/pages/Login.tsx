@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { ModeToggle } from "@/components/mode-toggle"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -17,10 +17,12 @@ import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
 import { AlertCircle, Eye, EyeOff } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const loginSchema = z.object({
     userName: z.string().min(1, "El usuario es requerido"),
     password: z.string().min(1, "La contraseña es requerida"),
+    rememberMe: z.boolean().optional(),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -34,6 +36,7 @@ export default function Login() {
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -113,7 +116,24 @@ export default function Login() {
                                 <p className="text-sm text-red-500">{errors.password.message}</p>
                             )}
                         </div>
-                        <div className="flex justify-end">
+
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <Controller
+                                    name="rememberMe"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Checkbox
+                                            id="rememberMe"
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    )}
+                                />
+                                <Label htmlFor="rememberMe" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Recordar contraseña
+                                </Label>
+                            </div>
                             <Button variant="link" className="px-0 font-normal text-xs text-muted-foreground" type="button">
                                 ¿Olvidó su contraseña?
                             </Button>
