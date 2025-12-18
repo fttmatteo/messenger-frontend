@@ -12,6 +12,9 @@ import AdminDashboard from '../pages/admin/Dashboard';
 import Empleados from '../pages/admin/Empleados';
 import CreateEmployee from '../pages/admin/CreateEmployee';
 import EditEmployee from '../pages/admin/EditEmployee';
+import Concesionarios from '../pages/admin/Concesionarios';
+import CreateConcesionario from '../pages/admin/CreateConcesionario';
+import EditConcesionario from '../pages/admin/EditConcesionario';
 
 // Messenger Pages
 import MessengerDashboard from '../pages/messenger/Dashboard';
@@ -82,8 +85,12 @@ export function AppRoutes() {
                 <Route path="empleados/crear" element={<CreateEmployee />} />
                 <Route path="empleados/editar/:id" element={<EditEmployee />} />
                 {/* Other admin routes */}
-                <Route path="concesionarios" element={<div className="p-4">Concesionarios - Próximamente</div>} />
-                <Route path="entregas" element={<div className="p-4">Entregas - Próximamente</div>} />
+                {/* Dealership routes */}
+                <Route path="concesionarios" element={<Concesionarios />} />
+                <Route path="concesionarios/crear" element={<CreateConcesionario />} />
+                <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
+                {/* Other routes */}
+                <Route path="tracking" element={<div className="p-4">Mapa - Próximamente</div>} />
                 <Route path="configuracion" element={<div className="p-4">Configuración - Próximamente</div>} />
             </Route>
 
