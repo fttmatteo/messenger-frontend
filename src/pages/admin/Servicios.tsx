@@ -72,6 +72,7 @@ import {
     Building2,
     User,
     PackageCheck,
+    Settings,
     Edit,
     X,
     Upload,
@@ -715,8 +716,8 @@ export default function Servicios() {
                                                         <SortIndicator field="createdAt" />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="text-right w-[100px]">
-                                                    Acciones
+                                                <TableHead className="text-right w-[100px]"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
+Acciones</div>
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
