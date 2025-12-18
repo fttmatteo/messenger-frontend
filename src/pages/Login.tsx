@@ -64,10 +64,10 @@ export default function Login() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         {error && (
-                            <Alert variant="destructive" className="border-red-500 text-red-500 [&>svg]:text-red-500">
+                            <Alert variant="destructive">
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>Error</AlertTitle>
-                                <AlertDescription className="text-red-500">{error}</AlertDescription>
+                                <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
 
@@ -113,10 +113,18 @@ export default function Login() {
                                 <p className="text-sm text-red-500">{errors.password.message}</p>
                             )}
                         </div>
+                        <div className="flex justify-end">
+                            <Button variant="link" className="px-0 font-normal text-xs text-muted-foreground" type="button">
+                                ¿Olvidó su contraseña?
+                            </Button>
+                        </div>
 
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                         </Button>
+                        <div className="text-center text-sm text-muted-foreground mt-4">
+                            ¿Tienes problemas para entrar? <span className="underline cursor-pointer">Contacta a soporte</span>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
