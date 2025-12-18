@@ -6,7 +6,7 @@
  * - Protegidas: Dashboard según rol
  */
 
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { LoginPage } from '@/pages/LoginPage'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { MessengerDashboard } from '@/pages/messenger/MessengerDashboard'
@@ -35,31 +35,72 @@ export const router = createBrowserRouter([
     {
         path: '/admin',
         element: (
-            <ProtectedRoute requiredRole= "ADMIN" >
-            <AdminDashboard />
+            <ProtectedRoute requiredRole="ADMIN">
+                <Outlet />
+            </ProtectedRoute>
+        ),
+        children: [
+            {
+                index: true,
+                element: <AdminDashboard />,
+            },
+            {
+                path: 'services',
+                async lazy() {
+                    const { ServicesPage } = await import('@/pages/admin/ServicesPage')
+                    return { Component: ServicesPage }
+                },
+            },
+            {
+                path: 'tracking',
+                async lazy() {
+                    const { TrackingPage } = await import('@/pages/admin/TrackingPage')
+                    return { Component: TrackingPage }
+                },
+            },
+            {
+                path: 'dealerships',
+                async lazy() {
+                    const { DealershipsPage } = await import('@/pages/admin/DealershipsPage')
+                    return { Component: DealershipsPage }
+                },
+            },
+            {
+                path: 'employees',
+                async lazy() {
+                    const { EmployeesPage } = await import('@/pages/admin/EmployeesPage')
+                    return { Component: EmployeesPage }
+                },
+            },
+            {
+                path: 'settings',
+                async lazy() {
+                    const { SettingsPage } = await import('@/pages/admin/SettingsPage')
+                    return { Component: SettingsPage }
+                },
+            },
+        ],
+    },
+
+    // Rutas de Mensajero
+    {
+        path: '/messenger',
+        element: (
+            <ProtectedRoute requiredRole="MESSENGER" >
+                <MessengerDashboard />
             </ProtectedRoute>
         ),
     },
 
-// Rutas de Mensajero
-{
-    path: '/messenger',
-        element: (
-            <ProtectedRoute requiredRole= "MESSENGER" >
-            <MessengerDashboard />
-            </ProtectedRoute>
-        ),
-},
-
-// Ruta raíz - redirige al login
-{
-    path: '/',
+    // Ruta raíz - redirige al login
+    {
+        path: '/',
         element: <RoleBasedRedirect />,
-},
+    },
 
-// Ruta 404 - redirige al login
-{
-    path: '*',
+    // Ruta 404 - redirige al login
+    {
+        path: '*',
         element: <Navigate to="/login" replace />,
     },
 ])

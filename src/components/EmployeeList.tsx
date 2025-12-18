@@ -31,11 +31,10 @@ interface EmployeeListProps {
 function RoleBadge({ role }: { role: EmployeeRole }) {
     const isAdmin = role === 'ADMIN'
     return (
-        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-            isAdmin 
-                ? 'bg-purple-500/20 text-purple-400' 
+        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${isAdmin
+                ? 'bg-purple-500/20 text-purple-400'
                 : 'bg-blue-500/20 text-blue-400'
-        }`}>
+            }`}>
             {isAdmin ? <Shield className="w-3 h-3" /> : <Bike className="w-3 h-3" />}
             {role}
         </span>
@@ -52,7 +51,7 @@ export function EmployeeList({ onEdit, onCreate }: EmployeeListProps) {
     const [deleteId, setDeleteId] = useState<number | null>(null)
 
     // Filtrar empleados por búsqueda
-    const filteredEmployees = employees?.filter(emp => 
+    const filteredEmployees = employees?.filter(emp =>
         emp.fullName.toLowerCase().includes(search.toLowerCase()) ||
         emp.document.includes(search) ||
         emp.userName.toLowerCase().includes(search.toLowerCase())
@@ -94,7 +93,7 @@ export function EmployeeList({ onEdit, onCreate }: EmployeeListProps) {
                         placeholder="Buscar por nombre, documento o usuario..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 bg-slate-800 border-slate-700"
+                        className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
                     />
                 </div>
                 {onCreate && (

@@ -12,7 +12,9 @@
  */
 
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { cn } from '@/utils/cn'
+import { useAuth } from '@/context/AuthContext'
 import {
     LayoutDashboard,
     Building2,
@@ -51,6 +53,13 @@ const navItems = [
 export function AdminLayout({ children }: AdminLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [activeItem, setActiveItem] = useState('/admin')
+    const { logout } = useAuth()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login')
+    }
 
     return (
         <div className="min-h-screen bg-slate-950">
@@ -90,7 +99,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     {navItems.map((item) => (
                         <button
                             key={item.href}
-                            onClick={() => setActiveItem(item.href)}
+                            onClick={() => {
+                                setActiveItem(item.href)
+                                navigate(item.href)
+                            }}
                             className={cn(
                                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                                 activeItem === item.href
@@ -106,7 +118,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                 {/* Botón de cerrar sesión */}
                 <div className="absolute bottom-4 left-4 right-4">
-                    <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                    >
                         <LogOut className="w-5 h-5" />
                         Cerrar Sesión
                     </button>

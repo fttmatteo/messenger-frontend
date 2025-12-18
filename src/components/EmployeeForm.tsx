@@ -103,13 +103,13 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
     // Manejar envío
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        
+
         if (!validate()) return
 
         if (isEditing && employee) {
             updateEmployee(
-                { 
-                    id: employee.id, 
+                {
+                    id: employee.id,
                     data: {
                         ...formData,
                         password: formData.password || undefined, // Omitir si está vacío
@@ -149,7 +149,7 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             value={formData.document}
                             onChange={(e) => handleChange('document', e.target.value)}
                             placeholder="Número de documento"
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             disabled={isPending}
                         />
                         {errors.document && (
@@ -167,7 +167,7 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             value={formData.fullName}
                             onChange={(e) => handleChange('fullName', e.target.value)}
                             placeholder="Nombre y apellidos"
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             disabled={isPending}
                         />
                         {errors.fullName && (
@@ -186,7 +186,7 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             value={formData.phone}
                             onChange={(e) => handleChange('phone', e.target.value)}
                             placeholder="Número de teléfono"
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             disabled={isPending}
                         />
                         {errors.phone && (
@@ -204,7 +204,7 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             value={formData.userName}
                             onChange={(e) => handleChange('userName', e.target.value)}
                             placeholder="Usuario para login"
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             disabled={isPending}
                         />
                         {errors.userName && (
@@ -223,7 +223,7 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             value={formData.password}
                             onChange={(e) => handleChange('password', e.target.value)}
                             placeholder={isEditing ? '••••••••' : 'Contraseña'}
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             disabled={isPending}
                         />
                         {errors.password && (
@@ -238,11 +238,10 @@ export function EmployeeForm({ employee, onSuccess, onCancel }: EmployeeFormProp
                             {(['MESSENGER', 'ADMIN'] as EmployeeRole[]).map((role) => (
                                 <label
                                     key={role}
-                                    className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
-                                        formData.role === role
+                                    className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${formData.role === role
                                             ? 'border-blue-500 bg-blue-500/10 text-blue-400'
                                             : 'border-slate-700 text-slate-400 hover:border-slate-600'
-                                    }`}
+                                        }`}
                                 >
                                     <input
                                         type="radio"
