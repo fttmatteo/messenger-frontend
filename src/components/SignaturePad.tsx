@@ -1,19 +1,17 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { Eraser, Check } from 'lucide-react'
+import { Eraser } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SignaturePadProps {
-    onSave: (file: File) => void
-    onClear?: () => void
+    onChange: (file: File | null) => void
     width?: number
     height?: number
     className?: string
 }
 
 export function SignaturePad({
-    onSave,
-    onClear,
+    onChange,
     width = 400,
     height = 200,
     className
@@ -68,7 +66,7 @@ export function SignaturePad({
     }, [])
 
     const startDrawing = useCallback((e: React.TouchEvent | React.MouseEvent) => {
-        e.preventDefault()
+        if (e.cancelable) e.preventDefault()
         const canvas = canvasRef.current
         const ctx = canvas?.getContext('2d')
         if (!ctx) return
@@ -81,7 +79,7 @@ export function SignaturePad({
     }, [getCoordinates])
 
     const draw = useCallback((e: React.TouchEvent | React.MouseEvent) => {
-        e.preventDefault()
+        if (e.cancelable) e.preventDefault()
         if (!isDrawing) return
 
         const canvas = canvasRef.current
@@ -93,9 +91,25 @@ export function SignaturePad({
         ctx.stroke()
     }, [isDrawing, getCoordinates])
 
+    const generateFile = useCallback(() => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const file = new File([blob], `signature_${Date.now()}.png`, { type: 'image/png' })
+                onChange(file)
+            }
+        }, 'image/png')
+    }, [onChange])
+
     const stopDrawing = useCallback(() => {
-        setIsDrawing(false)
-    }, [])
+        if (isDrawing) {
+            setIsDrawing(false)
+            // Generate file when drawing stops (mouse up / touch end)
+            generateFile()
+        }
+    }, [isDrawing, generateFile])
 
     const clearCanvas = useCallback(() => {
         const canvas = canvasRef.current
@@ -105,20 +119,8 @@ export function SignaturePad({
         ctx.fillStyle = '#ffffff'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         setIsEmpty(true)
-        onClear?.()
-    }, [onClear])
-
-    const saveSignature = useCallback(() => {
-        const canvas = canvasRef.current
-        if (!canvas || isEmpty) return
-
-        canvas.toBlob((blob) => {
-            if (blob) {
-                const file = new File([blob], `signature_${Date.now()}.png`, { type: 'image/png' })
-                onSave(file)
-            }
-        }, 'image/png')
-    }, [isEmpty, onSave])
+        onChange(null)
+    }, [onChange])
 
     return (
         <div className={cn("space-y-3", className)}>
@@ -144,25 +146,16 @@ export function SignaturePad({
                 )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex justify-end">
                 <Button
                     type="button"
                     variant="outline"
                     onClick={clearCanvas}
-                    className="flex-1"
                     disabled={isEmpty}
+                    size="sm"
                 >
                     <Eraser className="mr-2 h-4 w-4" />
-                    Limpiar
-                </Button>
-                <Button
-                    type="button"
-                    onClick={saveSignature}
-                    className="flex-1"
-                    disabled={isEmpty}
-                >
-                    <Check className="mr-2 h-4 w-4" />
-                    Confirmar Firma
+                    Limpiar firma
                 </Button>
             </div>
         </div>

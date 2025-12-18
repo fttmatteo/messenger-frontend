@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react"
 import { SignaturePad } from "@/components/SignaturePad"
+import { PlacaBadge } from "@/components/PlacaBadge"
 import { useNavigate, useOutletContext, Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { serviceDeliveryService } from "@/services/service.service"
@@ -75,7 +76,7 @@ import {
     PackageCheck,
     Settings,
     Edit,
-    X,
+    X, Check,
 
     Image as ImageIcon,
 } from "lucide-react"
@@ -158,7 +159,7 @@ const ITEMS_PER_PAGE = 10
 const getStatusBadge = (status: ServiceStatus) => {
     const config: Record<ServiceStatus, { label: string; className: string }> = {
         ASSIGNED: { label: 'Asignado', className: 'bg-blue-500' },
-        PENDING: { label: 'Pendiente', className: 'bg-yellow-500' },
+        PENDING: { label: "Pendiente", className: "bg-indigo-500" },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500' },
         FAILED: { label: 'Fallido', className: 'bg-red-500' },
         RETURNED: { label: 'Devuelto', className: 'bg-orange-500' },
@@ -203,7 +204,6 @@ export default function Servicios() {
     const [observation, setObservation] = useState('')
     const [signatureFile, setSignatureFile] = useState<File | null>(null)
     const [photoFiles, setPhotoFiles] = useState<File[]>([])
-    const [signaturePreview, setSignaturePreview] = useState<string | null>(null)
     const [photosPreviews, setPhotosPreviews] = useState<string[]>([])
 
     // Filter and sort services
@@ -296,7 +296,6 @@ export default function Servicios() {
         setObservation('')
         setSignatureFile(null)
         setPhotoFiles([])
-        setSignaturePreview(null)
         setPhotosPreviews([])
         setUpdateDialogOpen(true)
     }
@@ -308,7 +307,6 @@ export default function Servicios() {
         setObservation('')
         setSignatureFile(null)
         setPhotoFiles([])
-        setSignaturePreview(null)
         setPhotosPreviews([])
     }
 
@@ -342,6 +340,13 @@ export default function Servicios() {
     // Handle update status submission
     const handleUpdateStatus = async () => {
         if (!selectedService) return
+
+        if (newStatus === 'DELIVERED' && !signatureFile) {
+            toast.error("Firma requerida", {
+                description: "Para marcar como Entregado, debe incluir la firma."
+            })
+            return
+        }
 
         try {
             setUpdating(true)
@@ -424,8 +429,8 @@ export default function Servicios() {
                             <div className="flex-1 space-y-2 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <div className="flex items-center gap-1.5">
-                                        <Car className="h-4 w-4 text-muted-foreground shrink-0" />
-                                        <span className="font-semibold text-lg font-mono">{service.plate.plateNumber}</span>
+
+                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
                                     </div>
                                     <Badge variant="outline" className="text-xs">
                                         {service.plate.plateType}
@@ -704,7 +709,7 @@ export default function Servicios() {
                                                     </div>
                                                 </TableHead>
                                                 <TableHead className="text-right w-[100px]"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
-Acciones</div>
+                                                    Acciones</div>
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -724,8 +729,8 @@ Acciones</div>
                                                             custom={index}
                                                             className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                                                         >
-                                                            <TableCell className="font-mono whitespace-nowrap">
-                                                                {service.plate.plateNumber}
+                                                            <TableCell>
+                                                                <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
                                                             </TableCell>
                                                             <TableCell className="max-w-[200px] truncate" title={service.dealership.name}>
                                                                 {service.dealership.name}
@@ -792,7 +797,7 @@ Acciones</div>
                         <DialogTitle>Actualizar Estado del Servicio</DialogTitle>
                         <DialogDescription>
                             {selectedService && (
-                                <>Placa: <span className="font-mono font-semibold">{selectedService.plate.plateNumber}</span> • {selectedService.dealership.name}</>
+                                <><PlacaBadge plateNumber={selectedService.plate.plateNumber} plateType={selectedService.plate.plateType} size="sm" /> • {selectedService.dealership.name}</>
                             )}
                         </DialogDescription>
                     </DialogHeader>
@@ -830,40 +835,14 @@ Acciones</div>
                         {/* Signature Upload */}
                         <div className="space-y-2">
                             <Label>Firma Digital (Opcional)</Label>
-                            {!signaturePreview ? (
-                                <SignaturePad
-                                    onSave={(file) => {
-                                        setSignatureFile(file)
-                                        const reader = new FileReader()
-                                        reader.onloadend = () => setSignaturePreview(reader.result as string)
-                                        reader.readAsDataURL(file)
-                                    }}
-                                    onClear={() => {
-                                        setSignatureFile(null)
-                                        setSignaturePreview(null)
-                                    }}
-                                />
-                            ) : (
-                                <div className="relative">
-                                    <img
-                                        src={signaturePreview}
-                                        alt="Firma"
-                                        className="w-full h-32 object-contain border rounded-lg bg-white"
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="icon"
-                                        className="absolute top-2 right-2 h-6 w-6"
-                                        onClick={() => {
-                                            setSignatureFile(null)
-                                            setSignaturePreview(null)
-                                        }}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </div>
+                            <SignaturePad onChange={setSignatureFile} />
+                            {signatureFile && (
+                                <p className="text-xs text-green-600 mt-1 flex items-center animate-in fade-in slide-in-from-top-1">
+                                    <Check className="w-3 h-3 mr-1" />
+                                    Firma capturada
+                                </p>
                             )}
+
                         </div>
 
                         {/* Photos Upload */}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { PlacaBadge } from "@/components/PlacaBadge"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import { useAuth } from "@/context/AuthContext"
@@ -45,7 +46,7 @@ import { es } from "date-fns/locale"
 const getStatusBadge = (status: string) => {
     const config: Record<string, { label: string; className: string }> = {
         ASSIGNED: { label: 'Asignado', className: 'bg-blue-500' },
-        PENDING: { label: 'Pendiente', className: 'bg-yellow-500' },
+        PENDING: { label: "Pendiente", className: "bg-indigo-500" },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500' },
         FAILED: { label: 'Fallido', className: 'bg-red-500' },
         RETURNED: { label: 'Devuelto', className: 'bg-orange-500' },
@@ -170,7 +171,7 @@ export default function ViewServicio() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
+                        <BreadcrumbPage><PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" className="align-middle" /></BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -179,8 +180,8 @@ export default function ViewServicio() {
             <div className="flex items-start justify-between">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold font-mono">{service.plate.plateNumber}</h1>
-                        <Badge variant="outline">{service.plate.plateType}</Badge>
+                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
+                        
                         <Badge className={statusConfig.className}>{statusConfig.label}</Badge>
                     </div>
                     <p className="text-muted-foreground">
@@ -218,7 +219,7 @@ export default function ViewServicio() {
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Placa</p>
                                 <p className="text-sm text-muted-foreground font-mono">
-                                    {service.plate.plateNumber} ({service.plate.plateType})
+                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
                                 </p>
                             </div>
                         </div>
@@ -391,7 +392,7 @@ export default function ViewServicio() {
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Eliminar servicio?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta acción no se puede deshacer. El servicio de la placa <span className="font-mono font-semibold">{service.plate.plateNumber}</span> será eliminado permanentemente.
+                            Esta acción no se puede deshacer. El servicio de la placa <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" className="inline-flex align-middle mx-1" /> será eliminado permanentemente.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
