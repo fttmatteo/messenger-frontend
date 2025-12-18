@@ -12,7 +12,7 @@ function getAuthHeaders(): HeadersInit {
 
 export const employeeService = {
     async getAll(): Promise<Employee[]> {
-        const response = await fetch(`${API_URL}/all`, {
+        const response = await fetch(`${API_URL}/allEmployees`, {
             method: 'GET',
             headers: getAuthHeaders(),
         })
@@ -26,7 +26,7 @@ export const employeeService = {
     },
 
     async getById(id: number): Promise<Employee> {
-        const response = await fetch(`${API_URL}/find/${id}`, {
+        const response = await fetch(`${API_URL}/findEmployee/${id}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         })
@@ -40,7 +40,7 @@ export const employeeService = {
     },
 
     async create(data: CreateEmployeeRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/create`, {
+        const response = await fetch(`${API_URL}/createEmployee`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
@@ -55,7 +55,7 @@ export const employeeService = {
     },
 
     async update(id: number, data: UpdateEmployeeRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/update/${id}`, {
+        const response = await fetch(`${API_URL}/updateEmployee/${id}`, {
             method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
@@ -70,7 +70,7 @@ export const employeeService = {
     },
 
     async delete(id: number): Promise<string> {
-        const response = await fetch(`${API_URL}/delete/${id}`, {
+        const response = await fetch(`${API_URL}/deleteEmployee/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
         })

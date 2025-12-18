@@ -1,0 +1,88 @@
+// Service Status - using type instead of enum for TS compatibility
+export type ServiceStatus =
+    | 'ASSIGNED'
+    | 'PENDING'
+    | 'DELIVERED'
+    | 'FAILED'
+    | 'RETURNED'
+    | 'CANCELED'
+    | 'OBSERVED'
+    | 'RESOLVED'
+
+// Plate Type
+export type PlateType =
+    | 'CAR'
+    | 'MOTORCYCLE'
+    | 'MOTORCAR'
+
+// Nested interfaces
+export interface PlateInfo {
+    idPlate: number
+    plateNumber: string
+    plateType: PlateType
+}
+
+export interface SignatureInfo {
+    idSignature: number
+    signatureUrl: string
+}
+
+export interface PhotoInfo {
+    idPhoto: number
+    photoUrl: string
+}
+
+export interface DealershipInfo {
+    idDealership: number
+    name: string
+    address: string
+    phone: string
+    zone: string
+}
+
+export interface EmployeeInfo {
+    idEmployee: number
+    document: number
+    fullName: string
+    phone: string
+    userName: string
+    role: 'ADMIN' | 'MESSENGER'
+}
+
+export interface StatusHistoryInfo {
+    idStatusHistory: number
+    previousStatus: ServiceStatus | null
+    newStatus: ServiceStatus
+    changeDate: string
+    changedBy: EmployeeInfo
+    photos: PhotoInfo[]
+}
+
+// Main Service Delivery interface
+export interface ServiceDelivery {
+    idServiceDelivery: number
+    plate: PlateInfo
+    dealership: DealershipInfo
+    messenger: EmployeeInfo
+    currentStatus: ServiceStatus
+    observation?: string
+    signature?: SignatureInfo
+    photos: PhotoInfo[]
+    history: StatusHistoryInfo[]
+    createdAt: string
+}
+
+// Request types
+export interface CreateServiceRequest {
+    image: File
+    dealershipId: string
+    messengerDocument?: string
+    manualPlateNumber?: string
+}
+
+export interface UpdateServiceStatusRequest {
+    status: ServiceStatus
+    observation?: string
+    signature?: File
+    photos?: File[]
+}

@@ -12,7 +12,7 @@ function getAuthHeaders(): HeadersInit {
 
 export const dealershipService = {
     async getAll(): Promise<Dealership[]> {
-        const response = await fetch(`${API_URL}/all`, {
+        const response = await fetch(`${API_URL}/allDealerships`, {
             method: 'GET',
             headers: getAuthHeaders(),
         })
@@ -26,7 +26,7 @@ export const dealershipService = {
     },
 
     async getById(id: number): Promise<Dealership> {
-        const response = await fetch(`${API_URL}/find/${id}`, {
+        const response = await fetch(`${API_URL}/findDealership/${id}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         })
@@ -40,7 +40,7 @@ export const dealershipService = {
     },
 
     async create(data: CreateDealershipRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/create`, {
+        const response = await fetch(`${API_URL}/createDealership`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
@@ -55,7 +55,7 @@ export const dealershipService = {
     },
 
     async update(id: number, data: UpdateDealershipRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/update/${id}`, {
+        const response = await fetch(`${API_URL}/updateDealership/${id}`, {
             method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
@@ -70,7 +70,7 @@ export const dealershipService = {
     },
 
     async delete(id: number): Promise<string> {
-        const response = await fetch(`${API_URL}/delete/${id}`, {
+        const response = await fetch(`${API_URL}/deleteDealership/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
         })
@@ -84,7 +84,7 @@ export const dealershipService = {
     },
 
     async geocode(id: number): Promise<Dealership> {
-        const response = await fetch(`${API_URL}/geocode/${id}`, {
+        const response = await fetch(`${API_URL}/geocodeDealership/${id}`, {
             method: 'POST',
             headers: getAuthHeaders(),
         })

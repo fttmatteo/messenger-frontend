@@ -15,6 +15,9 @@ import EditEmployee from '../pages/admin/EditEmployee';
 import Concesionarios from '../pages/admin/Concesionarios';
 import CreateConcesionario from '../pages/admin/CreateConcesionario';
 import EditConcesionario from '../pages/admin/EditConcesionario';
+import Servicios from '../pages/admin/Servicios';
+import CreateServicio from '../pages/admin/CreateServicio';
+import ViewServicio from '../pages/admin/ViewServicio';
 
 // Messenger Pages
 import MessengerDashboard from '../pages/messenger/Dashboard';
@@ -89,6 +92,10 @@ export function AppRoutes() {
                 <Route path="concesionarios" element={<Concesionarios />} />
                 <Route path="concesionarios/crear" element={<CreateConcesionario />} />
                 <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
+                {/* Services routes */}
+                <Route path="servicios" element={<Servicios />} />
+                <Route path="servicios/crear" element={<CreateServicio />} />
+                <Route path="servicios/:id" element={<ViewServicio />} />
                 {/* Other routes */}
                 <Route path="tracking" element={<div className="p-4">Mapa - Próximamente</div>} />
                 <Route path="configuracion" element={<div className="p-4">Configuración - Próximamente</div>} />

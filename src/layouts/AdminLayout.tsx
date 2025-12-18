@@ -36,7 +36,6 @@ const menuItems = [
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
-// Subset of menu items for mobile bottom nav (max 5 recommended)
 const mobileNavItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
