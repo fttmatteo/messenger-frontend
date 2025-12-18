@@ -223,6 +223,7 @@ export default function Empleados() {
         } catch (error: any) {
             toast.error("Error al cargar empleados", {
                 description: error.message,
+                id: "error-cargar-empleados"
             })
         } finally {
             setLoading(false)
@@ -242,6 +243,7 @@ export default function Empleados() {
         } catch (error: any) {
             toast.error("Error al eliminar empleado", {
                 description: error.message,
+                id: "error-eliminar-empleado"
             })
         } finally {
             setDeleting(null)

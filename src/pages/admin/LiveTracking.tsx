@@ -32,11 +32,12 @@ export default function LiveTracking() {
             }
         } catch (error: any) {
             console.error("Error fetching messengers:", error)
-            // Don't show error for expected cases (404, 403, empty list)
+            // Don't show error for 404 (no active messengers - expected)
             const status = error.response?.status
-            if (status !== 404 && status !== 403 && status !== 500) {
+            if (status !== 404) {
                 toast.error("Error al cargar mensajeros", {
-                    description: error.response?.data?.message || error.message
+                    description: error.response?.data?.message || error.message,
+                    id: "error-cargar-mensajeros"
                 })
             }
             // Set empty array on error

@@ -269,6 +269,7 @@ export default function Servicios() {
         } catch (error: any) {
             toast.error("Error al cargar servicios", {
                 description: error.message,
+                id: "error-cargar-servicios"
             })
         } finally {
             setLoading(false)
@@ -317,7 +318,7 @@ export default function Servicios() {
         if (files.length > 0) {
             const validFiles = files.filter(f => f.type.startsWith('image/'))
             if (validFiles.length !== files.length) {
-                toast.error("Algunos archivos no son imágenes")
+                toast.error("Algunos archivos no son imágenes", { id: "error-archivos-invalidos" })
             }
             setPhotoFiles(prev => [...prev, ...validFiles])
 
@@ -343,7 +344,8 @@ export default function Servicios() {
 
         if (newStatus === 'DELIVERED' && !signatureFile) {
             toast.error("Firma requerida", {
-                description: "Para marcar como Entregado, debe incluir la firma."
+                description: "Para marcar como Entregado, debe incluir la firma.",
+                id: "error-firma-requerida"
             })
             return
         }
@@ -365,7 +367,8 @@ export default function Servicios() {
             fetchServices() // Reload list
         } catch (error: any) {
             toast.error("Error al actualizar estado", {
-                description: error.response?.data?.message || error.message
+                description: error.response?.data?.message || error.message,
+                id: "error-actualizar-estado"
             })
         } finally {
             setUpdating(false)

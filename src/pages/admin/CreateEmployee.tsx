@@ -67,6 +67,7 @@ export default function CreateEmployee() {
         } catch (error: any) {
             toast.error("Error al crear empleado", {
                 description: error.message,
+                id: "error-crear-empleado"
             })
         }
     }

@@ -89,7 +89,8 @@ export default function ViewServicio() {
                 setService(data)
             } catch (error: any) {
                 toast.error("Error al cargar servicio", {
-                    description: error.response?.data?.message || error.message
+                    description: error.response?.data?.message || error.message,
+                    id: "error-cargar-servicio"
                 })
                 if (error.response?.status === 404 || error.response?.status === 403) {
                     navigate("/admin/servicios")
@@ -114,7 +115,8 @@ export default function ViewServicio() {
             navigate("/admin/servicios")
         } catch (error: any) {
             toast.error("Error al eliminar servicio", {
-                description: error.response?.data?.message || error.message
+                description: error.response?.data?.message || error.message,
+                id: "error-eliminar-servicio"
             })
         } finally {
             setDeleting(false)

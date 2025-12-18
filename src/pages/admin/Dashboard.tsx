@@ -53,6 +53,7 @@ export default function AdminDashboard() {
         } catch (error: any) {
             toast.error("Error al cargar estadísticas", {
                 description: error.message,
+                id: "error-cargar-estadisticas"
             })
         } finally {
             setLoading(false)

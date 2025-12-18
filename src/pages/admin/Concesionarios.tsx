@@ -221,6 +221,7 @@ export default function Concesionarios() {
         } catch (error: any) {
             toast.error("Error al cargar concesionarios", {
                 description: error.message,
+                id: "error-cargar-concesionarios"
             })
         } finally {
             setLoading(false)
@@ -240,6 +241,7 @@ export default function Concesionarios() {
         } catch (error: any) {
             toast.error("Error al eliminar concesionario", {
                 description: error.message,
+                id: "error-eliminar-concesionario"
             })
         } finally {
             setDeleting(null)
@@ -255,6 +257,7 @@ export default function Concesionarios() {
         } catch (error: any) {
             toast.error("Error al geocodificar", {
                 description: error.message,
+                id: "error-geocodificar"
             })
         } finally {
             setGeocoding(null)
