@@ -30,6 +30,7 @@ export interface SignatureInfo {
 export interface PhotoInfo {
     idPhoto: number
     photoPath: string
+    photoType?: 'PLATE_DETECTION' | 'EVIDENCE'
 }
 
 export interface DealershipInfo {

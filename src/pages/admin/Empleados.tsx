@@ -58,6 +58,7 @@ import {
     Trash2,
     Loader2,
     Phone,
+    PhoneCall,
     User,
     FileText,
     AtSign,
@@ -332,10 +333,10 @@ export default function Empleados() {
                                     <span className="font-mono">{employee.document}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Phone className="h-3.5 w-3.5" />
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                            <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3.5 w-3.5" />
                                                 {employee.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -647,8 +648,8 @@ export default function Empleados() {
                                                     <TableCell>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-2 w-fit">
-                                                                    <Phone className="h-3 w-3 md:hidden" />
+                                                                <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
+                                                                    <PhoneCall className="h-3 w-3" />
                                                                     {employee.phone}
                                                                 </a>
                                                             </TooltipTrigger>

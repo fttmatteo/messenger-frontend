@@ -35,9 +35,10 @@ import {
     User,
     Calendar,
     FileSignature,
-    Image as ImageIcon,
     Clock,
     Trash2,
+    PhoneCall,
+    Expand,
 } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
@@ -46,16 +47,16 @@ import { es } from "date-fns/locale"
 // Status badge configuration
 const getStatusBadge = (status: string) => {
     const config: Record<string, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500' },
-        PENDING: { label: "Pendiente", className: "bg-indigo-500" },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500' },
-        FAILED: { label: 'Fallido', className: 'bg-red-500' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500' },
-        CANCELED: { label: 'Cancelado', className: 'bg-gray-500' },
-        OBSERVED: { label: 'Observado', className: 'bg-purple-500' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
+        PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
+        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
+        FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
+        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
+        CANCELED: { label: 'Cancelado', className: 'bg-gray-500 text-white' },
+        OBSERVED: { label: 'Observado', className: 'bg-purple-500 text-white' },
+        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
-    return config[status] || { label: status, className: 'bg-gray-500' }
+    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -184,7 +185,7 @@ export default function ViewServicio() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage><PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" className="align-middle" /></BreadcrumbPage>
+                        <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -245,6 +246,19 @@ export default function ViewServicio() {
                                 <p className="text-xs text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3 w-3" />
+                                                {service.dealership.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </p>
                             </div>
                         </div>
 
@@ -252,18 +266,19 @@ export default function ViewServicio() {
                             <User className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-muted-foreground">{service.messenger.fullName}</p>
+                                <p className="text-sm text-muted-foreground">@{service.messenger.userName}</p>
                                 <p className="text-xs text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3 w-3" />
                                                 {service.messenger.phone}
                                             </a>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>Llamar</p>
                                         </TooltipContent>
-                                    </Tooltip> • @{service.messenger.userName}
+                                    </Tooltip>
                                 </p>
                             </div>
                         </div>
@@ -287,53 +302,62 @@ export default function ViewServicio() {
                     </CardContent>
                 </Card>
 
-                {/* Evidence */}
+                {/* Photos & Signature */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Evidencias</CardTitle>
-                        <CardDescription>Firma y fotografías del servicio</CardDescription>
+                        <CardTitle>Imágenes del Servicio</CardTitle>
+                        <CardDescription>Lectura de placa, firma y evidencias</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
+                        {/* Plate Detection */}
+                        <div>
+                            <div className="flex items-start gap-3 mb-2">
+                                <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                                <p className="text-sm font-medium">Lectura de Placa</p>
+                            </div>
+                            {(() => {
+                                const platePhotos = service.photos.filter(p => p.photoType === 'PLATE_DETECTION')
+                                return platePhotos.length > 0 ? (
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {platePhotos.map((photo) => (
+                                            <div
+                                                key={photo.idPhoto}
+                                                className="relative group cursor-pointer"
+                                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                            >
+                                                <img
+                                                    src={getImageUrl(photo.photoPath)}
+                                                    alt="Lectura de placa"
+                                                    className="w-full h-32 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="bg-black/60 rounded-full p-2">
+                                                        <Expand className="h-5 w-5 text-white" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground">Sin imagen de placa registrada</p>
+                                )
+                            })()}
+                        </div>
+
                         {/* Signature */}
-                        {service.signature ? (
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <FileSignature className="h-4 w-4 text-muted-foreground" />
-                                    <p className="text-sm font-medium">Firma Digital</p>
-                                </div>
+                        <div>
+                            <div className="flex items-start gap-3 mb-2">
+                                <FileSignature className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                                <p className="text-sm font-medium">Firma Digital</p>
+                            </div>
+                            {service.signature ? (
                                 <img
                                     src={getImageUrl(service.signature.signaturePath)}
                                     alt="Firma"
-                                    className="w-full max-w-xs h-32 object-contain border rounded-lg"
+                                    className="w-full max-w-xs h-32 object-contain border rounded-lg bg-white"
                                 />
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <FileSignature className="h-4 w-4" />
-                                <p className="text-sm">Sin firma registrada</p>
-                            </div>
-                        )}
-
-                        {/* Photos */}
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                                <p className="text-sm font-medium">Fotografías ({service.photos.length})</p>
-                            </div>
-                            {service.photos.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-2">
-                                    {service.photos.map((photo) => (
-                                        <img
-                                            key={photo.idPhoto}
-                                            src={getImageUrl(photo.photoPath)}
-                                            alt="Evidencia"
-                                            className="w-full h-24 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
-                                            onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                        />
-                                    ))}
-                                </div>
                             ) : (
-                                <p className="text-sm text-muted-foreground">Sin fotografías registradas</p>
+                                <p className="text-sm text-muted-foreground">Sin firma registrada</p>
                             )}
                         </div>
                     </CardContent>
@@ -383,15 +407,24 @@ export default function ViewServicio() {
                                             </div>
 
                                             {entry.photos && entry.photos.length > 0 && (
-                                                <div className="flex gap-2 mt-2">
+                                                <div className="flex flex-wrap gap-2 mt-2">
                                                     {entry.photos.map((photo) => (
-                                                        <img
+                                                        <div
                                                             key={photo.idPhoto}
-                                                            src={getImageUrl(photo.photoPath)}
-                                                            alt="Evidencia"
-                                                            className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                                                            className="relative group cursor-pointer"
                                                             onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                        />
+                                                        >
+                                                            <img
+                                                                src={getImageUrl(photo.photoPath)}
+                                                                alt="Evidencia"
+                                                                className="w-24 h-24 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
+                                                            />
+                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <div className="bg-black/60 rounded-full p-2">
+                                                                    <Expand className="h-5 w-5 text-white" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}

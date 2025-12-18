@@ -158,16 +158,16 @@ const ITEMS_PER_PAGE = 10
 // Status badge configuration
 const getStatusBadge = (status: ServiceStatus) => {
     const config: Record<ServiceStatus, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500' },
-        PENDING: { label: "Pendiente", className: "bg-indigo-500" },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500' },
-        FAILED: { label: 'Fallido', className: 'bg-red-500' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500' },
-        CANCELED: { label: 'Cancelado', className: 'bg-gray-500' },
-        OBSERVED: { label: 'Observado', className: 'bg-purple-500' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
+        PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
+        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
+        FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
+        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
+        CANCELED: { label: 'Cancelado', className: 'bg-gray-500 text-white' },
+        OBSERVED: { label: 'Observado', className: 'bg-purple-500 text-white' },
+        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
-    return config[status] || { label: status, className: 'bg-gray-500' }
+    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
 // Available statuses for selection

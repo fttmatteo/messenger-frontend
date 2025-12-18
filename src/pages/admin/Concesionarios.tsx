@@ -59,6 +59,7 @@ import {
     Loader2,
     MapPin,
     Phone,
+    PhoneCall,
     Copy,
     MapPinned,
     Store,
@@ -367,10 +368,10 @@ export default function Concesionarios() {
                                     <span className="line-clamp-2">{dealership.address}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Phone className="h-3.5 w-3.5" />
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                            <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3.5 w-3.5" />
                                                 {dealership.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -702,8 +703,8 @@ export default function Concesionarios() {
                                                     <TableCell>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-2 w-fit">
-                                                                    <Phone className="h-3 w-3 md:hidden" />
+                                                                <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
+                                                                    <PhoneCall className="h-3 w-3" />
                                                                     {dealership.phone}
                                                                 </a>
                                                             </TooltipTrigger>
