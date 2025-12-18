@@ -1,6 +1,6 @@
 import type { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee.types'
 
-const API_URL = '/employees'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/employees'
 
 function getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token')

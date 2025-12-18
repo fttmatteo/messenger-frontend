@@ -1,6 +1,6 @@
 import type { Dealership, CreateDealershipRequest, UpdateDealershipRequest } from '@/types/dealership.types'
 
-const API_URL = '/dealerships'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/dealerships'
 
 function getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token')
