@@ -1,9 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/context/AuthContext"
 import { Users, Store, Truck, TrendingUp } from "lucide-react"
 
 export default function AdminDashboard() {
-    const { user } = useAuth()
 
     const stats = [
         { title: "Empleados", value: "24", icon: Users, change: "+2 este mes" },
@@ -15,10 +13,7 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">¡Bienvenido, {user?.username}!</h1>
-                <p className="text-muted-foreground">
-                    Panel de administración del sistema de mensajería
-                </p>
+                <h1 className="text-3xl font-bold">Panel de Control</h1>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
@@ -29,9 +29,26 @@ import { toast } from "sonner"
 
 export default function Empleados() {
     const navigate = useNavigate()
+    const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState<number | null>(null)
+
+    // Filter employees based on search query
+    const filteredEmployees = employees.filter((employee) => {
+        if (!searchQuery.trim()) return true
+        const query = searchQuery.toLowerCase()
+        return (
+            String(employee.idEmployee).includes(query) ||
+            String(employee.document).includes(query) ||
+            employee.fullName.toLowerCase().includes(query) ||
+            employee.phone.includes(query) ||
+            employee.userName.toLowerCase().includes(query) ||
+            employee.role.toLowerCase().includes(query) ||
+            (employee.role === 'ADMIN' && 'administrador'.includes(query)) ||
+            (employee.role === 'MESSENGER' && 'mensajero'.includes(query))
+        )
+    })
 
     const fetchEmployees = async () => {
         try {
@@ -86,7 +103,8 @@ export default function Empleados() {
                 <CardHeader>
                     <CardTitle>Lista de Empleados</CardTitle>
                     <CardDescription>
-                        {employees.length} empleado(s) registrado(s)
+                        {filteredEmployees.length} de {employees.length} empleado(s)
+                        {searchQuery && ` - Buscando "${searchQuery}"`}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -94,9 +112,9 @@ export default function Empleados() {
                         <div className="flex items-center justify-center py-8">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                         </div>
-                    ) : employees.length === 0 ? (
+                    ) : filteredEmployees.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
-                            No hay empleados registrados.
+                            {searchQuery ? "No se encontraron empleados con esa búsqueda." : "No hay empleados registrados."}
                         </div>
                     ) : (
                         <Table>
@@ -111,7 +129,7 @@ export default function Empleados() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {employees.map((employee) => (
+                                {filteredEmployees.map((employee) => (
                                     <TableRow key={employee.idEmployee}>
                                         <TableCell className="font-mono">
                                             {employee.document}
