@@ -1,6 +1,7 @@
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
+import { useIsMobile } from "@/hooks/use-mobile"
 import {
     Sidebar,
     SidebarContent,
@@ -25,6 +26,7 @@ import {
     Settings,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
@@ -34,15 +36,79 @@ const menuItems = [
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
+// Subset of menu items for mobile bottom nav (max 5 recommended)
+const mobileNavItems = [
+    { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
+    { title: "Empleados", icon: Users, url: "/admin/empleados" },
+    { title: "Entregas", icon: Truck, url: "/admin/entregas" },
+    { title: "Config", icon: Settings, url: "/admin/configuracion" },
+]
+
 export default function AdminLayout() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
+    const isMobile = useIsMobile()
 
     const handleLogout = () => {
         logout()
         navigate("/login")
     }
 
+    // Mobile Layout
+    if (isMobile) {
+        return (
+            <div className="flex flex-col min-h-screen bg-background">
+                {/* Header */}
+                <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
+                            M
+                        </div>
+                        <span className="font-semibold">Admin</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <ModeToggle />
+                        <Button variant="ghost" size="icon" onClick={handleLogout}>
+                            <LogOut className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </header>
+
+                {/* Main Content */}
+                <main className="flex-1 overflow-auto p-4 pb-20">
+                    <Outlet />
+                </main>
+
+                {/* Bottom Navigation */}
+                <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background safe-area-inset-bottom">
+                    <div className="flex h-16 items-center justify-around">
+                        {mobileNavItems.map((item) => {
+                            const isActive = location.pathname === item.url ||
+                                (item.url !== "/admin" && location.pathname.startsWith(item.url))
+                            return (
+                                <button
+                                    key={item.title}
+                                    onClick={() => navigate(item.url)}
+                                    className={cn(
+                                        "flex flex-col items-center justify-center gap-1 px-3 py-2 transition-colors",
+                                        isActive
+                                            ? "text-primary"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <item.icon className="h-5 w-5" />
+                                    <span className="text-xs font-medium">{item.title}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+                </nav>
+            </div>
+        )
+    }
+
+    // Desktop Layout with Sidebar
     return (
         <SidebarProvider>
             <Sidebar>

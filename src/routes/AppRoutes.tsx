@@ -11,6 +11,7 @@ import MessengerLayout from '../layouts/MessengerLayout';
 import AdminDashboard from '../pages/admin/Dashboard';
 import Empleados from '../pages/admin/Empleados';
 import CreateEmployee from '../pages/admin/CreateEmployee';
+import EditEmployee from '../pages/admin/EditEmployee';
 
 // Messenger Pages
 import MessengerDashboard from '../pages/messenger/Dashboard';
@@ -79,6 +80,7 @@ export function AppRoutes() {
                 {/* Employee routes */}
                 <Route path="empleados" element={<Empleados />} />
                 <Route path="empleados/crear" element={<CreateEmployee />} />
+                <Route path="empleados/editar/:id" element={<EditEmployee />} />
                 {/* Other admin routes */}
                 <Route path="concesionarios" element={<div className="p-4">Concesionarios - Próximamente</div>} />
                 <Route path="entregas" element={<div className="p-4">Entregas - Próximamente</div>} />
