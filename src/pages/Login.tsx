@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { ModeToggle } from "@/components/mode-toggle"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useAuth } from "@/context/AuthContext"
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -48,13 +48,13 @@ export default function Login() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="flex items-center justify-center min-h-screen bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle className="text-2xl text-center">Messenger Login</CardTitle>
-                    <CardDescription className="text-center">
-                        Enter your credentials to access your account
-                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-2xl text-center">Inicio de sesión</CardTitle>
+                        <ModeToggle />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -67,11 +67,11 @@ export default function Login() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="userName">Username</Label>
+                            <Label htmlFor="userName">Usuario</Label>
                             <Input
                                 id="userName"
                                 type="text"
-                                placeholder="Enter your username"
+                                placeholder="Ingrese su usuario"
                                 {...register("userName")}
                             />
                             {errors.userName && (
@@ -80,11 +80,11 @@ export default function Login() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Contraseña</Label>
                             <Input
                                 id="password"
                                 type="password"
-                                placeholder="Enter your password"
+                                placeholder="Ingrese su contraseña"
                                 {...register("password")}
                             />
                             {errors.password && (
@@ -93,7 +93,7 @@ export default function Login() {
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? "Logging in..." : "Login"}
+                            {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                         </Button>
                     </form>
                 </CardContent>
