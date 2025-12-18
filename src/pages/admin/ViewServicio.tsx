@@ -7,6 +7,7 @@ import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
     Breadcrumb,
@@ -181,7 +182,7 @@ export default function ViewServicio() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
-                        
+
                         <Badge className={statusConfig.className}>{statusConfig.label}</Badge>
                     </div>
                     <p className="text-muted-foreground">
@@ -241,7 +242,16 @@ export default function ViewServicio() {
                                 <p className="text-sm font-medium">Mensajero</p>
                                 <p className="text-sm text-muted-foreground">{service.messenger.fullName}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {service.messenger.phone} • @{service.messenger.userName}
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                                {service.messenger.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip> • @{service.messenger.userName}
                                 </p>
                             </div>
                         </div>

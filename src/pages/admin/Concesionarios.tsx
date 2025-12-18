@@ -365,7 +365,16 @@ export default function Concesionarios() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Phone className="h-3.5 w-3.5" />
-                                    <span>{dealership.phone}</span>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                                {dealership.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
@@ -687,7 +696,19 @@ export default function Concesionarios() {
                                                     <TableCell className="max-w-xs truncate">
                                                         {dealership.address}
                                                     </TableCell>
-                                                    <TableCell>{dealership.phone}</TableCell>
+                                                    <TableCell>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-2 w-fit">
+                                                                    <Phone className="h-3 w-3 md:hidden" />
+                                                                    {dealership.phone}
+                                                                </a>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Llamar</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TableCell>
                                                     <TableCell>
                                                         <Badge variant="outline">{dealership.zone}</Badge>
                                                     </TableCell>

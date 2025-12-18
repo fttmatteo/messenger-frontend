@@ -331,7 +331,16 @@ export default function Empleados() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Phone className="h-3.5 w-3.5" />
-                                    <span>{employee.phone}</span>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors">
+                                                {employee.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
@@ -633,7 +642,19 @@ export default function Empleados() {
                                                     <TableCell className="font-medium">
                                                         {employee.fullName}
                                                     </TableCell>
-                                                    <TableCell>{employee.phone}</TableCell>
+                                                    <TableCell>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-2 w-fit">
+                                                                    <Phone className="h-3 w-3 md:hidden" />
+                                                                    {employee.phone}
+                                                                </a>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Llamar</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TableCell>
                                                     <TableCell>{employee.userName}</TableCell>
                                                     <TableCell>
                                                         <Badge variant={getRoleBadgeVariant(employee.role)}>
