@@ -40,6 +40,7 @@ const menuItems = [
 const mobileNavItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
+    { title: "Conces.", icon: Store, url: "/admin/concesionarios" },
     { title: "Mapa", icon: Truck, url: "/admin/tracking" },
     { title: "Config", icon: Settings, url: "/admin/configuracion" },
 ]
@@ -87,7 +88,7 @@ export default function AdminLayout() {
 
                 {/* Main Content */}
                 <main className="flex-1 overflow-auto p-4 pb-20">
-                    <Outlet />
+                    <Outlet context={{ searchQuery }} />
                 </main>
 
                 {/* Bottom Navigation */}
