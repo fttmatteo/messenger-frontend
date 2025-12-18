@@ -75,9 +75,6 @@ export default function Empleados() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Empleados</h1>
-                    <p className="text-muted-foreground">
-                        Gestiona los empleados y mensajeros del sistema
-                    </p>
                 </div>
                 <Button onClick={() => navigate("/admin/empleados/crear")}>
                     <Plus className="mr-2 h-4 w-4" />
@@ -143,7 +140,7 @@ export default function Empleados() {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="text-destructive hover:text-destructive"
+                                                            className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>

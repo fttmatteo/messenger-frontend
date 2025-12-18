@@ -8,7 +8,6 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarInset,
     SidebarMenu,
@@ -29,18 +28,18 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const menuItems = [
-    { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
+    { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
-    { title: "Entregas", icon: Truck, url: "/admin/entregas" },
+    { title: "Mapa", icon: Truck, url: "/admin/tracking" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
 // Subset of menu items for mobile bottom nav (max 5 recommended)
 const mobileNavItems = [
-    { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
+    { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
-    { title: "Entregas", icon: Truck, url: "/admin/entregas" },
+    { title: "Mapa", icon: Truck, url: "/admin/tracking" },
     { title: "Config", icon: Settings, url: "/admin/configuracion" },
 ]
 
@@ -63,9 +62,9 @@ export default function AdminLayout() {
                 <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
                     <div className="flex items-center gap-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-                            M
+                            F
                         </div>
-                        <span className="font-semibold">Admin</span>
+                        <span className="font-semibold">FOXX</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <ModeToggle />
@@ -115,14 +114,13 @@ export default function AdminLayout() {
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center gap-2 px-2 py-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                            M
+                            F
                         </div>
-                        <span className="font-semibold">Messenger</span>
+                        <span className="font-semibold">FOXX</span>
                     </div>
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup>
-                        <SidebarGroupLabel>Menú Principal</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {menuItems.map((item) => (
