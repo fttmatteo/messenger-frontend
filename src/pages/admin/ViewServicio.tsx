@@ -266,7 +266,7 @@ export default function ViewServicio() {
                             <User className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-muted-foreground">@{service.messenger.userName}</p>
+                                <p className="text-sm text-muted-foreground">@ {service.messenger.userName}</p>
                                 <p className="text-xs text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -306,7 +306,7 @@ export default function ViewServicio() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Imágenes del Servicio</CardTitle>
-                        <CardDescription>Lectura de placa, firma y evidencias</CardDescription>
+                        <CardDescription>Lectura de placa y firma</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {/* Plate Detection */}

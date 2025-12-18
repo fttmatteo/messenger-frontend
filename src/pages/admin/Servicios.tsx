@@ -662,7 +662,7 @@ export default function Servicios() {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[100px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("plateNumber")}
                                                 >
                                                     <div className="flex items-center">
@@ -676,8 +676,8 @@ export default function Servicios() {
                                                     onClick={() => handleSort("dealershipName")}
                                                 >
                                                     <div className="flex items-center">
-                                                        <Building2 className="h-4 w-4 mr-1" />
-                                                        Concesionario
+                                                        <Building2 className="h-4 w-4 mr-1 shrink-0" />
+                                                        <span className="truncate">Concesionario</span>
                                                         <SortIndicator field="dealershipName" />
                                                     </div>
                                                 </TableHead>
@@ -686,13 +686,13 @@ export default function Servicios() {
                                                     onClick={() => handleSort("messengerName")}
                                                 >
                                                     <div className="flex items-center">
-                                                        <User className="h-4 w-4 mr-1" />
-                                                        Mensajero
+                                                        <User className="h-4 w-4 mr-1 shrink-0" />
+                                                        <span className="truncate">Mensajero</span>
                                                         <SortIndicator field="messengerName" />
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[100px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("currentStatus")}
                                                 >
                                                     <div className="flex items-center">
@@ -702,7 +702,7 @@ export default function Servicios() {
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none w-[120px]"
+                                                    className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("createdAt")}
                                                 >
                                                     <div className="flex items-center">
@@ -711,7 +711,7 @@ export default function Servicios() {
                                                         <SortIndicator field="createdAt" />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="text-right w-[100px]"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
+                                                <TableHead className="text-right"><div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />
                                                     Acciones</div>
                                                 </TableHead>
                                             </TableRow>
@@ -735,10 +735,10 @@ export default function Servicios() {
                                                             <TableCell>
                                                                 <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
                                                             </TableCell>
-                                                            <TableCell className="max-w-[200px] truncate" title={service.dealership.name}>
+                                                            <TableCell className="truncate" title={service.dealership.name}>
                                                                 {service.dealership.name}
                                                             </TableCell>
-                                                            <TableCell className="max-w-[150px] truncate" title={service.messenger.fullName}>
+                                                            <TableCell className="truncate" title={service.messenger.fullName}>
                                                                 {service.messenger.fullName}
                                                             </TableCell>
                                                             <TableCell>
@@ -747,7 +747,7 @@ export default function Servicios() {
                                                                 </Badge>
                                                             </TableCell>
                                                             <TableCell className="whitespace-nowrap text-sm">
-                                                                {format(new Date(service.createdAt), "dd/MM/yy", { locale: es })}
+                                                                {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                             </TableCell>
                                                             <TableCell className="text-right">
                                                                 <div className="flex items-center justify-end gap-1">
