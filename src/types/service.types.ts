@@ -1,102 +1,88 @@
-/**
- * Tipos de Service Delivery (Entregas)
- * 
- * Define las interfaces para el módulo de gestión de entregas.
- * Corresponde a los DTOs del backend.
- */
-
-/**
- * Estados posibles de una entrega
- */
+// Service Status - using type instead of enum for TS compatibility
 export type ServiceStatus =
-    | 'PENDING'      // Pendiente de asignación
-    | 'ASSIGNED'     // Asignada a mensajero
-    | 'IN_PROGRESS'  // En camino
-    | 'COMPLETED'    // Entregada
-    | 'CANCELLED'    // Cancelada
+    | 'ASSIGNED'
+    | 'PENDING'
+    | 'DELIVERED'
+    | 'FAILED'
+    | 'RETURNED'
+    | 'CANCELED'
+    | 'OBSERVED'
+    | 'RESOLVED'
 
-/**
- * Entrega de servicio completa (respuesta del backend)
- */
+// Plate Type
+export type PlateType =
+    | 'CAR'
+    | 'MOTORCYCLE'
+    | 'MOTORCAR'
+
+// Nested interfaces
+export interface PlateInfo {
+    idPlate: number
+    plateNumber: string
+    plateType: PlateType
+}
+
+export interface SignatureInfo {
+    idSignature: number
+    signatureUrl: string
+}
+
+export interface PhotoInfo {
+    idPhoto: number
+    photoUrl: string
+}
+
+export interface DealershipInfo {
+    idDealership: number
+    name: string
+    address: string
+    phone: string
+    zone: string
+}
+
+export interface EmployeeInfo {
+    idEmployee: number
+    document: number
+    fullName: string
+    phone: string
+    userName: string
+    role: 'ADMIN' | 'MESSENGER'
+}
+
+export interface StatusHistoryInfo {
+    idStatusHistory: number
+    previousStatus: ServiceStatus | null
+    newStatus: ServiceStatus
+    changeDate: string
+    changedBy: EmployeeInfo
+    photos: PhotoInfo[]
+}
+
+// Main Service Delivery interface
 export interface ServiceDelivery {
-    /** ID único de la entrega */
-    id: number
-    /** Placa del vehículo (extraída por OCR) */
-    licensePlate: string
-    /** URL de la imagen de la placa */
-    plateImageUrl?: string
-    /** Estado actual de la entrega */
-    status: ServiceStatus
-    /** Observaciones adicionales */
-    observations?: string
-    /** ID del concesionario destino */
-    dealershipId: number
-    /** Nombre del concesionario (incluido por backend) */
-    dealershipName?: string
-    /** Dirección del concesionario */
-    dealershipAddress?: string
-    /** ID del mensajero asignado */
-    messengerId?: number
-    /** Nombre del mensajero */
-    messengerName?: string
-    /** Documento del mensajero */
-    messengerDocument?: string
-    /** Fecha/hora de creación */
+    idServiceDelivery: number
+    plate: PlateInfo
+    dealership: DealershipInfo
+    messenger: EmployeeInfo
+    currentStatus: ServiceStatus
+    observation?: string
+    signature?: SignatureInfo
+    photos: PhotoInfo[]
+    history: StatusHistoryInfo[]
     createdAt: string
-    /** Fecha/hora de última actualización */
-    updatedAt?: string
-    /** Fecha/hora de entrega completada */
-    completedAt?: string
 }
 
-/**
- * Request para crear una entrega (multipart/form-data)
- * El backend espera un FormData con estos campos
- */
+// Request types
 export interface CreateServiceRequest {
-    /** Imagen de la placa (archivo) */
     image: File
-    /** ID del concesionario destino */
-    dealershipId: number
-    /** Documento del mensajero (requerido para ADMIN) */
+    dealershipId: string
     messengerDocument?: string
+    manualPlateNumber?: string
 }
 
-/**
- * Request para actualizar estado
- */
 export interface UpdateServiceStatusRequest {
     status: ServiceStatus
     observation?: string
     signature?: File
     photos?: File[]
-}
-
-/**
- * Request para agregar observaciones
- */
-export interface UpdateObservationsRequest {
-    observations: string
-}
-
-/**
- * Filtros para listar entregas
- */
-export interface ServiceFilters {
-    status?: ServiceStatus
-    messengerId?: number
-    dealershipId?: number
-    dateFrom?: string
-    dateTo?: string
-}
-
-/**
- * Colores y labels para estados
- */
-export const SERVICE_STATUS_CONFIG: Record<ServiceStatus, { label: string; color: string; bgColor: string }> = {
-    PENDING: { label: 'Pendiente', color: 'text-yellow-400', bgColor: 'bg-yellow-500/20' },
-    ASSIGNED: { label: 'Asignada', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
-    IN_PROGRESS: { label: 'En Progreso', color: 'text-purple-400', bgColor: 'bg-purple-500/20' },
-    COMPLETED: { label: 'Completada', color: 'text-green-400', bgColor: 'bg-green-500/20' },
-    CANCELLED: { label: 'Cancelada', color: 'text-red-400', bgColor: 'bg-red-500/20' },
 }

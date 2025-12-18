@@ -1,183 +1,66 @@
-/**
- * AuthContext - Contexto de Autenticación
- * 
- * Provee estado global de autenticación para toda la aplicación.
- * Maneja login, logout, y persistencia de sesión.
- */
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../services/auth.service';
+import type { LoginCredentials, User } from '../types/auth.types';
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
-import { AuthContextType, AuthState, LoginCredentials, User } from '@/types'
-import { tokenManager } from '@/config/axios-client'
-import axiosClient from '@/config/axios-client'
-
-/**
- * Estado inicial de autenticación
- */
-const initialState: AuthState = {
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
-    error: null,
+interface AuthContextType {
+    user: User | null;
+    login: (credentials: LoginCredentials) => Promise<void>;
+    logout: () => void;
+    isAuthenticated: boolean;
+    isLoading: boolean;
 }
 
-/**
- * Contexto de autenticación
- */
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-/**
- * Props del provider
- */
-interface AuthProviderProps {
-    children: ReactNode
-}
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-/**
- * Clave para almacenar el usuario en localStorage
- */
-const USER_KEY = 'messenger_user'
-
-/**
- * AuthProvider - Componente proveedor de autenticación
- * 
- * Envuelve la aplicación para proveer estado de autenticación.
- * Persiste el usuario en localStorage para mantener la sesión.
- */
-export function AuthProvider({ children }: AuthProviderProps) {
-    const [state, setState] = useState<AuthState>(initialState)
-
-    /**
-     * Cargar usuario desde localStorage al inicio
-     */
     useEffect(() => {
-        const loadUser = () => {
-            try {
-                const token = tokenManager.getToken()
-                const userJson = localStorage.getItem(USER_KEY)
-
-                if (token && userJson) {
-                    const user = JSON.parse(userJson) as User
-                    setState({
-                        user,
-                        isLoading: false,
-                        isAuthenticated: true,
-                        error: null,
-                    })
-                } else {
-                    setState({
-                        ...initialState,
-                        isLoading: false,
-                    })
-                }
-            } catch {
-                setState({
-                    ...initialState,
-                    isLoading: false,
-                })
-            }
+        const storedUser = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        if (storedUser && token) {
+            setUser(JSON.parse(storedUser));
         }
+        setIsLoading(false);
+    }, []);
 
-        loadUser()
-    }, [])
+    const login = async (credentials: LoginCredentials) => {
+        const data = await authService.login(credentials);
 
-    /**
-     * Iniciar sesión con credenciales
-     */
-    const login = useCallback(async (credentials: LoginCredentials) => {
-        setState(prev => ({ ...prev, isLoading: true, error: null }))
+        // Store data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('role', data.role);
 
-        try {
-            const response = await axiosClient.post<{
-                token: string
-                refreshToken: string
-                role: string
-                userName: string
-            }>('/auth/login', credentials)
+        const userObj = { username: credentials.userName, role: data.role };
+        localStorage.setItem('user', JSON.stringify(userObj));
 
-            const { token, refreshToken, role, userName } = response.data
+        setUser(userObj);
+    };
 
-            // Guardar tokens
-            tokenManager.setTokens(token, refreshToken)
-
-            // Crear objeto de usuario
-            const user: User = {
-                id: 0, // El backend podría retornar esto
-                userName: userName,
-                fullName: userName, // Usar userName como fullName hasta que el backend lo provea
-                role: role as 'ADMIN' | 'MESSENGER',
-            }
-
-            // Guardar usuario
-            localStorage.setItem(USER_KEY, JSON.stringify(user))
-
-            setState({
-                user,
-                isLoading: false,
-                isAuthenticated: true,
-                error: null,
-            })
-        } catch (error: unknown) {
-            const message = error instanceof Error
-                ? error.message
-                : 'Error al iniciar sesión'
-
-            setState(prev => ({
-                ...prev,
-                isLoading: false,
-                error: message,
-            }))
-            throw error
-        }
-    }, [])
-
-    /**
-     * Cerrar sesión
-     */
-    const logout = useCallback(() => {
-        tokenManager.clearTokens()
-        localStorage.removeItem(USER_KEY)
-        setState({
-            user: null,
-            isLoading: false,
-            isAuthenticated: false,
-            error: null,
-        })
-    }, [])
-
-    /**
-     * Limpiar errores
-     */
-    const clearError = useCallback(() => {
-        setState(prev => ({ ...prev, error: null }))
-    }, [])
-
-    const value: AuthContextType = {
-        ...state,
-        login,
-        logout,
-        clearError,
-    }
+    const logout = () => {
+        authService.logout();
+        setUser(null);
+    };
 
     return (
-        <AuthContext.Provider value={value}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            logout,
+            isAuthenticated: !!user,
+            isLoading
+        }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
-/**
- * Hook useAuth
- * 
- * Accede al contexto de autenticación.
- * Debe usarse dentro de un AuthProvider.
- * 
- * @returns Contexto de autenticación
- * @throws Error si se usa fuera de AuthProvider
- */
-export function useAuth(): AuthContextType {
-    const context = useContext(AuthContext)
+export const useAuth = () => {
+    const context = useContext(AuthContext);
     if (context === undefined) {
-        throw new Error('useAuth debe usarse dentro de un AuthProvider')
+        throw new Error('useAuth must be used within an AuthProvider');
     }
-    return context
-}
+    return context;
+};
