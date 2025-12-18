@@ -59,16 +59,6 @@ const getStatusBadge = (status: string) => {
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
-// Plate type translation
-const getPlateTypeLabel = (plateType: string) => {
-    const types: Record<string, string> = {
-        CAR: 'Carro',
-        MOTORCYCLE: 'Moto',
-        MOTORCAR: 'Motocarro',
-    }
-    return types[plateType] || plateType
-}
-
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 const getImageUrl = (url: string) => {
