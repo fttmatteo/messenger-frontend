@@ -58,6 +58,16 @@ const getStatusBadge = (status: string) => {
     return config[status] || { label: status, className: 'bg-gray-500' }
 }
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+
+const getImageUrl = (url: string) => {
+    if (!url) return ''
+    if (url.startsWith('http')) return url
+    // Remove /api if present in url to avoid duplication if backend returns it
+    const cleanUrl = url.replace(/^\/api\//, '/')
+    return `${API_URL}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`
+}
+
 export default function ViewServicio() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -290,7 +300,7 @@ export default function ViewServicio() {
                                     <p className="text-sm font-medium">Firma Digital</p>
                                 </div>
                                 <img
-                                    src={service.signature.signatureUrl}
+                                    src={getImageUrl(service.signature.signaturePath)}
                                     alt="Firma"
                                     className="w-full max-w-xs h-32 object-contain border rounded-lg"
                                 />
@@ -313,10 +323,10 @@ export default function ViewServicio() {
                                     {service.photos.map((photo) => (
                                         <img
                                             key={photo.idPhoto}
-                                            src={photo.photoUrl}
+                                            src={getImageUrl(photo.photoPath)}
                                             alt="Evidencia"
                                             className="w-full h-24 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
-                                            onClick={() => window.open(photo.photoUrl, '_blank')}
+                                            onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
                                         />
                                     ))}
                                 </div>
@@ -375,10 +385,10 @@ export default function ViewServicio() {
                                                     {entry.photos.map((photo) => (
                                                         <img
                                                             key={photo.idPhoto}
-                                                            src={photo.photoUrl}
+                                                            src={getImageUrl(photo.photoPath)}
                                                             alt="Evidencia"
                                                             className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                                                            onClick={() => window.open(photo.photoUrl, '_blank')}
+                                                            onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
                                                         />
                                                     ))}
                                                 </div>
