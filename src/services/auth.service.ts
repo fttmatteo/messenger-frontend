@@ -1,6 +1,6 @@
 import type { AuthResponse, LoginCredentials } from '../types/auth.types';
 
-const API_URL = '/auth';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<AuthResponse> {
