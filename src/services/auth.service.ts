@@ -1,6 +1,6 @@
 import type { AuthResponse, LoginCredentials } from '../types/auth.types';
 
-const API_URL = '/api/auth';
+const API_URL = '/auth';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<AuthResponse> {

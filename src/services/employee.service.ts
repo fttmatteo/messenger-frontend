@@ -1,6 +1,6 @@
 import type { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee.types'
 
-const API_URL = '/api/employees'
+const API_URL = '/employees'
 
 function getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token')
