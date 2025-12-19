@@ -47,12 +47,20 @@ export default function Login() {
     const [showExitDialog, setShowExitDialog] = useState(false)
 
     const handleExit = () => {
-        window.close()
-        // Fallback for browsers preventing window.close()
-        // Note: This mainly works for installed PWAs or windows opened by script
-        if (!window.closed) {
-            window.location.href = "about:blank"
-        }
+        // Intentar cerrar la ventana/app (Funciona principalmente en PWAs instaladas o ventanas abiertas por script)
+        window.open('', '_self', '');
+        window.close();
+
+        // Intento secundario
+        const win = window.open("about:blank", "_self");
+        if (win) win.close();
+
+        // Fallback final: si no puede cerrarse (por seguridad del navegador), ir a una página en blanco
+        setTimeout(() => {
+            if (window.location) {
+                window.location.href = "about:blank";
+            }
+        }, 300);
     }
 
     const {
