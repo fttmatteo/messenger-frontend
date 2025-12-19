@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff, Power } from "lucide-react"
+import { AlertCircle, Eye, EyeOff, Power, Moon, Sun } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -76,20 +76,32 @@ export default function Login() {
 
     return (
         <div className="relative flex items-center justify-center min-h-screen bg-background p-4">
-            <div className="absolute top-4 right-4 flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    className="font-medium"
-                >
-                    {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => setShowExitDialog(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                    <Power className="h-5 w-5" />
-                </Button>
-            </div>
 
-            <Card className="w-full max-w-md">
+
+            <Card className="w-full max-w-md relative pt-12">
+                {/* Theme Toggle Left */}
+                <div className="absolute top-4 left-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        className="h-10 w-10"
+                    >
+                        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                    </Button>
+                </div>
+
+                {/* Exit Button Right */}
+                <div className="absolute top-4 right-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowExitDialog(true)}
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                        <Power className="h-5 w-5" />
+                    </Button>
+                </div>
                 <CardHeader>
                     <div className="flex flex-col items-center justify-center mb-4 space-y-2">
                         <img src={logo} alt="PLAK Logo" className="h-20 w-20 object-contain" />
