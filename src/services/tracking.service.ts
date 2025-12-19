@@ -76,6 +76,19 @@ class TrackingService {
         this.isConnected = false;
     }
 
+    public sendUpdate(update: Partial<LiveTrackingUpdate>) {
+        if (this.isConnected) {
+            try {
+                this.client.publish({
+                    destination: '/app/tracking/update',
+                    body: JSON.stringify(update)
+                });
+            } catch (error) {
+                console.error('Error sending tracking update', error);
+            }
+        }
+    }
+
     public subscribeToAll(callback: (update: LiveTrackingUpdate) => void) {
         const doSubscribe = () => {
             this.client.subscribe('/topic/tracking/all', (message) => {

@@ -8,6 +8,11 @@ import {
     User,
     LogOut,
 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { trackingService } from "@/services/tracking.service"
+import { toast } from "sonner"
+import { useEffect, useRef } from "react"
 import {
     Sidebar,
     SidebarContent,
@@ -45,6 +50,60 @@ export default function MessengerLayout() {
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const [isOnline, setIsOnline] = useState(false)
+    const watchIdRef = useRef<number | null>(null)
+
+    useEffect(() => {
+        if (isOnline) {
+            trackingService.connect(() => {
+                toast.success("Conectado al servidor de rastreo")
+            })
+
+            if ('geolocation' in navigator) {
+                watchIdRef.current = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const { latitude, longitude, speed, heading } = position.coords
+                        trackingService.sendUpdate({
+                            latitude,
+                            longitude,
+                            speed: speed || 0,
+                            heading: heading || 0,
+                            status: 'ACTIVE'
+                        })
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error)
+                        toast.error('Error de ubicación: ' + error.message)
+                        setIsOnline(false)
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                )
+            } else {
+                toast.error('Geolocalización no soportada')
+                setIsOnline(false)
+            }
+        } else {
+            if (watchIdRef.current !== null) {
+                navigator.geolocation.clearWatch(watchIdRef.current)
+                watchIdRef.current = null
+            }
+            trackingService.disconnect()
+        }
+
+        return () => {
+            if (watchIdRef.current !== null) {
+                navigator.geolocation.clearWatch(watchIdRef.current)
+            }
+            // Don't disconnect here on unmount to keep background tracking if possible? 
+            // No, component unmount means navigation away usually. 
+            // Actually, if we navigate pages within layout, layout doesn't unmount.
+            // So this cleanup only runs on full refresh or logout.
+        }
+    }, [isOnline])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -94,6 +153,21 @@ export default function MessengerLayout() {
                 <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
                     <SidebarTrigger />
                     <div className="flex-1" />
+
+                    <div className="flex items-center gap-3 mr-2">
+                        <div className="flex items-center gap-2">
+                            <Switch
+                                id="online-mode"
+                                checked={isOnline}
+                                onCheckedChange={setIsOnline}
+                                className="data-[state=checked]:bg-green-500"
+                            />
+                            <Label htmlFor="online-mode" className="cursor-pointer font-medium text-xs hidden sm:inline-block">
+                                {isOnline ? 'EN LÍNEA' : 'OFFLINE'}
+                            </Label>
+                        </div>
+                    </div>
+
                     <div className="flex items-center gap-3">
                         <span className="text-sm font-medium">@{user?.username}</span>
                     </div>
