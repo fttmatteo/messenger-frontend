@@ -130,15 +130,17 @@ const CardSkeleton = () => (
         <CardContent className="pt-4">
             <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex flex-col items-start gap-1">
                         <Skeleton className="h-5 w-40" />
-                        <Skeleton className="h-5 w-20 rounded-full" />
                         <Skeleton className="h-5 w-24 rounded-full" />
                     </div>
                     <div className="space-y-1">
                         <div className="flex items-start gap-2">
                             <Skeleton className="h-3.5 w-3.5 rounded-full mt-0.5" />
                             <Skeleton className="h-4 w-full max-w-xs" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3 w-16" />
                         </div>
                         <div className="flex items-center gap-2">
                             <Skeleton className="h-3.5 w-3.5 rounded-full" />
@@ -336,15 +338,14 @@ export default function Concesionarios() {
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex flex-col items-start gap-1">
                                 <h3 className="font-semibold text-lg">{dealership.name}</h3>
-                                <Badge variant="outline">{dealership.zone}</Badge>
                                 {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Badge
                                                 variant="default"
-                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors w-fit"
                                                 onClick={() => {
                                                     const coords = `${dealership.latitude}, ${dealership.longitude}`
                                                     navigator.clipboard.writeText(coords)
@@ -363,18 +364,21 @@ export default function Concesionarios() {
                                         </TooltipContent>
                                     </Tooltip>
                                 ) : dealership.isGeolocated ? (
-                                    <Badge variant="default" className="bg-green-500">
+                                    <Badge variant="default" className="bg-green-500 w-fit">
                                         <MapPin className="h-3 w-3 mr-1" />
                                         Ubicado
                                     </Badge>
                                 ) : (
-                                    <Badge variant="secondary">Sin ubicación</Badge>
+                                    <Badge variant="secondary" className="w-fit">Sin ubicación</Badge>
                                 )}
                             </div>
                             <div className="space-y-1 text-sm text-muted-foreground">
                                 <div className="flex items-start gap-2">
                                     <MapPinned className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                                     <span className="line-clamp-2">{dealership.address}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-semibold uppercase text-muted-foreground/80">{dealership.zone}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Tooltip>
