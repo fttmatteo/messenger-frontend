@@ -1,11 +1,13 @@
 import { useEffect, useState, useMemo } from "react"
-import { SignaturePad } from "@/components/SignaturePad"
-import { PlacaBadge } from "@/components/PlacaBadge"
 import { useNavigate, useOutletContext, Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { PlacaBadge } from "@/components/PlacaBadge"
+import { TableRowSkeleton, CardSkeleton } from "@/components/service/ServiceSkeletons"
+import { ServiceCard } from "@/components/service/ServiceCard"
+import { UpdateStatusDialog } from "@/components/service/UpdateStatusDialog"
 import { Button } from "@/components/ui/button"
 import {
     Table,
@@ -18,7 +20,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -44,22 +45,12 @@ import {
     EmptyContent,
 } from "@/components/ui/empty"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
     Plus,
     Eye,
@@ -76,16 +67,15 @@ import {
     PackageCheck,
     Settings,
     Edit,
-    X, Check,
+    X,
     ChevronUp,
-
-    Image as ImageIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { getStatusBadge } from "@/lib/status-utils"
 
-// Sorting types
+// Type Definitions
 type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentStatus" | "createdAt" | null
 type SortDirection = "asc" | "desc"
 
@@ -107,66 +97,6 @@ const itemVariants = {
         transition: { duration: 0.2 },
     },
 }
-
-// Skeleton components
-const TableRowSkeleton = () => (
-    <TableRow>
-        <TableCell>
-            <Skeleton className="h-8 w-24 rounded" />
-        </TableCell>
-        <TableCell><Skeleton className="h-4 w-36" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-        <TableCell className="text-right">
-            <div className="flex justify-end gap-1">
-                <Skeleton className="h-8 w-8 rounded-md" />
-                <Skeleton className="h-8 w-8 rounded-md" />
-            </div>
-        </TableCell>
-    </TableRow>
-)
-
-const CardSkeleton = () => (
-    <Card className="mb-3">
-        <CardContent className="pt-4">
-            <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-2 min-w-0">
-                    <div className="flex flex-col items-start gap-2">
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                        <div className="flex flex-col items-center w-fit">
-                            <Skeleton className="h-8 w-28 rounded" />
-                            <Skeleton className="h-3 w-16 mt-0.5" />
-                        </div>
-                    </div>
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-40" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-32" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-36" />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-2 shrink-0">
-                    <Skeleton className="h-8 w-24 rounded-md" />
-                    <Skeleton className="h-8 w-24 rounded-md" />
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-)
-
-
-
-// Lib Utilities
-import { getStatusBadge, getPlateTypeLabel } from "@/lib/status-utils"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -203,12 +133,7 @@ export default function Servicios() {
     // Update status dialog state
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
     const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
-    const [updating, setUpdating] = useState(false)
-    const [newStatus, setNewStatus] = useState<ServiceStatus>('PENDING')
-    const [observation, setObservation] = useState('')
-    const [signatureFile, setSignatureFile] = useState<File | null>(null)
-    const [photoFiles, setPhotoFiles] = useState<File[]>([])
-    const [photosPreviews, setPhotosPreviews] = useState<string[]>([])
+
 
     // Filter and sort services
     const filteredAndSortedServices = useMemo(() => {
@@ -323,86 +248,7 @@ export default function Servicios() {
     // Open update dialog
     const openUpdateDialog = (service: ServiceDelivery) => {
         setSelectedService(service)
-        setNewStatus(service.currentStatus)
-        setObservation('')
-        setSignatureFile(null)
-        setPhotoFiles([])
-        setPhotosPreviews([])
         setUpdateDialogOpen(true)
-    }
-
-    // Close update dialog
-    const closeUpdateDialog = () => {
-        setUpdateDialogOpen(false)
-        setSelectedService(null)
-        setObservation('')
-        setSignatureFile(null)
-        setPhotoFiles([])
-        setPhotosPreviews([])
-    }
-
-
-    // Handle photos change
-    const handlePhotosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files || [])
-        if (files.length > 0) {
-            const validFiles = files.filter(f => f.type.startsWith('image/'))
-            if (validFiles.length !== files.length) {
-                toast.error("Algunos archivos no son imágenes", { id: "error-archivos-invalidos" })
-            }
-            setPhotoFiles(prev => [...prev, ...validFiles])
-
-            validFiles.forEach(file => {
-                const reader = new FileReader()
-                reader.onloadend = () => {
-                    setPhotosPreviews(prev => [...prev, reader.result as string])
-                }
-                reader.readAsDataURL(file)
-            })
-        }
-    }
-
-    // Remove photo from list
-    const removePhoto = (index: number) => {
-        setPhotoFiles(prev => prev.filter((_, i) => i !== index))
-        setPhotosPreviews(prev => prev.filter((_, i) => i !== index))
-    }
-
-    // Handle update status submission
-    const handleUpdateStatus = async () => {
-        if (!selectedService) return
-
-        if (newStatus === 'DELIVERED' && !signatureFile) {
-            toast.error("Firma requerida", {
-                description: "Para marcar como Entregado, debe incluir la firma.",
-                id: "error-firma-requerida"
-            })
-            return
-        }
-
-        try {
-            setUpdating(true)
-            await serviceDeliveryService.updateStatus(selectedService.idServiceDelivery, {
-                status: newStatus,
-                observation: observation || undefined,
-                signature: signatureFile || undefined,
-                photos: photoFiles.length > 0 ? photoFiles : undefined,
-            })
-
-            toast.success("Estado actualizado", {
-                description: `Servicio ${selectedService.plate.plateNumber} actualizado a ${getStatusBadge(newStatus).label}`
-            })
-
-            closeUpdateDialog()
-            fetchServices() // Reload list
-        } catch (error: any) {
-            toast.error("Error al actualizar estado", {
-                description: error.response?.data?.message || error.message,
-                id: "error-actualizar-estado"
-            })
-        } finally {
-            setUpdating(false)
-        }
     }
 
     // Sort indicator component
@@ -442,71 +288,6 @@ export default function Servicios() {
             )}
         </Empty>
     )
-
-    // Mobile Card Component
-    const ServiceCard = ({ service }: { service: ServiceDelivery }) => {
-        const statusConfig = getStatusBadge(service.currentStatus)
-
-        return (
-            <motion.div
-                exit="exit"
-                layout
-            >
-                <Card className="mb-3 hover:shadow-md transition-shadow">
-                    <CardContent className="pt-4">
-                        <div className="flex items-start justify-between">
-                            <div className="flex-1 space-y-2 min-w-0">
-                                <div className="flex flex-col items-start gap-2">
-                                    <Badge className={statusConfig.className}>
-                                        {statusConfig.label}
-                                    </Badge>
-                                    <div className="flex flex-col items-center w-fit">
-                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
-                                        <span className="text-[10px] text-muted-foreground mt-0.5 uppercase font-semibold">
-                                            {getPlateTypeLabel(service.plate.plateType)}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                    <div className="flex items-center gap-2">
-                                        <Building2 className="h-3.5 w-3.5 shrink-0" />
-                                        <span className="truncate">{service.dealership.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <User className="h-3.5 w-3.5 shrink-0" />
-                                        <span className="truncate">{service.messenger.fullName}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Calendar className="h-3.5 w-3.5 shrink-0" />
-                                        <span>{format(new Date(service.createdAt), "PPP", { locale: es })}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-2 shrink-0">
-                                <Button
-                                    variant="default"
-                                    size="sm"
-                                    onClick={() => openUpdateDialog(service)}
-                                    className="bg-primary hover:bg-primary/90"
-                                >
-                                    <Edit className="h-4 w-4 mr-1" />
-                                    Actualizar
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
-                                >
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    Detalles
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        )
-    }
 
     // Enhanced Pagination component
     const PaginationControls = () => {
@@ -753,6 +534,8 @@ export default function Servicios() {
                                     <ServiceCard
                                         key={service.idServiceDelivery}
                                         service={service}
+                                        onUpdate={openUpdateDialog}
+                                        onViewDetails={(id) => navigate(`/admin/servicios/${id}`)}
                                     />
                                 ))}
                             </AnimatePresence>
@@ -927,127 +710,12 @@ export default function Servicios() {
             )}
 
             {/* Update Status Dialog */}
-            <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Actualizar estado del Servicio</DialogTitle>
-                        <DialogDescription>
-                            {selectedService && (
-                                <><PlacaBadge plateNumber={selectedService.plate.plateNumber} plateType={selectedService.plate.plateType} size="sm" /> • {selectedService.dealership.name}</>
-                            )}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-4 py-4">
-                        {/* Status Select */}
-                        <div className="space-y-2">
-                            <Label htmlFor="status">Nuevo estado</Label>
-                            <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona un estado" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {AVAILABLE_STATUSES.map((status) => (
-                                        <SelectItem key={status.value} value={status.value}>
-                                            {status.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Observation */}
-                        <div className="space-y-2">
-                            <Label htmlFor="observation">Observaciones</Label>
-                            <Textarea
-                                id="observation"
-                                placeholder="Agrega observaciones sobre el cambio de estado..."
-                                value={observation}
-                                onChange={(e) => setObservation(e.target.value)}
-                                rows={3}
-                            />
-                        </div>
-
-                        {/* Signature Upload */}
-                        <div className="space-y-2">
-                            <Label>Firma digital</Label>
-                            <SignaturePad onChange={setSignatureFile} />
-                            {signatureFile && (
-                                <p className="text-xs text-green-600 mt-1 flex items-center animate-in fade-in slide-in-from-top-1">
-                                    <Check className="w-3 h-3 mr-1" />
-                                    Firma capturada
-                                </p>
-                            )}
-
-                        </div>
-
-                        {/* Photos Upload */}
-                        <div className="space-y-2">
-                            <Label htmlFor="photos">Evidencia fotografica</Label>
-                            <div className="flex items-center justify-center w-full">
-                                <label
-                                    htmlFor="photos"
-                                    className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
-                                >
-                                    <div className="flex flex-col items-center justify-center pt-3 pb-4">
-                                        <ImageIcon className="w-6 h-6 mb-1 text-muted-foreground" />
-                                        <p className="text-xs text-muted-foreground">
-                                            <span className="font-semibold">Agregar foto</span>
-                                        </p>
-                                    </div>
-                                    <input
-                                        id="photos"
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handlePhotosChange}
-                                    />
-                                </label>
-                            </div>
-
-                            {photosPreviews.length > 0 && (
-                                <div className="grid grid-cols-3 gap-2">
-                                    {photosPreviews.map((preview, index) => (
-                                        <div key={index} className="relative">
-                                            <img
-                                                src={preview}
-                                                alt={`Foto ${index + 1}`}
-                                                className="w-full h-20 object-cover rounded border"
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="destructive"
-                                                size="icon"
-                                                className="absolute -top-2 -right-2 h-5 w-5"
-                                                onClick={() => removePhoto(index)}
-                                            >
-                                                <X className="h-3 w-3" />
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={closeUpdateDialog}
-                            disabled={updating}
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            onClick={handleUpdateStatus}
-                            disabled={updating}
-                        >
-                            {updating ? "Actualizando..." : "Actualizar Estado"}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <UpdateStatusDialog
+                open={updateDialogOpen}
+                onOpenChange={setUpdateDialogOpen}
+                service={selectedService}
+                onSuccess={fetchServices}
+            />
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
