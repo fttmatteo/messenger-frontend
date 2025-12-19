@@ -231,11 +231,10 @@ export default function Empleados() {
     }
 
     const getRoleBadgeClass = (role: string) => {
-        // Use different colors than service statuses (blue, green, red, etc.)
-        // ADMIN: cyan/teal, MESSENGER: amber/yellow
+        // Match mobile design: purple for ADMIN, blue for MESSENGER
         return role === 'ADMIN'
-            ? 'bg-cyan-600 text-white hover:bg-cyan-700'
-            : 'bg-amber-500 text-white hover:bg-amber-600'
+            ? 'bg-purple-600 text-white hover:bg-purple-700'
+            : 'bg-blue-600 text-white hover:bg-blue-700'
     }
 
     // Sorting handler

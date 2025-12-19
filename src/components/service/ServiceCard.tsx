@@ -34,7 +34,7 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2 min-w-0">
-                            <div className="flex flex-col items-start gap-2">
+                            <div className="flex flex-col items-center gap-2">
                                 <Badge className={statusConfig.className}>
                                     {statusConfig.label}
                                 </Badge>
