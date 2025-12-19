@@ -59,7 +59,7 @@ export default function LiveTracking() {
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
-    const [mapCenter, setMapCenter] = useState({ lat: 4.6097, lng: -74.0817 }) // Bogotá
+    const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
 
     // Fetch initial data via REST
     const fetchActiveMessengers = useCallback(async (manual = false) => {
@@ -148,7 +148,7 @@ export default function LiveTracking() {
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-2">
                 <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo en Vivo</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo</h1>
                     <Badge variant={connected ? "default" : "secondary"} className="gap-1">
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
@@ -157,7 +157,7 @@ export default function LiveTracking() {
                 <div className="flex items-center gap-2">
                     <Badge variant="outline" className="gap-1">
                         <Users className="h-3 w-3" />
-                        {messengers.length} activos
+                        {messengers.length} Activos
                     </Badge>
                     <Button variant="outline" size="sm" onClick={() => fetchActiveMessengers(true)} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />

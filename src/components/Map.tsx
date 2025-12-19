@@ -8,8 +8,8 @@ const containerStyle = {
 }
 
 const defaultCenter = {
-    lat: 4.6097, // Bogotá default
-    lng: -74.0817
+    lat: 6.2442, // Medellín default
+    lng: -75.5812
 }
 
 const LIBRARIES: ("marker")[] = ["marker"];
