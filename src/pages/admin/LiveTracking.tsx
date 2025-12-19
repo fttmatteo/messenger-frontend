@@ -155,7 +155,7 @@ export default function LiveTracking() {
                     </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge className="gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm bg-green-500 text-white hover:bg-green-600">
+                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${messengers.length > 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
                         <Users className="h-3 w-3" />
                         {messengers.length} Activos
                     </Badge>

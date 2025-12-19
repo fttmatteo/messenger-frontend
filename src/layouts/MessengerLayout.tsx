@@ -190,7 +190,7 @@ export default function MessengerLayout() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium">@{user?.username}</span>
+                        <span className="text-sm font-medium text-black dark:text-white">@{user?.username}</span>
                     </div>
                     <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
                         <LogOut className="h-4 w-4" />
