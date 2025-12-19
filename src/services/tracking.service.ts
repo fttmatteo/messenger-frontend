@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs';
+import { authService } from './auth.service';
 
 const getWebSocketUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -12,7 +13,7 @@ const getWebSocketUrl = () => {
 };
 
 const getAuthToken = () => {
-    return localStorage.getItem('token') || '';
+    return authService.getToken() || '';
 };
 
 export interface LiveTrackingUpdate {
