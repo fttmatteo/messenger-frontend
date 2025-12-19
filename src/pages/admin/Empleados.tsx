@@ -148,8 +148,8 @@ const CardSkeleton = () => (
                     </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <Skeleton className="h-8 w-20 rounded-md" />
-                    <Skeleton className="h-8 w-24 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
                 </div>
             </div>
         </CardContent>
@@ -363,22 +363,22 @@ export default function Empleados() {
                         <div className="flex flex-col gap-2">
                             <Button
                                 variant="default"
-                                size="sm"
+                                size="icon"
                                 onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
                                 className="bg-primary hover:bg-primary/90"
+                                aria-label="Editar empleado"
                             >
-                                <Pencil className="h-4 w-4 mr-1" />
-                                Editar
+                                <Pencil className="h-4 w-4" />
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        size="sm"
+                                        size="icon"
                                         className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                        aria-label="Eliminar empleado"
                                     >
-                                        <Trash2 className="h-4 w-4 mr-1" />
-                                        Eliminar
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
