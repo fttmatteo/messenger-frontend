@@ -1,7 +1,6 @@
-import { Outlet, useNavigate, useLocation, useSearchParams } from "react-router-dom"
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
-import { useIsMobile } from "@/hooks/use-mobile"
 import {
     Sidebar,
     SidebarContent,
@@ -27,7 +26,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 
 const menuItems = [
@@ -39,20 +37,9 @@ const menuItems = [
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
-const mobileNavItems = [
-    { title: "Panel", icon: LayoutDashboard, url: "/admin" },
-    { title: "Empleados", icon: Users, url: "/admin/empleados" },
-    { title: "Conces.", icon: Store, url: "/admin/concesionarios" },
-    { title: "Servicios", icon: Bike, url: "/admin/servicios" },
-    { title: "Mapa", icon: Map, url: "/admin/tracking" },
-    { title: "Config", icon: Settings, url: "/admin/configuracion" },
-]
-
 export default function AdminLayout() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
-    const location = useLocation()
-    const isMobile = useIsMobile()
     const [searchParams, setSearchParams] = useSearchParams()
     const searchQuery = searchParams.get("q") || ""
 
