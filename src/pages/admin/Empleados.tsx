@@ -127,12 +127,12 @@ const CardSkeleton = () => (
     <Card className="mb-3">
         <CardContent className="pt-4">
             <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
+                <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
                         <Skeleton className="h-5 w-36" />
                         <Skeleton className="h-5 w-24 rounded-full" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <Skeleton className="h-3.5 w-3.5 rounded-full" />
                             <Skeleton className="h-4 w-24" />
@@ -149,7 +149,7 @@ const CardSkeleton = () => (
                 </div>
                 <div className="flex flex-col gap-2">
                     <Skeleton className="h-8 w-20 rounded-md" />
-                    <Skeleton className="h-8 w-20 rounded-md" />
+                    <Skeleton className="h-8 w-24 rounded-md" />
                 </div>
             </div>
         </CardContent>
