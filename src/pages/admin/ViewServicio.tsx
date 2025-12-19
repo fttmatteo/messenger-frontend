@@ -43,6 +43,9 @@ import {
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { motion, AnimatePresence } from "framer-motion"
+import { ChevronUp } from "lucide-react"
 
 // Status badge configuration
 const getStatusBadge = (status: string) => {
@@ -85,7 +88,10 @@ export default function ViewServicio() {
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
     const [deleting, setDeleting] = useState(false)
+    const isMobile = useIsMobile()
+    const [showScrollTop, setShowScrollTop] = useState(false)
 
     const isAdmin = user?.role === 'ADMIN'
 
@@ -132,6 +138,23 @@ export default function ViewServicio() {
             setDeleting(false)
             setDeleteDialogOpen(false)
         }
+    }
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     if (loading) {
@@ -472,7 +495,7 @@ export default function ViewServicio() {
                                                         <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
                                                             {newStatusConfig.label}
                                                         </Badge>
-                                                        
+
                                                         {/* Content card */}
                                                         <div className="mt-3 w-64">
                                                             <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50">
@@ -514,6 +537,28 @@ export default function ViewServicio() {
                                                                     </div>
                                                                 )}
 
+                                                                {/* Signature for DELIVERED */}
+                                                                {entry.newStatus === 'DELIVERED' && service.signature && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Firma recibida</p>
+                                                                        <div
+                                                                            className="relative group cursor-pointer w-fit"
+                                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
+                                                                        >
+                                                                            <img
+                                                                                src={getImageUrl(service.signature!.signaturePath)}
+                                                                                alt="Firma"
+                                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
+                                                                            />
+                                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                <div className="bg-black/60 rounded-full p-1.5">
+                                                                                    <Expand className="h-3 w-3 text-white" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
                                                                 {/* Other photos */}
                                                                 {entry.photos && entry.photos.length > 0 && (
                                                                     <div className="pt-2 border-t border-border/50">
@@ -543,13 +588,15 @@ export default function ViewServicio() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {/* Arrow connector */}
-                                                    {index < service.history.length - 1 && (
-                                                        <div className="flex items-center px-4 pt-1">
-                                                            <span className="text-muted-foreground text-xl">→</span>
-                                                        </div>
-                                                    )}
+                                                    {
+                                                        index < service.history.length - 1 && (
+                                                            <div className="flex items-center px-4 pt-1">
+                                                                <span className="text-muted-foreground text-xl">→</span>
+                                                            </div>
+                                                        )
+                                                    }
                                                 </div>
                                             )
                                         })}
@@ -560,7 +607,7 @@ export default function ViewServicio() {
 
                             {/* Mobile vertical timeline - simplified */}
                             <div className="md:hidden space-y-4">
-                                {service.history.map((entry, index) => {
+                                {service.history.map((entry) => {
                                     const newStatusConfig = getStatusBadge(entry.newStatus)
                                     const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
@@ -568,9 +615,7 @@ export default function ViewServicio() {
                                         <div key={entry.idStatusHistory} className="space-y-2">
                                             {/* Badge with arrow if not first */}
                                             <div className="flex items-center gap-2">
-                                                {index > 0 && (
-                                                    <span className="text-muted-foreground text-sm">↓</span>
-                                                )}
+                                                <span className="text-muted-foreground text-sm">↓</span>
                                                 <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
                                                     {newStatusConfig.label}
                                                 </Badge>
@@ -612,6 +657,28 @@ export default function ViewServicio() {
                                                                     </div>
                                                                 </div>
                                                             ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Signature for DELIVERED */}
+                                                {entry.newStatus === 'DELIVERED' && service.signature && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Firma recibida</p>
+                                                        <div
+                                                            className="relative group cursor-pointer w-fit"
+                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
+                                                        >
+                                                            <img
+                                                                src={getImageUrl(service.signature!.signaturePath)}
+                                                                alt="Firma"
+                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
+                                                            />
+                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <div className="bg-black/60 rounded-full p-1.5">
+                                                                    <Expand className="h-3 w-3 text-white" />
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 )}
@@ -678,6 +745,25 @@ export default function ViewServicio() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div >
     )
 }
