@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import logo from "@/assets/logo.png"
 import { useState } from "react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -54,6 +55,8 @@ export default function AdminLayout() {
     const [searchParams, setSearchParams] = useSearchParams()
     const searchQuery = searchParams.get("q") || ""
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const [showSearchInput, setShowSearchInput] = useState(false)
+    const isMobile = useIsMobile()
 
     const handleSearchChange = (value: string) => {
         if (value) {
@@ -112,22 +115,60 @@ export default function AdminLayout() {
             <SidebarInset>
                 <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
                     <SidebarTrigger />
-                    <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Buscar..."
-                            className="pl-9 h-9"
-                            value={searchQuery}
-                            onChange={(e) => handleSearchChange(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex-1" />
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium">@{user?.username}</span>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                        <LogOut className="h-4 w-4" />
-                    </Button>
+                    {isMobile ? (
+                        // Mobile header layout
+                        <>
+                            {showSearchInput ? (
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Input
+                                        placeholder="Buscar..."
+                                        className="pl-9 h-9"
+                                        value={searchQuery}
+                                        onChange={(e) => handleSearchChange(e.target.value)}
+                                        autoFocus
+                                        onBlur={() => !searchQuery && setShowSearchInput(false)}
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex-1 flex justify-center">
+                                        <span className="text-sm font-medium">@{user?.username}</span>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setShowSearchInput(true)}
+                                    >
+                                        <Search className="h-4 w-4" />
+                                    </Button>
+                                </>
+                            )}
+                            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                <LogOut className="h-4 w-4" />
+                            </Button>
+                        </>
+                    ) : (
+                        // Desktop header layout
+                        <>
+                            <div className="relative flex-1 max-w-md">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input
+                                    placeholder="Buscar..."
+                                    className="pl-9 h-9"
+                                    value={searchQuery}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex-1" />
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium">@{user?.username}</span>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                <LogOut className="h-4 w-4" />
+                            </Button>
+                        </>
+                    )}
                 </header>
                 <main className="flex-1 overflow-auto p-6">
                     <Outlet context={{ searchQuery }} />

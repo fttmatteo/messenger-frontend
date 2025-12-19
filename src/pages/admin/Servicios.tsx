@@ -89,16 +89,6 @@ type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentSt
 type SortDirection = "asc" | "desc"
 
 // Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.05,
-        },
-    },
-}
-
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -766,11 +756,7 @@ export default function Servicios() {
                     ) : filteredAndSortedServices.length === 0 ? (
                         <EmptyState isSearchResult={!!searchQuery} />
                     ) : (
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                        <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedServices.map((service, index) => (
                                     <ServiceCard

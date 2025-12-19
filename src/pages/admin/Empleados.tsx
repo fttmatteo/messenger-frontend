@@ -87,16 +87,6 @@ type SortField = "fullName" | "role" | "document" | null
 type SortDirection = "asc" | "desc"
 
 // Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.05,
-        },
-    },
-}
-
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -651,11 +641,7 @@ export default function Empleados() {
                     ) : filteredAndSortedEmployees.length === 0 ? (
                         <EmptyState isSearchResult={!!searchQuery} />
                     ) : (
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                        <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedEmployees.map((employee, index) => (
                                     <EmployeeCard
