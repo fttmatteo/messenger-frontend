@@ -8,6 +8,7 @@ interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
+    updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,10 +34,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('role', data.role);
 
-        const userObj = { username: credentials.userName, role: data.role };
+        // Try to get ID from token payload (basic decode)
+        let userId: number | undefined;
+        try {
+            const payload = JSON.parse(atob(data.token.split('.')[1]));
+            // Now we expect an 'id' claim in the payload
+            if (payload.id) userId = payload.id;
+        } catch (e) {
+            console.error("Error decoding token", e);
+        }
+
+        const userObj = {
+            username: credentials.userName,
+            role: data.role,
+            id: userId // might be undefined, which is the problem
+        };
         localStorage.setItem('user', JSON.stringify(userObj));
 
         setUser(userObj);
+    };
+
+    const updateUser = (data: Partial<User>) => {
+        if (!user) return;
+        const updatedUser = { ...user, ...data };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
     };
 
     const logout = () => {
@@ -49,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             user,
             login,
             logout,
+            updateUser,
             isAuthenticated: !!user,
             isLoading
         }}>

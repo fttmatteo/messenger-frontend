@@ -46,12 +46,16 @@ const navItems = [
 ]
 
 export default function MessengerLayout() {
-    const { user, logout } = useAuth()
+    const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-    const [isOnline, setIsOnline] = useState(false)
+    const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
+
+    const handleOnlineStatusChange = (checked: boolean) => {
+        updateUser({ isOnline: checked })
+    }
 
     useEffect(() => {
         if (isOnline) {
@@ -64,6 +68,7 @@ export default function MessengerLayout() {
                     (position) => {
                         const { latitude, longitude, speed, heading } = position.coords
                         trackingService.sendUpdate({
+                            messengerId: user?.id, // Send ID!
                             latitude,
                             longitude,
                             speed: speed || 0,
@@ -74,7 +79,7 @@ export default function MessengerLayout() {
                     (error) => {
                         console.error('Geolocation error:', error)
                         toast.error('Error de ubicación: ' + error.message)
-                        setIsOnline(false)
+                        updateUser({ isOnline: false })
                     },
                     {
                         enableHighAccuracy: true,
@@ -84,7 +89,7 @@ export default function MessengerLayout() {
                 )
             } else {
                 toast.error('Geolocalización no soportada')
-                setIsOnline(false)
+                updateUser({ isOnline: false })
             }
         } else {
             if (watchIdRef.current !== null) {
@@ -98,12 +103,8 @@ export default function MessengerLayout() {
             if (watchIdRef.current !== null) {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
-            // Don't disconnect here on unmount to keep background tracking if possible? 
-            // No, component unmount means navigation away usually. 
-            // Actually, if we navigate pages within layout, layout doesn't unmount.
-            // So this cleanup only runs on full refresh or logout.
         }
-    }, [isOnline])
+    }, [isOnline, user?.id]) // Add user.id dependency
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -159,7 +160,7 @@ export default function MessengerLayout() {
                             <Switch
                                 id="online-mode"
                                 checked={isOnline}
-                                onCheckedChange={setIsOnline}
+                                onCheckedChange={handleOnlineStatusChange}
                                 className="data-[state=checked]:bg-green-500"
                             />
                             <Label htmlFor="online-mode" className="cursor-pointer font-medium text-xs hidden sm:inline-block">
