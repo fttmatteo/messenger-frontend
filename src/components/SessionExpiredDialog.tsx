@@ -37,9 +37,7 @@ export function SessionExpiredDialog() {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
-                            <LogOut className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-                        </div>
+                        <LogOut className="h-6 w-6 text-red-500" />
                         <AlertDialogTitle className="text-xl">
                             ¡Sesión Expirada!
                         </AlertDialogTitle>
