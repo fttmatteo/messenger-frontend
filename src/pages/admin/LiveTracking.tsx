@@ -91,6 +91,13 @@ export default function LiveTracking() {
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
+        // If the messenger goes offline, remove them from the list
+        if (update.status === 'OFFLINE') {
+            setMessengers(prev => prev.filter(m => m.messengerId !== update.messengerId))
+            setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? null : prev)
+            return
+        }
+
         setMessengers(prev => {
             const existing = prev.findIndex(m => m.messengerId === update.messengerId)
             if (existing >= 0) {

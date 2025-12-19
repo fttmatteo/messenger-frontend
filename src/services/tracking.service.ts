@@ -18,7 +18,7 @@ export interface LiveTrackingUpdate {
     latitude: number;
     longitude: number;
     lastUpdate: string;
-    status: 'ACTIVE' | 'IN_ACTIVE';
+    status: 'ACTIVE' | 'INACTIVE' | 'OFFLINE';
     speed: number;
     heading: number;
 }

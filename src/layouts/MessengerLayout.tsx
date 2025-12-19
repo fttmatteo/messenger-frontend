@@ -96,7 +96,21 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
                 watchIdRef.current = null
             }
-            trackingService.disconnect()
+
+            // Notify backend before disconnecting
+            if (user?.id) {
+                trackingService.sendUpdate({
+                    messengerId: user.id,
+                    status: 'OFFLINE'
+                })
+            }
+
+            // Allow a small window for the message to be sent before closing the connection
+            const timer = setTimeout(() => {
+                trackingService.disconnect()
+            }, 500)
+
+            return () => clearTimeout(timer)
         }
 
         return () => {
@@ -111,6 +125,12 @@ export default function MessengerLayout() {
     }
 
     const confirmLogout = () => {
+        if (isOnline && user?.id) {
+            trackingService.sendUpdate({
+                messengerId: user.id,
+                status: 'OFFLINE'
+            })
+        }
         logout()
         navigate("/login")
     }
