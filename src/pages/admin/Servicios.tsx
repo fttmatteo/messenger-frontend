@@ -425,11 +425,11 @@ export default function Servicios() {
                 </div>
                 <Button
                     onClick={() => navigate("/admin/servicios/crear")}
-                    size={isMobile ? "icon" : "default"}
+                    size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo servicio"}
+                    <Plus className="h-4 w-4 mr-2" />
+                    Crear servicio
                 </Button>
             </div>
 
@@ -653,20 +653,20 @@ export default function Servicios() {
                                                             className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                                                         >
                                                             <TableCell>
-                                                                <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
+                                                                <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
                                                             </TableCell>
-                                                            <TableCell className="truncate" title={service.dealership.name}>
+                                                            <TableCell className="truncate text-base" title={service.dealership.name}>
                                                                 {service.dealership.name}
                                                             </TableCell>
-                                                            <TableCell className="truncate" title={service.messenger.fullName}>
+                                                            <TableCell className="truncate text-base" title={service.messenger.fullName}>
                                                                 {service.messenger.fullName}
                                                             </TableCell>
                                                             <TableCell>
-                                                                <Badge className={`${statusConfig.className} text-sm px-3 py-1`}>
+                                                                <Badge className={`${statusConfig.className} text-base px-3 py-1`}>
                                                                     {statusConfig.label}
                                                                 </Badge>
                                                             </TableCell>
-                                                            <TableCell className="whitespace-nowrap text-sm">
+                                                            <TableCell className="whitespace-nowrap text-base">
                                                                 {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                             </TableCell>
                                                             <TableCell className="text-right">

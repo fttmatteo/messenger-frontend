@@ -442,17 +442,14 @@ export default function Concesionarios() {
             <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <h1 className="text-2xl md:text-3xl font-bold truncate">Concesionarios</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Gestiona los concesionarios del sistema
-                    </p>
                 </div>
                 <Button
                     onClick={() => navigate("/admin/concesionarios/crear")}
-                    size={isMobile ? "icon" : "default"}
+                    size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Concesionario"}
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nuevo Concesionario
                 </Button>
             </div>
 
@@ -656,13 +653,13 @@ export default function Concesionarios() {
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                                                 >
-                                                    <TableCell className="font-medium">
+                                                    <TableCell className="font-medium text-base">
                                                         {dealership.name}
                                                     </TableCell>
-                                                    <TableCell className="max-w-xs truncate">
+                                                    <TableCell className="max-w-xs truncate text-base">
                                                         {dealership.address}
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell className="text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -676,7 +673,7 @@ export default function Concesionarios() {
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Badge variant="outline">{dealership.zone}</Badge>
+                                                        <Badge variant="outline" className="text-base px-2 py-0.5">{dealership.zone}</Badge>
                                                     </TableCell>
                                                     <TableCell>
                                                         {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (

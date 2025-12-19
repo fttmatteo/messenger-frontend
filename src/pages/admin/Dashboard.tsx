@@ -127,14 +127,14 @@ export default function AdminDashboard() {
                     dashboardCards.map((card) => (
                         <Card key={card.title} className="hover:shadow-md transition-shadow">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
+                                <CardTitle className="text-base font-medium">
                                     {card.title}
                                 </CardTitle>
                                 <card.icon className={`h-4 w-4 ${card.color}`} />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{card.value}</div>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <div className="text-3xl font-bold">{card.value}</div>
+                                <p className="text-sm text-muted-foreground mt-1">
                                     {card.description}
                                 </p>
                             </CardContent>
@@ -166,18 +166,18 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                        <span className="text-sm font-medium">Administradores</span>
+                                        <span className="text-base font-medium">Administradores</span>
                                     </div>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-base text-muted-foreground">
                                         {stats.adminCount} ({stats.totalEmployees > 0 ? ((stats.adminCount / stats.totalEmployees) * 100).toFixed(0) : 0}%)
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500" />
-                                        <span className="text-sm font-medium">Mensajeros</span>
+                                        <span className="text-base font-medium">Mensajeros</span>
                                     </div>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-base text-muted-foreground">
                                         {stats.messengerCount} ({stats.totalEmployees > 0 ? ((stats.messengerCount / stats.totalEmployees) * 100).toFixed(0) : 0}%)
                                     </span>
                                 </div>
@@ -200,7 +200,7 @@ export default function AdminDashboard() {
                                 <Skeleton className="h-4 w-2/3" />
                             </div>
                         ) : stats.totalDealerships === 0 ? (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-base text-muted-foreground">
                                 No hay concesionarios registrados.
                             </p>
                         ) : (
@@ -208,18 +208,18 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500" />
-                                        <span className="text-sm font-medium">Geocodificados</span>
+                                        <span className="text-base font-medium">Geocodificados</span>
                                     </div>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-base text-muted-foreground">
                                         {stats.geocodedDealerships} ({geolocatedPercentage}%)
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="h-2 w-2 rounded-full bg-gray-400" />
-                                        <span className="text-sm font-medium">Sin ubicación</span>
+                                        <span className="text-base font-medium">Sin ubicación</span>
                                     </div>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-base text-muted-foreground">
                                         {stats.totalDealerships - stats.geocodedDealerships} ({(100 - parseFloat(geolocatedPercentage)).toFixed(1)}%)
                                     </span>
                                 </div>
