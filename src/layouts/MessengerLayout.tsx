@@ -21,7 +21,18 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
+import { useState } from "react"
 
 const navItems = [
     { title: "Inicio", icon: Home, url: "/messenger" },
@@ -33,8 +44,13 @@ export default function MessengerLayout() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false)
 
     const handleLogout = () => {
+        setShowLogoutDialog(true)
+    }
+
+    const confirmLogout = () => {
         logout()
         navigate("/login")
     }
@@ -43,9 +59,12 @@ export default function MessengerLayout() {
         <SidebarProvider>
             <Sidebar>
                 <SidebarHeader className="border-b border-sidebar-border">
-                    <div className="flex items-center gap-2 px-2 py-2">
-                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                        <span className="font-semibold">PLAK</span>
+                    <div className="flex items-center justify-between px-2 py-2">
+                        <div className="flex items-center gap-2">
+                            <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
+                            <span className="font-semibold">PLAK</span>
+                        </div>
+                        <ModeToggle />
                     </div>
                 </SidebarHeader>
                 <SidebarContent>
@@ -77,16 +96,32 @@ export default function MessengerLayout() {
                     <div className="flex-1" />
                     <div className="flex items-center gap-3">
                         <span className="text-sm font-medium">@{user?.username}</span>
-                        <ModeToggle />
-                        <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                            <LogOut className="h-4 w-4" />
-                        </Button>
                     </div>
+                    <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <LogOut className="h-4 w-4" />
+                    </Button>
                 </header>
                 <main className="flex-1 overflow-auto p-6">
                     <Outlet />
                 </main>
             </SidebarInset>
+
+            <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            ¿Estás seguro que deseas cerrar sesión?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmLogout} className="bg-red-500 text-white hover:bg-red-600">
+                            Salir
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </SidebarProvider>
     )
 }
