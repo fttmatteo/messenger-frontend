@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { Map } from "@/components/Map"
-import { Marker, InfoWindow } from "@react-google-maps/api"
+import { InfoWindow, useGoogleMap } from "@react-google-maps/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,48 @@ import { RefreshCw, Users, Wifi, WifiOff } from "lucide-react"
 import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
+
+// Componente para manejar AdvancedMarkerElement (API nueva de Google Maps)
+function AdvancedMarker({ position, onClick, title }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string }) {
+    const map = useGoogleMap()
+    const markerRef = useRef<any>(null)
+
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title,
+            content: new google.maps.marker.PinElement({
+                background: '#4f46e5',
+                borderColor: 'white',
+                glyphColor: 'white',
+            }).element
+        })
+
+        marker.addListener('click', () => {
+            if (onClick) onClick()
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map]) // Solo se crea una vez cuando el mapa está listo
+
+    // Actualizar posición sin re-crear el marcador
+    useEffect(() => {
+        if (markerRef.current) {
+            markerRef.current.position = position
+        }
+    }, [position])
+
+    return null
+}
 
 export default function LiveTracking() {
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
@@ -107,15 +149,11 @@ export default function LiveTracking() {
                         <Map className="w-full h-full rounded-md" center={mapCenter} zoom={12}>
                             {messengers.map((messenger) => (
                                 messenger.latitude && messenger.longitude && (
-                                    <Marker
+                                    <AdvancedMarker
                                         key={messenger.messengerId}
                                         position={{ lat: messenger.latitude, lng: messenger.longitude }}
                                         onClick={() => setSelectedMessenger(messenger)}
-                                        icon={{
-                                            url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%234f46e5' stroke='white' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a10 10 0 0 0-7 17l7 5 7-5a10 10 0 0 0-7-17z'/%3E%3C/svg%3E",
-                                            scaledSize: new google.maps.Size(40, 40),
-                                            anchor: new google.maps.Point(20, 40),
-                                        }}
+                                        title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
                                     />
                                 )
                             ))}

@@ -11,6 +11,8 @@ const defaultCenter = {
     lng: -74.0817
 }
 
+const LIBRARIES: ("marker")[] = ["marker"];
+
 interface MapProps {
     center?: google.maps.LatLngLiteral
     zoom?: number
@@ -23,7 +25,8 @@ interface MapProps {
 function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onUnmount, className }: MapProps) {
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        libraries: LIBRARIES as any
     })
 
     const handleLoad = useCallback((map: google.maps.Map) => {
@@ -47,17 +50,11 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                 onLoad={handleLoad}
                 onUnmount={handleUnmount}
                 options={{
+                    mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
                     zoomControl: true,
                     streetViewControl: false,
                     mapTypeControl: false,
                     fullscreenControl: true,
-                    styles: [
-                        {
-                            featureType: "poi",
-                            elementType: "labels",
-                            stylers: [{ visibility: "off" }],
-                        },
-                    ]
                 }}
             >
                 {children}
