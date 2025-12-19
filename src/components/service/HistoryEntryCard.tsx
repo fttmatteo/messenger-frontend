@@ -12,6 +12,7 @@ interface HistoryEntryCardProps {
     signaturePath?: string
     getImageUrl: (url: string) => string
     className?: string
+    onImageClick?: (url: string) => void
 }
 
 /**
@@ -24,7 +25,17 @@ export function HistoryEntryCard({
     signaturePath,
     getImageUrl,
     className = "",
+    onImageClick,
 }: HistoryEntryCardProps) {
+    const handleImageClick = (path: string) => {
+        const url = getImageUrl(path)
+        if (onImageClick) {
+            onImageClick(url)
+        } else {
+            window.open(url, '_blank')
+        }
+    }
+
     return (
         <div className={`bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ${className}`}>
             {/* Date and User Info */}
@@ -48,7 +59,7 @@ export function HistoryEntryCard({
                             <div
                                 key={photo.idPhoto}
                                 className="relative group cursor-pointer"
-                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                onClick={() => handleImageClick(photo.photoPath)}
                             >
                                 <img
                                     src={getImageUrl(photo.photoPath)}
@@ -73,7 +84,7 @@ export function HistoryEntryCard({
                     <div className="flex justify-center">
                         <div
                             className="relative group cursor-pointer w-48 h-48 bg-white rounded-md border border-border/50 flex items-center justify-center"
-                            onClick={() => window.open(getImageUrl(signaturePath), '_blank')}
+                            onClick={() => handleImageClick(signaturePath)}
                         >
                             <img
                                 src={getImageUrl(signaturePath)}
@@ -99,7 +110,7 @@ export function HistoryEntryCard({
                             <div
                                 key={photo.idPhoto}
                                 className="relative group cursor-pointer"
-                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                onClick={() => handleImageClick(photo.photoPath)}
                             >
                                 <img
                                     src={getImageUrl(photo.photoPath)}

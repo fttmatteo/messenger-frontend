@@ -30,6 +30,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
 import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
+import { ImageViewer } from "@/components/ui/image-viewer"
 import {
     Home,
     ArrowLeft,
@@ -62,6 +63,7 @@ export default function ViewServicio() {
     // UI State
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [showScrollTop, setShowScrollTop] = useState(false)
 
     // Derived State
@@ -220,7 +222,7 @@ export default function ViewServicio() {
                             <Car className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Placa</p>
-                                <div className="mt-1 flex flex-col items-start w-fit">
+                                <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
                                     <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
                                         {getPlateTypeLabel(service.plate.plateType)}
@@ -411,6 +413,7 @@ export default function ViewServicio() {
                                                         platePhotos={platePhotos}
                                                         signaturePath={service.signature?.signaturePath}
                                                         getImageUrl={getImageUrl}
+                                                        onImageClick={setSelectedImage}
                                                     />
                                                 </TimelineContent>
                                             </TimelineItem>
@@ -449,6 +452,12 @@ export default function ViewServicio() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <ImageViewer
+                open={!!selectedImage}
+                src={selectedImage}
+                onClose={() => setSelectedImage(null)}
+            />
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
                 {isMobile && showScrollTop && (
