@@ -29,6 +29,7 @@ import {
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
 import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
+import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import {
     Home,
     ArrowLeft,
@@ -380,76 +381,42 @@ export default function ViewServicio() {
                 <CardContent>
                     {service.history.length > 0 ? (
                         <>
-                            {/* Desktop horizontal timeline - simplified with badges only */}
-                            <div className="hidden md:block">
-                                <div className="relative overflow-x-auto pb-4">
-                                    <div className="flex items-start min-w-max py-4">
-                                        {service.history.map((entry, index) => {
-                                            const newStatusConfig = getStatusBadge(entry.newStatus)
-                                            const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
+                            {/* Responsive Timeline */}
+                            <div className="py-4 overflow-x-auto">
+                                <Timeline
+                                    layout={isMobile ? "vertical" : "horizontal"}
+                                    centered={isMobile}
+                                    className={isMobile ? "" : "min-w-max md:min-w-0"}
+                                >
+                                    {[...service.history].reverse().map((entry, index) => {
+                                        const newStatusConfig = getStatusBadge(entry.newStatus)
+                                        const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
-                                            return (
-                                                <div key={entry.idStatusHistory} className="flex items-start">
-                                                    {/* Entry column */}
-                                                    <div className="flex flex-col items-center">
-                                                        {/* Status badge */}
-                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
+                                        return (
+                                            <TimelineItem
+                                                key={entry.idStatusHistory}
+                                                isLast={index === service.history.length - 1}
+                                                className={isMobile ? "" : "min-w-[280px]"}
+                                            >
+                                                <TimelineHeader>
+                                                    <div className="h-10 flex items-center justify-center z-10 bg-card">
+                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5 shadow-sm`}>
                                                             {newStatusConfig.label}
                                                         </Badge>
-
-                                                        {/* Content card */}
-                                                        <div className="mt-3 w-64">
-                                                            <HistoryEntryCard
-                                                                entry={entry}
-                                                                platePhotos={platePhotos}
-                                                                signaturePath={service.signature?.signaturePath}
-                                                                getImageUrl={getImageUrl}
-                                                            />
-                                                        </div>
                                                     </div>
-
-                                                    {/* Arrow connector */}
-                                                    {
-                                                        index < service.history.length - 1 && (
-                                                            <div className="flex items-center px-4 pt-1">
-                                                                <span className="text-muted-foreground text-xl">→</span>
-                                                            </div>
-                                                        )
-                                                    }
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Mobile vertical timeline - simplified */}
-                            <div className="md:hidden space-y-4">
-                                {service.history.map((entry) => {
-                                    const newStatusConfig = getStatusBadge(entry.newStatus)
-                                    const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
-
-                                    return (
-                                        <div key={entry.idStatusHistory} className="space-y-2">
-                                            {/* Badge with arrow if not first */}
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-muted-foreground text-sm">↓</span>
-                                                <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
-                                                    {newStatusConfig.label}
-                                                </Badge>
-                                            </div>
-
-                                            {/* Content card */}
-                                            <HistoryEntryCard
-                                                entry={entry}
-                                                platePhotos={platePhotos}
-                                                signaturePath={service.signature?.signaturePath}
-                                                getImageUrl={getImageUrl}
-                                                className="ml-4"
-                                            />
-                                        </div>
-                                    )
-                                })}
+                                                </TimelineHeader>
+                                                <TimelineContent>
+                                                    <HistoryEntryCard
+                                                        entry={entry}
+                                                        platePhotos={platePhotos}
+                                                        signaturePath={service.signature?.signaturePath}
+                                                        getImageUrl={getImageUrl}
+                                                    />
+                                                </TimelineContent>
+                                            </TimelineItem>
+                                        )
+                                    })}
+                                </Timeline>
                             </div>
 
                         </>

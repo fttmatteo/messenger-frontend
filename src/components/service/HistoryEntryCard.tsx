@@ -28,7 +28,7 @@ export function HistoryEntryCard({
     return (
         <div className={`bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ${className}`}>
             {/* Date and User Info */}
-            <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+            <div className="flex flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 flex-shrink-0" />
                     <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
