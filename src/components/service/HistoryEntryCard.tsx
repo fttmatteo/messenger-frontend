@@ -53,11 +53,11 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Lectura de placa"
-                                    className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                    className="w-28 h-28 object-cover rounded-md border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-3 w-3 text-white" />
+                                        <Expand className="h-4 w-4 text-white" />
                                     </div>
                                 </div>
                             </div>
@@ -71,17 +71,17 @@ export function HistoryEntryCard({
                 <div className="pt-2 border-t border-border/50">
                     <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
                     <div
-                        className="relative group cursor-pointer w-fit"
+                        className="relative group cursor-pointer w-28 h-28 bg-white rounded-md border border-border/50 flex items-center justify-center"
                         onClick={() => window.open(getImageUrl(signaturePath), '_blank')}
                     >
                         <img
                             src={getImageUrl(signaturePath)}
                             alt="Firma"
-                            className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
+                            className="max-w-full max-h-full object-contain p-1"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
                             <div className="bg-black/60 rounded-full p-1.5">
-                                <Expand className="h-3 w-3 text-white" />
+                                <Expand className="h-4 w-4 text-white" />
                             </div>
                         </div>
                     </div>
@@ -102,11 +102,11 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Evidencia"
-                                    className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                    className="w-28 h-28 object-cover rounded-md border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-3 w-3 text-white" />
+                                        <Expand className="h-4 w-4 text-white" />
                                     </div>
                                 </div>
                             </div>
