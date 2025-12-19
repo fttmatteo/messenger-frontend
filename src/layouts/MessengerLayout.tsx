@@ -77,13 +77,20 @@ export default function MessengerLayout() {
                         })
                     },
                     (error) => {
-                        console.error('Geolocation error:', error)
-                        toast.error('Error de ubicación: ' + error.message)
-                        updateUser({ isOnline: false })
+                        console.warn('Geolocation partial error:', error.message)
+
+                        if (error.code === 1) { // PERMISSION_DENIED
+                            toast.error('Permiso de ubicación denegado.')
+                            updateUser({ isOnline: false })
+                        } else {
+                            // Para TIMEOUT o POSITION_UNAVAILABLE, no apagamos el switch.
+                            // Solo mostramos un aviso en consola y dejamos que siga intentando.
+                            console.log("Señal GPS débil o agotada. Reintentando...")
+                        }
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 10000,
+                        timeout: 30000,
                         maximumAge: 0
                     }
                 )
