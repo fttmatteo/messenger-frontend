@@ -445,18 +445,14 @@ export default function Servicios() {
         </Empty>
     )
 
-    // Mobile Card Component with animations
-    const ServiceCard = ({ service, index }: { service: ServiceDelivery; index: number }) => {
+    // Mobile Card Component
+    const ServiceCard = ({ service }: { service: ServiceDelivery }) => {
         const statusConfig = getStatusBadge(service.currentStatus)
 
         return (
             <motion.div
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
                 exit="exit"
                 layout
-                custom={index}
             >
                 <Card className="mb-3 hover:shadow-md transition-shadow">
                     <CardContent className="pt-4">
@@ -758,11 +754,10 @@ export default function Servicios() {
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
-                                {paginatedServices.map((service, index) => (
+                                {paginatedServices.map((service) => (
                                     <ServiceCard
                                         key={service.idServiceDelivery}
                                         service={service}
-                                        index={index}
                                     />
                                 ))}
                             </AnimatePresence>

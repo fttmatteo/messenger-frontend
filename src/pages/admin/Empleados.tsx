@@ -318,15 +318,11 @@ export default function Empleados() {
         </Empty>
     )
 
-    // Mobile Card Component with animations
-    const EmployeeCard = ({ employee, index }: { employee: Employee; index: number }) => (
+    // Mobile Card Component
+    const EmployeeCard = ({ employee }: { employee: Employee }) => (
         <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
             exit="exit"
             layout
-            custom={index}
         >
             <Card className="mb-3 hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
@@ -643,11 +639,10 @@ export default function Empleados() {
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
-                                {paginatedEmployees.map((employee, index) => (
+                                {paginatedEmployees.map((employee) => (
                                     <EmployeeCard
                                         key={employee.idEmployee}
                                         employee={employee}
-                                        index={index}
                                     />
                                 ))}
                             </AnimatePresence>

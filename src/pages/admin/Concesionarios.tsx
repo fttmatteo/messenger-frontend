@@ -342,15 +342,11 @@ export default function Concesionarios() {
         </Empty>
     )
 
-    // Mobile Card Component with animations
-    const DealershipCard = ({ dealership, index }: { dealership: Dealership; index: number }) => (
+    // Mobile Card Component
+    const DealershipCard = ({ dealership }: { dealership: Dealership }) => (
         <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
             exit="exit"
             layout
-            custom={index}
         >
             <Card className="mb-3 hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
@@ -711,11 +707,10 @@ export default function Concesionarios() {
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
-                                {paginatedDealerships.map((dealership, index) => (
+                                {paginatedDealerships.map((dealership) => (
                                     <DealershipCard
                                         key={dealership.idDealership}
                                         dealership={dealership}
-                                        index={index}
                                     />
                                 ))}
                             </AnimatePresence>
