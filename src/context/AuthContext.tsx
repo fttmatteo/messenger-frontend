@@ -54,7 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userObj = {
             username: credentials.userName,
             role: data.role,
-            id: userId // might be undefined, which is the problem
+            id: userId,
+            isOnline: data.role === 'MESSENGER'
         };
         localStorage.setItem('user', JSON.stringify(userObj));
 
