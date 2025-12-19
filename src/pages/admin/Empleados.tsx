@@ -496,16 +496,20 @@ export default function Empleados() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Empleados</h1>
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">Empleados</h1>
                     <p className="text-sm text-muted-foreground mt-1">
                         Gestiona los empleados del sistema
                     </p>
                 </div>
-                <Button onClick={() => navigate("/admin/empleados/crear")} size={isMobile ? "sm" : "default"}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {isMobile ? "Nuevo" : "Nuevo Empleado"}
+                <Button
+                    onClick={() => navigate("/admin/empleados/crear")}
+                    size={isMobile ? "icon" : "default"}
+                    className="shrink-0"
+                >
+                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Empleado"}
                 </Button>
             </div>
 

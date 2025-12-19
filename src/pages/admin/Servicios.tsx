@@ -596,16 +596,20 @@ export default function Servicios() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Servicios de Entrega</h1>
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">Servicios de Entrega</h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Gestiona las entregas de placas vehiculares
+                        Gestiona las entregas de placas
                     </p>
                 </div>
-                <Button onClick={() => navigate("/admin/servicios/crear")} size={isMobile ? "sm" : "default"}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {isMobile ? "Nuevo" : "Nuevo Servicio"}
+                <Button
+                    onClick={() => navigate("/admin/servicios/crear")}
+                    size={isMobile ? "icon" : "default"}
+                    className="shrink-0"
+                >
+                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Servicio"}
                 </Button>
             </div>
 
