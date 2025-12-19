@@ -216,7 +216,7 @@ export default function MessengerLayout() {
                 </SidebarContent>
             </Sidebar>
             <SidebarInset>
-                <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+                <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
                     <SidebarTrigger />
                     <div className="flex-1" />
 
