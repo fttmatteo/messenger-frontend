@@ -45,12 +45,18 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import {
     Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-    EmptyDescription,
     EmptyContent,
+    EmptyDescription,
+    EmptyTitle,
 } from "@/components/ui/empty"
 import {
     Plus,
@@ -156,8 +162,7 @@ const CardSkeleton = () => (
     </Card>
 )
 
-// Pagination settings
-const ITEMS_PER_PAGE = 10
+
 
 export default function Empleados() {
     const navigate = useNavigate()
@@ -173,57 +178,61 @@ export default function Empleados() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
+
+    // Filter state
+    const [roleFilter, setRoleFilter] = useState<"all" | "ADMIN" | "MESSENGER">("all")
 
     // Filter and sort employees
     const filteredAndSortedEmployees = useMemo(() => {
         let result = employees.filter((employee) => {
-            if (!searchQuery.trim()) return true
-            const query = searchQuery.toLowerCase()
-            return (
-                String(employee.idEmployee).includes(query) ||
-                String(employee.document).includes(query) ||
-                employee.fullName.toLowerCase().includes(query) ||
-                employee.phone.includes(query) ||
-                employee.userName.toLowerCase().includes(query) ||
-                employee.role.toLowerCase().includes(query) ||
-                (employee.role === 'ADMIN' && 'administrador'.includes(query)) ||
-                (employee.role === 'MESSENGER' && 'mensajero'.includes(query))
-            )
+            // Search filter
+            if (searchQuery.trim()) {
+                const query = searchQuery.toLowerCase()
+                const matchesSearch = employee.fullName.toLowerCase().includes(query) ||
+                    employee.userName.toLowerCase().includes(query) ||
+                    String(employee.document).includes(query) ||
+                    employee.phone.includes(query) ||
+                    employee.role.toLowerCase().includes(query)
+
+                if (!matchesSearch) return false
+            }
+
+            // Role filter
+            if (roleFilter !== "all" && employee.role !== roleFilter) {
+                return false
+            }
+
+            return true
         })
 
         // Apply sorting
         if (sortField) {
             result = [...result].sort((a, b) => {
                 let comparison = 0
-                switch (sortField) {
-                    case "fullName":
-                        comparison = a.fullName.localeCompare(b.fullName)
-                        break
-                    case "document":
-                        comparison = String(a.document).localeCompare(String(b.document))
-                        break
-                    case "role":
-                        comparison = a.role.localeCompare(b.role)
-                        break
+                if (sortField === "fullName") {
+                    comparison = a.fullName.localeCompare(b.fullName)
+                } else if (sortField === "role") {
+                    comparison = a.role.localeCompare(b.role)
                 }
                 return sortDirection === "asc" ? comparison : -comparison
             })
         }
 
         return result
-    }, [employees, searchQuery, sortField, sortDirection])
+    }, [employees, searchQuery, roleFilter, sortField, sortDirection])
 
     // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedEmployees.length / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(filteredAndSortedEmployees.length / itemsPerPage)
     const paginatedEmployees = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE
-        return filteredAndSortedEmployees.slice(start, start + ITEMS_PER_PAGE)
-    }, [filteredAndSortedEmployees, currentPage])
+        const start = (currentPage - 1) * itemsPerPage
+        return filteredAndSortedEmployees.slice(start, start + itemsPerPage)
+    }, [filteredAndSortedEmployees, currentPage, itemsPerPage])
 
-    // Reset to page 1 when search or sort changes
+    // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection])
+    }, [searchQuery, sortField, sortDirection, roleFilter, itemsPerPage])
 
     const fetchEmployees = async () => {
         try {
@@ -412,67 +421,113 @@ export default function Empleados() {
         </motion.div>
     )
 
-    // Pagination component
+    // Enhanced Pagination component
     const PaginationControls = () => {
-        if (totalPages <= 1) return null
+        const startItem = (currentPage - 1) * itemsPerPage + 1
+        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedEmployees.length)
+        const hasResults = filteredAndSortedEmployees.length > 0
 
         return (
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                            }}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === 1}
-                        />
-                    </PaginationItem>
+            <div className="mt-4 space-y-3">
+                {/* Results info and items per page selector */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <p className="text-sm text-muted-foreground">
+                        {hasResults ? (
+                            <>
+                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
+                                <span className="font-medium">{filteredAndSortedEmployees.length}</span> resultado(s)
+                                {roleFilter !== "all" && (
+                                    <span className="text-primary ml-1">
+                                        (filtro: {roleFilter === "ADMIN" ? "Admin" : "Mensajero"})
+                                    </span>
+                                )}
+                            </>
+                        ) : (
+                            "Sin resultados"
+                        )}
+                    </p>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPages <= 5) {
-                            pageNum = i + 1
-                        } else if (currentPage <= 3) {
-                            pageNum = i + 1
-                        } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i
-                        } else {
-                            pageNum = currentPage - 2 + i
-                        }
+                    {hasResults && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
+                            <Select
+                                value={itemsPerPage.toString()}
+                                onValueChange={(value) => setItemsPerPage(Number(value))}
+                            >
+                                <SelectTrigger className="w-[70px] h-9">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
 
-                        return (
-                            <PaginationItem key={pageNum}>
-                                <PaginationLink
+                {/* Pagination navigation */}
+                {totalPages > 1 && (
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault()
-                                        setCurrentPage(pageNum)
+                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
                                     }}
-                                    isActive={currentPage === pageNum}
-                                    className="cursor-pointer"
-                                >
-                                    {pageNum}
-                                </PaginationLink>
+                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        )
-                    })}
 
-                    <PaginationItem>
-                        <PaginationNext
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                            }}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === totalPages}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i
+                                } else {
+                                    pageNum = currentPage - 2 + i
+                                }
+
+                                return (
+                                    <PaginationItem key={pageNum}>
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setCurrentPage(pageNum)
+                                            }}
+                                            isActive={currentPage === pageNum}
+                                            className="cursor-pointer"
+                                        >
+                                            {pageNum}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                )
+                            })}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
+                                    }}
+                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         )
     }
 
@@ -513,12 +568,64 @@ export default function Empleados() {
                 </Button>
             </div>
 
+            {/* Filters Bar */}
+            {!isMobile && (
+                <div className="flex items-center gap-3 flex-wrap">
+                    <ToggleGroup
+                        type="single"
+                        value={roleFilter}
+                        onValueChange={(value) => setRoleFilter((value as typeof roleFilter) || "all")}
+                        className="justify-start"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos">
+                            Todos
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="ADMIN" aria-label="Admin">
+                            Admin
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="MESSENGER" aria-label="Mensajero">
+                            Mensajero
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+
+                    {roleFilter !== "all" && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setRoleFilter("all")}
+                            className="h-9"
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro
+                        </Button>
+                    )}
+                </div>
+            )}
+
             {/* Mobile View */}
             {isMobile ? (
                 <div>
+                    {/* Mobile filter */}
+                    <div className="mb-3">
+                        <Select
+                            value={roleFilter}
+                            onValueChange={(value) => setRoleFilter(value as typeof roleFilter)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Filtrar por rol" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los roles</SelectItem>
+                                <SelectItem value="ADMIN">Admin</SelectItem>
+                                <SelectItem value="MESSENGER">Mensajero</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
                         {searchQuery && ` - "${searchQuery}"`}
+                        {roleFilter !== "all" && ` (filtro: ${roleFilter === "ADMIN" ? "Admin" : "Mensajero"})`}
                     </p>
                     {loading ? (
                         <div className="space-y-3">
@@ -735,7 +842,8 @@ export default function Empleados() {
                         )}
                     </CardContent>
                 </Card>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }

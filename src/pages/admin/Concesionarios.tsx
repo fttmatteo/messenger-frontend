@@ -45,6 +45,13 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
     Empty,
     EmptyHeader,
     EmptyMedia,
@@ -158,8 +165,7 @@ const CardSkeleton = () => (
     </Card>
 )
 
-// Pagination settings
-const ITEMS_PER_PAGE = 10
+
 
 export default function Concesionarios() {
     const navigate = useNavigate()
@@ -176,6 +182,10 @@ export default function Concesionarios() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
+
+    // Filter state
+    const [zoneFilter, setZoneFilter] = useState<string>("all")
 
     // Filter and sort dealerships
     const filteredAndSortedDealerships = useMemo(() => {
@@ -214,16 +224,16 @@ export default function Concesionarios() {
     }, [dealerships, searchQuery, sortField, sortDirection])
 
     // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedDealerships.length / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
     const paginatedDealerships = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE
-        return filteredAndSortedDealerships.slice(start, start + ITEMS_PER_PAGE)
-    }, [filteredAndSortedDealerships, currentPage])
+        const start = (currentPage - 1) * itemsPerPage
+        return filteredAndSortedDealerships.slice(start, start + itemsPerPage)
+    }, [filteredAndSortedDealerships, currentPage, itemsPerPage])
 
-    // Reset to page 1 when search or sort changes
+    // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection])
+    }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
 
     const fetchDealerships = async () => {
         try {
@@ -462,67 +472,113 @@ export default function Concesionarios() {
         </motion.div>
     )
 
-    // Pagination component
+    // Enhanced Pagination component
     const PaginationControls = () => {
-        if (totalPages <= 1) return null
+        const startItem = (currentPage - 1) * itemsPerPage + 1
+        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedDealerships.length)
+        const hasResults = filteredAndSortedDealerships.length > 0
 
         return (
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                            }}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === 1}
-                        />
-                    </PaginationItem>
+            <div className="mt-4 space-y-3">
+                {/* Results info and items per page selector */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <p className="text-sm text-muted-foreground">
+                        {hasResults ? (
+                            <>
+                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
+                                <span className="font-medium">{filteredAndSortedDealerships.length}</span> resultado(s)
+                                {zoneFilter !== "all" && (
+                                    <span className="text-primary ml-1">
+                                        (zona: {zoneFilter})
+                                    </span>
+                                )}
+                            </>
+                        ) : (
+                            "Sin resultados"
+                        )}
+                    </p>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPages <= 5) {
-                            pageNum = i + 1
-                        } else if (currentPage <= 3) {
-                            pageNum = i + 1
-                        } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i
-                        } else {
-                            pageNum = currentPage - 2 + i
-                        }
+                    {hasResults && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
+                            <Select
+                                value={itemsPerPage.toString()}
+                                onValueChange={(value) => setItemsPerPage(Number(value))}
+                            >
+                                <SelectTrigger className="w-[70px] h-9">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
 
-                        return (
-                            <PaginationItem key={pageNum}>
-                                <PaginationLink
+                {/* Pagination navigation */}
+                {totalPages > 1 && (
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault()
-                                        setCurrentPage(pageNum)
+                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
                                     }}
-                                    isActive={currentPage === pageNum}
-                                    className="cursor-pointer"
-                                >
-                                    {pageNum}
-                                </PaginationLink>
+                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        )
-                    })}
 
-                    <PaginationItem>
-                        <PaginationNext
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                            }}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === totalPages}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i
+                                } else {
+                                    pageNum = currentPage - 2 + i
+                                }
+
+                                return (
+                                    <PaginationItem key={pageNum}>
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setCurrentPage(pageNum)
+                                            }}
+                                            isActive={currentPage === pageNum}
+                                            className="cursor-pointer"
+                                        >
+                                            {pageNum}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                )
+                            })}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
+                                    }}
+                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         )
     }
 
