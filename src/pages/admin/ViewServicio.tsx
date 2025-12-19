@@ -219,12 +219,12 @@ export default function ViewServicio() {
                     {/* Desktop: Horizontal grid layout */}
                     <div className="hidden md:grid md:grid-cols-4 gap-6">
                         <div className="flex items-start gap-3">
-                            <Car className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Placa</p>
+                                <p className="text-base font-medium">Placa</p>
                                 <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
                                         {getPlateTypeLabel(service.plate.plateType)}
                                     </span>
                                 </div>
@@ -232,18 +232,18 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Concesionario</p>
-                                <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Concesionario</p>
+                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-sm text-muted-foreground mt-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.dealership.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -256,15 +256,15 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <User className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-muted-foreground">@ {service.messenger.userName}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Mensajero</p>
+                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-sm text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.messenger.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -277,10 +277,10 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Fecha de Creación</p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-base font-medium">Fecha de Creación</p>
+                                <p className="text-base text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
                             </div>
@@ -290,20 +290,20 @@ export default function ViewServicio() {
                     {/* Desktop: Observations if present */}
                     {service.observation && (
                         <div className="hidden md:block pt-4 mt-4 border-t">
-                            <p className="text-sm font-medium mb-1">Observaciones</p>
-                            <p className="text-sm text-muted-foreground">{service.observation}</p>
+                            <p className="text-base font-medium mb-1">Observaciones</p>
+                            <p className="text-base text-muted-foreground">{service.observation}</p>
                         </div>
                     )}
 
                     {/* Mobile: Vertical layout */}
                     <div className="md:hidden space-y-4">
                         <div className="flex items-start gap-3">
-                            <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Placa</p>
+                                <p className="text-base font-medium">Placa</p>
                                 <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
                                         {getPlateTypeLabel(service.plate.plateType)}
                                     </span>
                                 </div>
@@ -311,18 +311,18 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Concesionario</p>
-                                <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Concesionario</p>
+                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-sm text-muted-foreground mt-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.dealership.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -335,15 +335,15 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <User className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <User className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-muted-foreground">@ {service.messenger.userName}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Mensajero</p>
+                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-sm text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.messenger.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -356,10 +356,10 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Fecha de Creación</p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-base font-medium">Fecha de Creación</p>
+                                <p className="text-base text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
                             </div>
@@ -367,8 +367,8 @@ export default function ViewServicio() {
 
                         {service.observation && (
                             <div className="pt-2 border-t">
-                                <p className="text-sm font-medium mb-1">Observaciones</p>
-                                <p className="text-sm text-muted-foreground">{service.observation}</p>
+                                <p className="text-base font-medium mb-1">Observaciones</p>
+                                <p className="text-base text-muted-foreground">{service.observation}</p>
                             </div>
                         )}
                     </div>
@@ -402,7 +402,7 @@ export default function ViewServicio() {
                                             >
                                                 <TimelineHeader>
                                                     <div className="h-10 flex items-center justify-center z-10 bg-card">
-                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5 shadow-sm`}>
+                                                        <Badge className={`${newStatusConfig.className} text-base px-6 py-2 shadow-sm`}>
                                                             {newStatusConfig.label}
                                                         </Badge>
                                                     </div>
