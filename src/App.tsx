@@ -3,6 +3,7 @@ import { ThemeProvider } from './components/theme-provider';
 import { AuthProvider } from './context/AuthContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
+import { SessionExpiredDialog } from './components/SessionExpiredDialog';
 
 export function App() {
   return (
@@ -11,6 +12,7 @@ export function App() {
         <AuthProvider>
           <AppRoutes />
           <Toaster />
+          <SessionExpiredDialog />
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

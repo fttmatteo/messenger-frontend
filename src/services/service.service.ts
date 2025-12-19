@@ -1,25 +1,14 @@
-import axios from 'axios'
+import apiClient from './api-client'
 import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest } from '@/types/service.types'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-
 class ServiceDeliveryService {
-    private getAuthHeader() {
-        const token = localStorage.getItem('token')
-        return {
-            'Authorization': `Bearer ${token}`
-        }
-    }
-
     /**
      * Get all services (filtered by role automatically in backend)
      * ADMIN: gets all services
      * MESSENGER: gets only assigned services
      */
     async getAll(): Promise<ServiceDelivery[]> {
-        const response = await axios.get(`${API_URL}/services/allServices`, {
-            headers: this.getAuthHeader()
-        })
+        const response = await apiClient.get('/services/allServices')
         return response.data
     }
 
@@ -28,9 +17,7 @@ class ServiceDeliveryService {
      * Validates ownership for MESSENGER role
      */
     async getById(id: number): Promise<ServiceDelivery> {
-        const response = await axios.get(`${API_URL}/services/findService/${id}`, {
-            headers: this.getAuthHeader()
-        })
+        const response = await apiClient.get(`/services/findService/${id}`)
         return response.data
     }
 
@@ -51,12 +38,7 @@ class ServiceDeliveryService {
             formData.append('manualPlateNumber', request.manualPlateNumber)
         }
 
-        await axios.post(`${API_URL}/services/createService`, formData, {
-            headers: {
-                ...this.getAuthHeader(),
-                // Don't set Content-Type, axios will set it with boundary
-            }
-        })
+        await apiClient.post('/services/createService', formData)
     }
 
     /**
@@ -81,21 +63,14 @@ class ServiceDeliveryService {
             })
         }
 
-        await axios.put(`${API_URL}/services/updateServiceStatus/${id}`, formData, {
-            headers: {
-                ...this.getAuthHeader(),
-                // Don't set Content-Type, axios will set it with boundary
-            }
-        })
+        await apiClient.put(`/services/updateServiceStatus/${id}`, formData)
     }
 
     /**
      * Delete service (admin only)
      */
     async delete(id: number): Promise<void> {
-        await axios.delete(`${API_URL}/services/deleteService/${id}`, {
-            headers: this.getAuthHeader()
-        })
+        await apiClient.delete(`/services/deleteService/${id}`)
     }
 }
 
