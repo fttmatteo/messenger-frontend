@@ -45,6 +45,14 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import {
     Empty,
     EmptyHeader,
     EmptyMedia,
@@ -58,7 +66,7 @@ import {
     Trash2,
     Loader2,
     MapPin,
-    Phone,
+    Smartphone,
     PhoneCall,
     Copy,
     MapPinned,
@@ -69,8 +77,10 @@ import {
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
+    ChevronUp,
     Home,
     Search,
+    X,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -79,16 +89,6 @@ type SortField = "name" | "zone" | "isGeolocated" | null
 type SortDirection = "asc" | "desc"
 
 // Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.05,
-        },
-    },
-}
-
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -110,13 +110,14 @@ const itemVariants = {
 // Skeleton components
 const TableRowSkeleton = () => (
     <TableRow>
-        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-56" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-28" /></TableCell>
         <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+        <TableCell><Skeleton className="h-6 w-28 rounded-full" /></TableCell>
         <TableCell className="text-right">
             <div className="flex justify-end gap-2">
+                <Skeleton className="h-8 w-20 rounded-md" />
                 <Skeleton className="h-8 w-8 rounded-md" />
                 <Skeleton className="h-8 w-8 rounded-md" />
             </div>
@@ -128,27 +129,36 @@ const CardSkeleton = () => (
     <Card className="mb-3">
         <CardContent className="pt-4">
             <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-5 w-36" />
-                        <Skeleton className="h-5 w-16 rounded-full" />
+                <div className="flex-1 space-y-2">
+                    <div className="flex flex-col items-start gap-1">
+                        <Skeleton className="h-5 w-40" />
+                        <Skeleton className="h-5 w-24 rounded-full" />
                     </div>
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-24" />
+                    <div className="space-y-1">
+                        <div className="flex items-start gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full mt-0.5" />
+                            <Skeleton className="h-4 w-full max-w-xs" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3 w-16" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                <div className="flex flex-col gap-2">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
                 </div>
             </div>
         </CardContent>
     </Card>
 )
 
-// Pagination settings
-const ITEMS_PER_PAGE = 10
+
 
 export default function Concesionarios() {
     const navigate = useNavigate()
@@ -165,19 +175,40 @@ export default function Concesionarios() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
+
+    // Filter state
+    const [zoneFilter, setZoneFilter] = useState<string>("all")
+    const [showScrollTop, setShowScrollTop] = useState(false)
+
+    // Get unique zones from dealerships
+    const uniqueZones = useMemo(() => {
+        const zones = new Set(dealerships.map(d => d.zone))
+        return Array.from(zones).sort()
+    }, [dealerships])
 
     // Filter and sort dealerships
     const filteredAndSortedDealerships = useMemo(() => {
         let result = dealerships.filter((dealership) => {
-            if (!searchQuery.trim()) return true
-            const query = searchQuery.toLowerCase()
-            return (
-                String(dealership.idDealership).includes(query) ||
-                dealership.name.toLowerCase().includes(query) ||
-                dealership.address.toLowerCase().includes(query) ||
-                dealership.phone.includes(query) ||
-                dealership.zone.toLowerCase().includes(query)
-            )
+            // Search filter
+            if (searchQuery.trim()) {
+                const query = searchQuery.toLowerCase()
+                const matchesSearch = (
+                    String(dealership.idDealership).includes(query) ||
+                    dealership.name.toLowerCase().includes(query) ||
+                    dealership.address.toLowerCase().includes(query) ||
+                    dealership.phone.includes(query) ||
+                    dealership.zone.toLowerCase().includes(query)
+                )
+                if (!matchesSearch) return false
+            }
+
+            // Zone filter
+            if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
+                return false
+            }
+
+            return true
         })
 
         // Apply sorting
@@ -200,19 +231,19 @@ export default function Concesionarios() {
         }
 
         return result
-    }, [dealerships, searchQuery, sortField, sortDirection])
+    }, [dealerships, searchQuery, zoneFilter, sortField, sortDirection])
 
     // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedDealerships.length / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
     const paginatedDealerships = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE
-        return filteredAndSortedDealerships.slice(start, start + ITEMS_PER_PAGE)
-    }, [filteredAndSortedDealerships, currentPage])
+        const start = (currentPage - 1) * itemsPerPage
+        return filteredAndSortedDealerships.slice(start, start + itemsPerPage)
+    }, [filteredAndSortedDealerships, currentPage, itemsPerPage])
 
-    // Reset to page 1 when search or sort changes
+    // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection])
+    }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
 
     const fetchDealerships = async () => {
         try {
@@ -232,6 +263,24 @@ export default function Concesionarios() {
     useEffect(() => {
         fetchDealerships()
     }, [])
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
 
     const handleDelete = async (id: number) => {
         try {
@@ -313,29 +362,24 @@ export default function Concesionarios() {
         </Empty>
     )
 
-    // Mobile Card Component with animations
-    const DealershipCard = ({ dealership, index }: { dealership: Dealership; index: number }) => (
+    // Mobile Card Component
+    const DealershipCard = ({ dealership }: { dealership: Dealership }) => (
         <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
             exit="exit"
             layout
-            custom={index}
         >
             <Card className="mb-3 hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex flex-col items-start gap-1">
                                 <h3 className="font-semibold text-lg">{dealership.name}</h3>
-                                <Badge variant="outline">{dealership.zone}</Badge>
                                 {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Badge
                                                 variant="default"
-                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors w-fit"
                                                 onClick={() => {
                                                     const coords = `${dealership.latitude}, ${dealership.longitude}`
                                                     navigator.clipboard.writeText(coords)
@@ -354,18 +398,21 @@ export default function Concesionarios() {
                                         </TooltipContent>
                                     </Tooltip>
                                 ) : dealership.isGeolocated ? (
-                                    <Badge variant="default" className="bg-green-500">
+                                    <Badge variant="default" className="bg-green-500 w-fit">
                                         <MapPin className="h-3 w-3 mr-1" />
                                         Ubicado
                                     </Badge>
                                 ) : (
-                                    <Badge variant="secondary">Sin ubicación</Badge>
+                                    <Badge variant="secondary" className="w-fit">Sin ubicación</Badge>
                                 )}
                             </div>
                             <div className="space-y-1 text-sm text-muted-foreground">
                                 <div className="flex items-start gap-2">
                                     <MapPinned className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                                     <span className="line-clamp-2">{dealership.address}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-semibold uppercase text-muted-foreground/80">{dealership.zone}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Tooltip>
@@ -386,36 +433,36 @@ export default function Concesionarios() {
                             {!dealership.isGeolocated && (
                                 <Button
                                     variant="outline"
-                                    size="sm"
+                                    size="icon"
                                     onClick={() => handleGeocode(dealership.idDealership)}
                                     disabled={geocoding === dealership.idDealership}
+                                    aria-label="Ubicar concesionario"
                                 >
                                     {geocoding === dealership.idDealership ? (
-                                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                                        <Loader2 className="h-4 w-4 animate-spin" />
                                     ) : (
-                                        <MapPin className="h-4 w-4 mr-1" />
+                                        <MapPin className="h-4 w-4" />
                                     )}
-                                    Ubicar
                                 </Button>
                             )}
                             <Button
                                 variant="default"
-                                size="sm"
+                                size="icon"
                                 onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                 className="bg-primary hover:bg-primary/90"
+                                aria-label="Editar concesionario"
                             >
-                                <Pencil className="h-4 w-4 mr-1" />
-                                Editar
+                                <Pencil className="h-4 w-4" />
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        size="sm"
+                                        size="icon"
                                         className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                        aria-label="Eliminar concesionario"
                                     >
-                                        <Trash2 className="h-4 w-4 mr-1" />
-                                        Eliminar
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -449,67 +496,113 @@ export default function Concesionarios() {
         </motion.div>
     )
 
-    // Pagination component
+    // Enhanced Pagination component
     const PaginationControls = () => {
-        if (totalPages <= 1) return null
+        const startItem = (currentPage - 1) * itemsPerPage + 1
+        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedDealerships.length)
+        const hasResults = filteredAndSortedDealerships.length > 0
 
         return (
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                            }}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === 1}
-                        />
-                    </PaginationItem>
+            <div className="mt-4 space-y-3">
+                {/* Results info and items per page selector */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <p className="text-sm text-muted-foreground">
+                        {hasResults ? (
+                            <>
+                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
+                                <span className="font-medium">{filteredAndSortedDealerships.length}</span> resultado(s)
+                                {zoneFilter !== "all" && (
+                                    <span className="text-primary ml-1">
+                                        (zona: {zoneFilter})
+                                    </span>
+                                )}
+                            </>
+                        ) : (
+                            "Sin resultados"
+                        )}
+                    </p>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPages <= 5) {
-                            pageNum = i + 1
-                        } else if (currentPage <= 3) {
-                            pageNum = i + 1
-                        } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i
-                        } else {
-                            pageNum = currentPage - 2 + i
-                        }
+                    {hasResults && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
+                            <Select
+                                value={itemsPerPage.toString()}
+                                onValueChange={(value) => setItemsPerPage(Number(value))}
+                            >
+                                <SelectTrigger className="w-[70px] h-9">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
 
-                        return (
-                            <PaginationItem key={pageNum}>
-                                <PaginationLink
+                {/* Pagination navigation */}
+                {totalPages > 1 && (
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault()
-                                        setCurrentPage(pageNum)
+                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
                                     }}
-                                    isActive={currentPage === pageNum}
-                                    className="cursor-pointer"
-                                >
-                                    {pageNum}
-                                </PaginationLink>
+                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        )
-                    })}
 
-                    <PaginationItem>
-                        <PaginationNext
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                            }}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === totalPages}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i
+                                } else {
+                                    pageNum = currentPage - 2 + i
+                                }
+
+                                return (
+                                    <PaginationItem key={pageNum}>
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setCurrentPage(pageNum)
+                                            }}
+                                            isActive={currentPage === pageNum}
+                                            className="cursor-pointer"
+                                        >
+                                            {pageNum}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                )
+                            })}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
+                                    }}
+                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         )
     }
 
@@ -533,25 +626,95 @@ export default function Concesionarios() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Concesionarios</h1>
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">Concesionarios</h1>
                     <p className="text-sm text-muted-foreground mt-1">
                         Gestiona los concesionarios del sistema
                     </p>
                 </div>
-                <Button onClick={() => navigate("/admin/concesionarios/crear")} size={isMobile ? "sm" : "default"}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {isMobile ? "Nuevo" : "Nuevo Concesionario"}
+                <Button
+                    onClick={() => navigate("/admin/concesionarios/crear")}
+                    size={isMobile ? "icon" : "default"}
+                    className="shrink-0"
+                >
+                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Concesionario"}
                 </Button>
             </div>
+
+            {/* Filters Bar */}
+            {!isMobile && (
+                <div className="flex items-center gap-3 flex-wrap">
+                    <ToggleGroup
+                        type="single"
+                        value={zoneFilter}
+                        onValueChange={(value) => setZoneFilter(value || "all")}
+                        className="justify-start"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos">
+                            Todos
+                        </ToggleGroupItem>
+                        {uniqueZones.map((zone) => (
+                            <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
+                                {zone}
+                            </ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
+
+                    {zoneFilter !== "all" && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setZoneFilter("all")}
+                            className="h-9"
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro
+                        </Button>
+                    )}
+                </div>
+            )}
 
             {/* Mobile View */}
             {isMobile ? (
                 <div>
+                    {/* Mobile filter */}
+                    <div className="mb-3 space-y-2">
+                        <Select
+                            value={zoneFilter}
+                            onValueChange={(value) => setZoneFilter(value)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Filtrar por zona" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todas las zonas</SelectItem>
+                                {uniqueZones.map((zone) => (
+                                    <SelectItem key={zone} value={zone}>
+                                        {zone}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {zoneFilter !== "all" && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setZoneFilter("all")}
+                                className="w-full"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtro
+                            </Button>
+                        )}
+                    </div>
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                         {searchQuery && ` - "${searchQuery}"`}
+                        {zoneFilter !== "all" && ` (zona: ${zoneFilter})`}
                     </p>
                     {loading ? (
                         <div className="space-y-3">
@@ -562,17 +725,12 @@ export default function Concesionarios() {
                     ) : filteredAndSortedDealerships.length === 0 ? (
                         <EmptyState isSearchResult={!!searchQuery} />
                     ) : (
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                        <motion.div>
                             <AnimatePresence mode="popLayout">
-                                {paginatedDealerships.map((dealership, index) => (
+                                {paginatedDealerships.map((dealership) => (
                                     <DealershipCard
                                         key={dealership.idDealership}
                                         dealership={dealership}
-                                        index={index}
                                     />
                                 ))}
                             </AnimatePresence>
@@ -635,7 +793,7 @@ export default function Concesionarios() {
                                             </TableHead>
                                             <TableHead>
                                                 <div className="flex items-center gap-2">
-                                                    <Phone className="h-4 w-4" />
+                                                    <Smartphone className="h-4 w-4" />
                                                     Teléfono
                                                 </div>
                                             </TableHead>
@@ -821,6 +979,26 @@ export default function Concesionarios() {
                     </CardContent>
                 </Card>
             )}
+
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

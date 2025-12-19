@@ -77,6 +77,7 @@ import {
     Settings,
     Edit,
     X, Check,
+    ChevronUp,
 
     Image as ImageIcon,
 } from "lucide-react"
@@ -89,16 +90,6 @@ type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentSt
 type SortDirection = "asc" | "desc"
 
 // Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.05,
-        },
-    },
-}
-
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -120,11 +111,13 @@ const itemVariants = {
 // Skeleton components
 const TableRowSkeleton = () => (
     <TableRow>
-        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+        <TableCell>
+            <Skeleton className="h-8 w-24 rounded" />
+        </TableCell>
+        <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+        <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
         <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
         <TableCell className="text-right">
             <div className="flex justify-end gap-1">
                 <Skeleton className="h-8 w-8 rounded-md" />
@@ -137,23 +130,40 @@ const TableRowSkeleton = () => (
 const CardSkeleton = () => (
     <Card className="mb-3">
         <CardContent className="pt-4">
-            <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                    <Skeleton className="h-5 w-28" />
-                    <Skeleton className="h-5 w-20 rounded-full" />
+            <div className="flex items-start justify-between">
+                <div className="flex-1 space-y-2 min-w-0">
+                    <div className="flex flex-col items-start gap-2">
+                        <Skeleton className="h-6 w-24 rounded-full" />
+                        <div className="flex flex-col items-center w-fit">
+                            <Skeleton className="h-8 w-28 rounded" />
+                            <Skeleton className="h-3 w-16 mt-0.5" />
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-40" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-36" />
+                        </div>
+                    </div>
                 </div>
-                <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
+                <div className="flex flex-col gap-2 shrink-0">
+                    <Skeleton className="h-8 w-24 rounded-md" />
+                    <Skeleton className="h-8 w-24 rounded-md" />
                 </div>
             </div>
         </CardContent>
     </Card>
 )
 
-// Pagination settings
-const ITEMS_PER_PAGE = 10
+
 
 // Status badge configuration
 const getStatusBadge = (status: ServiceStatus) => {
@@ -205,6 +215,12 @@ export default function Servicios() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
+
+    // Filter state
+    const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
+    const [showScrollTop, setShowScrollTop] = useState(false)
+
 
     // Update status dialog state
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
@@ -219,16 +235,24 @@ export default function Servicios() {
     // Filter and sort services
     const filteredAndSortedServices = useMemo(() => {
         let result = services.filter((service) => {
-            if (!searchQuery.trim()) return true
+            // Search filter
             const query = searchQuery.toLowerCase()
-            return (
+            const matchesSearch = !searchQuery.trim() ||
                 String(service.idServiceDelivery).includes(query) ||
                 service.plate.plateNumber.toLowerCase().includes(query) ||
                 service.dealership.name.toLowerCase().includes(query) ||
                 service.messenger.fullName.toLowerCase().includes(query) ||
                 service.currentStatus.toLowerCase().includes(query) ||
                 getStatusBadge(service.currentStatus).label.toLowerCase().includes(query)
-            )
+
+            if (!matchesSearch) return false
+
+            // Status filter
+            if (statusFilter.length > 0 && !statusFilter.includes(service.currentStatus)) {
+                return false
+            }
+
+            return true
         })
 
         // Apply sorting
@@ -257,19 +281,19 @@ export default function Servicios() {
         }
 
         return result
-    }, [services, searchQuery, sortField, sortDirection])
+    }, [services, searchQuery, statusFilter, sortField, sortDirection])
 
     // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedServices.length / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(filteredAndSortedServices.length / itemsPerPage)
     const paginatedServices = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE
-        return filteredAndSortedServices.slice(start, start + ITEMS_PER_PAGE)
-    }, [filteredAndSortedServices, currentPage])
+        const start = (currentPage - 1) * itemsPerPage
+        return filteredAndSortedServices.slice(start, start + itemsPerPage)
+    }, [filteredAndSortedServices, currentPage, itemsPerPage])
 
-    // Reset to page 1 when search or sort changes
+    // Reset to page 1 when search, sort, or filters changes
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection])
+    }, [searchQuery, sortField, sortDirection, statusFilter, itemsPerPage])
 
     const fetchServices = async () => {
         try {
@@ -289,6 +313,24 @@ export default function Servicios() {
     useEffect(() => {
         fetchServices()
     }, [])
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
 
     // Sorting handler
     const handleSort = (field: SortField) => {
@@ -423,18 +465,14 @@ export default function Servicios() {
         </Empty>
     )
 
-    // Mobile Card Component with animations
-    const ServiceCard = ({ service, index }: { service: ServiceDelivery; index: number }) => {
+    // Mobile Card Component
+    const ServiceCard = ({ service }: { service: ServiceDelivery }) => {
         const statusConfig = getStatusBadge(service.currentStatus)
 
         return (
             <motion.div
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
                 exit="exit"
                 layout
-                custom={index}
             >
                 <Card className="mb-3 hover:shadow-md transition-shadow">
                     <CardContent className="pt-4">
@@ -492,67 +530,113 @@ export default function Servicios() {
         )
     }
 
-    // Pagination component
+    // Enhanced Pagination component
     const PaginationControls = () => {
-        if (totalPages <= 1) return null
+        const startItem = (currentPage - 1) * itemsPerPage + 1
+        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedServices.length)
+        const hasResults = filteredAndSortedServices.length > 0
 
         return (
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                            }}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === 1}
-                        />
-                    </PaginationItem>
+            <div className="mt-4 space-y-3">
+                {/* Results info and items per page selector */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <p className="text-sm text-muted-foreground">
+                        {hasResults ? (
+                            <>
+                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
+                                <span className="font-medium">{filteredAndSortedServices.length}</span> resultado(s)
+                                {statusFilter.length > 0 && (
+                                    <span className="text-primary ml-1">
+                                        ({statusFilter.length} filtro{statusFilter.length > 1 ? 's' : ''} activo{statusFilter.length > 1 ? 's' : ''})
+                                    </span>
+                                )}
+                            </>
+                        ) : (
+                            "Sin resultados"
+                        )}
+                    </p>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPages <= 5) {
-                            pageNum = i + 1
-                        } else if (currentPage <= 3) {
-                            pageNum = i + 1
-                        } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i
-                        } else {
-                            pageNum = currentPage - 2 + i
-                        }
+                    {hasResults && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
+                            <Select
+                                value={itemsPerPage.toString()}
+                                onValueChange={(value) => setItemsPerPage(Number(value))}
+                            >
+                                <SelectTrigger className="w-[70px] h-9">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
 
-                        return (
-                            <PaginationItem key={pageNum}>
-                                <PaginationLink
+                {/* Pagination navigation */}
+                {totalPages > 1 && (
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault()
-                                        setCurrentPage(pageNum)
+                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
                                     }}
-                                    isActive={currentPage === pageNum}
-                                    className="cursor-pointer"
-                                >
-                                    {pageNum}
-                                </PaginationLink>
+                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        )
-                    })}
 
-                    <PaginationItem>
-                        <PaginationNext
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                            }}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            aria-disabled={currentPage === totalPages}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i
+                                } else {
+                                    pageNum = currentPage - 2 + i
+                                }
+
+                                return (
+                                    <PaginationItem key={pageNum}>
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setCurrentPage(pageNum)
+                                            }}
+                                            isActive={currentPage === pageNum}
+                                            className="cursor-pointer"
+                                        >
+                                            {pageNum}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                )
+                            })}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
+                                    }}
+                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         )
     }
 
@@ -576,25 +660,105 @@ export default function Servicios() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Servicios de Entrega</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Gestiona las entregas de placas vehiculares
-                    </p>
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">Servicios</h1>
                 </div>
-                <Button onClick={() => navigate("/admin/servicios/crear")} size={isMobile ? "sm" : "default"}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {isMobile ? "Nuevo" : "Nuevo Servicio"}
+                <Button
+                    onClick={() => navigate("/admin/servicios/crear")}
+                    size={isMobile ? "icon" : "default"}
+                    className="shrink-0"
+                >
+                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo servicio"}
                 </Button>
             </div>
+
+            {/* Filters Bar */}
+            {!isMobile && (
+                <div className="flex items-center gap-3 flex-wrap">
+                    <Select
+                        value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                        onValueChange={(value) => {
+                            if (value === "all") {
+                                setStatusFilter([])
+                            } else {
+                                setStatusFilter([value as ServiceStatus])
+                            }
+                        }}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los estados</SelectItem>
+                            {AVAILABLE_STATUSES.map(status => (
+                                <SelectItem key={status.value} value={status.value}>
+                                    {status.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    {(statusFilter.length > 0) && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setStatusFilter([])}
+                            className="h-9"
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro
+                        </Button>
+                    )}
+                </div>
+            )}
 
             {/* Mobile View */}
             {isMobile ? (
                 <div>
+                    {/* Mobile filter */}
+                    <div className="mb-3 space-y-2">
+                        <Select
+                            value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                            onValueChange={(value) => {
+                                if (value === "all") {
+                                    setStatusFilter([])
+                                } else {
+                                    setStatusFilter([value as ServiceStatus])
+                                }
+                            }}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Filtrar por estado" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los estados</SelectItem>
+                                {AVAILABLE_STATUSES.map(status => (
+                                    <SelectItem key={status.value} value={status.value}>
+                                        {status.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {statusFilter.length > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setStatusFilter([])}
+                                className="w-full"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtro
+                            </Button>
+                        )}
+                    </div>
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedServices.length} de {services.length} servicio(s)
                         {searchQuery && ` - "${searchQuery}"`}
+                        {statusFilter.length > 0 && ` (${statusFilter.length} filtro activo)`}
                     </p>
                     {loading ? (
                         <div className="space-y-3">
@@ -605,17 +769,12 @@ export default function Servicios() {
                     ) : filteredAndSortedServices.length === 0 ? (
                         <EmptyState isSearchResult={!!searchQuery} />
                     ) : (
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                        <motion.div>
                             <AnimatePresence mode="popLayout">
-                                {paginatedServices.map((service, index) => (
+                                {paginatedServices.map((service) => (
                                     <ServiceCard
                                         key={service.idServiceDelivery}
                                         service={service}
-                                        index={index}
                                     />
                                 ))}
                             </AnimatePresence>
@@ -627,7 +786,7 @@ export default function Servicios() {
                 /* Desktop View */
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Servicios</CardTitle>
+                        <CardTitle>Lista de servicios</CardTitle>
                         <CardDescription>
                             {filteredAndSortedServices.length} de {services.length} servicio(s)
                             {searchQuery && ` - Buscando "${searchQuery}"`}
@@ -793,7 +952,7 @@ export default function Servicios() {
             <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Actualizar Estado del Servicio</DialogTitle>
+                        <DialogTitle>Actualizar estado del Servicio</DialogTitle>
                         <DialogDescription>
                             {selectedService && (
                                 <><PlacaBadge plateNumber={selectedService.plate.plateNumber} plateType={selectedService.plate.plateType} size="sm" /> • {selectedService.dealership.name}</>
@@ -804,7 +963,7 @@ export default function Servicios() {
                     <div className="space-y-4 py-4">
                         {/* Status Select */}
                         <div className="space-y-2">
-                            <Label htmlFor="status">Nuevo Estado *</Label>
+                            <Label htmlFor="status">Nuevo estado</Label>
                             <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Selecciona un estado" />
@@ -833,7 +992,7 @@ export default function Servicios() {
 
                         {/* Signature Upload */}
                         <div className="space-y-2">
-                            <Label>Firma Digital (Opcional)</Label>
+                            <Label>Firma digital</Label>
                             <SignaturePad onChange={setSignatureFile} />
                             {signatureFile && (
                                 <p className="text-xs text-green-600 mt-1 flex items-center animate-in fade-in slide-in-from-top-1">
@@ -846,7 +1005,7 @@ export default function Servicios() {
 
                         {/* Photos Upload */}
                         <div className="space-y-2">
-                            <Label htmlFor="photos">Fotografías (Opcional)</Label>
+                            <Label htmlFor="photos">Evidencia fotografica</Label>
                             <div className="flex items-center justify-center w-full">
                                 <label
                                     htmlFor="photos"
@@ -855,7 +1014,7 @@ export default function Servicios() {
                                     <div className="flex flex-col items-center justify-center pt-3 pb-4">
                                         <ImageIcon className="w-6 h-6 mb-1 text-muted-foreground" />
                                         <p className="text-xs text-muted-foreground">
-                                            <span className="font-semibold">Agregar fotos</span>
+                                            <span className="font-semibold">Agregar foto</span>
                                         </p>
                                     </div>
                                     <input
@@ -911,6 +1070,26 @@ export default function Servicios() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/*.png'],
       manifest: {
-        name: 'Messenger',
-        short_name: 'Messenger',
-        description: 'Sistema de gestión de mensajería',
+        name: 'PLAK',
+        short_name: 'PLAK',
+        description: 'Sistema de gestión de mensajería PLAK',
         theme_color: '#4169e1',
         background_color: '#000000',
         display: 'standalone',

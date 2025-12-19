@@ -1,99 +1,34 @@
+import apiClient from './api-client'
 import type { Dealership, CreateDealershipRequest, UpdateDealershipRequest } from '@/types/dealership.types'
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/dealerships'
-
-function getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token')
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-    }
-}
 
 export const dealershipService = {
     async getAll(): Promise<Dealership[]> {
-        const response = await fetch(`${API_URL}/allDealerships`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al obtener concesionarios')
-        }
-
-        return response.json()
+        const response = await apiClient.get('/dealerships/allDealerships')
+        return response.data
     },
 
     async getById(id: number): Promise<Dealership> {
-        const response = await fetch(`${API_URL}/findDealership/${id}`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al obtener concesionario')
-        }
-
-        return response.json()
+        const response = await apiClient.get(`/dealerships/findDealership/${id}`)
+        return response.data
     },
 
     async create(data: CreateDealershipRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/createDealership`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(data),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al crear concesionario')
-        }
-
-        return response.text()
+        const response = await apiClient.post('/dealerships/createDealership', data)
+        return response.data
     },
 
     async update(id: number, data: UpdateDealershipRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/updateDealership/${id}`, {
-            method: 'PUT',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(data),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al actualizar concesionario')
-        }
-
-        return response.text()
+        const response = await apiClient.put(`/dealerships/updateDealership/${id}`, data)
+        return response.data
     },
 
     async delete(id: number): Promise<string> {
-        const response = await fetch(`${API_URL}/deleteDealership/${id}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al eliminar concesionario')
-        }
-
-        return response.text()
+        const response = await apiClient.delete(`/dealerships/deleteDealership/${id}`)
+        return response.data
     },
 
     async geocode(id: number): Promise<Dealership> {
-        const response = await fetch(`${API_URL}/geocodeDealership/${id}`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al geocodificar concesionario')
-        }
-
-        return response.json()
+        const response = await apiClient.post(`/dealerships/geocodeDealership/${id}`)
+        return response.data
     },
 }

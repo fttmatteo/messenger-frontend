@@ -1,16 +1,16 @@
 <div align="center">
 
-# 💻 Messenger Frontend
+# 📱 PLAK Frontend
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.0+-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0+-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-latest-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
 
-**Cliente web y móvil (PWA) para el sistema de gestión de entregas y mensajería.**
+**Interfaz de usuario moderna y responsiva para el sistema de gestión de entregas PLAK.**
 
-*Modern web and mobile (PWA) client for the delivery and courier management system.*
+*Modern and responsive user interface for the PLAK delivery management system.*
 
 </div>
 
@@ -21,20 +21,24 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
+- [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
-- [Features](#-features)
-- [Setup & Installation](#️-setup--installation)
-- [Scripts](#-scripts)
+- [Setup & Installation](#-setup--installation)
+- [Environment Variables](#-environment-variables)
+- [Deployment](#-deployment)
 
 ---
 
-### 🔭 Overview
+### ✨ Features
 
-The **Messenger Frontend** is a modern Single Page Application (SPA) built with **React** and **Vite**, designed to provide two distinct user experiences:
-1.  **Admin Dashboard**: A comprehensive web interface for administrators to manage employees, dealerships, and monitor service deliveries.
-2.  **Messenger App**: A mobile-first Progressive Web App (PWA) for couriers to view their assigned tasks, update statuses, and track their routes.
+- **Mobile-First Design**: Optimized for messengers on the go.
+- **Real-Time Tracking**: Live visualization of active messengers using Google Maps.
+- **Digital Signatures**: Capture customer signatures directly on screen.
+- **Evidence Management**: Upload multiple photos for delivery verification.
+- **Role-Based Access**: Specialized interfaces for Admins and Messengers.
+- **Authentication**: Secure JWT login with auto-refresh mechanism.
+- **Dark Mode**: Built-in theme switching.
 
 ---
 
@@ -43,83 +47,13 @@ The **Messenger Frontend** is a modern Single Page Application (SPA) built with 
 | Component | Technology |
 |-----------|------------|
 | **Core** | React 19, TypeScript |
-| **Build Tool** | Vite 7 |
-| **Styling** | Tailwind CSS 4, CSS Modules |
-| **UI Library** | shadcn/ui (Radix UI) |
+| **Build Tool** | Vite |
+| **Styling** | Tailwind CSS v4, shadcn/ui |
 | **Icons** | Lucide React |
-| **Routing** | React Router DOM 7 |
 | **Forms** | React Hook Form + Zod |
+| **Maps** | @react-google-maps/api |
+| **Animations** | Framer Motion |
 | **HTTP Client** | Axios |
-| **Charts** | Recharts |
-| **PWA** | Vite Plugin PWA |
-
----
-
-### 📁 Project Structure
-
-```
-src/
-├── components/          # Reusable UI components (shadcn/ui & custom)
-├── context/             # Global state (Auth, Theme)
-├── hooks/               # Custom React hooks
-├── layouts/             # Role-based layouts
-│   ├── AdminLayout.tsx      # Sidebar + Header for Admins
-│   └── MessengerLayout.tsx  # Bottom Navigation for Mobile
-├── lib/                 # Utilities and helpers (cn, formatters)
-├── pages/               # Application Views
-│   ├── admin/           # Admin-specific pages (Dashboard, Employees, etc.)
-│   ├── messenger/       # Messenger-specific pages
-│   └── Login.tsx        # Authentication page
-├── routes/              # Route definitions and protection
-├── services/            # API service integration
-└── types/               # TypeScript type definitions
-```
-
----
-
-### ✨ Features
-
-#### 🛡️ Admin Portal (Web)
-- **Dashboard**: Real-time overview of system metrics.
-- **Employee Management**: Create, edit, and manage courier accounts.
-- **Dealership Management**: Manage client dealerships.
-- **Service Monitoring**: Track deliveries in real-time.
-- **Responsive Tables**: Advanced data tables with filtering and sorting.
-
-#### 📱 Messenger App (Mobile PWA)
-- **Mobile First Design**: Optimized for touch interactions.
-- **Task List**: View assigned deliveries.
-- **Status Updates**: Simple workflow to update delivery status.
-- **PWA**: Installable on mobile devices.
-
----
-
-### ⚙️ Setup & Installation
-
-**Prerequisites:**
-- Node.js 18+
-- npm or yarn
-
-**Installation:**
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd messenger-frontend
-
-# Install dependencies
-npm install
-
-# Setup environment variables
-cp .env.example .env
-# Edit .env with your backend API URL
-```
-
-**Running Locally:**
-
-```bash
-npm run dev
-```
 
 </details>
 
@@ -127,38 +61,46 @@ npm run dev
 
 ## 📋 Tabla de Contenidos
 
-- [Descripción General](#-descripción-general)
-- [Stack Tecnológico](#-stack-tecnológico-1)
-- [Estructura del Proyecto](#-estructura-del-proyecto-1)
-- [Funcionalidades](#-funcionalidades)
-- [Configuración e Instalación](#️-configuración-e-instalación-1)
-- [Scripts](#-scripts-1)
+- [Características](#-características)
+- [Stack Tecnológico](#-stack-tecnológico)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Instalación](#-instalación)
+- [Variables de Entorno](#-variables-de-entorno)
+- [Roles y Vistas](#-roles-y-vistas)
 
 ---
 
-## 🔭 Descripción General
+## ✨ Características
 
-**Messenger Frontend** es una Single Page Application (SPA) moderna construida con **React** y **Vite**, diseñada para ofrecer dos experiencias de usuario distintas adaptadas a cada rol:
+### 📱 Experiencia Móvil Optimizada
+Diseñado pensando primero en los mensajeros. La interfaz se adapta perfectamente a dispositivos móviles, facilitando la gestión de entregas en terreno.
 
-1.  **Panel de Administración**: Una interfaz web completa para administradores, optimizada para escritorio, que permite la gestión de empleados, concesionarios y monitoreo de entregas.
-2.  **App de Mensajería**: Una Progressive Web App (PWA) diseñada para uso móvil, permitiendo a los mensajeros ver rutas, actualizar estados y gestionar sus entregas asignadas.
+### 🗺️ Tracking y Mapas
+- **Visualización en Vivo:** Los administradores pueden ver la ubicación de todos los mensajeros activos.
+- **Geocodificación:** Los concesionarios se ubican automáticamente en el mapa.
+
+### ✍️ Gestión de Evidencias
+- **Firma Digital:** Componente integrado para capturar firmas táctiles.
+- **Fotos:** Carga múltiple de imágenes (evidencia de entrega, fallos, etc.).
+- **Validación:** Reglas estrictas para asegurar que cada entrega tenga su soporte.
+
+### 🔒 Seguridad y Acceso
+- **JWT Persistente:** Manejo automático de tokens de acceso y refresco.
+- **Rutas Protegidas:** Redirección inteligente basada en roles (Admin vs Mensajero).
 
 ---
 
 ## 💻 Stack Tecnológico
 
-| Componente | Tecnología |
-|------------|------------|
-| **Core** | React 19, TypeScript |
-| **Build Tool** | Vite 7 |
-| **Estilos** | Tailwind CSS 4, CSS Modules |
-| **Librería UI** | shadcn/ui (basado en Radix UI) |
-| **Iconos** | Lucide React |
-| **Routing** | React Router DOM 7 |
-| **Formularios** | React Hook Form + Zod |
-| **Cliente HTTP** | Axios |
-| **Gráficos** | Recharts |
-| **PWA** | Vite Plugin PWA |
+| Componente | Tecnología | Descripción |
+|------------|------------|-------------|
+| **Core** | React 19 + TypeScript | Rendimiento y seguridad de tipos |
+| **Build** | Vite | Entorno de desarrollo ultrarrápido |
+| **Estilos** | Tailwind CSS v4 | Motor de estilos utility-first moderno |
+| **UI Kit** | shadcn/ui | Componentes accesibles y personalizables |
+| **Formularios** | React Hook Form + Zod | Validación robusta de datos |
+| **Mapas** | Google Maps API | Integración nativa de mapas |
+| **Animaciones** | Framer Motion | Transiciones fluidas y micro-interacciones |
 
 ---
 
@@ -166,81 +108,144 @@ npm run dev
 
 ```
 src/
-├── components/          # Componentes UI reutilizables (shadcn/ui & custom)
-├── context/             # Estado global (AuthContext, ThemeContext)
-├── hooks/               # Hooks personalizados
-├── layouts/             # Layouts por rol
-│   ├── AdminLayout.tsx      # Layout con Sidebar fijo (Escritorio)
-│   └── MessengerLayout.tsx  # Layout con Navegación Inferior (Móvil)
-├── lib/                 # Utilidades y helpers (cn, formatters)
-├── pages/               # Vistas de la aplicación
-│   ├── admin/           # Vistas de Administrador (Dashboard, Empleados...)
-│   ├── messenger/       # Vistas de Mensajero (Dashboard móvil...)
+├── assets/              # Imágenes y recursos estáticos
+├── components/          # Componentes reutilizables
+│   ├── ui/              # Componentes base (shadcn/ui)
+│   ├── Map.tsx          # Componente de Google Maps
+│   ├── SignaturePad.tsx # Captura de firmas
+│   └── ...
+├── context/             # Estado global (Auth, Theme)
+├── hooks/               # Custom hooks (useMobile, etc.)
+├── layouts/             # Plantillas de estructuras (Admin, Messenger)
+├── lib/                 # Utilidades y configuración (utils, axios)
+├── pages/               # Vistas principales
+│   ├── admin/           # Panel de control administrativo
+│   ├── messenger/       # Vistas para mensajeros
 │   └── Login.tsx        # Página de autenticación
-├── routes/              # Definición y protección de rutas
-├── services/            # Integración con Backend API
+├── services/            # Comunicación con API (Axios services)
 └── types/               # Definiciones de tipos TypeScript
 ```
 
 ---
 
-## ✨ Funcionalidades
-
-### 🛡️ Portal Administrativo (Web)
-- **Dashboard Integrado**: Visualización métricas clave mediante gráficos interactivos.
-- **Gestión de Empleados**: CRUD completo para administradores y mensajeros.
-- **Gestión de Concesionarios**: Administración de puntos de recogida/entrega.
-- **Gestión de Servicios**: Creación y monitoreo de solicitudes de servicio.
-- **Tablas Avanzadas**: Filtrado, ordenamiento y paginación de datos.
-
-### 📱 App de Mensajería (Móvil PWA)
-- **Diseño Mobile-First**: Interfaz optimizada para pantallas táctiles y uso en campo.
-- **Navegación Intuitiva**: Menú inferior para acceso rápido a secciones clave.
-- **Gestión de Entregas**: Visualización clara de tareas asignadas y pendientes.
-- **Instalable**: Soporte PWA para instalar en la pantalla de inicio del dispositivo.
-
----
-
-## ⚙️ Configuración e Instalación
+## 🚀 Instalación
 
 ### Prerrequisitos
 - Node.js 18+
-- npm o yarn
+- npm o pnpm
 
-### Instalación
+### Pasos
 
-1. **Clonar el repositorio:**
+1. **Clonar el repositorio**
    ```bash
-   git clone <repository-url>
+   git clone <url-del-repositorio>
    cd messenger-frontend
    ```
 
-2. **Instalar dependencias:**
+2. **Instalar dependencias**
    ```bash
    npm install
    ```
 
-3. **Configurar variables de entorno:**
-   Crea un archivo `.env` basado en `.env.example`:
+3. **Configurar entorno**
+   Crea un archivo `.env` en la raíz (ver sección de variables).
+
+4. **Ejecutar en desarrollo**
    ```bash
-   VITE_API_URL=http://localhost:8080/api
+   npm run dev
    ```
 
-### Ejecución Local
+## 📜 Scripts Disponibles
 
-Para iniciar el servidor de desarrollo:
-```bash
-npm run dev
-```
-La aplicación estará disponible típicamente en `http://localhost:5173`.
+En el directorio del proyecto, puedes ejecutar:
+
+### `npm run dev`
+Inicia la aplicación en modo de desarrollo.\
+Abre [http://localhost:5173](http://localhost:5173) para verla en el navegador.
+
+### `npm run build`
+Construye la aplicación para producción en la carpeta `dist`.\
+Optimiza React y minifica el código para el mejor rendimiento.
+
+### `npm run lint`
+Ejecuta el linter (ESLint) para encontrar y arreglar problemas en el código.
+
+### `npm run preview`
+Sirve localmente la versión de producción construida para probarla antes de desplegar.
 
 ---
 
-## 📜 Scripts
+## 📸 Capturas de Pantalla
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Inicia el servidor de desarrollo con Hot Module Replacement (HMR). |
-| `npm run build` | Compila la aplicación para producción (TSC + Vite Build). |
-| `npm run preview` | Previsualiza localmente la build de producción. |
-| `npm run lint` | Ejecuta el linter (ESLint) para verificar la calidad del código. |
+| Dashboard Admin | Tracking en Vivo |
+|:---:|:---:|
+| ![Dashboard](../assets/dashboard-placeholder.png) | ![Tracking](../assets/tracking-placeholder.png) |
+| *Vista general del sistema* | *Monitoreo en tiempo real* |
+
+---
+
+## 🚀 Despliegue
+
+### Vercel (Recomendado)
+La forma más fácil de desplegar es usando [Vercel](https://vercel.com).
+1. Importa tu repositorio en Vercel.
+2. Vercel detectará automáticamente que es un proyecto **Vite**.
+3. Agrega las variables de entorno (`VITE_API_URL`, etc.).
+4. ¡Despliega!
+
+### Docker
+También puedes crear una imagen Docker para servir los archivos estáticos con Nginx.
+
+```dockerfile
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+---
+
+## 🔧 Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+# URL del Backend
+VITE_API_URL=http://localhost:8080
+
+# Google Maps API Key (con permisos de Maps JS API y Geocoding)
+VITE_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
+```
+
+---
+
+## 👥 Roles y Vistas
+
+### 🛡️ Administrador (PLAK Admin)
+Acceso total al sistema a través de un dashboard completo de escritorio (responsive).
+- **Dashboard:** Estadísticas generales.
+- **Empleados:** Gestión de usuarios (Admin/Messenger).
+- **Concesionarios:** Gestión de puntos de entrega.
+- **Servicios:** Vista detallada de todas las entregas.
+- **Mapa:** Tracking en tiempo real.
+
+### 🛵 Mensajero (PLAK Messenger)
+Interfaz simplificada enfocada en la operatividad diaria.
+- **Inicio:** Resumen de tareas pendientes.
+- **Entregas:** Lista de servicios asignados.
+- **Perfil:** Información personal y estado.
+
+---
+
+<div align="center">
+
+**Made with ❤️ using React 19 & Tailwind**
+
+</div>

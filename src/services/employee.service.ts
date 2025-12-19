@@ -1,85 +1,29 @@
+import apiClient from './api-client'
 import type { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee.types'
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/employees'
-
-function getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token')
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-    }
-}
 
 export const employeeService = {
     async getAll(): Promise<Employee[]> {
-        const response = await fetch(`${API_URL}/allEmployees`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al obtener empleados')
-        }
-
-        return response.json()
+        const response = await apiClient.get('/employees/allEmployees')
+        return response.data
     },
 
     async getById(id: number): Promise<Employee> {
-        const response = await fetch(`${API_URL}/findEmployee/${id}`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al obtener empleado')
-        }
-
-        return response.json()
+        const response = await apiClient.get(`/employees/findEmployee/${id}`)
+        return response.data
     },
 
     async create(data: CreateEmployeeRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/createEmployee`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(data),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al crear empleado')
-        }
-
-        return response.text()
+        const response = await apiClient.post('/employees/createEmployee', data)
+        return response.data
     },
 
     async update(id: number, data: UpdateEmployeeRequest): Promise<string> {
-        const response = await fetch(`${API_URL}/updateEmployee/${id}`, {
-            method: 'PUT',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(data),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al actualizar empleado')
-        }
-
-        return response.text()
+        const response = await apiClient.put(`/employees/updateEmployee/${id}`, data)
+        return response.data
     },
 
     async delete(id: number): Promise<string> {
-        const response = await fetch(`${API_URL}/deleteEmployee/${id}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new Error(error.message || 'Error al eliminar empleado')
-        }
-
-        return response.text()
+        const response = await apiClient.delete(`/employees/deleteEmployee/${id}`)
+        return response.data
     },
 }

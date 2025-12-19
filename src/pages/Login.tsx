@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
-import { ModeToggle } from "@/components/mode-toggle"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useAuth } from "@/context/AuthContext"
@@ -15,9 +14,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff } from "lucide-react"
+import { AlertCircle, Eye, EyeOff, Power, Moon, Sun } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import logo from "@/assets/logo.png"
+import { useTheme } from "next-themes"
 
 const loginSchema = z.object({
     userName: z.string().min(1, "El usuario es requerido"),
@@ -29,9 +40,20 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function Login() {
     const { login } = useAuth()
+    const { setTheme, theme } = useTheme()
     const navigate = useNavigate()
     const [error, setError] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
+    const [showExitDialog, setShowExitDialog] = useState(false)
+
+    const handleExit = () => {
+        window.close()
+        // Fallback for browsers preventing window.close()
+        // Note: This mainly works for installed PWAs or windows opened by script
+        if (!window.closed) {
+            window.location.href = "about:blank"
+        }
+    }
 
     const {
         register,
@@ -53,12 +75,39 @@ export default function Login() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background p-4">
-            <Card className="w-full max-w-md">
+        <div className="relative flex items-center justify-center min-h-screen bg-background p-4">
+
+
+            <Card className="w-full max-w-md relative pt-12">
+                {/* Theme Toggle Left */}
+                <div className="absolute top-4 left-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        className="h-10 w-10"
+                    >
+                        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                    </Button>
+                </div>
+
+                {/* Exit Button Right */}
+                <div className="absolute top-4 right-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowExitDialog(true)}
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                        <Power className="h-5 w-5" />
+                    </Button>
+                </div>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-2xl text-center">Inicio de sesión</CardTitle>
-                        <ModeToggle />
+                    <div className="flex flex-col items-center justify-center mb-4 space-y-2">
+                        <img src={logo} alt="PLAK Logo" className="h-20 w-20 object-contain" />
+                    </div>
+                    <div className="flex items-center justify-center">
+                        <CardTitle className="text-2xl text-center">Inicio de sesíon</CardTitle>
                     </div>
                     <CardDescription className="text-center">
                         Ingrese sus credenciales para continuar
@@ -148,6 +197,21 @@ export default function Login() {
                     </form>
                 </CardContent>
             </Card>
+
+            <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Salir de la aplicación?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            ¿Estás seguro que deseas salir? Esto cerrará la aplicación.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleExit} className="bg-red-500 text-white hover:bg-red-600">Salir</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

@@ -5,7 +5,7 @@ import { serviceDeliveryService } from "@/services/service.service"
 import { useAuth } from "@/context/AuthContext"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -43,6 +43,9 @@ import {
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { motion, AnimatePresence } from "framer-motion"
+import { ChevronUp } from "lucide-react"
 
 // Status badge configuration
 const getStatusBadge = (status: string) => {
@@ -57,6 +60,15 @@ const getStatusBadge = (status: string) => {
         RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
+}
+
+const getPlateTypeLabel = (plateType: string) => {
+    const types: Record<string, string> = {
+        CAR: 'Carro',
+        MOTORCYCLE: 'Moto',
+        MOTORCAR: 'Motocarro',
+    }
+    return types[plateType] || plateType
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -76,7 +88,10 @@ export default function ViewServicio() {
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
     const [deleting, setDeleting] = useState(false)
+    const isMobile = useIsMobile()
+    const [showScrollTop, setShowScrollTop] = useState(false)
 
     const isAdmin = user?.role === 'ADMIN'
 
@@ -123,6 +138,23 @@ export default function ViewServicio() {
             setDeleting(false)
             setDeleteDialogOpen(false)
         }
+    }
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     if (loading) {
@@ -258,28 +290,33 @@ export default function ViewServicio() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
-                    <div className="mb-4 flex flex-col items-start gap-4">
-                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
+                    <div className="mb-4 flex flex-row items-center gap-4">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
+                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                     </div>
                     <p className="text-muted-foreground">
                         Servicio #{service.idServiceDelivery} • Creado el {format(new Date(service.createdAt), "PPP", { locale: es })}
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex w-full md:w-auto gap-2">
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
                         <Button
                             variant="destructive"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
+                            className="flex-1 md:flex-none"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
                         </Button>
                     )}
-                    <Button variant="outline" onClick={() => navigate("/admin/servicios")}>
+                    <Button
+                        variant="outline"
+                        onClick={() => navigate("/admin/servicios")}
+                        className="flex-1 md:flex-none"
+                    >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Volver
                     </Button>
@@ -290,16 +327,18 @@ export default function ViewServicio() {
                 {/* General Information */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Información General</CardTitle>
-                        <CardDescription>Detalles del servicio de entrega</CardDescription>
+                        <CardTitle>Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-start gap-3">
                             <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Placa</p>
-                                <div className="mt-1">
+                                <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                        {getPlateTypeLabel(service.plate.plateType)}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -371,15 +410,14 @@ export default function ViewServicio() {
                 {/* Photos & Signature */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Imágenes del Servicio</CardTitle>
-                        <CardDescription>Lectura de placa y firma</CardDescription>
+                        <CardTitle>Imágenes principales</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {/* Plate Detection */}
                         <div>
                             <div className="flex items-start gap-3 mb-2">
                                 <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Lectura de Placa</p>
+                                <p className="text-sm font-medium">Lectura de placa</p>
                             </div>
                             {(() => {
                                 const platePhotos = service.photos.filter(p => p.photoType === 'PLATE_DETECTION')
@@ -414,7 +452,7 @@ export default function ViewServicio() {
                         <div>
                             <div className="flex items-start gap-3 mb-2">
                                 <FileSignature className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Firma Digital</p>
+                                <p className="text-sm font-medium">Firma digital</p>
                             </div>
                             {service.signature ? (
                                 <img
@@ -433,72 +471,248 @@ export default function ViewServicio() {
             {/* History Timeline */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Historial de Estados</CardTitle>
-                    <CardDescription>Trazabilidad completa de cambios de estado</CardDescription>
+                    <CardTitle>Historial de estados</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {service.history.length > 0 ? (
-                        <div className="relative space-y-4 before:absolute before:left-2 before:top-2 before:h-[calc(100%-1rem)] before:w-0.5 before:bg-border">
-                            {service.history.map((entry) => {
-                                const newStatusConfig = getStatusBadge(entry.newStatus)
-                                const prevStatusConfig = entry.previousStatus
-                                    ? getStatusBadge(entry.previousStatus)
-                                    : null
+                        <>
+                            {/* Desktop horizontal timeline - simplified with badges only */}
+                            <div className="hidden md:block">
+                                <div className="relative overflow-x-auto pb-4">
+                                    <div className="flex items-start min-w-max py-4">
+                                        {service.history.map((entry, index) => {
+                                            const newStatusConfig = getStatusBadge(entry.newStatus)
+                                            const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
-                                return (
-                                    <div key={entry.idStatusHistory} className="relative flex gap-4 pl-8">
-                                        <div className="absolute left-0 top-2 w-4 h-4 rounded-full border-2 border-background bg-primary" />
-
-                                        <div className="flex-1 space-y-2">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                {prevStatusConfig && (
-                                                    <>
-                                                        <Badge variant="outline" className={prevStatusConfig.className}>
-                                                            {prevStatusConfig.label}
+                                            return (
+                                                <div key={entry.idStatusHistory} className="flex items-start">
+                                                    {/* Entry column */}
+                                                    <div className="flex flex-col items-center">
+                                                        {/* Status badge */}
+                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
+                                                            {newStatusConfig.label}
                                                         </Badge>
-                                                        <span className="text-muted-foreground">→</span>
-                                                    </>
-                                                )}
-                                                <Badge className={newStatusConfig.className}>
+
+                                                        {/* Content card */}
+                                                        <div className="mt-3 w-64">
+                                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50">
+                                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                                                                        <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
+                                                                        <span>@{entry.changedBy.userName}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Plate photos for ASSIGNED */}
+                                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {platePhotos.map((photo) => (
+                                                                                <div
+                                                                                    key={photo.idPhoto}
+                                                                                    className="relative group cursor-pointer"
+                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                                >
+                                                                                    <img
+                                                                                        src={getImageUrl(photo.photoPath)}
+                                                                                        alt="Lectura de placa"
+                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                                    />
+                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Signature for DELIVERED */}
+                                                                {entry.newStatus === 'DELIVERED' && service.signature && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
+                                                                        <div
+                                                                            className="relative group cursor-pointer w-fit"
+                                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
+                                                                        >
+                                                                            <img
+                                                                                src={getImageUrl(service.signature!.signaturePath)}
+                                                                                alt="Firma"
+                                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
+                                                                            />
+                                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                <div className="bg-black/60 rounded-full p-1.5">
+                                                                                    <Expand className="h-3 w-3 text-white" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Other photos */}
+                                                                {entry.photos && entry.photos.length > 0 && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {entry.photos.map((photo) => (
+                                                                                <div
+                                                                                    key={photo.idPhoto}
+                                                                                    className="relative group cursor-pointer"
+                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                                >
+                                                                                    <img
+                                                                                        src={getImageUrl(photo.photoPath)}
+                                                                                        alt="Evidencia"
+                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                                    />
+                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Arrow connector */}
+                                                    {
+                                                        index < service.history.length - 1 && (
+                                                            <div className="flex items-center px-4 pt-1">
+                                                                <span className="text-muted-foreground text-xl">→</span>
+                                                            </div>
+                                                        )
+                                                    }
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {/* Mobile vertical timeline - simplified */}
+                            <div className="md:hidden space-y-4">
+                                {service.history.map((entry) => {
+                                    const newStatusConfig = getStatusBadge(entry.newStatus)
+                                    const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
+
+                                    return (
+                                        <div key={entry.idStatusHistory} className="space-y-2">
+                                            {/* Badge with arrow if not first */}
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-muted-foreground text-sm">↓</span>
+                                                <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
                                                     {newStatusConfig.label}
                                                 </Badge>
                                             </div>
 
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Clock className="h-3.5 w-3.5" />
-                                                <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
-                                                <span>•</span>
-                                                <User className="h-3.5 w-3.5" />
-                                                <span>@{entry.changedBy.userName}</span>
-                                            </div>
+                                            {/* Content card */}
+                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ml-4">
+                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                                                        <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
+                                                        <span>@{entry.changedBy.userName}</span>
+                                                    </div>
+                                                </div>
 
-                                            {entry.photos && entry.photos.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    {entry.photos.map((photo) => (
+                                                {/* Plate photos for ASSIGNED */}
+                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {platePhotos.map((photo) => (
+                                                                <div
+                                                                    key={photo.idPhoto}
+                                                                    className="relative group cursor-pointer"
+                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(photo.photoPath)}
+                                                                        alt="Lectura de placa"
+                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Signature for DELIVERED */}
+                                                {entry.newStatus === 'DELIVERED' && service.signature && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
                                                         <div
-                                                            key={photo.idPhoto}
-                                                            className="relative group cursor-pointer"
-                                                            onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                            className="relative group cursor-pointer w-fit"
+                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
                                                         >
                                                             <img
-                                                                src={getImageUrl(photo.photoPath)}
-                                                                alt="Evidencia"
-                                                                className="w-24 h-24 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
+                                                                src={getImageUrl(service.signature!.signaturePath)}
+                                                                alt="Firma"
+                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
                                                             />
                                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <div className="bg-black/60 rounded-full p-2">
-                                                                    <Expand className="h-5 w-5 text-white" />
+                                                                <div className="bg-black/60 rounded-full p-1.5">
+                                                                    <Expand className="h-3 w-3 text-white" />
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            )}
+                                                    </div>
+                                                )}
+
+                                                {/* Other photos */}
+                                                {entry.photos && entry.photos.length > 0 && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {entry.photos.map((photo) => (
+                                                                <div
+                                                                    key={photo.idPhoto}
+                                                                    className="relative group cursor-pointer"
+                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(photo.photoPath)}
+                                                                        alt="Evidencia"
+                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                                    )
+                                })}
+                            </div>
+
+                        </>
                     ) : (
                         <p className="text-sm text-muted-foreground text-center py-4">
                             Sin historial de cambios
@@ -528,6 +742,25 @@ export default function ViewServicio() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div >
     )
 }
