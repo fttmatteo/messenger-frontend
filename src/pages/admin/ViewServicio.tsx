@@ -59,6 +59,15 @@ const getStatusBadge = (status: string) => {
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
+const getPlateTypeLabel = (plateType: string) => {
+    const types: Record<string, string> = {
+        CAR: 'Carro',
+        MOTORCYCLE: 'Moto',
+        MOTORCAR: 'Motocarro',
+    }
+    return types[plateType] || plateType
+}
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 const getImageUrl = (url: string) => {
@@ -258,28 +267,33 @@ export default function ViewServicio() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
-                    <div className="mb-4 flex flex-col items-start gap-4">
-                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
+                    <div className="mb-4 flex flex-row items-center gap-4">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
+                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                     </div>
                     <p className="text-muted-foreground">
                         Servicio #{service.idServiceDelivery} • Creado el {format(new Date(service.createdAt), "PPP", { locale: es })}
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex w-full md:w-auto gap-2">
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
                         <Button
                             variant="destructive"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
+                            className="flex-1 md:flex-none"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
                         </Button>
                     )}
-                    <Button variant="outline" onClick={() => navigate("/admin/servicios")}>
+                    <Button
+                        variant="outline"
+                        onClick={() => navigate("/admin/servicios")}
+                        className="flex-1 md:flex-none"
+                    >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Volver
                     </Button>
@@ -298,8 +312,11 @@ export default function ViewServicio() {
                             <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Placa</p>
-                                <div className="mt-1">
+                                <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                        {getPlateTypeLabel(service.plate.plateType)}
+                                    </span>
                                 </div>
                             </div>
                         </div>

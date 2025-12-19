@@ -34,7 +34,7 @@ export function PlacaBadge({
     const isMoto = plateType?.toUpperCase() === 'MOTO'
 
     return (
-        <div
+        <span
             className={cn(
                 "inline-flex items-center font-bold tracking-wider border-2 border-black dark:border-white shadow-sm",
                 // Colombian plate colors: yellow background, black text
@@ -60,6 +60,6 @@ export function PlacaBadge({
                     🏍️
                 </span>
             )}
-        </div>
+        </span>
     )
 }
