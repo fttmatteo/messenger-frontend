@@ -662,10 +662,7 @@ export default function Servicios() {
             {/* Header */}
             <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-bold truncate">Servicios de Entrega</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Gestiona las entregas de placas
-                    </p>
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">Servicios</h1>
                 </div>
                 <Button
                     onClick={() => navigate("/admin/servicios/crear")}
@@ -673,7 +670,7 @@ export default function Servicios() {
                     className="shrink-0"
                 >
                     <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Servicio"}
+                    {!isMobile && "Nuevo servicio"}
                 </Button>
             </div>
 
@@ -789,7 +786,7 @@ export default function Servicios() {
                 /* Desktop View */
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Servicios</CardTitle>
+                        <CardTitle>Lista de servicios</CardTitle>
                         <CardDescription>
                             {filteredAndSortedServices.length} de {services.length} servicio(s)
                             {searchQuery && ` - Buscando "${searchQuery}"`}
@@ -955,7 +952,7 @@ export default function Servicios() {
             <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Actualizar Estado del Servicio</DialogTitle>
+                        <DialogTitle>Actualizar estado del Servicio</DialogTitle>
                         <DialogDescription>
                             {selectedService && (
                                 <><PlacaBadge plateNumber={selectedService.plate.plateNumber} plateType={selectedService.plate.plateType} size="sm" /> • {selectedService.dealership.name}</>
@@ -966,7 +963,7 @@ export default function Servicios() {
                     <div className="space-y-4 py-4">
                         {/* Status Select */}
                         <div className="space-y-2">
-                            <Label htmlFor="status">Nuevo Estado *</Label>
+                            <Label htmlFor="status">Nuevo estado</Label>
                             <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Selecciona un estado" />
@@ -995,7 +992,7 @@ export default function Servicios() {
 
                         {/* Signature Upload */}
                         <div className="space-y-2">
-                            <Label>Firma Digital (Opcional)</Label>
+                            <Label>Firma digital</Label>
                             <SignaturePad onChange={setSignatureFile} />
                             {signatureFile && (
                                 <p className="text-xs text-green-600 mt-1 flex items-center animate-in fade-in slide-in-from-top-1">
@@ -1008,7 +1005,7 @@ export default function Servicios() {
 
                         {/* Photos Upload */}
                         <div className="space-y-2">
-                            <Label htmlFor="photos">Fotografías (Opcional)</Label>
+                            <Label htmlFor="photos">Evidencia fotografica</Label>
                             <div className="flex items-center justify-center w-full">
                                 <label
                                     htmlFor="photos"
@@ -1017,7 +1014,7 @@ export default function Servicios() {
                                     <div className="flex flex-col items-center justify-center pt-3 pb-4">
                                         <ImageIcon className="w-6 h-6 mb-1 text-muted-foreground" />
                                         <p className="text-xs text-muted-foreground">
-                                            <span className="font-semibold">Agregar fotos</span>
+                                            <span className="font-semibold">Agregar foto</span>
                                         </p>
                                     </div>
                                     <input

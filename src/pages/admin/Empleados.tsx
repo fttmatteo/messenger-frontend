@@ -563,9 +563,6 @@ export default function Empleados() {
             <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <h1 className="text-2xl md:text-3xl font-bold truncate">Empleados</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Gestiona los empleados del sistema
-                    </p>
                 </div>
                 <Button
                     onClick={() => navigate("/admin/empleados/crear")}
@@ -573,7 +570,7 @@ export default function Empleados() {
                     className="shrink-0"
                 >
                     <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Empleado"}
+                    {!isMobile && "Nuevo empleado"}
                 </Button>
             </div>
 
@@ -674,7 +671,7 @@ export default function Empleados() {
                 /* Desktop View */
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Empleados</CardTitle>
+                        <CardTitle>Lista de empleados</CardTitle>
                         <CardDescription>
                             {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
                             {searchQuery && ` - Buscando "${searchQuery}"`}

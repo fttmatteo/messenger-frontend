@@ -5,7 +5,7 @@ import { serviceDeliveryService } from "@/services/service.service"
 import { useAuth } from "@/context/AuthContext"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -327,8 +327,7 @@ export default function ViewServicio() {
                 {/* General Information */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Información General</CardTitle>
-                        <CardDescription>Detalles del servicio de entrega</CardDescription>
+                        <CardTitle>Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-start gap-3">
@@ -411,15 +410,14 @@ export default function ViewServicio() {
                 {/* Photos & Signature */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Imágenes del Servicio</CardTitle>
-                        <CardDescription>Lectura de placa y firma</CardDescription>
+                        <CardTitle>Imágenes principales</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {/* Plate Detection */}
                         <div>
                             <div className="flex items-start gap-3 mb-2">
                                 <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Lectura de Placa</p>
+                                <p className="text-sm font-medium">Lectura de placa</p>
                             </div>
                             {(() => {
                                 const platePhotos = service.photos.filter(p => p.photoType === 'PLATE_DETECTION')
@@ -454,7 +452,7 @@ export default function ViewServicio() {
                         <div>
                             <div className="flex items-start gap-3 mb-2">
                                 <FileSignature className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Firma Digital</p>
+                                <p className="text-sm font-medium">Firma digital</p>
                             </div>
                             {service.signature ? (
                                 <img
@@ -473,8 +471,7 @@ export default function ViewServicio() {
             {/* History Timeline */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Historial de Estados</CardTitle>
-                    <CardDescription>Trazabilidad completa de cambios de estado</CardDescription>
+                    <CardTitle>Historial de estados</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {service.history.length > 0 ? (
@@ -540,7 +537,7 @@ export default function ViewServicio() {
                                                                 {/* Signature for DELIVERED */}
                                                                 {entry.newStatus === 'DELIVERED' && service.signature && (
                                                                     <div className="pt-2 border-t border-border/50">
-                                                                        <p className="text-xs text-muted-foreground mb-2">Firma recibida</p>
+                                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
                                                                         <div
                                                                             className="relative group cursor-pointer w-fit"
                                                                             onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
@@ -664,7 +661,7 @@ export default function ViewServicio() {
                                                 {/* Signature for DELIVERED */}
                                                 {entry.newStatus === 'DELIVERED' && service.signature && (
                                                     <div className="pt-2 border-t border-border/50">
-                                                        <p className="text-xs text-muted-foreground mb-2">Firma recibida</p>
+                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
                                                         <div
                                                             className="relative group cursor-pointer w-fit"
                                                             onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
