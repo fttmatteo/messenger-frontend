@@ -2,10 +2,13 @@ import { Client } from '@stomp/stompjs';
 
 const getWebSocketUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    if (apiUrl.startsWith('https')) {
-        return apiUrl.replace('https', 'wss') + '/ws/tracking';
+    // Remove trailing slash if present to avoid "//ws/tracking"
+    const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+
+    if (base.startsWith('https')) {
+        return base.replace('https', 'wss') + '/ws/tracking';
     }
-    return apiUrl.replace('http', 'ws') + '/ws/tracking';
+    return base.replace('http', 'ws') + '/ws/tracking';
 };
 
 const getAuthToken = () => {
