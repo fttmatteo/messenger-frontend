@@ -62,15 +62,31 @@ export default function LiveTracking() {
     const [mapCenter, setMapCenter] = useState({ lat: 4.6097, lng: -74.0817 }) // Bogotá
 
     // Fetch initial data via REST
-    const fetchActiveMessengers = useCallback(async () => {
+    const fetchActiveMessengers = useCallback(async (manual = false) => {
         try {
             setLoading(true)
             const data = await trackingApiService.getActiveMessengers()
-            setMessengers(data || [])
+            const updatedMessengers = data || []
+            setMessengers(updatedMessengers)
 
-            // Center map on first messenger if available
-            if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
-                setMapCenter({ lat: data[0].latitude, lng: data[0].longitude })
+            // Update selected messenger data if it exists in the new list
+            if (selectedMessenger) {
+                const refreshed = updatedMessengers.find(m => m.messengerId === selectedMessenger.messengerId)
+                if (refreshed) {
+                    setSelectedMessenger(refreshed)
+                }
+            }
+
+            if (manual) {
+                toast.success("Monitoreo actualizado", {
+                    description: `${updatedMessengers.length} mensajeros activos`,
+                    id: "manual-refresh-success"
+                })
+            }
+
+            // Center map on first messenger if available and it's the first load
+            if (!manual && updatedMessengers.length > 0 && updatedMessengers[0].latitude && updatedMessengers[0].longitude) {
+                setMapCenter({ lat: updatedMessengers[0].latitude, lng: updatedMessengers[0].longitude })
             }
         } catch (error: any) {
             console.error("Error fetching messengers:", error)
@@ -87,7 +103,7 @@ export default function LiveTracking() {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [selectedMessenger])
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
@@ -107,6 +123,9 @@ export default function LiveTracking() {
             }
             return [...prev, update]
         })
+
+        // Also update selected messenger info if it matches the ID
+        setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? update : prev)
     }, [])
 
     // Connect to WebSocket on mount
@@ -140,7 +159,7 @@ export default function LiveTracking() {
                         <Users className="h-3 w-3" />
                         {messengers.length} activos
                     </Badge>
-                    <Button variant="outline" size="sm" onClick={fetchActiveMessengers} disabled={loading}>
+                    <Button variant="outline" size="sm" onClick={() => fetchActiveMessengers(true)} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Actualizar
                     </Button>
