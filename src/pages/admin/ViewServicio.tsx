@@ -456,136 +456,100 @@ export default function ViewServicio() {
                 <CardContent>
                     {service.history.length > 0 ? (
                         <>
-                            {/* Desktop horizontal timeline */}
+                            {/* Desktop horizontal timeline - simplified with badges only */}
                             <div className="hidden md:block">
                                 <div className="relative overflow-x-auto pb-4">
-                                    <div className="flex gap-8 min-w-max py-4">
+                                    <div className="flex items-start min-w-max py-4">
                                         {service.history.map((entry, index) => {
                                             const newStatusConfig = getStatusBadge(entry.newStatus)
-                                            const prevStatusConfig = entry.previousStatus
-                                                ? getStatusBadge(entry.previousStatus)
-                                                : null
-
-                                            // Get color based on status
-                                            const getStatusColor = (status: string) => {
-                                                const colors: Record<string, string> = {
-                                                    ASSIGNED: 'bg-slate-600 border-slate-600',
-                                                    PENDING: 'bg-indigo-500 border-indigo-500',
-                                                    DELIVERED: 'bg-green-500 border-green-500',
-                                                    FAILED: 'bg-red-500 border-red-500',
-                                                    RETURNED: 'bg-orange-500 border-orange-500',
-                                                    CANCELED: 'bg-gray-500 border-gray-500',
-                                                    OBSERVED: 'bg-purple-500 border-purple-500',
-                                                    RESOLVED: 'bg-emerald-500 border-emerald-500',
-                                                }
-                                                return colors[status] || 'bg-gray-500 border-gray-500'
-                                            }
-
-
-                                            // Get plate photos from service level, not entry level
                                             const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
                                             return (
-                                                <div key={entry.idStatusHistory} className="relative flex flex-col items-center">
-                                                    {/* Horizontal connector line with gradient */}
-                                                    {index < service.history.length - 1 && (
-                                                        <div className="absolute left-1/2 top-6 w-full h-1 bg-gradient-to-r from-border via-border/50 to-transparent translate-x-1/2" />
-                                                    )}
-
-                                                    {/* Timeline dot with status color and glow effect */}
-                                                    <div className={`relative w-12 h-12 rounded-full border-4 border-background ${getStatusColor(entry.newStatus)} z-10 flex-shrink-0 shadow-lg`}>
-                                                        <div className={`absolute inset-0 rounded-full ${getStatusColor(entry.newStatus).split(' ')[0]} opacity-20 blur-md`} />
-                                                    </div>
-
-                                                    {/* Content card with improved design */}
-                                                    <div className="mt-6 w-72 space-y-3">
-                                                        {/* Status badges with better spacing */}
-                                                        <div className="flex items-center justify-center gap-2 flex-wrap">
-                                                            {prevStatusConfig && (
-                                                                <>
-                                                                    <Badge variant="outline" className={`${prevStatusConfig.className} text-xs`}>
-                                                                        {prevStatusConfig.label}
-                                                                    </Badge>
-                                                                    <span className="text-muted-foreground text-lg">→</span>
-                                                                </>
-                                                            )}
-                                                            <Badge className={`${newStatusConfig.className} text-sm px-3 py-1`}>
-                                                                {newStatusConfig.label}
-                                                            </Badge>
-                                                        </div>
-
-                                                        {/* Card container with hover effect */}
-                                                        <div className="bg-muted/30 rounded-lg p-4 space-y-3 border border-border/50 hover:border-border transition-colors">
-                                                            {/* Date and user info */}
-                                                            <div className="flex flex-col items-start gap-2 text-xs text-muted-foreground">
-                                                                <div className="flex items-center gap-1.5 w-full">
-                                                                    <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                                                                    <span className="flex-1">{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
+                                                <div key={entry.idStatusHistory} className="flex items-start">
+                                                    {/* Entry column */}
+                                                    <div className="flex flex-col items-center">
+                                                        {/* Status badge */}
+                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
+                                                            {newStatusConfig.label}
+                                                        </Badge>
+                                                        
+                                                        {/* Content card */}
+                                                        <div className="mt-3 w-64">
+                                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50">
+                                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                                                                        <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
+                                                                        <span>@{entry.changedBy.userName}</span>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-1.5 w-full">
-                                                                    <User className="h-3.5 w-3.5 flex-shrink-0" />
-                                                                    <span className="flex-1">@{entry.changedBy.userName}</span>
-                                                                </div>
+
+                                                                {/* Plate photos for ASSIGNED */}
+                                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {platePhotos.map((photo) => (
+                                                                                <div
+                                                                                    key={photo.idPhoto}
+                                                                                    className="relative group cursor-pointer"
+                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                                >
+                                                                                    <img
+                                                                                        src={getImageUrl(photo.photoPath)}
+                                                                                        alt="Lectura de placa"
+                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                                    />
+                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Other photos */}
+                                                                {entry.photos && entry.photos.length > 0 && (
+                                                                    <div className="pt-2 border-t border-border/50">
+                                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {entry.photos.map((photo) => (
+                                                                                <div
+                                                                                    key={photo.idPhoto}
+                                                                                    className="relative group cursor-pointer"
+                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                                >
+                                                                                    <img
+                                                                                        src={getImageUrl(photo.photoPath)}
+                                                                                        alt="Evidencia"
+                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                                    />
+                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
                                                             </div>
-
-                                                            {/* Show plate detection photos for ASSIGNED status */}
-                                                            {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
-                                                                <div className="pt-2 border-t border-border/30">
-                                                                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                                                                        Lectura de placa
-                                                                    </p>
-                                                                    {/* Plate photos */}
-                                                                    <div className="flex flex-wrap gap-2 justify-center">
-                                                                        {platePhotos.map((photo) => (
-                                                                            <div
-                                                                                key={photo.idPhoto}
-                                                                                className="relative group cursor-pointer"
-                                                                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                            >
-                                                                                <img
-                                                                                    src={getImageUrl(photo.photoPath)}
-                                                                                    alt="Lectura de placa"
-                                                                                    className="w-20 h-20 object-cover rounded-md border transition-all group-hover:opacity-75 group-hover:scale-105"
-                                                                                />
-                                                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                                    <div className="bg-black/60 rounded-full p-1.5">
-                                                                                        <Expand className="h-3 w-3 text-white" />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-
-                                                            {/* Photos */}
-                                                            {entry.photos && entry.photos.length > 0 && (
-                                                                <div className="pt-2 border-t border-border/30">
-                                                                    <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
-                                                                    <div className="flex flex-wrap gap-2 justify-center">
-                                                                        {entry.photos.map((photo) => (
-                                                                            <div
-                                                                                key={photo.idPhoto}
-                                                                                className="relative group cursor-pointer"
-                                                                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                            >
-                                                                                <img
-                                                                                    src={getImageUrl(photo.photoPath)}
-                                                                                    alt="Evidencia"
-                                                                                    className="w-16 h-16 object-cover rounded-md border transition-all group-hover:opacity-75 group-hover:scale-105"
-                                                                                />
-                                                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                                    <div className="bg-black/60 rounded-full p-1.5">
-                                                                                        <Expand className="h-3 w-3 text-white" />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
+                                                    
+                                                    {/* Arrow connector */}
+                                                    {index < service.history.length - 1 && (
+                                                        <div className="flex items-center px-4 pt-1">
+                                                            <span className="text-muted-foreground text-xl">→</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )
                                         })}
@@ -593,124 +557,97 @@ export default function ViewServicio() {
                                 </div>
                             </div>
 
-                            {/* Mobile vertical timeline with improved design */}
-                            <div className="md:hidden relative space-y-6 before:absolute before:left-2 before:top-2 before:h-[calc(100%-1rem)] before:w-0.5 before:bg-gradient-to-b before:from-border before:via-border/50 before:to-transparent">
-                                {service.history.map((entry) => {
+
+                            {/* Mobile vertical timeline - simplified */}
+                            <div className="md:hidden space-y-4">
+                                {service.history.map((entry, index) => {
                                     const newStatusConfig = getStatusBadge(entry.newStatus)
-                                    const prevStatusConfig = entry.previousStatus
-                                        ? getStatusBadge(entry.previousStatus)
-                                        : null
-
-                                    const getStatusColor = (status: string) => {
-                                        const colors: Record<string, string> = {
-                                            ASSIGNED: 'bg-slate-600',
-                                            PENDING: 'bg-indigo-500',
-                                            DELIVERED: 'bg-green-500',
-                                            FAILED: 'bg-red-500',
-                                            RETURNED: 'bg-orange-500',
-                                            CANCELED: 'bg-gray-500',
-                                            OBSERVED: 'bg-purple-500',
-                                            RESOLVED: 'bg-emerald-500',
-                                        }
-                                        return colors[status] || 'bg-gray-500'
-                                    }
-
-
-                                    // Get plate photos from service level, not entry level
                                     const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
                                     return (
-                                        <div key={entry.idStatusHistory} className="relative flex gap-4 pl-8">
-                                            <div className={`absolute left-0 top-2 w-4 h-4 rounded-full border-2 border-background ${getStatusColor(entry.newStatus)} shadow-md`}>
-                                                <div className={`absolute inset-0 rounded-full ${getStatusColor(entry.newStatus)} opacity-20 blur-sm`} />
+                                        <div key={entry.idStatusHistory} className="space-y-2">
+                                            {/* Badge with arrow if not first */}
+                                            <div className="flex items-center gap-2">
+                                                {index > 0 && (
+                                                    <span className="text-muted-foreground text-sm">↓</span>
+                                                )}
+                                                <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
+                                                    {newStatusConfig.label}
+                                                </Badge>
                                             </div>
 
-                                            <div className="flex-1 space-y-3">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    {prevStatusConfig && (
-                                                        <>
-                                                            <Badge variant="outline" className={prevStatusConfig.className}>
-                                                                {prevStatusConfig.label}
-                                                            </Badge>
-                                                            <span className="text-muted-foreground">→</span>
-                                                        </>
-                                                    )}
-                                                    <Badge className={newStatusConfig.className}>
-                                                        {newStatusConfig.label}
-                                                    </Badge>
-                                                </div>
-
-                                                <div className="bg-muted/30 rounded-lg p-3 space-y-2 border border-border/50">
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Clock className="h-3.5 w-3.5" />
+                                            {/* Content card */}
+                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ml-4">
+                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
                                                         <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <User className="h-3.5 w-3.5" />
+                                                    <div className="flex items-center gap-1.5">
+                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
                                                         <span>@{entry.changedBy.userName}</span>
                                                     </div>
-
-                                                    {/* Show plate detection photos for ASSIGNED status in mobile */}
-                                                    {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
-                                                        <div className="pt-2 border-t border-border/30">
-                                                            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                                                                Lectura de placa
-                                                            </p>
-                                                            {/* Plate photos */}
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {platePhotos.map((photo) => (
-                                                                    <div
-                                                                        key={photo.idPhoto}
-                                                                        className="relative group cursor-pointer"
-                                                                        onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                    >
-                                                                        <img
-                                                                            src={getImageUrl(photo.photoPath)}
-                                                                            alt="Lectura de placa"
-                                                                            className="w-20 h-20 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
-                                                                        />
-                                                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                            <div className="bg-black/60 rounded-full p-2">
-                                                                                <Expand className="h-4 w-4 text-white" />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {entry.photos && entry.photos.length > 0 && (
-                                                        <div className="pt-2 border-t border-border/30">
-                                                            <p className="text-xs text-muted-foreground mb-2">Evidencia</p>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {entry.photos.map((photo) => (
-                                                                    <div
-                                                                        key={photo.idPhoto}
-                                                                        className="relative group cursor-pointer"
-                                                                        onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                    >
-                                                                        <img
-                                                                            src={getImageUrl(photo.photoPath)}
-                                                                            alt="Evidencia"
-                                                                            className="w-20 h-20 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
-                                                                        />
-                                                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                            <div className="bg-black/60 rounded-full p-2">
-                                                                                <Expand className="h-4 w-4 text-white" />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
                                                 </div>
+
+                                                {/* Plate photos for ASSIGNED */}
+                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {platePhotos.map((photo) => (
+                                                                <div
+                                                                    key={photo.idPhoto}
+                                                                    className="relative group cursor-pointer"
+                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(photo.photoPath)}
+                                                                        alt="Lectura de placa"
+                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Other photos */}
+                                                {entry.photos && entry.photos.length > 0 && (
+                                                    <div className="pt-2 border-t border-border/50">
+                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {entry.photos.map((photo) => (
+                                                                <div
+                                                                    key={photo.idPhoto}
+                                                                    className="relative group cursor-pointer"
+                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(photo.photoPath)}
+                                                                        alt="Evidencia"
+                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <div className="bg-black/60 rounded-full p-1.5">
+                                                                            <Expand className="h-3 w-3 text-white" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )
                                 })}
                             </div>
+
                         </>
                     ) : (
                         <p className="text-sm text-muted-foreground text-center py-4">
