@@ -1,6 +1,8 @@
 export interface User {
+    id?: number;
     username: string;
     role: string;
+    isOnline?: boolean;
 }
 
 export interface AuthResponse {

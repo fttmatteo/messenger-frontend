@@ -27,7 +27,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Skeleton } from "@/components/ui/skeleton"
+import { TableRowSkeleton, CardSkeleton } from "@/components/employee/EmployeeSkeletons"
+import { EmployeeCard } from "@/components/employee/EmployeeCard"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -105,59 +106,6 @@ const itemVariants = {
         transition: { duration: 0.2 },
     },
 }
-
-// Skeleton components
-const TableRowSkeleton = () => (
-    <TableRow>
-        <TableCell><Skeleton className="h-4 w-28 font-mono" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-28 rounded-full" /></TableCell>
-        <TableCell className="text-right">
-            <div className="flex justify-end gap-2">
-                <Skeleton className="h-8 w-20 rounded-md" />
-                <Skeleton className="h-8 w-8 rounded-md" />
-            </div>
-        </TableCell>
-    </TableRow>
-)
-
-const CardSkeleton = () => (
-    <Card className="mb-3">
-        <CardContent className="pt-4">
-            <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <Skeleton className="h-5 w-36" />
-                        <Skeleton className="h-5 w-24 rounded-full" />
-                    </div>
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-24" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-28" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                            <Skeleton className="h-4 w-32" />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-)
-
-
-
 export default function Empleados() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
@@ -336,98 +284,6 @@ export default function Empleados() {
                 </EmptyContent>
             )}
         </Empty>
-    )
-
-    // Mobile Card Component
-    const EmployeeCard = ({ employee }: { employee: Employee }) => (
-        <motion.div
-            exit="exit"
-            layout
-        >
-            <Card className="mb-3 hover:shadow-md transition-shadow">
-                <CardContent className="pt-4">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="font-semibold text-lg">{employee.fullName}</h3>
-                                <Badge className={getRoleBadgeClass(employee.role)}>
-                                    {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
-                                </Badge>
-                            </div>
-                            <div className="space-y-1 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                    <User className="h-3.5 w-3.5" />
-                                    <span>@{employee.userName}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <FileText className="h-3.5 w-3.5" />
-                                    <span className="font-mono">{employee.document}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3.5 w-3.5" />
-                                                {employee.phone}
-                                            </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Llamar</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <Button
-                                variant="default"
-                                size="icon"
-                                onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
-                                className="bg-primary hover:bg-primary/90"
-                                aria-label="Editar empleado"
-                            >
-                                <Pencil className="h-4 w-4" />
-                            </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                        aria-label="Eliminar empleado"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar empleado?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente a <strong>{employee.fullName}</strong> del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() => handleDelete(employee.idEmployee)}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            disabled={deleting === employee.idEmployee}
-                                        >
-                                            {deleting === employee.idEmployee ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : null}
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </motion.div>
     )
 
     // Enhanced Pagination component
@@ -660,6 +516,9 @@ export default function Empleados() {
                                     <EmployeeCard
                                         key={employee.idEmployee}
                                         employee={employee}
+                                        onEdit={(id) => navigate(`/admin/empleados/editar/${id}`)}
+                                        onDelete={handleDelete}
+                                        deleting={deleting}
                                     />
                                 ))}
                             </AnimatePresence>

@@ -18,7 +18,7 @@ export interface LiveTrackingUpdate {
     latitude: number;
     longitude: number;
     lastUpdate: string;
-    status: 'ACTIVE' | 'IN_ACTIVE';
+    status: 'ACTIVE' | 'INACTIVE' | 'OFFLINE';
     speed: number;
     heading: number;
 }
@@ -74,6 +74,19 @@ class TrackingService {
     public disconnect() {
         this.client.deactivate();
         this.isConnected = false;
+    }
+
+    public sendUpdate(update: Partial<LiveTrackingUpdate>) {
+        if (this.isConnected) {
+            try {
+                this.client.publish({
+                    destination: '/app/tracking/update',
+                    body: JSON.stringify(update)
+                });
+            } catch (error) {
+                console.error('Error sending tracking update', error);
+            }
+        }
     }
 
     public subscribeToAll(callback: (update: LiveTrackingUpdate) => void) {

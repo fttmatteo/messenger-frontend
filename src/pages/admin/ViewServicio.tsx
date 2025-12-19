@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react"
-import { PlacaBadge } from "@/components/PlacaBadge"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { serviceDeliveryService } from "@/services/service.service"
 import { useAuth } from "@/context/AuthContext"
+import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -27,6 +26,11 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { PlacaBadge } from "@/components/PlacaBadge"
+import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
+import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
+import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
+import { ImageViewer } from "@/components/ui/image-viewer"
 import {
     Home,
     ArrowLeft,
@@ -34,65 +38,35 @@ import {
     Building2,
     User,
     Calendar,
-    FileSignature,
-    Clock,
     Trash2,
     PhoneCall,
-    Expand,
+    ChevronUp,
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChevronUp } from "lucide-react"
-
-// Status badge configuration
-const getStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; className: string }> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
-        PENDING: { label: "Pendiente", className: "bg-indigo-500 text-white" },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
-        FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
-        CANCELED: { label: 'Cancelado', className: 'bg-gray-500 text-white' },
-        OBSERVED: { label: 'Observado', className: 'bg-purple-500 text-white' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
-    }
-    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
-}
-
-const getPlateTypeLabel = (plateType: string) => {
-    const types: Record<string, string> = {
-        CAR: 'Carro',
-        MOTORCYCLE: 'Moto',
-        MOTORCAR: 'Motocarro',
-    }
-    return types[plateType] || plateType
-}
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-
-const getImageUrl = (url: string) => {
-    if (!url) return ''
-    if (url.startsWith('http')) return url
-    // Remove /api if present in url to avoid duplication if backend returns it
-    const cleanUrl = url.replace(/^\/api\//, '/')
-    return `${API_URL}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`
-}
+import { getStatusBadge, getPlateTypeLabel } from "@/lib/status-utils"
+import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
+    // Router & Auth
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { user } = useAuth()
+    const isMobile = useIsMobile()
+
+    // Service Data State
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
+    // UI State
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
-    const isMobile = useIsMobile()
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [showScrollTop, setShowScrollTop] = useState(false)
 
+    // Derived State
     const isAdmin = user?.role === 'ADMIN'
 
     useEffect(() => {
@@ -158,94 +132,7 @@ export default function ViewServicio() {
     }
 
     if (loading) {
-        return (
-            <div className="space-y-6">
-                {/* Breadcrumb skeleton */}
-                <Skeleton className="h-5 w-64" />
-
-                {/* Header skeleton */}
-                <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                            <Skeleton className="h-8 w-24" />
-                            <Skeleton className="h-6 w-20 rounded-full" />
-                        </div>
-                        <Skeleton className="h-5 w-80" />
-                    </div>
-                    <div className="flex gap-2">
-                        <Skeleton className="h-10 w-28" />
-                    </div>
-                </div>
-
-                {/* Content grid skeleton */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Detalles del Servicio */}
-                    <Card>
-                        <CardHeader>
-                            <Skeleton className="h-6 w-40" />
-                            <Skeleton className="h-4 w-56" />
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                                <div key={i} className="flex items-start gap-3">
-                                    <Skeleton className="h-5 w-5" />
-                                    <div className="flex-1 space-y-1">
-                                        <Skeleton className="h-4 w-24" />
-                                        <Skeleton className="h-4 w-full" />
-                                    </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-
-                    {/* Imágenes del Servicio */}
-                    <Card>
-                        <CardHeader>
-                            <Skeleton className="h-6 w-44" />
-                            <Skeleton className="h-4 w-48" />
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <Skeleton className="h-5 w-5" />
-                                    <Skeleton className="h-4 w-32" />
-                                </div>
-                                <Skeleton className="h-32 w-full" />
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <Skeleton className="h-5 w-5" />
-                                    <Skeleton className="h-4 w-28" />
-                                </div>
-                                <Skeleton className="h-32 w-48" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Historial skeleton */}
-                <Card>
-                    <CardHeader>
-                        <Skeleton className="h-6 w-40" />
-                        <Skeleton className="h-4 w-64" />
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex gap-4 pl-8">
-                                <div className="flex-1 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <Skeleton className="h-6 w-20 rounded-full" />
-                                        <Skeleton className="h-4 w-4" />
-                                        <Skeleton className="h-6 w-20 rounded-full" />
-                                    </div>
-                                    <Skeleton className="h-4 w-64" />
-                                </div>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
-        )
+        return <ViewServicioSkeleton />
     }
 
     if (!service) {
@@ -323,20 +210,21 @@ export default function ViewServicio() {
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                {/* General Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Información general</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+            {/* General Information - Horizontal layout for desktop */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Información general</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {/* Desktop: Horizontal grid layout */}
+                    <div className="hidden md:grid md:grid-cols-4 gap-6">
                         <div className="flex items-start gap-3">
-                            <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Placa</p>
+                                <p className="text-base font-medium">Placa</p>
                                 <div className="mt-1 flex flex-col items-center w-fit">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
                                         {getPlateTypeLabel(service.plate.plateType)}
                                     </span>
                                 </div>
@@ -344,18 +232,18 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Concesionario</p>
-                                <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Concesionario</p>
+                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-sm text-muted-foreground mt-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.dealership.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -368,15 +256,15 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <User className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <User className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-muted-foreground">@ {service.messenger.userName}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">Mensajero</p>
+                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-sm text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-3 w-3" />
+                                                <PhoneCall className="h-4 w-4" />
                                                 {service.messenger.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -389,10 +277,89 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Fecha de Creación</p>
+                                <p className="text-base font-medium">Fecha de Creación</p>
+                                <p className="text-base text-muted-foreground">
+                                    {format(new Date(service.createdAt), "PPPp", { locale: es })}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop: Observations if present */}
+                    {service.observation && (
+                        <div className="hidden md:block pt-4 mt-4 border-t">
+                            <p className="text-base font-medium mb-1">Observaciones</p>
+                            <p className="text-base text-muted-foreground">{service.observation}</p>
+                        </div>
+                    )}
+
+                    {/* Mobile: Vertical layout */}
+                    <div className="md:hidden space-y-4">
+                        <div className="flex items-start gap-3">
+                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <div className="flex-1">
+                                <p className="text-base font-medium">Placa</p>
+                                <div className="mt-1 flex flex-col items-center w-fit">
+                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
+                                        {getPlateTypeLabel(service.plate.plateType)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <div className="flex-1">
+                                <p className="text-base font-medium">Concesionario</p>
+                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
                                 <p className="text-sm text-muted-foreground">
+                                    {service.dealership.address} • {service.dealership.zone}
+                                </p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-4 w-4" />
+                                                {service.dealership.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <User className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <div className="flex-1">
+                                <p className="text-base font-medium">Mensajero</p>
+                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-4 w-4" />
+                                                {service.messenger.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <div className="flex-1">
+                                <p className="text-base font-medium">Fecha de Creación</p>
+                                <p className="text-base text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
                             </div>
@@ -400,73 +367,13 @@ export default function ViewServicio() {
 
                         {service.observation && (
                             <div className="pt-2 border-t">
-                                <p className="text-sm font-medium mb-1">Observaciones</p>
-                                <p className="text-sm text-muted-foreground">{service.observation}</p>
+                                <p className="text-base font-medium mb-1">Observaciones</p>
+                                <p className="text-base text-muted-foreground">{service.observation}</p>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
-
-                {/* Photos & Signature */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Imágenes principales</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {/* Plate Detection */}
-                        <div>
-                            <div className="flex items-start gap-3 mb-2">
-                                <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Lectura de placa</p>
-                            </div>
-                            {(() => {
-                                const platePhotos = service.photos.filter(p => p.photoType === 'PLATE_DETECTION')
-                                return platePhotos.length > 0 ? (
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {platePhotos.map((photo) => (
-                                            <div
-                                                key={photo.idPhoto}
-                                                className="relative group cursor-pointer"
-                                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                            >
-                                                <img
-                                                    src={getImageUrl(photo.photoPath)}
-                                                    alt="Lectura de placa"
-                                                    className="w-full h-32 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <div className="bg-black/60 rounded-full p-2">
-                                                        <Expand className="h-5 w-5 text-white" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground">Sin imagen de placa registrada</p>
-                                )
-                            })()}
-                        </div>
-
-                        {/* Signature */}
-                        <div>
-                            <div className="flex items-start gap-3 mb-2">
-                                <FileSignature className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Firma digital</p>
-                            </div>
-                            {service.signature ? (
-                                <img
-                                    src={getImageUrl(service.signature.signaturePath)}
-                                    alt="Firma"
-                                    className="w-full max-w-xs h-32 object-contain border rounded-lg bg-white"
-                                />
-                            ) : (
-                                <p className="text-sm text-muted-foreground">Sin firma registrada</p>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* History Timeline */}
             <Card>
@@ -476,240 +383,43 @@ export default function ViewServicio() {
                 <CardContent>
                     {service.history.length > 0 ? (
                         <>
-                            {/* Desktop horizontal timeline - simplified with badges only */}
-                            <div className="hidden md:block">
-                                <div className="relative overflow-x-auto pb-4">
-                                    <div className="flex items-start min-w-max py-4">
-                                        {service.history.map((entry, index) => {
-                                            const newStatusConfig = getStatusBadge(entry.newStatus)
-                                            const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
+                            {/* Responsive Timeline */}
+                            <div className="py-4 overflow-x-auto">
+                                <Timeline
+                                    layout={isMobile ? "vertical" : "horizontal"}
+                                    centered={isMobile}
+                                    className={isMobile ? "" : "min-w-max md:min-w-0"}
+                                >
+                                    {[...service.history].reverse().map((entry, index) => {
+                                        const newStatusConfig = getStatusBadge(entry.newStatus)
+                                        const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
-                                            return (
-                                                <div key={entry.idStatusHistory} className="flex items-start">
-                                                    {/* Entry column */}
-                                                    <div className="flex flex-col items-center">
-                                                        {/* Status badge */}
-                                                        <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
+                                        return (
+                                            <TimelineItem
+                                                key={entry.idStatusHistory}
+                                                isLast={index === service.history.length - 1}
+                                                className={isMobile ? "" : "min-w-[280px]"}
+                                            >
+                                                <TimelineHeader>
+                                                    <div className="h-10 flex items-center justify-center z-10 bg-card">
+                                                        <Badge className={`${newStatusConfig.className} text-base px-6 py-2 shadow-sm`}>
                                                             {newStatusConfig.label}
                                                         </Badge>
-
-                                                        {/* Content card */}
-                                                        <div className="mt-3 w-64">
-                                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50">
-                                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
-                                                                    <div className="flex items-center gap-1.5">
-                                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                                                                        <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-1.5">
-                                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
-                                                                        <span>@{entry.changedBy.userName}</span>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Plate photos for ASSIGNED */}
-                                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
-                                                                    <div className="pt-2 border-t border-border/50">
-                                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
-                                                                        <div className="flex flex-wrap gap-2">
-                                                                            {platePhotos.map((photo) => (
-                                                                                <div
-                                                                                    key={photo.idPhoto}
-                                                                                    className="relative group cursor-pointer"
-                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                                >
-                                                                                    <img
-                                                                                        src={getImageUrl(photo.photoPath)}
-                                                                                        alt="Lectura de placa"
-                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
-                                                                                    />
-                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                                        <div className="bg-black/60 rounded-full p-1.5">
-                                                                                            <Expand className="h-3 w-3 text-white" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Signature for DELIVERED */}
-                                                                {entry.newStatus === 'DELIVERED' && service.signature && (
-                                                                    <div className="pt-2 border-t border-border/50">
-                                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
-                                                                        <div
-                                                                            className="relative group cursor-pointer w-fit"
-                                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
-                                                                        >
-                                                                            <img
-                                                                                src={getImageUrl(service.signature!.signaturePath)}
-                                                                                alt="Firma"
-                                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
-                                                                            />
-                                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                                <div className="bg-black/60 rounded-full p-1.5">
-                                                                                    <Expand className="h-3 w-3 text-white" />
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Other photos */}
-                                                                {entry.photos && entry.photos.length > 0 && (
-                                                                    <div className="pt-2 border-t border-border/50">
-                                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
-                                                                        <div className="flex flex-wrap gap-2">
-                                                                            {entry.photos.map((photo) => (
-                                                                                <div
-                                                                                    key={photo.idPhoto}
-                                                                                    className="relative group cursor-pointer"
-                                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                                >
-                                                                                    <img
-                                                                                        src={getImageUrl(photo.photoPath)}
-                                                                                        alt="Evidencia"
-                                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
-                                                                                    />
-                                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                                        <div className="bg-black/60 rounded-full p-1.5">
-                                                                                            <Expand className="h-3 w-3 text-white" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
                                                     </div>
-
-                                                    {/* Arrow connector */}
-                                                    {
-                                                        index < service.history.length - 1 && (
-                                                            <div className="flex items-center px-4 pt-1">
-                                                                <span className="text-muted-foreground text-xl">→</span>
-                                                            </div>
-                                                        )
-                                                    }
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            {/* Mobile vertical timeline - simplified */}
-                            <div className="md:hidden space-y-4">
-                                {service.history.map((entry) => {
-                                    const newStatusConfig = getStatusBadge(entry.newStatus)
-                                    const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
-
-                                    return (
-                                        <div key={entry.idStatusHistory} className="space-y-2">
-                                            {/* Badge with arrow if not first */}
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-muted-foreground text-sm">↓</span>
-                                                <Badge className={`${newStatusConfig.className} text-sm px-4 py-1.5`}>
-                                                    {newStatusConfig.label}
-                                                </Badge>
-                                            </div>
-
-                                            {/* Content card */}
-                                            <div className="bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ml-4">
-                                                <div className="flex flex-col gap-2 text-xs text-muted-foreground">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                                                        <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <User className="h-3.5 w-3.5 flex-shrink-0" />
-                                                        <span>@{entry.changedBy.userName}</span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Plate photos for ASSIGNED */}
-                                                {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
-                                                    <div className="pt-2 border-t border-border/50">
-                                                        <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {platePhotos.map((photo) => (
-                                                                <div
-                                                                    key={photo.idPhoto}
-                                                                    className="relative group cursor-pointer"
-                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                >
-                                                                    <img
-                                                                        src={getImageUrl(photo.photoPath)}
-                                                                        alt="Lectura de placa"
-                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
-                                                                    />
-                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <div className="bg-black/60 rounded-full p-1.5">
-                                                                            <Expand className="h-3 w-3 text-white" />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* Signature for DELIVERED */}
-                                                {entry.newStatus === 'DELIVERED' && service.signature && (
-                                                    <div className="pt-2 border-t border-border/50">
-                                                        <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
-                                                        <div
-                                                            className="relative group cursor-pointer w-fit"
-                                                            onClick={() => window.open(getImageUrl(service.signature!.signaturePath), '_blank')}
-                                                        >
-                                                            <img
-                                                                src={getImageUrl(service.signature!.signaturePath)}
-                                                                alt="Firma"
-                                                                className="h-16 w-auto object-contain rounded-md border border-border/50 bg-white"
-                                                            />
-                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <div className="bg-black/60 rounded-full p-1.5">
-                                                                    <Expand className="h-3 w-3 text-white" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* Other photos */}
-                                                {entry.photos && entry.photos.length > 0 && (
-                                                    <div className="pt-2 border-t border-border/50">
-                                                        <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {entry.photos.map((photo) => (
-                                                                <div
-                                                                    key={photo.idPhoto}
-                                                                    className="relative group cursor-pointer"
-                                                                    onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                                                >
-                                                                    <img
-                                                                        src={getImageUrl(photo.photoPath)}
-                                                                        alt="Evidencia"
-                                                                        className="w-20 h-20 object-cover rounded-md border border-border/50"
-                                                                    />
-                                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <div className="bg-black/60 rounded-full p-1.5">
-                                                                            <Expand className="h-3 w-3 text-white" />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
+                                                </TimelineHeader>
+                                                <TimelineContent>
+                                                    <HistoryEntryCard
+                                                        entry={entry}
+                                                        platePhotos={platePhotos}
+                                                        signaturePath={service.signature?.signaturePath}
+                                                        getImageUrl={getImageUrl}
+                                                        onImageClick={setSelectedImage}
+                                                    />
+                                                </TimelineContent>
+                                            </TimelineItem>
+                                        )
+                                    })}
+                                </Timeline>
                             </div>
 
                         </>
@@ -742,6 +452,12 @@ export default function ViewServicio() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <ImageViewer
+                open={!!selectedImage}
+                src={selectedImage}
+                onClose={() => setSelectedImage(null)}
+            />
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
                 {isMobile && showScrollTop && (

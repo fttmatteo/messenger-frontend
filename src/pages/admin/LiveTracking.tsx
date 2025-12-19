@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { Map } from "@/components/Map"
-import { Marker, InfoWindow } from "@react-google-maps/api"
+import { InfoWindow, useGoogleMap } from "@react-google-maps/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,23 +12,81 @@ import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 
+// Componente para manejar AdvancedMarkerElement (API nueva de Google Maps)
+function AdvancedMarker({ position, onClick, title }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string }) {
+    const map = useGoogleMap()
+    const markerRef = useRef<any>(null)
+
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title,
+            content: new google.maps.marker.PinElement({
+                background: '#4f46e5',
+                borderColor: 'white',
+                glyphColor: 'white',
+            }).element
+        })
+
+        marker.addListener('click', () => {
+            if (onClick) onClick()
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map]) // Solo se crea una vez cuando el mapa está listo
+
+    // Actualizar posición sin re-crear el marcador
+    useEffect(() => {
+        if (markerRef.current) {
+            markerRef.current.position = position
+        }
+    }, [position])
+
+    return null
+}
+
 export default function LiveTracking() {
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
-    const [mapCenter, setMapCenter] = useState({ lat: 4.6097, lng: -74.0817 }) // Bogotá
+    const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
 
     // Fetch initial data via REST
-    const fetchActiveMessengers = useCallback(async () => {
+    const fetchActiveMessengers = useCallback(async (manual = false) => {
         try {
             setLoading(true)
             const data = await trackingApiService.getActiveMessengers()
-            setMessengers(data || [])
+            const updatedMessengers = data || []
+            setMessengers(updatedMessengers)
 
-            // Center map on first messenger if available
-            if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
-                setMapCenter({ lat: data[0].latitude, lng: data[0].longitude })
+            // Update selected messenger data if it exists in the new list
+            if (selectedMessenger) {
+                const refreshed = updatedMessengers.find(m => m.messengerId === selectedMessenger.messengerId)
+                if (refreshed) {
+                    setSelectedMessenger(refreshed)
+                }
+            }
+
+            if (manual) {
+                toast.success("Monitoreo actualizado", {
+                    description: `${updatedMessengers.length} mensajeros activos`,
+                    id: "manual-refresh-success"
+                })
+            }
+
+            // Center map on first messenger if available and it's the first load
+            if (!manual && updatedMessengers.length > 0 && updatedMessengers[0].latitude && updatedMessengers[0].longitude) {
+                setMapCenter({ lat: updatedMessengers[0].latitude, lng: updatedMessengers[0].longitude })
             }
         } catch (error: any) {
             console.error("Error fetching messengers:", error)
@@ -45,10 +103,17 @@ export default function LiveTracking() {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [selectedMessenger])
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
+        // If the messenger goes offline, remove them from the list
+        if (update.status === 'OFFLINE') {
+            setMessengers(prev => prev.filter(m => m.messengerId !== update.messengerId))
+            setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? null : prev)
+            return
+        }
+
         setMessengers(prev => {
             const existing = prev.findIndex(m => m.messengerId === update.messengerId)
             if (existing >= 0) {
@@ -58,6 +123,9 @@ export default function LiveTracking() {
             }
             return [...prev, update]
         })
+
+        // Also update selected messenger info if it matches the ID
+        setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? update : prev)
     }, [])
 
     // Connect to WebSocket on mount
@@ -80,18 +148,18 @@ export default function LiveTracking() {
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-2">
                 <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo en Vivo</h1>
-                    <Badge variant={connected ? "default" : "secondary"} className="gap-1">
+                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo</h1>
+                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${connected ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
                     </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="gap-1">
+                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${messengers.length > 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
                         <Users className="h-3 w-3" />
-                        {messengers.length} activos
+                        {messengers.length} Activos
                     </Badge>
-                    <Button variant="outline" size="sm" onClick={fetchActiveMessengers} disabled={loading}>
+                    <Button variant="outline" size="sm" onClick={() => fetchActiveMessengers(true)} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Actualizar
                     </Button>
@@ -107,15 +175,11 @@ export default function LiveTracking() {
                         <Map className="w-full h-full rounded-md" center={mapCenter} zoom={12}>
                             {messengers.map((messenger) => (
                                 messenger.latitude && messenger.longitude && (
-                                    <Marker
+                                    <AdvancedMarker
                                         key={messenger.messengerId}
                                         position={{ lat: messenger.latitude, lng: messenger.longitude }}
                                         onClick={() => setSelectedMessenger(messenger)}
-                                        icon={{
-                                            url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%234f46e5' stroke='white' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a10 10 0 0 0-7 17l7 5 7-5a10 10 0 0 0-7-17z'/%3E%3C/svg%3E",
-                                            scaledSize: new google.maps.Size(40, 40),
-                                            anchor: new google.maps.Point(20, 40),
-                                        }}
+                                        title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
                                     />
                                 )
                             ))}

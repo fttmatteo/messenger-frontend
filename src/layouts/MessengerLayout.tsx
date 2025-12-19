@@ -8,6 +8,11 @@ import {
     User,
     LogOut,
 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { trackingService } from "@/services/tracking.service"
+import { toast } from "sonner"
+import { useEffect, useRef } from "react"
 import {
     Sidebar,
     SidebarContent,
@@ -41,16 +46,91 @@ const navItems = [
 ]
 
 export default function MessengerLayout() {
-    const { user, logout } = useAuth()
+    const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const isOnline = user?.isOnline || false
+    const watchIdRef = useRef<number | null>(null)
+
+    const handleOnlineStatusChange = (checked: boolean) => {
+        updateUser({ isOnline: checked })
+    }
+
+    useEffect(() => {
+        if (isOnline) {
+            trackingService.connect(() => {
+                toast.success("Conectado al servidor de rastreo")
+            })
+
+            if ('geolocation' in navigator) {
+                watchIdRef.current = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const { latitude, longitude, speed, heading } = position.coords
+                        trackingService.sendUpdate({
+                            messengerId: user?.id, // Send ID!
+                            latitude,
+                            longitude,
+                            speed: speed || 0,
+                            heading: heading || 0,
+                            status: 'ACTIVE'
+                        })
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error)
+                        toast.error('Error de ubicación: ' + error.message)
+                        updateUser({ isOnline: false })
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                )
+            } else {
+                toast.error('Geolocalización no soportada')
+                updateUser({ isOnline: false })
+            }
+        } else {
+            if (watchIdRef.current !== null) {
+                navigator.geolocation.clearWatch(watchIdRef.current)
+                watchIdRef.current = null
+            }
+
+            // Notify backend before disconnecting
+            if (user?.id) {
+                trackingService.sendUpdate({
+                    messengerId: user.id,
+                    status: 'OFFLINE'
+                })
+            }
+
+            // Allow a small window for the message to be sent before closing the connection
+            const timer = setTimeout(() => {
+                trackingService.disconnect()
+            }, 500)
+
+            return () => clearTimeout(timer)
+        }
+
+        return () => {
+            if (watchIdRef.current !== null) {
+                navigator.geolocation.clearWatch(watchIdRef.current)
+            }
+        }
+    }, [isOnline, user?.id]) // Add user.id dependency
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
     }
 
     const confirmLogout = () => {
+        if (isOnline && user?.id) {
+            trackingService.sendUpdate({
+                messengerId: user.id,
+                status: 'OFFLINE'
+            })
+        }
         logout()
         navigate("/login")
     }
@@ -94,8 +174,23 @@ export default function MessengerLayout() {
                 <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
                     <SidebarTrigger />
                     <div className="flex-1" />
+
+                    <div className="flex items-center gap-3 mr-2">
+                        <div className="flex items-center gap-2">
+                            <Switch
+                                id="online-mode"
+                                checked={isOnline}
+                                onCheckedChange={handleOnlineStatusChange}
+                                className="data-[state=checked]:bg-green-500"
+                            />
+                            <Label htmlFor="online-mode" className="cursor-pointer font-medium text-xs hidden sm:inline-block">
+                                {isOnline ? 'EN LÍNEA' : 'OFFLINE'}
+                            </Label>
+                        </div>
+                    </div>
+
                     <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium">@{user?.username}</span>
+                        <span className="text-sm font-medium text-black dark:text-white">@{user?.username}</span>
                     </div>
                     <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
                         <LogOut className="h-4 w-4" />
