@@ -34,11 +34,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('role', data.role);
 
-        // Try to get ID from token payload (basic decode)
+        // Try to get ID from token payload (robust decode for JWT/Base64URL)
         let userId: number | undefined;
         try {
-            const payload = JSON.parse(atob(data.token.split('.')[1]));
-            // Now we expect an 'id' claim in the payload
+            const base64Url = data.token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+                atob(base64)
+                    .split('')
+                    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                    .join('')
+            );
+            const payload = JSON.parse(jsonPayload);
             if (payload.id) userId = payload.id;
         } catch (e) {
             console.error("Error decoding token", e);
