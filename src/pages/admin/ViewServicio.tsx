@@ -36,10 +36,8 @@ import {
     Building2,
     User,
     Calendar,
-    FileSignature,
     Trash2,
     PhoneCall,
-    Expand,
     ChevronUp,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -209,13 +207,93 @@ export default function ViewServicio() {
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                {/* General Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Información general</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+            {/* General Information - Horizontal layout for desktop */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Información general</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {/* Desktop: Horizontal grid layout */}
+                    <div className="hidden md:grid md:grid-cols-4 gap-6">
+                        <div className="flex items-start gap-3">
+                            <Car className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium">Placa</p>
+                                <div className="mt-1 flex flex-col items-start w-fit">
+                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                    <span className="text-xs text-muted-foreground mt-1 uppercase font-semibold">
+                                        {getPlateTypeLabel(service.plate.plateType)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium">Concesionario</p>
+                                <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {service.dealership.address} • {service.dealership.zone}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3 w-3" />
+                                                {service.dealership.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium">Mensajero</p>
+                                <p className="text-sm text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                                <PhoneCall className="h-3 w-3" />
+                                                {service.messenger.phone}
+                                            </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Llamar</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium">Fecha de Creación</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {format(new Date(service.createdAt), "PPPp", { locale: es })}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop: Observations if present */}
+                    {service.observation && (
+                        <div className="hidden md:block pt-4 mt-4 border-t">
+                            <p className="text-sm font-medium mb-1">Observaciones</p>
+                            <p className="text-sm text-muted-foreground">{service.observation}</p>
+                        </div>
+                    )}
+
+                    {/* Mobile: Vertical layout */}
+                    <div className="md:hidden space-y-4">
                         <div className="flex items-start gap-3">
                             <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
@@ -290,69 +368,9 @@ export default function ViewServicio() {
                                 <p className="text-sm text-muted-foreground">{service.observation}</p>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
-
-                {/* Photos & Signature */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Imágenes principales</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {/* Plate Detection */}
-                        <div>
-                            <div className="flex items-start gap-3 mb-2">
-                                <Car className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Lectura de placa</p>
-                            </div>
-                            {(() => {
-                                const platePhotos = service.photos.filter(p => p.photoType === 'PLATE_DETECTION')
-                                return platePhotos.length > 0 ? (
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {platePhotos.map((photo) => (
-                                            <div
-                                                key={photo.idPhoto}
-                                                className="relative group cursor-pointer"
-                                                onClick={() => window.open(getImageUrl(photo.photoPath), '_blank')}
-                                            >
-                                                <img
-                                                    src={getImageUrl(photo.photoPath)}
-                                                    alt="Lectura de placa"
-                                                    className="w-full h-32 object-cover rounded-lg border transition-opacity group-hover:opacity-75"
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <div className="bg-black/60 rounded-full p-2">
-                                                        <Expand className="h-5 w-5 text-white" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground">Sin imagen de placa registrada</p>
-                                )
-                            })()}
-                        </div>
-
-                        {/* Signature */}
-                        <div>
-                            <div className="flex items-start gap-3 mb-2">
-                                <FileSignature className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                                <p className="text-sm font-medium">Firma digital</p>
-                            </div>
-                            {service.signature ? (
-                                <img
-                                    src={getImageUrl(service.signature.signaturePath)}
-                                    alt="Firma"
-                                    className="w-full max-w-xs h-32 object-contain border rounded-lg bg-white"
-                                />
-                            ) : (
-                                <p className="text-sm text-muted-foreground">Sin firma registrada</p>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* History Timeline */}
             <Card>
