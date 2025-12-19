@@ -37,10 +37,12 @@ export function CardSkeleton() {
                 <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-2 min-w-0">
                         <div className="flex flex-col items-start gap-2">
-                            <Skeleton className="h-6 w-24 rounded-full" />
-                            <div className="flex flex-col items-center w-fit">
-                                <Skeleton className="h-8 w-28 rounded" />
-                                <Skeleton className="h-3 w-16 mt-0.5" />
+                            <div className="flex flex-col items-center gap-2 w-fit">
+                                <Skeleton className="h-7 w-28 rounded-full" />
+                                <div className="flex flex-col items-center">
+                                    <Skeleton className="h-8 w-28 rounded" />
+                                    <Skeleton className="h-3 w-16 mt-0.5" />
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-1">

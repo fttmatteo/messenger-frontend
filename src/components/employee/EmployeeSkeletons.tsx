@@ -34,7 +34,7 @@ export function CardSkeleton() {
             <CardContent className="pt-4">
                 <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="space-y-1">
                             <Skeleton className="h-5 w-36" />
                             <Skeleton className="h-5 w-24 rounded-full" />
                         </div>

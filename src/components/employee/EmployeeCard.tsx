@@ -57,11 +57,11 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                         <div className="flex-1 space-y-2">
                             <div className="space-y-1">
                                 <h3 className="font-semibold text-lg">{employee.fullName}</h3>
-                                <Badge className={getRoleBadgeClass(employee.role)}>
+                                <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3"}>
                                     {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                 </Badge>
                             </div>
-                            <div className="space-y-1 text-sm text-muted-foreground">
+                            <div className="space-y-1 text-base text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <User className="h-3.5 w-3.5" />
                                     <span>@{employee.userName}</span>
@@ -70,12 +70,12 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                                     <FileText className="h-3.5 w-3.5" />
                                     <span className="font-mono">{employee.document}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a
                                                 href={`tel:${employee.phone}`}
-                                                className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1"
+                                                className="hover:underline hover:text-primary transition-colors flex items-center gap-2"
                                             >
                                                 <PhoneCall className="h-3.5 w-3.5" />
                                                 {employee.phone}

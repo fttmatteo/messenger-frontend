@@ -26,7 +26,7 @@ export default function MessengerDashboard() {
                         <CardContent className="pt-6">
                             <stat.icon className={`h-8 w-8 mx-auto mb-2 ${stat.color}`} />
                             <div className="text-2xl font-bold">{stat.value}</div>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                                 {stat.title}
                             </p>
                         </CardContent>
@@ -36,21 +36,21 @@ export default function MessengerDashboard() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-xl">
                         <Package className="h-5 w-5" />
                         Próxima Entrega
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-sm">
                         Tu siguiente destino
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-2">
-                        <p className="font-medium">Toyota Bogotá Norte</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-medium text-lg">Toyota Bogotá Norte</p>
+                        <p className="text-base text-muted-foreground">
                             Calle 127 # 15-20, Bogotá
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                             Entrega estimada: 10:30 AM
                         </p>
                     </div>

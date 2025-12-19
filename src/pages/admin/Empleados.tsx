@@ -421,11 +421,11 @@ export default function Empleados() {
                 </div>
                 <Button
                     onClick={() => navigate("/admin/empleados/crear")}
-                    size={isMobile ? "icon" : "default"}
+                    size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className={isMobile ? "h-4 w-4" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo empleado"}
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nuevo Empleado
                 </Button>
             </div>
 
@@ -625,13 +625,13 @@ export default function Empleados() {
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                                                 >
-                                                    <TableCell className="font-mono">
+                                                    <TableCell className="font-mono text-base">
                                                         {employee.document}
                                                     </TableCell>
-                                                    <TableCell className="font-medium">
+                                                    <TableCell className="font-medium text-base">
                                                         {employee.fullName}
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell className="text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -644,9 +644,9 @@ export default function Empleados() {
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell>{employee.userName}</TableCell>
+                                                    <TableCell className="text-base">{employee.userName}</TableCell>
                                                     <TableCell>
-                                                        <Badge className={getRoleBadgeClass(employee.role)}>
+                                                        <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3 py-1"}>
                                                             {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
                                                         </Badge>
                                                     </TableCell>

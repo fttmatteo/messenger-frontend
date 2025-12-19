@@ -91,13 +91,13 @@ export function DealershipCard({
                                     <Badge variant="secondary" className="w-fit">Sin ubicación</Badge>
                                 )}
                             </div>
-                            <div className="space-y-1 text-sm text-muted-foreground">
+                            <div className="space-y-1 text-base text-muted-foreground">
                                 <div className="flex items-start gap-2">
                                     <MapPinned className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                                     <span className="line-clamp-2">{dealership.address}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold uppercase text-muted-foreground/80">
+                                    <span className="text-sm font-semibold uppercase text-muted-foreground/80">
                                         {dealership.zone}
                                     </span>
                                 </div>
