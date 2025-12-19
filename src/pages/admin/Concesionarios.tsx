@@ -77,6 +77,7 @@ import {
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
+    ChevronUp,
     Home,
     Search,
     X,
@@ -178,6 +179,7 @@ export default function Concesionarios() {
 
     // Filter state
     const [zoneFilter, setZoneFilter] = useState<string>("all")
+    const [showScrollTop, setShowScrollTop] = useState(false)
 
     // Get unique zones from dealerships
     const uniqueZones = useMemo(() => {
@@ -261,6 +263,24 @@ export default function Concesionarios() {
     useEffect(() => {
         fetchDealerships()
     }, [])
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
 
     const handleDelete = async (id: number) => {
         try {
@@ -959,6 +979,26 @@ export default function Concesionarios() {
                     </CardContent>
                 </Card>
             )}
+
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

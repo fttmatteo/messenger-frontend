@@ -77,6 +77,7 @@ import {
     Settings,
     Edit,
     X, Check,
+    ChevronUp,
 
     Image as ImageIcon,
 } from "lucide-react"
@@ -218,6 +219,7 @@ export default function Servicios() {
 
     // Filter state
     const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
+    const [showScrollTop, setShowScrollTop] = useState(false)
 
 
     // Update status dialog state
@@ -311,6 +313,24 @@ export default function Servicios() {
     useEffect(() => {
         fetchServices()
     }, [])
+
+    // Scroll to top functionality for mobile
+    useEffect(() => {
+        if (!isMobile) return
+
+        const handleScroll = () => {
+            const scrolled = window.scrollY > 300
+            setShowScrollTop(scrolled)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMobile])
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
 
     // Sorting handler
     const handleSort = (field: SortField) => {
@@ -1053,6 +1073,26 @@ export default function Servicios() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Scroll to top button (mobile only) */}
+            <AnimatePresence>
+                {isMobile && showScrollTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed bottom-20 right-4 z-50"
+                    >
+                        <Button
+                            onClick={scrollToTop}
+                            size="icon"
+                            className="h-12 w-12 rounded-full shadow-lg"
+                        >
+                            <ChevronUp className="h-5 w-5" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
