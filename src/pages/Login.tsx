@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff, Power, Moon, Sun } from "lucide-react"
+import { AlertCircle, Eye, EyeOff, Moon, Sun, Power } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -47,15 +47,10 @@ export default function Login() {
     const [showExitDialog, setShowExitDialog] = useState(false)
 
     const handleExit = () => {
-        // Intentar cerrar la ventana/app (Funciona principalmente en PWAs instaladas o ventanas abiertas por script)
         window.open('', '_self', '');
         window.close();
-
-        // Intento secundario
         const win = window.open("about:blank", "_self");
         if (win) win.close();
-
-        // Fallback final: si no puede cerrarse (por seguridad del navegador), ir a una página en blanco
         setTimeout(() => {
             if (window.location) {
                 window.location.href = "about:blank";
@@ -87,28 +82,42 @@ export default function Login() {
 
 
             <Card className="w-full max-w-md relative pt-12">
-                {/* Theme Toggle Left */}
-                <div className="absolute top-4 left-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="h-10 w-10"
-                    >
-                        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                    </Button>
+                {/* Mobile View: Toggle Left, Exit Right */}
+                <div className="md:hidden">
+                    <div className="absolute top-4 left-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                            className="h-10 w-10 text-muted-foreground"
+                        >
+                            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </Button>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowExitDialog(true)}
+                            className="text-red-500 hover:text-red-600 h-10 w-10"
+                        >
+                            <Power className="h-5 w-5" />
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Exit Button Right */}
-                <div className="absolute top-4 right-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setShowExitDialog(true)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    >
-                        <Power className="h-5 w-5" />
-                    </Button>
+                {/* Desktop View: Toggle Right, Exit Hidden */}
+                <div className="hidden md:block">
+                    <div className="absolute top-4 right-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                            className="h-10 w-10 text-muted-foreground hover:text-primary"
+                        >
+                            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </Button>
+                    </div>
                 </div>
                 <CardHeader>
                     <div className="flex flex-col items-center justify-center mb-4 space-y-2">
@@ -137,6 +146,7 @@ export default function Login() {
                                 id="userName"
                                 type="text"
                                 placeholder="Ingrese su usuario"
+                                autoComplete="username"
                                 {...register("userName")}
                             />
                             {errors.userName && (
@@ -151,6 +161,7 @@ export default function Login() {
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Ingrese su contraseña"
+                                    autoComplete="current-password"
                                     {...register("password")}
                                     className="pr-8"
                                 />

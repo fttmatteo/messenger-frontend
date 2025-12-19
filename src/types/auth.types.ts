@@ -14,4 +14,5 @@ export interface AuthResponse {
 export interface LoginCredentials {
     userName: string; // Backend expects 'userName' based on AuthCredentials.java
     password: string;
+    rememberMe?: boolean;
 }

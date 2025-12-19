@@ -8,11 +8,10 @@ import {
     User,
     LogOut,
 } from "lucide-react"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef } from "react"
+import { Badge } from "@/components/ui/badge"
 import {
     Sidebar,
     SidebarContent,
@@ -52,13 +51,35 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
+    const wakeLockRef = useRef<any>(null)
 
-    const handleOnlineStatusChange = (checked: boolean) => {
-        updateUser({ isOnline: checked })
+    const requestWakeLock = async () => {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLockRef.current = await (navigator as any).wakeLock.request('screen')
+                console.log('Wake Lock activo: la pantalla no se apagará')
+
+                wakeLockRef.current.addEventListener('release', () => {
+                    console.log('Wake Lock liberado')
+                })
+            }
+        } catch (err: any) {
+            console.warn(`No se pudo activar el Wake Lock: ${err.name}, ${err.message}`)
+        }
+    }
+
+    const releaseWakeLock = () => {
+        if (wakeLockRef.current) {
+            wakeLockRef.current.release().then(() => {
+                wakeLockRef.current = null
+            })
+        }
     }
 
     useEffect(() => {
         if (isOnline) {
+            requestWakeLock()
+
             trackingService.connect(() => {
                 toast.success("Conectado al servidor de rastreo")
             })
@@ -80,8 +101,9 @@ export default function MessengerLayout() {
                         console.warn('Geolocation partial error:', error.message)
 
                         if (error.code === 1) { // PERMISSION_DENIED
-                            toast.error('Permiso de ubicación denegado.')
-                            updateUser({ isOnline: false })
+                            toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
+                            logout()
+                            navigate("/login")
                         } else {
                             // Para TIMEOUT o POSITION_UNAVAILABLE, no apagamos el switch.
                             // Solo mostramos un aviso en consola y dejamos que siga intentando.
@@ -99,6 +121,8 @@ export default function MessengerLayout() {
                 updateUser({ isOnline: false })
             }
         } else {
+            releaseWakeLock()
+
             if (watchIdRef.current !== null) {
                 navigator.geolocation.clearWatch(watchIdRef.current)
                 watchIdRef.current = null
@@ -130,6 +154,20 @@ export default function MessengerLayout() {
     const handleLogout = () => {
         setShowLogoutDialog(true)
     }
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isOnline) {
+                requestWakeLock()
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+            releaseWakeLock()
+        }
+    }, [isOnline])
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
@@ -178,21 +216,15 @@ export default function MessengerLayout() {
                 </SidebarContent>
             </Sidebar>
             <SidebarInset>
-                <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+                <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
                     <SidebarTrigger />
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-3 mr-2">
                         <div className="flex items-center gap-2">
-                            <Switch
-                                id="online-mode"
-                                checked={isOnline}
-                                onCheckedChange={handleOnlineStatusChange}
-                                className="data-[state=checked]:bg-green-500"
-                            />
-                            <Label htmlFor="online-mode" className="cursor-pointer font-medium text-xs hidden sm:inline-block">
-                                {isOnline ? 'EN LÍNEA' : 'OFFLINE'}
-                            </Label>
+                            <Badge variant="default" className={isOnline ? "bg-green-500 hover:bg-green-600" : ""}>
+                                {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
+                            </Badge>
                         </div>
                     </div>
 
