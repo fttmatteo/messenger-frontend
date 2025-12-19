@@ -55,7 +55,7 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="space-y-1">
                                 <h3 className="font-semibold text-lg">{employee.fullName}</h3>
                                 <Badge className={getRoleBadgeClass(employee.role)}>
                                     {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
