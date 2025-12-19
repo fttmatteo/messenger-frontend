@@ -149,13 +149,13 @@ export default function LiveTracking() {
             <div className="flex justify-between items-center flex-wrap gap-2">
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold tracking-tight">Monitoreo</h1>
-                    <Badge variant={connected ? "default" : "secondary"} className="gap-1">
+                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${connected ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
                     </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="gap-1">
+                    <Badge className="gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm bg-green-500 text-white hover:bg-green-600">
                         <Users className="h-3 w-3" />
                         {messengers.length} Activos
                     </Badge>
