@@ -8,7 +8,9 @@ import {
     User,
     LogOut,
 } from "lucide-react"
+
 import { cn } from "@/lib/utils"
+import logo from "@/assets/logo.png"
 
 const navItems = [
     { title: "Inicio", icon: Home, url: "/messenger" },
@@ -31,9 +33,7 @@ export default function MessengerLayout() {
             {/* Header */}
             <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-                        P
-                    </div>
+                    <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
                     <span className="font-semibold">PLAK</span>
                 </div>
                 <div className="flex items-center gap-2">

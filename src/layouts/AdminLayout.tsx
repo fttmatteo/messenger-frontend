@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import logo from "@/assets/logo.png"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -75,9 +76,7 @@ export default function AdminLayout() {
                 {/* Header */}
                 <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
                     <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-                            P
-                        </div>
+                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
                         <span className="font-semibold">PLAK</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -127,9 +126,7 @@ export default function AdminLayout() {
             <Sidebar>
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center gap-2 px-2 py-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                            P
-                        </div>
+                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
                         <span className="font-semibold">PLAK</span>
                     </div>
                 </SidebarHeader>

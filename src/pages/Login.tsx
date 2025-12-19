@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom"
 import { AlertCircle, Eye, EyeOff } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
+import logo from "@/assets/logo.png"
 
 const loginSchema = z.object({
     userName: z.string().min(1, "El usuario es requerido"),
@@ -56,8 +57,11 @@ export default function Login() {
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
+                    <div className="flex flex-col items-center justify-center mb-4 space-y-2">
+                        <img src={logo} alt="PLAK Logo" className="h-20 w-20 object-contain" />
+                    </div>
                     <div className="flex items-center justify-between">
-                        <CardTitle className="text-2xl text-center">Inicio de sesión</CardTitle>
+                        <CardTitle className="text-2xl text-center">Bienvenido a PLAK</CardTitle>
                         <ModeToggle />
                     </div>
                     <CardDescription className="text-center">
