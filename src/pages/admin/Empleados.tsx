@@ -65,7 +65,7 @@ import {
     Pencil,
     Trash2,
     Loader2,
-    Phone,
+    Smartphone,
     PhoneCall,
     User,
     FileText,
@@ -609,7 +609,7 @@ export default function Empleados() {
             {isMobile ? (
                 <div>
                     {/* Mobile filter */}
-                    <div className="mb-3">
+                    <div className="mb-3 space-y-2">
                         <Select
                             value={roleFilter}
                             onValueChange={(value) => setRoleFilter(value as typeof roleFilter)}
@@ -623,6 +623,18 @@ export default function Empleados() {
                                 <SelectItem value="MESSENGER">Mensajero</SelectItem>
                             </SelectContent>
                         </Select>
+
+                        {roleFilter !== "all" && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setRoleFilter("all")}
+                                className="w-full"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtro
+                            </Button>
+                        )}
                     </div>
 
                     <p className="text-sm text-muted-foreground mb-3">
@@ -716,7 +728,7 @@ export default function Empleados() {
                                             </TableHead>
                                             <TableHead>
                                                 <div className="flex items-center gap-2">
-                                                    <Phone className="h-4 w-4" />
+                                                    <Smartphone className="h-4 w-4" />
                                                     Teléfono
                                                 </div>
                                             </TableHead>

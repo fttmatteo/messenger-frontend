@@ -51,6 +51,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
     Empty,
     EmptyHeader,
@@ -65,7 +66,7 @@ import {
     Trash2,
     Loader2,
     MapPin,
-    Phone,
+    Smartphone,
     PhoneCall,
     Copy,
     MapPinned,
@@ -78,6 +79,7 @@ import {
     ArrowDown,
     Home,
     Search,
+    X,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -187,18 +189,34 @@ export default function Concesionarios() {
     // Filter state
     const [zoneFilter, setZoneFilter] = useState<string>("all")
 
+    // Get unique zones from dealerships
+    const uniqueZones = useMemo(() => {
+        const zones = new Set(dealerships.map(d => d.zone))
+        return Array.from(zones).sort()
+    }, [dealerships])
+
     // Filter and sort dealerships
     const filteredAndSortedDealerships = useMemo(() => {
         let result = dealerships.filter((dealership) => {
-            if (!searchQuery.trim()) return true
-            const query = searchQuery.toLowerCase()
-            return (
-                String(dealership.idDealership).includes(query) ||
-                dealership.name.toLowerCase().includes(query) ||
-                dealership.address.toLowerCase().includes(query) ||
-                dealership.phone.includes(query) ||
-                dealership.zone.toLowerCase().includes(query)
-            )
+            // Search filter
+            if (searchQuery.trim()) {
+                const query = searchQuery.toLowerCase()
+                const matchesSearch = (
+                    String(dealership.idDealership).includes(query) ||
+                    dealership.name.toLowerCase().includes(query) ||
+                    dealership.address.toLowerCase().includes(query) ||
+                    dealership.phone.includes(query) ||
+                    dealership.zone.toLowerCase().includes(query)
+                )
+                if (!matchesSearch) return false
+            }
+
+            // Zone filter
+            if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
+                return false
+            }
+
+            return true
         })
 
         // Apply sorting
@@ -221,7 +239,7 @@ export default function Concesionarios() {
         }
 
         return result
-    }, [dealerships, searchQuery, sortField, sortDirection])
+    }, [dealerships, searchQuery, zoneFilter, sortField, sortDirection])
 
     // Pagination calculations
     const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
@@ -619,12 +637,78 @@ export default function Concesionarios() {
                 </Button>
             </div>
 
+            {/* Filters Bar */}
+            {!isMobile && (
+                <div className="flex items-center gap-3 flex-wrap">
+                    <ToggleGroup
+                        type="single"
+                        value={zoneFilter}
+                        onValueChange={(value) => setZoneFilter(value || "all")}
+                        className="justify-start"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos">
+                            Todos
+                        </ToggleGroupItem>
+                        {uniqueZones.map((zone) => (
+                            <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
+                                {zone}
+                            </ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
+
+                    {zoneFilter !== "all" && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setZoneFilter("all")}
+                            className="h-9"
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro
+                        </Button>
+                    )}
+                </div>
+            )}
+
             {/* Mobile View */}
             {isMobile ? (
                 <div>
+                    {/* Mobile filter */}
+                    <div className="mb-3 space-y-2">
+                        <Select
+                            value={zoneFilter}
+                            onValueChange={(value) => setZoneFilter(value)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Filtrar por zona" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todas las zonas</SelectItem>
+                                {uniqueZones.map((zone) => (
+                                    <SelectItem key={zone} value={zone}>
+                                        {zone}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {zoneFilter !== "all" && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setZoneFilter("all")}
+                                className="w-full"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtro
+                            </Button>
+                        )}
+                    </div>
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                         {searchQuery && ` - "${searchQuery}"`}
+                        {zoneFilter !== "all" && ` (zona: ${zoneFilter})`}
                     </p>
                     {loading ? (
                         <div className="space-y-3">
@@ -708,7 +792,7 @@ export default function Concesionarios() {
                                             </TableHead>
                                             <TableHead>
                                                 <div className="flex items-center gap-2">
-                                                    <Phone className="h-4 w-4" />
+                                                    <Smartphone className="h-4 w-4" />
                                                     Teléfono
                                                 </div>
                                             </TableHead>

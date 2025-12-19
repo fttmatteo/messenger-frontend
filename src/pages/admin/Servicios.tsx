@@ -705,22 +705,8 @@ export default function Servicios() {
                             className="h-9"
                         >
                             <X className="h-4 w-4 mr-2" />
-                            Limpiar filtros
+                            Limpiar filtro
                         </Button>
-                    )}
-
-                    {statusFilter.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
-                            {statusFilter.map(status => (
-                                <Badge key={status} variant="secondary" className="gap-1">
-                                    {getStatusBadge(status).label}
-                                    <X
-                                        className="h-3 w-3 cursor-pointer hover:text-destructive"
-                                        onClick={() => setStatusFilter(prev => prev.filter(s => s !== status))}
-                                    />
-                                </Badge>
-                            ))}
-                        </div>
                     )}
                 </div>
             )}
@@ -754,27 +740,15 @@ export default function Servicios() {
                         </Select>
 
                         {statusFilter.length > 0 && (
-                            <div className="flex items-center justify-between">
-                                <div className="flex gap-2 flex-wrap">
-                                    {statusFilter.map(status => (
-                                        <Badge key={status} variant="secondary" className="gap-1">
-                                            {getStatusBadge(status).label}
-                                            <X
-                                                className="h-3 w-3 cursor-pointer"
-                                                onClick={() => setStatusFilter(prev => prev.filter(s => s !== status))}
-                                            />
-                                        </Badge>
-                                    ))}
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setStatusFilter([])}
-                                    className="h-7 px-2"
-                                >
-                                    Limpiar
-                                </Button>
-                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setStatusFilter([])}
+                                className="w-full"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtro
+                            </Button>
                         )}
                     </div>
 
