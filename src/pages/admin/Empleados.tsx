@@ -110,13 +110,13 @@ const itemVariants = {
 const TableRowSkeleton = () => (
     <TableRow>
         <TableCell><Skeleton className="h-4 w-28 font-mono" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-28" /></TableCell>
         <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-        <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+        <TableCell><Skeleton className="h-6 w-28 rounded-full" /></TableCell>
         <TableCell className="text-right">
             <div className="flex justify-end gap-2">
-                <Skeleton className="h-8 w-8 rounded-md" />
+                <Skeleton className="h-8 w-20 rounded-md" />
                 <Skeleton className="h-8 w-8 rounded-md" />
             </div>
         </TableCell>
@@ -128,19 +128,28 @@ const CardSkeleton = () => (
         <CardContent className="pt-4">
             <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-5 w-32" />
-                        <Skeleton className="h-5 w-20 rounded-full" />
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Skeleton className="h-5 w-36" />
+                        <Skeleton className="h-5 w-24 rounded-full" />
                     </div>
                     <div className="space-y-2">
-                        <Skeleton className="h-4 w-28" />
-                        <Skeleton className="h-4 w-36" />
-                        <Skeleton className="h-4 w-24" />
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-24" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-28" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                <div className="flex flex-col gap-2">
+                    <Skeleton className="h-8 w-20 rounded-md" />
+                    <Skeleton className="h-8 w-20 rounded-md" />
                 </div>
             </div>
         </CardContent>
