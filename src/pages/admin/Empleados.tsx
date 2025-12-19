@@ -424,8 +424,8 @@ export default function Empleados() {
                     size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Empleado
+                    <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Empleado"}
                 </Button>
             </div>
 

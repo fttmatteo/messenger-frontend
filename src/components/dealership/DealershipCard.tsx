@@ -123,36 +123,36 @@ export function DealershipCard({
                             {!dealership.isGeolocated && (
                                 <Button
                                     variant="outline"
-                                    size="icon"
+                                    size="lg"
                                     onClick={() => onGeocode(dealership.idDealership)}
                                     disabled={geocoding === dealership.idDealership}
                                     aria-label="Ubicar concesionario"
                                 >
                                     {geocoding === dealership.idDealership ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <Loader2 className="h-5 w-5 animate-spin" />
                                     ) : (
-                                        <MapPin className="h-4 w-4" />
+                                        <MapPin className="h-5 w-5" />
                                     )}
                                 </Button>
                             )}
                             <Button
                                 variant="default"
-                                size="icon"
+                                size="lg"
                                 onClick={() => onEdit(dealership.idDealership)}
                                 className="bg-primary hover:bg-primary/90"
                                 aria-label="Editar concesionario"
                             >
-                                <Pencil className="h-4 w-4" />
+                                <Pencil className="h-5 w-5" />
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        size="icon"
+                                        size="lg"
                                         className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
                                         aria-label="Eliminar concesionario"
                                     >
-                                        <Trash2 className="h-4 w-4" />
+                                        <Trash2 className="h-5 w-5" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>

@@ -69,20 +69,20 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                         <div className="flex flex-col gap-2 shrink-0">
                             <Button
                                 variant="default"
-                                size="sm"
+                                size="lg"
                                 onClick={() => onUpdate(service)}
                                 className="bg-primary hover:bg-primary/90"
+                                aria-label="Actualizar"
                             >
-                                <Edit className="h-4 w-4 mr-1" />
-                                Actualizar
+                                <Edit className="h-5 w-5" />
                             </Button>
                             <Button
                                 variant="outline"
-                                size="sm"
+                                size="lg"
                                 onClick={() => onViewDetails(service.idServiceDelivery)}
+                                aria-label="Detalles"
                             >
-                                <Eye className="h-4 w-4 mr-1" />
-                                Detalles
+                                <Eye className="h-5 w-5" />
                             </Button>
                         </div>
                     </div>

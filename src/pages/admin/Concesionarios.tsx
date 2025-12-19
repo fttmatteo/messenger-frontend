@@ -448,8 +448,8 @@ export default function Concesionarios() {
                     size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Concesionario
+                    <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Concesionario"}
                 </Button>
             </div>
 

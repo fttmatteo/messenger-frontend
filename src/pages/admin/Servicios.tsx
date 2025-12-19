@@ -428,8 +428,8 @@ export default function Servicios() {
                     size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Crear servicio
+                    <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+                    {!isMobile && "Nuevo Servicio"}
                 </Button>
             </div>
 
