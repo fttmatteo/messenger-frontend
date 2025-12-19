@@ -21,19 +21,20 @@ export const authService = {
     },
 
     logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('role');
-        localStorage.removeItem('user');
+        const keys = ['token', 'refreshToken', 'role', 'user'];
+        keys.forEach(key => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+        });
     },
 
     getCurrentUser() {
-        const userStr = localStorage.getItem('user');
+        const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
         if (userStr) return JSON.parse(userStr);
         return null;
     },
 
     getToken() {
-        return localStorage.getItem('token');
+        return localStorage.getItem('token') || sessionStorage.getItem('token');
     }
 };

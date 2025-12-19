@@ -146,6 +146,7 @@ export default function Login() {
                                 id="userName"
                                 type="text"
                                 placeholder="Ingrese su usuario"
+                                autoComplete="username"
                                 {...register("userName")}
                             />
                             {errors.userName && (
@@ -160,6 +161,7 @@ export default function Login() {
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Ingrese su contraseña"
+                                    autoComplete="current-password"
                                     {...register("password")}
                                     className="pr-8"
                                 />

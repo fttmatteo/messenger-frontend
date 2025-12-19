@@ -18,8 +18,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (storedUser && token) {
             setUser(JSON.parse(storedUser));
         }
@@ -28,11 +28,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);
+        const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
         // Store data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        localStorage.setItem('role', data.role);
+        storage.setItem('token', data.token);
+        storage.setItem('refreshToken', data.refreshToken);
+        storage.setItem('role', data.role);
 
         // Try to get ID from token payload (robust decode for JWT/Base64URL)
         let userId: number | undefined;
@@ -57,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: userId,
             isOnline: data.role === 'MESSENGER'
         };
-        localStorage.setItem('user', JSON.stringify(userObj));
+        storage.setItem('user', JSON.stringify(userObj));
 
         setUser(userObj);
     };
@@ -66,7 +67,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!user) return;
         const updatedUser = { ...user, ...data };
         setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // Update in both just in case, or detect which one was used
+        if (localStorage.getItem('user')) {
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+        if (sessionStorage.getItem('user')) {
+            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+        }
     };
 
     const logout = () => {
