@@ -91,22 +91,22 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                         <div className="flex flex-col gap-2">
                             <Button
                                 variant="default"
-                                size="icon"
+                                size="lg"
                                 onClick={() => onEdit(employee.idEmployee)}
                                 className="bg-primary hover:bg-primary/90"
                                 aria-label="Editar empleado"
                             >
-                                <Pencil className="h-4 w-4" />
+                                <Pencil className="h-5 w-5" />
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        size="icon"
+                                        size="lg"
                                         className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
                                         aria-label="Eliminar empleado"
                                     >
-                                        <Trash2 className="h-4 w-4" />
+                                        <Trash2 className="h-5 w-5" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
