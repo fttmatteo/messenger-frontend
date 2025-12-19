@@ -42,8 +42,8 @@ export function HistoryEntryCard({
             {/* Plate photos for ASSIGNED */}
             {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-xs text-muted-foreground mb-2">Lectura de placa</p>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-xs text-muted-foreground mb-2 text-center">Lectura de placa</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
                         {platePhotos.map((photo) => (
                             <div
                                 key={photo.idPhoto}
@@ -53,11 +53,11 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Lectura de placa"
-                                    className="w-28 h-28 object-cover rounded-md border border-border/50"
+                                    className="w-48 h-48 object-cover rounded-md border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-4 w-4 text-white" />
+                                    <div className="bg-black/60 rounded-full p-2">
+                                        <Expand className="h-6 w-6 text-white" />
                                     </div>
                                 </div>
                             </div>
@@ -69,19 +69,21 @@ export function HistoryEntryCard({
             {/* Signature for DELIVERED */}
             {entry.newStatus === 'DELIVERED' && signaturePath && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-xs text-muted-foreground mb-2">Firma digital</p>
-                    <div
-                        className="relative group cursor-pointer w-28 h-28 bg-white rounded-md border border-border/50 flex items-center justify-center"
-                        onClick={() => window.open(getImageUrl(signaturePath), '_blank')}
-                    >
-                        <img
-                            src={getImageUrl(signaturePath)}
-                            alt="Firma"
-                            className="max-w-full max-h-full object-contain p-1"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                            <div className="bg-black/60 rounded-full p-1.5">
-                                <Expand className="h-4 w-4 text-white" />
+                    <p className="text-xs text-muted-foreground mb-2 text-center">Firma digital</p>
+                    <div className="flex justify-center">
+                        <div
+                            className="relative group cursor-pointer w-48 h-48 bg-white rounded-md border border-border/50 flex items-center justify-center"
+                            onClick={() => window.open(getImageUrl(signaturePath), '_blank')}
+                        >
+                            <img
+                                src={getImageUrl(signaturePath)}
+                                alt="Firma"
+                                className="max-w-full max-h-full object-contain p-2"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                                <div className="bg-black/60 rounded-full p-2">
+                                    <Expand className="h-6 w-6 text-white" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -91,8 +93,8 @@ export function HistoryEntryCard({
             {/* Other photos */}
             {entry.photos && entry.photos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-xs text-muted-foreground mb-2">Evidencia fotográfica</p>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-xs text-muted-foreground mb-2 text-center">Evidencia fotográfica</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
                         {entry.photos.map((photo) => (
                             <div
                                 key={photo.idPhoto}
@@ -102,11 +104,11 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Evidencia"
-                                    className="w-28 h-28 object-cover rounded-md border border-border/50"
+                                    className="w-48 h-48 object-cover rounded-md border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-4 w-4 text-white" />
+                                    <div className="bg-black/60 rounded-full p-2">
+                                        <Expand className="h-6 w-6 text-white" />
                                     </div>
                                 </div>
                             </div>
