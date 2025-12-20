@@ -102,10 +102,8 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'ASSIGNED', label: 'Asignado' },
     { value: 'PENDING', label: 'Pendiente' },
     { value: 'DELIVERED', label: 'Entregado' },
-    { value: 'FAILED', label: 'Fallido' },
     { value: 'RETURNED', label: 'Devuelto' },
     { value: 'CANCELED', label: 'Cancelado' },
-    { value: 'OBSERVED', label: 'Observado' },
     { value: 'RESOLVED', label: 'Resuelto' },
 ]
 

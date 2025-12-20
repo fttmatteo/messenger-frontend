@@ -3,10 +3,8 @@ export type ServiceStatus =
     | 'ASSIGNED'
     | 'PENDING'
     | 'DELIVERED'
-    | 'FAILED'
     | 'RETURNED'
     | 'CANCELED'
-    | 'OBSERVED'
     | 'RESOLVED'
 
 // Plate Type

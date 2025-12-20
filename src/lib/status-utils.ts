@@ -15,10 +15,8 @@ export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfi
         ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
         PENDING: { label: 'Pendiente', className: 'bg-indigo-500 text-white' },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
-        FAILED: { label: 'Fallido', className: 'bg-red-500 text-white' },
         RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
         CANCELED: { label: 'Cancelado', className: 'bg-gray-500 text-white' },
-        OBSERVED: { label: 'Observado', className: 'bg-purple-500 text-white' },
         RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
     }
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
