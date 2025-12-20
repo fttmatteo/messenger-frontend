@@ -256,7 +256,7 @@ export default function ViewServicio() {
                             <User className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Mensajero</p>
-                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-base text-muted-foreground">{service.messenger.fullName}</p>
                                 <p className="text-sm text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -332,7 +332,7 @@ export default function ViewServicio() {
                             <User className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Mensajero</p>
-                                <p className="text-base text-muted-foreground">@ {service.messenger.userName}</p>
+                                <p className="text-base text-muted-foreground">{service.messenger.fullName}</p>
                                 <p className="text-sm text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>

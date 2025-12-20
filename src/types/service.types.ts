@@ -3,10 +3,8 @@ export type ServiceStatus =
     | 'ASSIGNED'
     | 'PENDING'
     | 'DELIVERED'
-    | 'FAILED'
     | 'RETURNED'
     | 'CANCELED'
-    | 'OBSERVED'
     | 'RESOLVED'
 
 // Plate Type
@@ -46,7 +44,6 @@ export interface EmployeeInfo {
     document: number
     fullName: string
     phone: string
-    userName: string
     role: 'ADMIN' | 'MESSENGER'
 }
 

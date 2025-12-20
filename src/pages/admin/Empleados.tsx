@@ -70,7 +70,6 @@ import {
     PhoneCall,
     User,
     FileText,
-    AtSign,
     Shield,
     Settings,
     ArrowUpDown,
@@ -133,7 +132,6 @@ export default function Empleados() {
             if (searchQuery.trim()) {
                 const query = searchQuery.toLowerCase()
                 const matchesSearch = employee.fullName.toLowerCase().includes(query) ||
-                    employee.userName.toLowerCase().includes(query) ||
                     String(employee.document).includes(query) ||
                     employee.phone.includes(query) ||
                     employee.role.toLowerCase().includes(query)
@@ -544,7 +542,6 @@ export default function Empleados() {
                                         <TableHead>Documento</TableHead>
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Teléfono</TableHead>
-                                        <TableHead>Usuario</TableHead>
                                         <TableHead>Cargo</TableHead>
                                         <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
@@ -586,12 +583,6 @@ export default function Empleados() {
                                                 <div className="flex items-center gap-2">
                                                     <Smartphone className="h-4 w-4" />
                                                     Teléfono
-                                                </div>
-                                            </TableHead>
-                                            <TableHead>
-                                                <div className="flex items-center gap-2">
-                                                    <AtSign className="h-4 w-4" />
-                                                    Usuario
                                                 </div>
                                             </TableHead>
                                             <TableHead
@@ -644,7 +635,6 @@ export default function Empleados() {
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell className="text-base">{employee.userName}</TableCell>
                                                     <TableCell>
                                                         <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3 py-1"}>
                                                             {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}

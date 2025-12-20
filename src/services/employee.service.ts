@@ -12,18 +12,17 @@ export const employeeService = {
         return response.data
     },
 
-    async create(data: CreateEmployeeRequest): Promise<string> {
+    async create(data: CreateEmployeeRequest): Promise<Employee> {
         const response = await apiClient.post('/employees/createEmployee', data)
         return response.data
     },
 
-    async update(id: number, data: UpdateEmployeeRequest): Promise<string> {
+    async update(id: number, data: UpdateEmployeeRequest): Promise<Employee> {
         const response = await apiClient.put(`/employees/updateEmployee/${id}`, data)
         return response.data
     },
 
-    async delete(id: number): Promise<string> {
-        const response = await apiClient.delete(`/employees/deleteEmployee/${id}`)
-        return response.data
+    async delete(id: number): Promise<void> {
+        await apiClient.delete(`/employees/deleteEmployee/${id}`)
     },
 }

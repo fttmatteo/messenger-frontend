@@ -66,7 +66,6 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
             const query = searchQuery.toLowerCase()
             const matchesSearch = !searchQuery.trim() ||
                 employee.fullName.toLowerCase().includes(query) ||
-                employee.userName.toLowerCase().includes(query) ||
                 String(employee.document).includes(query) ||
                 employee.phone.includes(query) ||
                 employee.role.toLowerCase().includes(query)

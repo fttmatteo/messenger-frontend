@@ -1,6 +1,5 @@
 import { motion } from "framer-motion"
 import {
-    User,
     FileText,
     PhoneCall,
     Pencil,
@@ -62,10 +61,6 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                                 </Badge>
                             </div>
                             <div className="space-y-1 text-base text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                    <User className="h-3.5 w-3.5" />
-                                    <span>@{employee.userName}</span>
-                                </div>
                                 <div className="flex items-center gap-2">
                                     <FileText className="h-3.5 w-3.5" />
                                     <span className="font-mono">{employee.document}</span>

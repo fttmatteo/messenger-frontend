@@ -28,7 +28,6 @@ const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
     fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    userName: z.string().min(1, "El usuario es requerido").min(4, "Mínimo 4 caracteres"),
     password: z.string().min(1, "La contraseña es requerida").min(6, "Mínimo 6 caracteres"),
     role: z.enum(["ADMIN", "MESSENGER"]),
 })
@@ -57,7 +56,6 @@ export default function CreateEmployee() {
                 document: data.document,
                 fullName: data.fullName,
                 phone: data.phone,
-                userName: data.userName,
                 password: data.password,
                 role: data.role as EmployeeRole,
             })
@@ -125,19 +123,6 @@ export default function CreateEmployee() {
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-2">
-                            {/* Usuario */}
-                            <div className="space-y-2">
-                                <Label htmlFor="userName">Nombre de usuario</Label>
-                                <Input
-                                    id="userName"
-                                    placeholder="juanperez"
-                                    {...register("userName")}
-                                />
-                                {errors.userName && (
-                                    <p className="text-sm text-red-500">{errors.userName.message}</p>
-                                )}
-                            </div>
-
                             {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Contraseña</Label>
