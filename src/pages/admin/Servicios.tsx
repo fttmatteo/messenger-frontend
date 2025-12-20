@@ -7,7 +7,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { TableRowSkeleton, CardSkeleton } from "@/components/service/ServiceSkeletons"
 import { ServiceCard } from "@/components/service/ServiceCard"
-import { UpdateStatusDialog } from "@/components/service/UpdateStatusDialog"
 import { Button } from "@/components/ui/button"
 import {
     Table,
@@ -130,9 +129,11 @@ export default function Servicios() {
     const [showScrollTop, setShowScrollTop] = useState(false)
 
 
-    // Update status dialog state
-    const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
-    const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
+
+    // Update status handler
+    const handleUpdateStatus = (service: ServiceDelivery) => {
+        navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)
+    }
 
 
     // Filter and sort services
@@ -243,12 +244,6 @@ export default function Servicios() {
             setSortField(field)
             setSortDirection("asc")
         }
-    }
-
-    // Open update dialog
-    const openUpdateDialog = (service: ServiceDelivery) => {
-        setSelectedService(service)
-        setUpdateDialogOpen(true)
     }
 
     // Sort indicator component
@@ -534,7 +529,7 @@ export default function Servicios() {
                                     <ServiceCard
                                         key={service.idServiceDelivery}
                                         service={service}
-                                        onUpdate={openUpdateDialog}
+                                        onUpdate={handleUpdateStatus}
                                         onViewDetails={(id) => navigate(`/admin/servicios/${id}`)}
                                     />
                                 ))}
@@ -674,7 +669,7 @@ export default function Servicios() {
                                                                     <Button
                                                                         variant="default"
                                                                         size="sm"
-                                                                        onClick={() => openUpdateDialog(service)}
+                                                                        onClick={() => handleUpdateStatus(service)}
                                                                         className="bg-primary hover:bg-primary/90"
                                                                     >
                                                                         <Edit className="h-4 w-4 mr-1" />
@@ -708,14 +703,6 @@ export default function Servicios() {
                     </CardContent>
                 </Card>
             )}
-
-            {/* Update Status Dialog */}
-            <UpdateStatusDialog
-                open={updateDialogOpen}
-                onOpenChange={setUpdateDialogOpen}
-                service={selectedService}
-                onSuccess={fetchServices}
-            />
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>

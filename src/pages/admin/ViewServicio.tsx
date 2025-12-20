@@ -41,6 +41,7 @@ import {
     Trash2,
     PhoneCall,
     ChevronUp,
+    Edit,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
@@ -189,6 +190,16 @@ export default function ViewServicio() {
                     </p>
                 </div>
                 <div className="flex w-full md:w-auto gap-2">
+                    {isAdmin && service.currentStatus !== 'DELIVERED' && (
+                        <Button
+                            variant="default"
+                            onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                            className="flex-1 md:flex-none"
+                        >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Actualizar Estado
+                        </Button>
+                    )}
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
                         <Button
                             variant="destructive"
