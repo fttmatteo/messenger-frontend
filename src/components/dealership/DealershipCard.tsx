@@ -55,10 +55,10 @@ export function DealershipCard({
         <motion.div exit="exit" layout>
             <Card className="mb-3 hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
                             <div className="flex flex-col items-start gap-1">
-                                <h3 className="font-semibold text-lg">{dealership.name}</h3>
+                                <h3 className="font-semibold text-lg truncate">{dealership.name}</h3>
                                 {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -106,7 +106,7 @@ export function DealershipCard({
                                         <TooltipTrigger asChild>
                                             <a
                                                 href={`tel:${dealership.phone}`}
-                                                className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1"
+                                                className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-2"
                                             >
                                                 <PhoneCall className="h-3.5 w-3.5" />
                                                 {dealership.phone}

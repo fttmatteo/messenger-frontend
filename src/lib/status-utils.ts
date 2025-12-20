@@ -1,4 +1,5 @@
 import type { ServiceStatus } from "@/types/service.types"
+import { Car, Bike, Truck } from "lucide-react"
 
 interface StatusBadgeConfig {
     label: string
@@ -33,4 +34,16 @@ export function getPlateTypeLabel(plateType: string): string {
         MOTORCAR: 'Motocarro',
     }
     return types[plateType] || plateType
+}
+
+/**
+ * Get the icon component for a plate type.
+ */
+export function getPlateTypeIcon(plateType: string): typeof Car | typeof Bike | typeof Truck {
+    const icons: Record<string, typeof Car | typeof Bike | typeof Truck> = {
+        CAR: Car,
+        MOTORCYCLE: Bike,
+        MOTORCAR: Truck,
+    }
+    return icons[plateType] || Car
 }

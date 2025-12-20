@@ -34,19 +34,19 @@ import { ImageViewer } from "@/components/ui/image-viewer"
 import {
     Home,
     ArrowLeft,
-    Car,
     Building2,
     User,
     Calendar,
     Trash2,
     PhoneCall,
     ChevronUp,
+    Edit,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeLabel } from "@/lib/status-utils"
+import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
@@ -148,9 +148,10 @@ export default function ViewServicio() {
     }
 
     const statusConfig = getStatusBadge(service.currentStatus)
+    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -179,15 +180,22 @@ export default function ViewServicio() {
             {/* Header */}
             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
-                    <div className="mb-4 flex flex-row items-center gap-4">
+                    <div className="flex flex-row items-center gap-4">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                         <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                     </div>
-                    <p className="text-muted-foreground">
-                        Servicio #{service.idServiceDelivery} • Creado el {format(new Date(service.createdAt), "PPP", { locale: es })}
-                    </p>
                 </div>
                 <div className="flex w-full md:w-auto gap-2">
+                    {isAdmin && service.currentStatus !== 'DELIVERED' && (
+                        <Button
+                            variant="default"
+                            onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                            className="flex-1 md:flex-none"
+                        >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Actualizar estado
+                        </Button>
+                    )}
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
                         <Button
                             variant="destructive"
@@ -199,14 +207,6 @@ export default function ViewServicio() {
                             Eliminar
                         </Button>
                     )}
-                    <Button
-                        variant="outline"
-                        onClick={() => navigate("/admin/servicios")}
-                        className="flex-1 md:flex-none"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Volver
-                    </Button>
                 </div>
             </div>
 
@@ -219,14 +219,11 @@ export default function ViewServicio() {
                     {/* Desktop: Horizontal grid layout */}
                     <div className="hidden md:grid md:grid-cols-4 gap-6">
                         <div className="flex items-start gap-3">
-                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Placa</p>
-                                <div className="mt-1 flex flex-col items-center w-fit">
+                                <div className="mt-1">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
-                                        {getPlateTypeLabel(service.plate.plateType)}
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -298,14 +295,11 @@ export default function ViewServicio() {
                     {/* Mobile: Vertical layout */}
                     <div className="md:hidden space-y-4">
                         <div className="flex items-start gap-3">
-                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Placa</p>
-                                <div className="mt-1 flex flex-col items-center w-fit">
+                                <div className="mt-1">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
-                                        {getPlateTypeLabel(service.plate.plateType)}
-                                    </span>
                                 </div>
                             </div>
                         </div>

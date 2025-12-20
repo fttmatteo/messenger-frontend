@@ -10,11 +10,10 @@ import { Textarea } from "@/components/ui/textarea"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 const dealershipSchema = z.object({
@@ -58,33 +57,22 @@ export default function CreateConcesionario() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/concesionarios")}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-bold">Nuevo Concesionario</h1>
-                    <p className="text-muted-foreground">
-                        Registra un nuevo concesionario en el sistema
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-3xl font-bold">Nuevo concesionario</h1>
             </div>
 
             <Card className="max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Información del Concesionario</CardTitle>
-                    <CardDescription>
-                        Completa los datos del concesionario. Después de crearlo podrás geocodificarlo para obtener sus coordenadas.
-                    </CardDescription>
+                    <CardTitle>Información del concesionario</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         {/* Nombre */}
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nombre del Concesionario</Label>
+                            <Label htmlFor="name">Nombre del concesionario</Label>
                             <Input
                                 id="name"
-                                placeholder="Concesionario Central S.A."
+                                placeholder="Mundo Yamaha"
                                 {...register("name")}
                             />
                             {errors.name && (
@@ -94,10 +82,10 @@ export default function CreateConcesionario() {
 
                         {/* Dirección */}
                         <div className="space-y-2">
-                            <Label htmlFor="address">Dirección Completa</Label>
+                            <Label htmlFor="address">Dirección completa</Label>
                             <Textarea
                                 id="address"
-                                placeholder="Calle 123 #45-67, Barrio Centro, Ciudad"
+                                placeholder="Calle 123 #45-67, Medellin"
                                 rows={3}
                                 {...register("address")}
                             />
@@ -125,7 +113,7 @@ export default function CreateConcesionario() {
                                 <Label htmlFor="zone">Zona</Label>
                                 <Input
                                     id="zone"
-                                    placeholder="Norte, Sur, Centro..."
+                                    placeholder="Norte, sur o centro"
                                     {...register("zone")}
                                 />
                                 {errors.zone && (
@@ -145,7 +133,7 @@ export default function CreateConcesionario() {
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear Concesionario
+                                Crear concesionario
                             </Button>
                         </div>
                     </form>

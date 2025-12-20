@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -22,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 
 const employeeSchema = z.object({
@@ -74,31 +73,20 @@ export default function CreateEmployee() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/empleados")}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-bold">Nuevo Empleado</h1>
-                    <p className="text-muted-foreground">
-                        Registra un nuevo empleado o mensajero
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-3xl font-bold">Nuevo empleado</h1>
             </div>
 
             <Card className="max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Información del Empleado</CardTitle>
-                    <CardDescription>
-                        Completa todos los campos para registrar al empleado
-                    </CardDescription>
+                    <CardTitle>Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Documento */}
                             <div className="space-y-2">
-                                <Label htmlFor="document">Documento de Identidad</Label>
+                                <Label htmlFor="document">Documento</Label>
                                 <Input
                                     id="document"
                                     placeholder="1234567890"
@@ -125,7 +113,7 @@ export default function CreateEmployee() {
 
                         {/* Nombre Completo */}
                         <div className="space-y-2">
-                            <Label htmlFor="fullName">Nombre Completo</Label>
+                            <Label htmlFor="fullName">Nombre completo</Label>
                             <Input
                                 id="fullName"
                                 placeholder="Juan Pérez García"
@@ -139,7 +127,7 @@ export default function CreateEmployee() {
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Usuario */}
                             <div className="space-y-2">
-                                <Label htmlFor="userName">Nombre de Usuario</Label>
+                                <Label htmlFor="userName">Nombre de usuario</Label>
                                 <Input
                                     id="userName"
                                     placeholder="juanperez"
@@ -183,13 +171,13 @@ export default function CreateEmployee() {
 
                         {/* Rol */}
                         <div className="space-y-2">
-                            <Label htmlFor="role">Rol</Label>
+                            <Label htmlFor="role">Cargo</Label>
                             <Select
                                 value={selectedRole}
                                 onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona un rol" />
+                                    <SelectValue placeholder="Selecciona un cargo" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="ADMIN">Administrador</SelectItem>
@@ -212,7 +200,7 @@ export default function CreateEmployee() {
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear Empleado
+                                Crear empleado
                             </Button>
                         </div>
                     </form>

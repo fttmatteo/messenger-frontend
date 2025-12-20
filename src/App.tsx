@@ -8,7 +8,7 @@ import { SessionExpiredDialog } from './components/SessionExpiredDialog';
 export function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider defaultTheme="dark" attribute="class">
+      <ThemeProvider defaultTheme="system" enableSystem attribute="class">
         <AuthProvider>
           <AppRoutes />
           <Toaster />

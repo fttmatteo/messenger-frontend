@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom"
+import { Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import {
@@ -33,6 +33,7 @@ import {
     Settings,
     Search,
     Map,
+    ArrowLeft,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -52,11 +53,19 @@ const menuItems = [
 export default function AdminLayout() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
     const [searchParams, setSearchParams] = useSearchParams()
     const searchQuery = searchParams.get("q") || ""
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [showSearchInput, setShowSearchInput] = useState(false)
     const isMobile = useIsMobile()
+
+    // Detect if we're on a nested page (create/edit/details/update or viewing a specific service)
+    const isNestedPage = location.pathname.includes('/crear') ||
+        location.pathname.includes('/editar') ||
+        location.pathname.includes('/detalles') ||
+        location.pathname.includes('/actualizar') ||
+        /\/servicios\/\d+$/.test(location.pathname)
 
     const handleSearchChange = (value: string) => {
         if (value) {
@@ -73,6 +82,10 @@ export default function AdminLayout() {
     const confirmLogout = () => {
         logout()
         navigate("/login")
+    }
+
+    const handleBack = () => {
+        navigate(-1)
     }
 
 
@@ -114,7 +127,18 @@ export default function AdminLayout() {
             </Sidebar>
             <SidebarInset>
                 <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    <SidebarTrigger />
+                    {isMobile && isNestedPage ? (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleBack}
+                            aria-label="Volver"
+                        >
+                            <ArrowLeft className="h-5 w-5" />
+                        </Button>
+                    ) : (
+                        <SidebarTrigger />
+                    )}
                     {isMobile ? (
                         // Mobile header layout
                         <>
@@ -144,7 +168,7 @@ export default function AdminLayout() {
                                     </Button>
                                 </>
                             )}
-                            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </>
@@ -164,7 +188,7 @@ export default function AdminLayout() {
                             <div className="flex items-center gap-3">
                                 <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">@{user?.username}</span>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </>

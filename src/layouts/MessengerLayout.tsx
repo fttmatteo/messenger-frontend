@@ -7,6 +7,7 @@ import {
     Package,
     User,
     LogOut,
+    ArrowLeft,
 } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
 import { useState } from "react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 const navItems = [
     { title: "Inicio", icon: Home, url: "/messenger" },
@@ -52,6 +54,15 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const wakeLockRef = useRef<any>(null)
+    const isMobile = useIsMobile()
+
+    // Detect if we're on a nested page
+    const isNestedPage = location.pathname.includes('/detalles') ||
+        location.pathname.includes('/entrega/')
+
+    const handleBack = () => {
+        navigate(-1)
+    }
 
     const requestWakeLock = async () => {
         try {
@@ -217,7 +228,18 @@ export default function MessengerLayout() {
             </Sidebar>
             <SidebarInset>
                 <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    <SidebarTrigger />
+                    {isMobile && isNestedPage ? (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleBack}
+                            aria-label="Volver"
+                        >
+                            <ArrowLeft className="h-5 w-5" />
+                        </Button>
+                    ) : (
+                        <SidebarTrigger />
+                    )}
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-3 mr-2">
@@ -231,7 +253,7 @@ export default function MessengerLayout() {
                     <div className="flex items-center gap-3">
                         <span className="text-sm font-medium text-black dark:text-white">@{user?.username}</span>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                    <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
                         <LogOut className="h-4 w-4" />
                     </Button>
                 </header>

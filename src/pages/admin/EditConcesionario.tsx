@@ -16,7 +16,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Loader2, MapPin } from "lucide-react"
+import { Loader2, MapPin } from "lucide-react"
 import { toast } from "sonner"
 
 const dealershipSchema = z.object({
@@ -120,34 +120,23 @@ export default function EditConcesionario() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/concesionarios")}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-bold">Editar Concesionario</h1>
-                    <p className="text-muted-foreground">
-                        Modifica la información del concesionario
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-3xl font-bold">Editar concesionario</h1>
             </div>
 
             <div className="grid gap-6 max-w-4xl lg:grid-cols-3">
                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle>Información del Concesionario</CardTitle>
-                        <CardDescription>
-                            Actualiza los datos del concesionario.
-                        </CardDescription>
+                        <CardTitle>Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                             {/* Nombre */}
                             <div className="space-y-2">
-                                <Label htmlFor="name">Nombre del Concesionario</Label>
+                                <Label htmlFor="name">Nombre del concesionario</Label>
                                 <Input
                                     id="name"
-                                    placeholder="Concesionario Central S.A."
+                                    placeholder="Mundo Yamaha"
                                     {...register("name")}
                                 />
                                 {errors.name && (
@@ -157,10 +146,10 @@ export default function EditConcesionario() {
 
                             {/* Dirección */}
                             <div className="space-y-2">
-                                <Label htmlFor="address">Dirección Completa</Label>
+                                <Label htmlFor="address">Dirección completa</Label>
                                 <Textarea
                                     id="address"
-                                    placeholder="Calle 123 #45-67, Barrio Centro, Ciudad"
+                                    placeholder="Calle 123 #45-67, Medellin"
                                     rows={3}
                                     {...register("address")}
                                 />
@@ -188,7 +177,7 @@ export default function EditConcesionario() {
                                     <Label htmlFor="zone">Zona</Label>
                                     <Input
                                         id="zone"
-                                        placeholder="Norte, Sur, Centro..."
+                                        placeholder="Norte, sur o centro"
                                         {...register("zone")}
                                     />
                                     {errors.zone && (
@@ -208,7 +197,7 @@ export default function EditConcesionario() {
                                 </Button>
                                 <Button type="submit" disabled={isSubmitting}>
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Guardar Cambios
+                                    Guardar cambios
                                 </Button>
                             </div>
                         </form>
@@ -223,7 +212,7 @@ export default function EditConcesionario() {
                             Ubicación
                         </CardTitle>
                         <CardDescription>
-                            Geocodifica el concesionario para obtener sus coordenadas.
+                            Geocodifica el concesionario para obtener sus coordenadas
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

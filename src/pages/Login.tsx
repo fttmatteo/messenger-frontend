@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff, Moon, Sun, Power } from "lucide-react"
+import { AlertCircle, Eye, EyeOff, Power } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -28,7 +28,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
-import { useTheme } from "next-themes"
+import { ModeToggle } from "@/components/mode-toggle"
 
 const loginSchema = z.object({
     userName: z.string().min(1, "El usuario es requerido"),
@@ -40,7 +40,6 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function Login() {
     const { login } = useAuth()
-    const { setTheme, theme } = useTheme()
     const navigate = useNavigate()
     const [error, setError] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
@@ -85,21 +84,14 @@ export default function Login() {
                 {/* Mobile View: Toggle Left, Exit Right */}
                 <div className="md:hidden">
                     <div className="absolute top-4 left-4">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                            className="h-10 w-10 text-muted-foreground"
-                        >
-                            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                        </Button>
+                        <ModeToggle className="h-10 w-10" />
                     </div>
                     <div className="absolute top-4 right-4">
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
                             onClick={() => setShowExitDialog(true)}
-                            className="text-red-500 hover:text-red-600 h-10 w-10"
+                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 h-10 w-10 rounded-full"
                         >
                             <Power className="h-5 w-5" />
                         </Button>
@@ -109,14 +101,7 @@ export default function Login() {
                 {/* Desktop View: Toggle Right, Exit Hidden */}
                 <div className="hidden md:block">
                     <div className="absolute top-4 right-4">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                            className="h-10 w-10 text-muted-foreground hover:text-primary"
-                        >
-                            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                        </Button>
+                        <ModeToggle className="h-10 w-10" />
                     </div>
                 </div>
                 <CardHeader>

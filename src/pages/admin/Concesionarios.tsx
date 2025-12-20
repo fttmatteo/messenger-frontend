@@ -438,10 +438,43 @@ export default function Concesionarios() {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            {/* Header */}
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-bold truncate">Concesionarios</h1>
+            {/* Header with inline filters on desktop */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                    <h1 className="text-2xl md:text-3xl font-bold">Concesionarios</h1>
+
+                    {/* Desktop Filters - inline with title */}
+                    {!isMobile && (
+                        <div className="flex items-center gap-3">
+                            <ToggleGroup
+                                type="single"
+                                value={zoneFilter}
+                                onValueChange={(value) => setZoneFilter(value || "all")}
+                                className="justify-start"
+                            >
+                                <ToggleGroupItem value="all" aria-label="Todos">
+                                    Todos
+                                </ToggleGroupItem>
+                                {uniqueZones.map((zone) => (
+                                    <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
+                                        {zone}
+                                    </ToggleGroupItem>
+                                ))}
+                            </ToggleGroup>
+
+                            {zoneFilter !== "all" && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setZoneFilter("all")}
+                                    className="h-9"
+                                >
+                                    <X className="h-4 w-4 mr-2" />
+                                    Limpiar filtro
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <Button
                     onClick={() => navigate("/admin/concesionarios/crear")}
@@ -449,42 +482,9 @@ export default function Concesionarios() {
                     className="shrink-0"
                 >
                     <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Concesionario"}
+                    {!isMobile && "Nuevo concesionario"}
                 </Button>
             </div>
-
-            {/* Filters Bar */}
-            {!isMobile && (
-                <div className="flex items-center gap-3 flex-wrap">
-                    <ToggleGroup
-                        type="single"
-                        value={zoneFilter}
-                        onValueChange={(value) => setZoneFilter(value || "all")}
-                        className="justify-start"
-                    >
-                        <ToggleGroupItem value="all" aria-label="Todos">
-                            Todos
-                        </ToggleGroupItem>
-                        {uniqueZones.map((zone) => (
-                            <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
-                                {zone}
-                            </ToggleGroupItem>
-                        ))}
-                    </ToggleGroup>
-
-                    {zoneFilter !== "all" && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setZoneFilter("all")}
-                            className="h-9"
-                        >
-                            <X className="h-4 w-4 mr-2" />
-                            Limpiar filtro
-                        </Button>
-                    )}
-                </div>
-            )}
 
             {/* Mobile View */}
             {isMobile ? (
@@ -557,7 +557,7 @@ export default function Concesionarios() {
                 /* Desktop View */
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Concesionarios</CardTitle>
+                        <CardTitle>Lista de concesionarios</CardTitle>
                         <CardDescription>
                             {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                             {searchQuery && ` - Buscando "${searchQuery}"`}

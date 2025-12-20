@@ -17,6 +17,7 @@ import CreateConcesionario from '../pages/admin/CreateConcesionario';
 import EditConcesionario from '../pages/admin/EditConcesionario';
 import Servicios from '../pages/admin/Servicios';
 import CreateServicio from '../pages/admin/CreateServicio';
+import UpdateServiceStatus from '../pages/admin/UpdateServiceStatus';
 import ViewServicio from '../pages/admin/ViewServicio';
 import LiveTracking from '../pages/admin/LiveTracking';
 
@@ -96,6 +97,7 @@ export function AppRoutes() {
                 {/* Services routes */}
                 <Route path="servicios" element={<Servicios />} />
                 <Route path="servicios/crear" element={<CreateServicio />} />
+                <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
                 <Route path="servicios/:id" element={<ViewServicio />} />
                 {/* Other routes */}
                 <Route path="tracking" element={<LiveTracking />} />

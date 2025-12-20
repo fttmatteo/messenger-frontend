@@ -44,11 +44,15 @@ export function SessionExpiredDialog() {
                     </div>
                 </AlertDialogHeader>
                 <AlertDialogDescription className="text-base">
-                    Tu sesión ha expirado. Por favor, inicia sesión nuevamente para continuar.
+                    Tu sesión ha expirado, inicia sesión nuevamente para continuar.
                 </AlertDialogDescription>
                 <AlertDialogFooter>
-                    <AlertDialogAction onClick={handleRedirectToLogin} className="w-full sm:w-auto">
-                        Ir al inicio de sesión
+                    <AlertDialogAction
+                        onClick={handleRedirectToLogin}
+                        className="w-full sm:w-auto text-red-500 border border-red-200 bg-transparent hover:bg-red-50 hover:text-red-600"
+                    >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Cerrar sesión
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
