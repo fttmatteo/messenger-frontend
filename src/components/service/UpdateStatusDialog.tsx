@@ -264,7 +264,7 @@ export function UpdateStatusDialog({
                         onClick={handleUpdateStatus}
                         disabled={updating}
                     >
-                        {updating ? "Actualizando..." : "Actualizar Estado"}
+                        {updating ? "Actualizando..." : "Actualizar estado"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -425,7 +425,7 @@ export default function Empleados() {
                     className="shrink-0"
                 >
                     <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Empleado"}
+                    {!isMobile && "Nuevo empleado"}
                 </Button>
             </div>
 

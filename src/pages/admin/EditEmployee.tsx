@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 
 const employeeSchema = z.object({
@@ -112,13 +112,8 @@ export default function EditEmployee() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/empleados")}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-bold">Editar empleado</h1>
-                </div>
+            <div>
+                <h1 className="text-3xl font-bold">Editar empleado</h1>
             </div>
 
             <Card className="max-w-2xl">
@@ -130,7 +125,7 @@ export default function EditEmployee() {
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Documento */}
                             <div className="space-y-2">
-                                <Label htmlFor="document">Documento de identidad</Label>
+                                <Label htmlFor="document">Documento</Label>
                                 <Input
                                     id="document"
                                     placeholder="1234567890"
@@ -244,7 +239,7 @@ export default function EditEmployee() {
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Guardar Cambios
+                                Guardar cambios
                             </Button>
                         </div>
                     </form>

@@ -449,7 +449,7 @@ export default function Concesionarios() {
                     className="shrink-0"
                 >
                     <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo Concesionario"}
+                    {!isMobile && "Nuevo concesionario"}
                 </Button>
             </div>
 
@@ -557,7 +557,7 @@ export default function Concesionarios() {
                 /* Desktop View */
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Concesionarios</CardTitle>
+                        <CardTitle>Lista de concesionarios</CardTitle>
                         <CardDescription>
                             {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                             {searchQuery && ` - Buscando "${searchQuery}"`}

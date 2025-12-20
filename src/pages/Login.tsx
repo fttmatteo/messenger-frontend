@@ -96,10 +96,10 @@ export default function Login() {
                     </div>
                     <div className="absolute top-4 right-4">
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
                             onClick={() => setShowExitDialog(true)}
-                            className="text-red-500 hover:text-red-600 h-10 w-10"
+                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 h-10 w-10"
                         >
                             <Power className="h-5 w-5" />
                         </Button>

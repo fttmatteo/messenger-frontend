@@ -53,10 +53,10 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
         <motion.div exit="exit" layout>
             <Card className="mb-3 hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
                             <div className="space-y-1">
-                                <h3 className="font-semibold text-lg">{employee.fullName}</h3>
+                                <h3 className="font-semibold text-lg truncate">{employee.fullName}</h3>
                                 <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3"}>
                                     {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                 </Badge>
