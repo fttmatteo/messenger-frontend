@@ -475,6 +475,13 @@ export default function UpdateServiceStatus() {
                                     <p className="text-xs text-muted-foreground text-center">
                                         PNG, JPG (MAX. 10MB)
                                     </p>
+
+                                    {cameraError && (
+                                        <p className="text-sm text-red-600 flex items-center bg-red-50 p-2 rounded border border-red-100">
+                                            <X className="w-4 h-4 mr-1.5" />
+                                            {cameraError}
+                                        </p>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="space-y-3">
