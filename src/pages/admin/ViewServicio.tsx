@@ -46,7 +46,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeLabel } from "@/lib/status-utils"
+import { getStatusBadge, getPlateTypeLabel, getPlateTypeIcon } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
@@ -148,6 +148,7 @@ export default function ViewServicio() {
     }
 
     const statusConfig = getStatusBadge(service.currentStatus)
+    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
         <div className="space-y-6">
@@ -219,14 +220,11 @@ export default function ViewServicio() {
                     {/* Desktop: Horizontal grid layout */}
                     <div className="hidden md:grid md:grid-cols-4 gap-6">
                         <div className="flex items-start gap-3">
-                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Placa</p>
-                                <div className="mt-1 flex flex-col items-center w-fit">
+                                <div className="mt-1">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
-                                        {getPlateTypeLabel(service.plate.plateType)}
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -298,14 +296,11 @@ export default function ViewServicio() {
                     {/* Mobile: Vertical layout */}
                     <div className="md:hidden space-y-4">
                         <div className="flex items-start gap-3">
-                            <Car className="h-6 w-6 mt-0.5 text-muted-foreground" />
+                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground" />
                             <div className="flex-1">
                                 <p className="text-base font-medium">Placa</p>
-                                <div className="mt-1 flex flex-col items-center w-fit">
+                                <div className="mt-1">
                                     <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                    <span className="text-sm text-muted-foreground mt-1 uppercase font-semibold">
-                                        {getPlateTypeLabel(service.plate.plateType)}
-                                    </span>
                                 </div>
                             </div>
                         </div>

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 // Utils
-import { getStatusBadge, getPlateTypeLabel } from "@/lib/status-utils"
+import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
 
 // Types
 import type { ServiceDelivery } from "@/types/service.types"
@@ -27,6 +27,7 @@ interface ServiceCardProps {
  */
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
+    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
         <motion.div exit="exit" layout>
@@ -35,19 +36,17 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 space-y-2 min-w-0">
                             <div className="flex flex-col items-start gap-2">
-                                <div className="flex flex-col items-center gap-2 w-fit">
+                                <div className="flex flex-col items-start gap-2 w-fit">
                                     <Badge className={`${statusConfig.className} text-base px-3 py-1`}>
                                         {statusConfig.label}
                                     </Badge>
-                                    <div className="flex flex-col items-center">
+                                    <div className="flex items-center gap-2">
                                         <PlacaBadge
                                             plateNumber={service.plate.plateNumber}
                                             plateType={service.plate.plateType}
                                             size="md"
                                         />
-                                        <span className="text-sm text-muted-foreground mt-0.5 uppercase font-semibold">
-                                            {getPlateTypeLabel(service.plate.plateType)}
-                                        </span>
+                                        <PlateIcon className="h-5 w-5 text-muted-foreground" />
                                     </div>
                                 </div>
                             </div>
