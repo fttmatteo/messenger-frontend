@@ -315,18 +315,12 @@ export default function CreateServicio() {
 
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold">Crear Servicio de Entrega</h1>
-                <p className="text-muted-foreground mt-1">
-                    Registra una nueva entrega de placa vehicular
-                </p>
+                <h1 className="text-3xl font-bold">Crear servicio de entrega</h1>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Información del Servicio</CardTitle>
-                    <CardDescription>
-                        Toma una foto de la placa para detección automática o ingresa el número manualmente
-                    </CardDescription>
+                    <CardTitle>Información del servicio</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -337,7 +331,7 @@ export default function CreateServicio() {
                                 name="image"
                                 render={() => (
                                     <FormItem>
-                                        <FormLabel>Imagen de la Placa *</FormLabel>
+                                        <FormLabel>Imagen de la placa *</FormLabel>
                                         <FormControl>
                                             <div className="space-y-4">
                                                 {!imagePreview && !cameraActive ? (
@@ -350,7 +344,7 @@ export default function CreateServicio() {
                                                             size="lg"
                                                         >
                                                             <Camera className="w-16 h-16" />
-                                                            <span className="font-semibold">📷 Abrir Cámara</span>
+                                                            <span className="font-semibold">📷 Abrir cámara</span>
                                                             <span className="text-xs opacity-80">
                                                                 Tomar foto de la placa
                                                             </span>
@@ -384,7 +378,7 @@ export default function CreateServicio() {
                                                         </label>
 
                                                         <p className="text-xs text-muted-foreground text-center">
-                                                            PNG, JPG, WEBP (MAX. 5MB)
+                                                            PNG, JPG (MAX. 10MB)
                                                         </p>
                                                     </div>
                                                 ) : cameraActive ? (
@@ -433,7 +427,7 @@ export default function CreateServicio() {
                                                                 {cameraReady ? (
                                                                     <>
                                                                         <Camera className="mr-2 h-6 w-6" />
-                                                                        📸 Capturar Foto
+                                                                        📸 Capturar foto
                                                                     </>
                                                                 ) : (
                                                                     <>
@@ -474,9 +468,6 @@ export default function CreateServicio() {
                                                 )}
                                             </div>
                                         </FormControl>
-                                        <FormDescription>
-                                            La imagen será analizada para detectar el número de placa automáticamente
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -498,7 +489,7 @@ export default function CreateServicio() {
                                             />
                                         </FormControl>
                                         <FormDescription>
-                                            Si ingresas la placa manualmente, se omitirá la detección OCR
+                                            Ingrese la placa manualmente, si la detección OCR falla
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -533,9 +524,6 @@ export default function CreateServicio() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <FormDescription>
-                                            Destino de la entrega
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -570,9 +558,6 @@ export default function CreateServicio() {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormDescription>
-                                                Empleado asignado a la entrega
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -581,6 +566,17 @@ export default function CreateServicio() {
 
                             {/* Actions */}
                             <div className="flex gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                        stopCamera()
+                                        navigate("/admin/servicios")
+                                    }}
+                                    disabled={loading}
+                                >
+                                    Cancelar
+                                </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading || loadingData || cameraActive}
@@ -594,20 +590,9 @@ export default function CreateServicio() {
                                     ) : (
                                         <>
                                             <Bike className="mr-2 h-4 w-4" />
-                                            Crear Servicio
+                                            Crear servicio
                                         </>
                                     )}
-                                </Button>
-                                <Button
-                                    type="button"
-
-                                    onClick={() => {
-                                        stopCamera()
-                                        navigate("/admin/servicios")
-                                    }}
-                                    disabled={loading}
-                                >
-                                    Cancelar
                                 </Button>
                             </div>
                         </form>
