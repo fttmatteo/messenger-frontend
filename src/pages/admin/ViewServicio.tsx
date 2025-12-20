@@ -34,7 +34,6 @@ import { ImageViewer } from "@/components/ui/image-viewer"
 import {
     Home,
     ArrowLeft,
-    Car,
     Building2,
     User,
     Calendar,
@@ -47,7 +46,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeLabel, getPlateTypeIcon } from "@/lib/status-utils"
+import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {

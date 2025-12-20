@@ -8,13 +8,17 @@ interface SignaturePadProps {
     width?: number
     height?: number
     className?: string
+    showClearButton?: boolean
+    onClear?: () => void
 }
 
 export function SignaturePad({
     onChange,
     width = 400,
     height = 200,
-    className
+    className,
+    showClearButton = true,
+    onClear
 }: SignaturePadProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const [isDrawing, setIsDrawing] = useState(false)
@@ -120,7 +124,8 @@ export function SignaturePad({
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         setIsEmpty(true)
         onChange(null)
-    }, [onChange])
+        onClear?.()
+    }, [onChange, onClear])
 
     return (
         <div className={cn("space-y-3", className)}>
@@ -146,18 +151,20 @@ export function SignaturePad({
                 )}
             </div>
 
-            <div className="flex justify-end">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={clearCanvas}
-                    disabled={isEmpty}
-                    size="sm"
-                >
-                    <Eraser className="mr-2 h-4 w-4" />
-                    Limpiar firma
-                </Button>
-            </div>
+            {showClearButton && (
+                <div className="flex justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={clearCanvas}
+                        disabled={isEmpty}
+                        size="sm"
+                    >
+                        <Eraser className="mr-2 h-4 w-4" />
+                        Limpiar firma
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }
