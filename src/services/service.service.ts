@@ -25,27 +25,28 @@ class ServiceDeliveryService {
      * Create new service with image
      * Supports OCR or manual plate entry
      */
-    async create(request: CreateServiceRequest): Promise<void> {
+    async create(request: CreateServiceRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
         formData.append('image', request.image)
         formData.append('dealershipId', request.dealershipId)
 
-        if (request.messengerDocument) {
-            formData.append('messengerDocument', request.messengerDocument)
+        if (request.messengerId) {
+            formData.append('messengerId', request.messengerId)
         }
 
         if (request.manualPlateNumber) {
             formData.append('manualPlateNumber', request.manualPlateNumber)
         }
 
-        await apiClient.post('/services/createService', formData)
+        const response = await apiClient.post('/services/createService', formData)
+        return response.data
     }
 
     /**
      * Update service status with evidence
      * Required evidence varies by target status
      */
-    async updateStatus(id: number, request: UpdateServiceStatusRequest): Promise<void> {
+    async updateStatus(id: number, request: UpdateServiceStatusRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
         formData.append('status', request.status)
 
@@ -63,7 +64,8 @@ class ServiceDeliveryService {
             })
         }
 
-        await apiClient.put(`/services/updateServiceStatus/${id}`, formData)
+        const response = await apiClient.put(`/services/updateServiceStatus/${id}`, formData)
+        return response.data
     }
 
     /**

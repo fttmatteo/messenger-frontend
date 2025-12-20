@@ -77,7 +77,7 @@ export interface ServiceDelivery {
 export interface CreateServiceRequest {
     image: File
     dealershipId: string
-    messengerDocument?: string
+    messengerId?: string
     manualPlateNumber?: string
 }
 
