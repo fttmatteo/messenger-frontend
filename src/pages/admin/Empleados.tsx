@@ -600,7 +600,7 @@ export default function Empleados() {
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Shield className="h-4 w-4" />
-                                                    Rol
+                                                    Cargo
                                                     <SortIndicator field="role" />
                                                 </div>
                                             </TableHead>
