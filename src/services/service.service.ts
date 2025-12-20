@@ -30,8 +30,8 @@ class ServiceDeliveryService {
         formData.append('image', request.image)
         formData.append('dealershipId', request.dealershipId)
 
-        if (request.messengerId) {
-            formData.append('messengerId', request.messengerId)
+        if (request.messengerDocument) {
+            formData.append('messengerDocument', request.messengerDocument)
         }
 
         if (request.manualPlateNumber) {

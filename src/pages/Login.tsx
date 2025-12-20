@@ -31,7 +31,7 @@ import logo from "@/assets/logo.png"
 import { ModeToggle } from "@/components/mode-toggle"
 
 const loginSchema = z.object({
-    userName: z.string().min(1, "El usuario es requerido"),
+    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
     password: z.string().min(1, "La contraseña es requerida"),
     rememberMe: z.boolean().optional(),
 })
@@ -69,7 +69,11 @@ export default function Login() {
     const onSubmit = async (data: LoginFormValues) => {
         try {
             setError(null)
-            await login(data)
+            await login({
+                document: parseInt(data.document, 10),
+                password: data.password,
+                rememberMe: data.rememberMe
+            })
             navigate("/")
         } catch (err: any) {
             setError(err.message || "Algo salió mal")
@@ -109,7 +113,7 @@ export default function Login() {
                         <img src={logo} alt="PLAK Logo" className="h-20 w-20 object-contain" />
                     </div>
                     <div className="flex items-center justify-center">
-                        <CardTitle className="text-2xl text-center">Inicio de sesíon</CardTitle>
+                        <CardTitle className="text-2xl text-center">Inicio de sesíon</CardTitle>
                     </div>
                     <CardDescription className="text-center">
                         Ingrese sus credenciales para continuar
@@ -126,16 +130,17 @@ export default function Login() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="userName">Usuario</Label>
+                            <Label htmlFor="document">Documento</Label>
                             <Input
-                                id="userName"
+                                id="document"
                                 type="text"
-                                placeholder="Ingrese su usuario"
+                                inputMode="numeric"
+                                placeholder="Ingrese su número de documento"
                                 autoComplete="username"
-                                {...register("userName")}
+                                {...register("document")}
                             />
-                            {errors.userName && (
-                                <p className="text-sm text-red-500">{errors.userName.message}</p>
+                            {errors.document && (
+                                <p className="text-sm text-red-500">{errors.document.message}</p>
                             )}
                         </div>
 

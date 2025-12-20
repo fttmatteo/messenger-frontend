@@ -157,7 +157,7 @@ export default function AdminLayout() {
                             ) : (
                                 <>
                                     <div className="flex-1 flex justify-center">
-                                        <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">@{user?.username}</span>
+                                        <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Doc: {user?.document}</span>
                                     </div>
                                     <Button
                                         variant="ghost"
@@ -186,7 +186,7 @@ export default function AdminLayout() {
                             </div>
                             <div className="flex-1" />
                             <div className="flex items-center gap-3">
-                                <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">@{user?.username}</span>
+                                <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Doc: {user?.document}</span>
                             </div>
                             <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
                                 <LogOut className="h-4 w-4" />

@@ -44,7 +44,6 @@ export interface EmployeeInfo {
     document: number
     fullName: string
     phone: string
-    userName: string
     role: 'ADMIN' | 'MESSENGER'
 }
 
@@ -75,7 +74,7 @@ export interface ServiceDelivery {
 export interface CreateServiceRequest {
     image: File
     dealershipId: string
-    messengerId?: string
+    messengerDocument?: string
     manualPlateNumber?: string
 }
 

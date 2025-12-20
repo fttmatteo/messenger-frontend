@@ -1,9 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/context/AuthContext"
 import { Package, CheckCircle, Clock, MapPin } from "lucide-react"
 
 export default function MessengerDashboard() {
-    const { user } = useAuth()
 
     const todayStats = [
         { title: "Pendientes", value: "5", icon: Clock, color: "text-yellow-500" },
@@ -14,7 +12,7 @@ export default function MessengerDashboard() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold">¡Hola, {user?.username}!</h1>
+                <h1 className="text-2xl font-bold">¡Bienvenido!</h1>
                 <p className="text-muted-foreground">
                     Tu resumen de entregas de hoy
                 </p>

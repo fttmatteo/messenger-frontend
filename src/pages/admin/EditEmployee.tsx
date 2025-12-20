@@ -28,7 +28,6 @@ const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
     fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    userName: z.string().min(1, "El usuario es requerido").min(4, "Mínimo 4 caracteres"),
     password: z.string().optional(), // Password is optional on update
     role: z.enum(["ADMIN", "MESSENGER"]),
 })
@@ -64,7 +63,6 @@ export default function EditEmployee() {
                     document: String(employee.document),
                     fullName: employee.fullName,
                     phone: employee.phone,
-                    userName: employee.userName,
                     password: "", // Don't populate password
                     role: employee.role,
                 })
@@ -88,7 +86,6 @@ export default function EditEmployee() {
                 document: data.document,
                 fullName: data.fullName,
                 phone: data.phone,
-                userName: data.userName,
                 password: data.password || "", // Send empty if not changed
                 role: data.role as EmployeeRole,
             })
@@ -164,19 +161,6 @@ export default function EditEmployee() {
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-2">
-                            {/* Usuario */}
-                            <div className="space-y-2">
-                                <Label htmlFor="userName">Nombre de usuario</Label>
-                                <Input
-                                    id="userName"
-                                    placeholder="juanperez"
-                                    {...register("userName")}
-                                />
-                                {errors.userName && (
-                                    <p className="text-sm text-red-500">{errors.userName.message}</p>
-                                )}
-                            </div>
-
                             {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Nueva contraseña (opcional)</Label>

@@ -5,7 +5,6 @@ export interface Employee {
     document: number
     fullName: string
     phone: string
-    userName: string
     role: EmployeeRole
 }
 
@@ -13,7 +12,6 @@ export interface CreateEmployeeRequest {
     document: string
     fullName: string
     phone: string
-    userName: string
     password: string
     role: EmployeeRole
 }

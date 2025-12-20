@@ -1,6 +1,6 @@
 export interface User {
     id?: number;
-    username: string;
+    document?: number;
     role: string;
     isOnline?: boolean;
 }
@@ -12,7 +12,7 @@ export interface AuthResponse {
 }
 
 export interface LoginCredentials {
-    userName: string; // Backend expects 'userName' based on AuthCredentials.java
+    document: number; // Backend expects 'document' (Long) based on AuthCredentials.java
     password: string;
     rememberMe?: boolean;
 }
