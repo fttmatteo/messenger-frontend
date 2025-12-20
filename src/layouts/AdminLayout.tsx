@@ -60,10 +60,12 @@ export default function AdminLayout() {
     const [showSearchInput, setShowSearchInput] = useState(false)
     const isMobile = useIsMobile()
 
-    // Detect if we're on a nested page (create/edit/details)
+    // Detect if we're on a nested page (create/edit/details/update or viewing a specific service)
     const isNestedPage = location.pathname.includes('/crear') ||
         location.pathname.includes('/editar') ||
-        location.pathname.includes('/detalles')
+        location.pathname.includes('/detalles') ||
+        location.pathname.includes('/actualizar') ||
+        /\/servicios\/\d+$/.test(location.pathname)
 
     const handleSearchChange = (value: string) => {
         if (value) {

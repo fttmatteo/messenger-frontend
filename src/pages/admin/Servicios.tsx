@@ -413,10 +413,50 @@ export default function Servicios() {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            {/* Header */}
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-bold truncate">Servicios</h1>
+            {/* Header with inline filters on desktop */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                    <h1 className="text-2xl md:text-3xl font-bold">Servicios</h1>
+
+                    {/* Desktop Filters - inline with title */}
+                    {!isMobile && (
+                        <div className="flex items-center gap-3">
+                            <Select
+                                value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                                onValueChange={(value) => {
+                                    if (value === "all") {
+                                        setStatusFilter([])
+                                    } else {
+                                        setStatusFilter([value as ServiceStatus])
+                                    }
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Estado" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos los estados</SelectItem>
+                                    {AVAILABLE_STATUSES.map(status => (
+                                        <SelectItem key={status.value} value={status.value}>
+                                            {status.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            {(statusFilter.length > 0) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setStatusFilter([])}
+                                    className="h-9"
+                                >
+                                    <X className="h-4 w-4 mr-2" />
+                                    Limpiar filtro
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <Button
                     onClick={() => navigate("/admin/servicios/crear")}
@@ -427,46 +467,6 @@ export default function Servicios() {
                     {!isMobile && "Nuevo servicio"}
                 </Button>
             </div>
-
-            {/* Filters Bar */}
-            {!isMobile && (
-                <div className="flex items-center gap-3 flex-wrap">
-                    <Select
-                        value={statusFilter.length === 1 ? statusFilter[0] : "all"}
-                        onValueChange={(value) => {
-                            if (value === "all") {
-                                setStatusFilter([])
-                            } else {
-                                setStatusFilter([value as ServiceStatus])
-                            }
-                        }}
-                    >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Estado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos los estados</SelectItem>
-                            {AVAILABLE_STATUSES.map(status => (
-                                <SelectItem key={status.value} value={status.value}>
-                                    {status.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    {(statusFilter.length > 0) && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setStatusFilter([])}
-                            className="h-9"
-                        >
-                            <X className="h-4 w-4 mr-2" />
-                            Limpiar filtro
-                        </Button>
-                    )}
-                </div>
-            )}
 
             {/* Mobile View */}
             {isMobile ? (

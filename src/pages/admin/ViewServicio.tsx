@@ -184,9 +184,6 @@ export default function ViewServicio() {
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                         <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                     </div>
-                    <p className="text-muted-foreground">
-                        Servicio #{service.idServiceDelivery} • Creado el {format(new Date(service.createdAt), "PPP", { locale: es })}
-                    </p>
                 </div>
                 <div className="flex w-full md:w-auto gap-2">
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
@@ -196,7 +193,7 @@ export default function ViewServicio() {
                             className="flex-1 md:flex-none"
                         >
                             <Edit className="mr-2 h-4 w-4" />
-                            Actualizar Estado
+                            Actualizar estado
                         </Button>
                     )}
                     {isAdmin && service.currentStatus !== 'DELIVERED' && (
@@ -210,14 +207,6 @@ export default function ViewServicio() {
                             Eliminar
                         </Button>
                     )}
-                    <Button
-                        variant="outline"
-                        onClick={() => navigate("/admin/servicios")}
-                        className="flex-1 md:flex-none"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Volver
-                    </Button>
                 </div>
             </div>
 
