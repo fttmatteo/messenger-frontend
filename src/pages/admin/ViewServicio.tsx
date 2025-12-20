@@ -151,7 +151,7 @@ export default function ViewServicio() {
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -180,7 +180,7 @@ export default function ViewServicio() {
             {/* Header */}
             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
-                    <div className="mb-4 flex flex-row items-center gap-4">
+                    <div className="flex flex-row items-center gap-4">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                         <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                     </div>
