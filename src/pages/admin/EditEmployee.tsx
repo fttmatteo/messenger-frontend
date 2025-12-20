@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -118,26 +117,20 @@ export default function EditEmployee() {
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                    <h1 className="text-3xl font-bold">Editar Empleado</h1>
-                    <p className="text-muted-foreground">
-                        Modifica la información del empleado
-                    </p>
+                    <h1 className="text-3xl font-bold">Editar empleado</h1>
                 </div>
             </div>
 
             <Card className="max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Información del Empleado</CardTitle>
-                    <CardDescription>
-                        Actualiza los datos del empleado. Deja la contraseña vacía para mantener la actual.
-                    </CardDescription>
+                    <CardTitle>Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Documento */}
                             <div className="space-y-2">
-                                <Label htmlFor="document">Documento de Identidad</Label>
+                                <Label htmlFor="document">Documento de identidad</Label>
                                 <Input
                                     id="document"
                                     placeholder="1234567890"
@@ -164,7 +157,7 @@ export default function EditEmployee() {
 
                         {/* Nombre Completo */}
                         <div className="space-y-2">
-                            <Label htmlFor="fullName">Nombre Completo</Label>
+                            <Label htmlFor="fullName">Nombre completo</Label>
                             <Input
                                 id="fullName"
                                 placeholder="Juan Pérez García"
@@ -178,7 +171,7 @@ export default function EditEmployee() {
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Usuario */}
                             <div className="space-y-2">
-                                <Label htmlFor="userName">Nombre de Usuario</Label>
+                                <Label htmlFor="userName">Nombre de usuario</Label>
                                 <Input
                                     id="userName"
                                     placeholder="juanperez"
@@ -191,7 +184,7 @@ export default function EditEmployee() {
 
                             {/* Contraseña */}
                             <div className="space-y-2">
-                                <Label htmlFor="password">Nueva Contraseña (opcional)</Label>
+                                <Label htmlFor="password">Nueva contraseña (opcional)</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -222,7 +215,7 @@ export default function EditEmployee() {
 
                         {/* Rol */}
                         <div className="space-y-2">
-                            <Label htmlFor="role">Rol</Label>
+                            <Label htmlFor="role">Cargo</Label>
                             <Select
                                 value={selectedRole}
                                 onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}

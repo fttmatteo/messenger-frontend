@@ -545,7 +545,7 @@ export default function Empleados() {
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Teléfono</TableHead>
                                         <TableHead>Usuario</TableHead>
-                                        <TableHead>Rol</TableHead>
+                                        <TableHead>Cargo</TableHead>
                                         <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
                                 </TableHeader>
