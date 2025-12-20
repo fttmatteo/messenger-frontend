@@ -577,13 +577,11 @@ export default function UpdateServiceStatus() {
                         <DialogTitle>Firma digital - Pantalla completa</DialogTitle>
                     </DialogHeader>
 
-                    {/* Rotation suggestion for mobile */}
-                    <div className="md:hidden bg-blue-50 border border-blue-200 rounded-lg p-2 mb-3 flex items-center gap-2">
-                        <RotateCw className="w-4 h-4 text-blue-600 shrink-0" />
-                        <p className="text-xs text-blue-700">
-                            Rota el dispositivo horizontalmente
-                        </p>
-                    </div>
+                    {/* Subtle rotation hint for mobile */}
+                    <p className="md:hidden text-xs text-muted-foreground text-center mb-2 flex items-center justify-center gap-1">
+                        <RotateCw className="w-3 h-3" />
+                        Rota el dispositivo
+                    </p>
 
                     <div className="flex items-center justify-center h-full md:py-4">
                         <SignaturePad
