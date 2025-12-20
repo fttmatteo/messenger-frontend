@@ -122,7 +122,7 @@ export default function CreateServicio() {
     }, [stopCamera])
 
     // Start camera
-    const startCamera = async () => {
+    const startCamera = useCallback(async () => {
         try {
             setCameraError(null)
             setCameraReady(false)
@@ -148,7 +148,6 @@ export default function CreateServicio() {
                         videoRef.current.play()
                             .then(() => {
                                 setCameraReady(true)
-                                toast.success("Cámara lista", { duration: 1500 })
                             })
                             .catch(err => {
                                 console.error('Video play error:', err)
@@ -166,7 +165,12 @@ export default function CreateServicio() {
                 id: "error-camara"
             })
         }
-    }
+    }, [])
+
+    // Auto-start camera on mount
+    useEffect(() => {
+        startCamera()
+    }, [startCamera])
 
     // Capture photo from camera
     const capturePhoto = () => {
@@ -315,7 +319,7 @@ export default function CreateServicio() {
 
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold">Crear servicio de entrega</h1>
+                <h1 className="text-3xl font-bold">Crear servicio</h1>
             </div>
 
             <Card>
