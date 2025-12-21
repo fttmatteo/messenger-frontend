@@ -29,6 +29,7 @@ import {
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
 import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
+import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
 import {
@@ -394,6 +395,14 @@ export default function ViewServicio() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Service Tracking Map */}
+            <ServiceTrackingMap
+                serviceId={service.idServiceDelivery}
+                dealershipLat={service.dealership.latitude}
+                dealershipLng={service.dealership.longitude}
+                dealershipName={service.dealership.name}
+            />
 
             {/* History Timeline */}
             <Card>

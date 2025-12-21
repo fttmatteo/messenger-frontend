@@ -32,5 +32,10 @@ export const trackingApiService = {
     getLastLocation: async (messengerId: number): Promise<LiveTrackingUpdate> => {
         const response = await api.get<LiveTrackingUpdate>(`/tracking/messenger/${messengerId}`);
         return response.data;
+    },
+
+    getHistoryByService: async (serviceId: number) => {
+        const response = await api.get(`/tracking/service/${serviceId}`);
+        return response.data;
     }
 };

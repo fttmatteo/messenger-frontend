@@ -37,6 +37,8 @@ export interface DealershipInfo {
     address: string
     phone: string
     zone: string
+    latitude?: number
+    longitude?: number
 }
 
 export interface EmployeeInfo {
