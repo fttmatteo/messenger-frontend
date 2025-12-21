@@ -34,6 +34,18 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
+/**
+ * Capitalizes the first letter of each word
+ * Example: "MATEO VALENCIA ARDILA" → "Mateo Valencia Ardila"
+ */
+function capitalizeWords(str: string): string {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+}
+
 export default function CreateEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
@@ -54,7 +66,7 @@ export default function CreateEmployee() {
         try {
             await employeeService.create({
                 document: data.document,
-                fullName: data.fullName,
+                fullName: capitalizeWords(data.fullName.trim()),
                 phone: data.phone,
                 password: data.password,
                 role: data.role as EmployeeRole,
