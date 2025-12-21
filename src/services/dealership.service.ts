@@ -8,7 +8,7 @@ export const dealershipService = {
     },
 
     async getById(id: number): Promise<Dealership> {
-        const response = await apiClient.get(`/dealerships/findDealership/${id}`)
+        const response = await apiClient.get(`/dealerships/findByDealershipId/${id}`)
         return response.data
     },
 

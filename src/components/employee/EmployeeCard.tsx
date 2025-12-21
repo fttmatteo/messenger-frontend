@@ -9,7 +9,6 @@ import {
 
 // Components
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
@@ -35,12 +34,24 @@ interface EmployeeCardProps {
 }
 
 /**
- * Returns badge class based on employee role
+ * Returns text color class based on employee role
  */
-function getRoleBadgeClass(role: string): string {
+function getRoleTextClass(role: string): string {
     return role === 'ADMIN'
-        ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
-        : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+        ? "text-purple-600 dark:text-purple-400"
+        : "text-blue-600 dark:text-blue-400"
+}
+
+/**
+ * Formats a full name to show first name and initial of last name
+ * Example: "Juan Carlos Perez" → "Juan P."
+ */
+function formatDisplayName(fullName: string): string {
+    const parts = fullName.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0]
+    const firstName = parts[0]
+    const lastName = parts[parts.length - 1]
+    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 /**
@@ -55,10 +66,17 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0 space-y-2">
                             <div className="space-y-1">
-                                <h3 className="font-semibold text-lg truncate">{employee.fullName}</h3>
-                                <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3"}>
-                                    {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
-                                </Badge>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <h3 className="font-semibold text-lg truncate cursor-default">{formatDisplayName(employee.fullName)}</h3>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{employee.fullName}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <span className={`text-base font-semibold ${getRoleTextClass(employee.role)}`}>
+                                    {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
+                                </span>
                             </div>
                             <div className="space-y-1 text-base text-muted-foreground">
                                 <div className="flex items-center gap-2">

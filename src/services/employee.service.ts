@@ -8,7 +8,7 @@ export const employeeService = {
     },
 
     async getById(id: number): Promise<Employee> {
-        const response = await apiClient.get(`/employees/findEmployee/${id}`)
+        const response = await apiClient.get(`/employees/findByEmployeeId/${id}`)
         return response.data
     },
 
