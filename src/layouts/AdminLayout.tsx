@@ -55,7 +55,7 @@ const menuItems = [
 ]
 
 export default function AdminLayout() {
-    const { user, logout } = useAuth()
+    const { logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [searchParams, setSearchParams] = useSearchParams()
