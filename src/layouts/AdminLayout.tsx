@@ -34,12 +34,14 @@ import {
     Search,
     Map,
     ArrowLeft,
+    ChevronUp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import logo from "@/assets/logo.png"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { motion, AnimatePresence } from "framer-motion"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -88,6 +90,25 @@ export default function AdminLayout() {
         navigate(-1)
     }
 
+    // Scroll to top functionality
+    const mainRef = useRef<HTMLElement>(null)
+    const [showScrollTop, setShowScrollTop] = useState(false)
+
+    useEffect(() => {
+        const mainElement = mainRef.current
+        if (!mainElement) return
+
+        const handleScroll = () => {
+            setShowScrollTop(mainElement.scrollTop > 300)
+        }
+
+        mainElement.addEventListener('scroll', handleScroll)
+        return () => mainElement.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const scrollToTop = () => {
+        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    }
 
 
     // Desktop Layout with Sidebar
@@ -125,8 +146,8 @@ export default function AdminLayout() {
                     </SidebarGroup>
                 </SidebarContent>
             </Sidebar>
-            <SidebarInset className="overflow-x-hidden">
-                <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
+            <SidebarInset className="overflow-hidden flex flex-col h-screen">
+                <header className="flex-shrink-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
                     {isMobile && isNestedPage ? (
                         <Button
                             variant="ghost"
@@ -194,9 +215,29 @@ export default function AdminLayout() {
                         </>
                     )}
                 </header>
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+                <main ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto p-6">
                     <Outlet context={{ searchQuery }} />
                 </main>
+
+                {/* Scroll to top button */}
+                <AnimatePresence>
+                    {showScrollTop && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className="fixed bottom-6 right-6 z-50"
+                        >
+                            <Button
+                                onClick={scrollToTop}
+                                size="icon"
+                                className="h-12 w-12 rounded-full shadow-lg"
+                            >
+                                <ChevronUp className="h-5 w-5" />
+                            </Button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </SidebarInset>
 
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
