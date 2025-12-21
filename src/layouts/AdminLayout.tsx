@@ -35,6 +35,7 @@ import {
     Map,
     ArrowLeft,
     ChevronUp,
+    Trash2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,6 +50,7 @@ const menuItems = [
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
     { title: "Mapa", icon: Map, url: "/admin/tracking" },
+    { title: "Eliminados", icon: Trash2, url: "/admin/eliminados" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
@@ -177,9 +179,7 @@ export default function AdminLayout() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="flex-1 flex justify-center">
-                                        <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Doc: {user?.document}</span>
-                                    </div>
+                                    <div className="flex-1" />
                                     <Button
                                         variant="ghost"
                                         size="icon"
@@ -206,9 +206,6 @@ export default function AdminLayout() {
                                 />
                             </div>
                             <div className="flex-1" />
-                            <div className="flex items-center gap-3">
-                                <span className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Doc: {user?.document}</span>
-                            </div>
                             <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
                                 <LogOut className="h-4 w-4" />
                             </Button>

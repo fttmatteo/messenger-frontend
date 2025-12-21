@@ -240,13 +240,6 @@ export default function Empleados() {
         }
     }
 
-    const getRoleTextClass = (role: string) => {
-        // Text-only color for roles
-        return role === 'ADMIN'
-            ? 'text-purple-600 dark:text-purple-400'
-            : 'text-blue-600 dark:text-blue-400'
-    }
-
     // Sorting handler
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -655,7 +648,7 @@ export default function Empleados() {
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <span className={`text-base font-semibold ${getRoleTextClass(employee.role)}`}>
+                                                        <span className="text-base font-bold text-muted-foreground">
                                                             {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
                                                         </span>
                                                     </TableCell>

@@ -34,15 +34,6 @@ interface EmployeeCardProps {
 }
 
 /**
- * Returns text color class based on employee role
- */
-function getRoleTextClass(role: string): string {
-    return role === 'ADMIN'
-        ? "text-purple-600 dark:text-purple-400"
-        : "text-blue-600 dark:text-blue-400"
-}
-
-/**
  * Formats a full name to show first name and initial of last name
  * Example: "Juan Carlos Perez" → "Juan P."
  */
@@ -74,7 +65,7 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                                         <p>{employee.fullName}</p>
                                     </TooltipContent>
                                 </Tooltip>
-                                <span className={`text-base font-semibold ${getRoleTextClass(employee.role)}`}>
+                                <span className="text-base font-bold text-muted-foreground">
                                     {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
                                 </span>
                             </div>
