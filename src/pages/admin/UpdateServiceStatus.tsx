@@ -36,20 +36,18 @@ import {
 // Services & Types
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
-
-// Available statuses for selection
-const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
-    { value: 'ASSIGNED', label: 'Asignado' },
-    { value: 'PENDING', label: 'Pendiente' },
-    { value: 'DELIVERED', label: 'Entregado' },
-    { value: 'RETURNED', label: 'Devuelto' },
-    { value: 'CANCELED', label: 'Cancelado' },
-    { value: 'RESOLVED', label: 'Resuelto' },
-]
+import { useAuth } from "@/context/AuthContext"
+import {
+    getAvailableStatusesForUser,
+    getServiceLockReason,
+    getTimeRemainingIn72hWindow,
+    getStatusBadge,
+} from "@/lib/status-utils"
 
 export default function UpdateServiceStatus() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -363,23 +361,79 @@ export default function UpdateServiceStatus() {
                         <div className="flex items-center gap-4">
                             <Separator orientation="vertical" className="h-8" />
                             <div className="w-[180px]">
-                                <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
-                                    <SelectTrigger className="h-9">
-                                        <SelectValue placeholder="Estado" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {AVAILABLE_STATUSES.map((status) => (
-                                            <SelectItem key={status.value} value={status.value}>
-                                                {status.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                {(() => {
+                                    const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
+                                    const availableStatuses = role
+                                        ? getAvailableStatusesForUser(role, service.currentStatus, service.createdAt)
+                                        : []
+                                    const lockReason = role
+                                        ? getServiceLockReason(role, service.currentStatus, service.createdAt)
+                                        : null
+
+                                    if (lockReason || availableStatuses.length === 0) {
+                                        return (
+                                            <div className="text-sm text-muted-foreground">
+                                                <span className="font-medium">{getStatusBadge(service.currentStatus).label}</span>
+                                            </div>
+                                        )
+                                    }
+
+                                    return (
+                                        <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
+                                            <SelectTrigger className="h-9">
+                                                <SelectValue placeholder="Estado" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableStatuses.map((status) => (
+                                                    <SelectItem key={status.value} value={status.value}>
+                                                        {status.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )
+                                })()}
                             </div>
                         </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                    {/* Lock/Warning Alerts */}
+                    {(() => {
+                        const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
+                        const lockReason = role
+                            ? getServiceLockReason(role, service.currentStatus, service.createdAt)
+                            : null
+                        const timeRemaining = (service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED')
+                            ? getTimeRemainingIn72hWindow(service.createdAt)
+                            : null
+
+                        return (
+                            <>
+                                {lockReason && (
+                                    <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg flex items-start gap-2">
+                                        <span className="text-amber-500 mt-0.5">⚠️</span>
+                                        <div>
+                                            <p className="font-medium">Servicio bloqueado</p>
+                                            <p className="text-sm">{lockReason}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {!lockReason && timeRemaining && (
+                                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg flex items-start gap-2">
+                                        <span className="text-blue-500 mt-0.5">⏱️</span>
+                                        <div>
+                                            <p className="font-medium">Ventana de edición activa</p>
+                                            <p className="text-sm">
+                                                Quedan <strong>{timeRemaining.hours}h {timeRemaining.minutes}m</strong> para modificar este servicio.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )
+                    })()}
+
                     {/* Observation */}
                     <div className="space-y-2">
                         <Label htmlFor="observation">Observaciones</Label>

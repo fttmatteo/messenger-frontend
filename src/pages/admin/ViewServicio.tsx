@@ -46,7 +46,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
+import { getStatusBadge, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
@@ -183,20 +183,46 @@ export default function ViewServicio() {
                     <div className="flex flex-row items-center gap-4">
                         <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                         <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
+                        {/* 72h Window Indicator */}
+                        {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
+                            const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
+                            if (timeRemaining) {
+                                return (
+                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                        ⏱️ {timeRemaining.hours}h {timeRemaining.minutes}m
+                                    </Badge>
+                                )
+                            }
+                            return (
+                                <Badge variant="outline" className="bg-gray-100 text-gray-500 border-gray-200">
+                                    🔒 Inmutable
+                                </Badge>
+                            )
+                        })()}
                     </div>
                 </div>
                 <div className="flex w-full md:w-auto gap-2">
-                    {isAdmin && service.currentStatus !== 'DELIVERED' && (
-                        <Button
-                            variant="default"
-                            onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
-                            className="flex-1 md:flex-none"
-                        >
-                            <Edit className="mr-2 h-4 w-4" />
-                            Actualizar estado
-                        </Button>
-                    )}
-                    {isAdmin && service.currentStatus !== 'DELIVERED' && (
+                    {/* Update Status Button - uses role-based logic */}
+                    {(() => {
+                        const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
+                        const canEdit = role ? canUserEditService(role, service.currentStatus, service.createdAt) : false
+
+                        if (canEdit) {
+                            return (
+                                <Button
+                                    variant="default"
+                                    onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                                    className="flex-1 md:flex-none"
+                                >
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Actualizar estado
+                                </Button>
+                            )
+                        }
+                        return null
+                    })()}
+                    {/* Delete Button - Admin only, not for DELIVERED/RESOLVED outside 72h window */}
+                    {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
                         <Button
                             variant="destructive"
                             onClick={() => setDeleteDialogOpen(true)}
