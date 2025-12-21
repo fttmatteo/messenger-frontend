@@ -14,7 +14,6 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -105,6 +104,19 @@ const itemVariants = {
         transition: { duration: 0.2 },
     },
 }
+
+/**
+ * Formats a full name to show first name and initial of last name
+ * Example: "Juan Carlos Perez" → "Juan P."
+ */
+function formatDisplayName(fullName: string): string {
+    const parts = fullName.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0]
+    const firstName = parts[0]
+    const lastName = parts[parts.length - 1]
+    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
+}
+
 export default function Empleados() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
@@ -226,13 +238,6 @@ export default function Empleados() {
         } finally {
             setDeleting(null)
         }
-    }
-
-    const getRoleBadgeClass = (role: string) => {
-        // Match mobile design: purple for ADMIN, blue for MESSENGER
-        return role === 'ADMIN'
-            ? 'bg-purple-600 text-white hover:bg-purple-700'
-            : 'bg-blue-600 text-white hover:bg-blue-700'
     }
 
     // Sorting handler
@@ -620,7 +625,14 @@ export default function Empleados() {
                                                         {employee.document}
                                                     </TableCell>
                                                     <TableCell className="font-medium text-base">
-                                                        {employee.fullName}
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>{employee.fullName}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     </TableCell>
                                                     <TableCell className="text-base">
                                                         <Tooltip>
@@ -636,9 +648,9 @@ export default function Empleados() {
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Badge className={getRoleBadgeClass(employee.role) + " text-base px-3 py-1"}>
+                                                        <span className="text-base font-bold text-muted-foreground">
                                                             {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
-                                                        </Badge>
+                                                        </span>
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">

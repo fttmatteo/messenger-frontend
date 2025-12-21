@@ -15,9 +15,23 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, MapPin } from "lucide-react"
 import { toast } from "sonner"
+
+// Available zones
+const ZONES = [
+    { value: "NORTE", label: "Norte" },
+    { value: "SUR", label: "Sur" },
+    { value: "CENTRO", label: "Centro" },
+]
 
 const dealershipSchema = z.object({
     name: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
@@ -27,6 +41,18 @@ const dealershipSchema = z.object({
 })
 
 type DealershipFormValues = z.infer<typeof dealershipSchema>
+
+/**
+ * Capitalizes the first letter of each word
+ * Example: "MUNDO YAMAHA" → "Mundo Yamaha"
+ */
+function capitalizeWords(str: string): string {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+}
 
 export default function EditConcesionario() {
     const { id } = useParams<{ id: string }>()
@@ -40,10 +66,14 @@ export default function EditConcesionario() {
         register,
         handleSubmit,
         reset,
+        setValue,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
     })
+
+    const selectedZone = watch("zone")
 
     useEffect(() => {
         const fetchDealership = async () => {
@@ -78,7 +108,12 @@ export default function EditConcesionario() {
     const onSubmit = async (data: DealershipFormValues) => {
         if (!id) return
         try {
-            await dealershipService.update(Number(id), data)
+            await dealershipService.update(Number(id), {
+                name: capitalizeWords(data.name.trim()),
+                address: capitalizeWords(data.address.trim()),
+                phone: data.phone,
+                zone: data.zone,
+            })
             toast.success("Concesionario actualizado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error: any) {
@@ -175,11 +210,21 @@ export default function EditConcesionario() {
                                 {/* Zona */}
                                 <div className="space-y-2">
                                     <Label htmlFor="zone">Zona</Label>
-                                    <Input
-                                        id="zone"
-                                        placeholder="Norte, sur o centro"
-                                        {...register("zone")}
-                                    />
+                                    <Select
+                                        value={selectedZone}
+                                        onValueChange={(value) => setValue("zone", value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecciona una zona" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {ZONES.map((zone) => (
+                                                <SelectItem key={zone.value} value={zone.value}>
+                                                    {zone.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     {errors.zone && (
                                         <p className="text-sm text-red-500">{errors.zone.message}</p>
                                     )}

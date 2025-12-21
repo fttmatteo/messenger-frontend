@@ -107,6 +107,18 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'RESOLVED', label: 'Resuelto' },
 ]
 
+/**
+ * Formats a full name to show first name and initial of last name
+ * Example: "Juan Carlos Perez" → "Juan P."
+ */
+function formatDisplayName(fullName: string): string {
+    const parts = fullName.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0]
+    const firstName = parts[0]
+    const lastName = parts[parts.length - 1]
+    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
+}
+
 export default function Servicios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
@@ -651,8 +663,15 @@ export default function Servicios() {
                                                             <TableCell className="truncate text-base" title={service.dealership.name}>
                                                                 {service.dealership.name}
                                                             </TableCell>
-                                                            <TableCell className="truncate text-base" title={service.messenger.fullName}>
-                                                                {service.messenger.fullName}
+                                                            <TableCell className="text-base">
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <span className="cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>{service.messenger.fullName}</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
                                                             </TableCell>
                                                             <TableCell>
                                                                 <Badge className={`${statusConfig.className} text-base px-3 py-1`}>

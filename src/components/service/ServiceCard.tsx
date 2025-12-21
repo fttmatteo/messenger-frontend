@@ -8,6 +8,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 // Utils
 import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
@@ -19,6 +20,17 @@ interface ServiceCardProps {
     service: ServiceDelivery
     onUpdate: (service: ServiceDelivery) => void
     onViewDetails: (serviceId: number) => void
+}
+
+/**
+ * Formats a full name to show first name and initial of last name
+ */
+function formatDisplayName(fullName: string): string {
+    const parts = fullName.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0]
+    const firstName = parts[0]
+    const lastName = parts[parts.length - 1]
+    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 /**
@@ -57,7 +69,14 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <User className="h-3.5 w-3.5 shrink-0" />
-                                    <span className="truncate">{service.messenger.fullName}</span>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <span className="truncate cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{service.messenger.fullName}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-3.5 w-3.5 shrink-0" />

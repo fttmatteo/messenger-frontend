@@ -17,7 +17,7 @@ class ServiceDeliveryService {
      * Validates ownership for MESSENGER role
      */
     async getById(id: number): Promise<ServiceDelivery> {
-        const response = await apiClient.get(`/services/findService/${id}`)
+        const response = await apiClient.get(`/services/findByServiceId/${id}`)
         return response.data
     }
 
@@ -73,6 +73,22 @@ class ServiceDeliveryService {
      */
     async delete(id: number): Promise<void> {
         await apiClient.delete(`/services/deleteService/${id}`)
+    }
+
+    /**
+     * Get all deleted services (trash) - Admin only
+     */
+    async getTrash(): Promise<ServiceDelivery[]> {
+        const response = await apiClient.get('/services/trash')
+        return response.data
+    }
+
+    /**
+     * Restore a service from trash - Admin only
+     */
+    async restore(id: number): Promise<ServiceDelivery> {
+        const response = await apiClient.post(`/services/trash/restore/${id}`)
+        return response.data
     }
 }
 
