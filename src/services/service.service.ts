@@ -17,7 +17,7 @@ class ServiceDeliveryService {
      * Validates ownership for MESSENGER role
      */
     async getById(id: number): Promise<ServiceDelivery> {
-        const response = await apiClient.get(`/services/findService/${id}`)
+        const response = await apiClient.get(`/services/findByServiceId/${id}`)
         return response.data
     }
 

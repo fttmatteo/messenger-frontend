@@ -125,7 +125,7 @@ export default function AdminLayout() {
                     </SidebarGroup>
                 </SidebarContent>
             </Sidebar>
-            <SidebarInset>
+            <SidebarInset className="overflow-x-hidden">
                 <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
                     {isMobile && isNestedPage ? (
                         <Button
@@ -194,7 +194,7 @@ export default function AdminLayout() {
                         </>
                     )}
                 </header>
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
                     <Outlet context={{ searchQuery }} />
                 </main>
             </SidebarInset>
