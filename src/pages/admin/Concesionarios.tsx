@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { dealershipService } from "@/services/dealership.service"
 import { useDealerships } from "@/hooks/useDealerships"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -14,20 +14,54 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { TableRowSkeleton, CardSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { DealershipCard } from "@/components/dealership/DealershipCard"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ChevronUp, X } from "lucide-react"
+import { Map } from "@/components/Map"
+import { useGoogleMap } from "@react-google-maps/api"
+import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ChevronUp, X, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 
+// Marker component for the dealership location
+function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
+    const map = useGoogleMap()
+    const markerRef = useRef<any>(null)
+
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title: "Ubicación del concesionario",
+            content: new google.maps.marker.PinElement({
+                background: '#10b981',
+                borderColor: 'white',
+                glyphColor: 'white',
+            }).element
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map, position])
+
+    return null
+}
 
 export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
     const [geocoding, setGeocoding] = useState<number | null>(null)
+    const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
 
     // Use custom hooks
     const { showScrollTop, scrollToTop } = useScrollToTop({ enabled: isMobile })
@@ -261,21 +295,20 @@ export default function Concesionarios() {
                                                     </TableCell>
                                                     <TableCell>
                                                         {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Badge variant="default" className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
-                                                                        onClick={() => {
-                                                                            const coords = `${dealership.latitude}, ${dealership.longitude}`
-                                                                            navigator.clipboard.writeText(coords)
-                                                                            toast.success("Coordenadas copiadas", { description: coords })
-                                                                        }}>
-                                                                        <MapPin className="h-3 w-3 mr-1" />Ubicado
-                                                                    </Badge>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent className="flex items-center gap-2">
-                                                                    <Copy className="h-3 w-3" />{dealership.latitude}, {dealership.longitude}
-                                                                </TooltipContent>
-                                                            </Tooltip>
+                                                            <Badge
+                                                                variant="default"
+                                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setLocationPopup({
+                                                                        name: dealership.name,
+                                                                        lat: dealership.latitude!,
+                                                                        lng: dealership.longitude!
+                                                                    })
+                                                                }}
+                                                            >
+                                                                <MapPin className="h-3 w-3 mr-1" />Ver ubicación
+                                                            </Badge>
                                                         ) : dealership.isGeolocated ? (
                                                             <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
                                                         ) : (
@@ -304,6 +337,62 @@ export default function Concesionarios() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Location Popup Dialog */}
+            <Dialog open={!!locationPopup} onOpenChange={(open) => !open && setLocationPopup(null)}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-green-500" />
+                            {locationPopup?.name}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div className="h-64 rounded-lg overflow-hidden border">
+                            {locationPopup && (
+                                <Map center={{ lat: locationPopup.lat, lng: locationPopup.lng }} zoom={16}>
+                                    <DealershipMarker position={{ lat: locationPopup.lat, lng: locationPopup.lng }} />
+                                </Map>
+                            )}
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground font-mono">
+                                {locationPopup?.lat.toFixed(6)}, {locationPopup?.lng.toFixed(6)}
+                            </span>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (locationPopup) {
+                                            const coords = `${locationPopup.lat}, ${locationPopup.lng}`
+                                            navigator.clipboard.writeText(coords)
+                                            toast.success("Coordenadas copiadas", { description: coords })
+                                        }
+                                    }}
+                                >
+                                    <Copy className="h-4 w-4 mr-2" />
+                                    Copiar
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    onClick={() => {
+                                        if (locationPopup) {
+                                            window.open(
+                                                `https://www.google.com/maps?q=${locationPopup.lat},${locationPopup.lng}`,
+                                                '_blank'
+                                            )
+                                        }
+                                    }}
+                                >
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    Google Maps
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
