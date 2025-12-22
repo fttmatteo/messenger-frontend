@@ -13,6 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -115,6 +116,7 @@ export default function Concesionarios() {
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState<number | null>(null)
     const [geocoding, setGeocoding] = useState<number | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
 
     // Sorting state
     const [sortField, setSortField] = useState<SortField>(null)
@@ -190,6 +192,7 @@ export default function Concesionarios() {
     // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
+        setSelectedIds(new Set())
     }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
 
     const fetchDealerships = async () => {
@@ -476,14 +479,17 @@ export default function Concesionarios() {
                         </div>
                     )}
                 </div>
-                <Button
-                    onClick={() => navigate("/admin/concesionarios/crear")}
-                    size={isMobile ? "lg" : "default"}
-                    className="shrink-0"
-                >
-                    <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo concesionario"}
-                </Button>
+
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                    <Button
+                        onClick={() => navigate("/admin/concesionarios/crear")}
+                        size={isMobile ? "lg" : "default"}
+                        className="shrink-0"
+                    >
+                        <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+                        {!isMobile && "Nuevo concesionario"}
+                    </Button>
+                </div>
             </div>
 
             {/* Mobile View */}
@@ -521,6 +527,89 @@ export default function Concesionarios() {
                         )}
                     </div>
 
+                    {/* Mobile Actions */}
+                    {selectedIds.size > 0 && (
+                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
+                            {selectedIds.size === 1 && (() => {
+                                const id = Array.from(selectedIds)[0];
+                                const selectedDealership = dealerships.find(d => d.idDealership === id);
+                                if (selectedDealership && !selectedDealership.isGeolocated) {
+                                    return (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleGeocode(id)}
+                                            disabled={geocoding === id}
+                                            className="shrink-0"
+                                        >
+                                            {geocoding === id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                            ) : (
+                                                <div className="flex items-center">
+                                                    <MapPin className="h-4 w-4 mr-2" />
+                                                    <span>Ubicar</span>
+                                                </div>
+                                            )}
+                                        </Button>
+                                    );
+                                }
+                                return null;
+                            })()}
+
+                            {selectedIds.size === 1 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        const id = Array.from(selectedIds)[0];
+                                        navigate(`/admin/concesionarios/editar/${id}`);
+                                    }}
+                                    className="shrink-0"
+                                >
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    Editar
+                                </Button>
+                            )}
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={async () => {
+                                                for (const id of Array.from(selectedIds)) {
+                                                    await handleDelete(id);
+                                                }
+                                                setSelectedIds(new Set());
+                                            }}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                            Eliminar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    )}
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                         {searchQuery && ` - "${searchQuery}"`}
@@ -538,15 +627,41 @@ export default function Concesionarios() {
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedDealerships.map((dealership) => (
-                                    <DealershipCard
-                                        key={dealership.idDealership}
-                                        dealership={dealership}
-                                        onEdit={(id) => navigate(`/admin/concesionarios/editar/${id}`)}
-                                        onDelete={handleDelete}
-                                        onGeocode={handleGeocode}
-                                        deleting={deleting}
-                                        geocoding={geocoding}
-                                    />
+                                    <div key={dealership.idDealership} className="flex gap-2 mb-2">
+                                        <div className="pt-4">
+                                            <Checkbox
+                                                checked={selectedIds.has(dealership.idDealership)}
+                                                onCheckedChange={(checked) => {
+                                                    const newSelected = new Set(selectedIds);
+                                                    if (checked) {
+                                                        newSelected.add(dealership.idDealership);
+                                                    } else {
+                                                        newSelected.delete(dealership.idDealership);
+                                                    }
+                                                    setSelectedIds(newSelected);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <DealershipCard
+                                                dealership={dealership}
+                                                // onEdit removed from mobile card or handled via header selection?
+                                                // Actually for mobile, selection + header buttons is awkward. 
+                                                // User asked to simplify "where I marked the blue circle" (Desktop).
+                                                // But usually standardizing means both. 
+                                                // Let's keep mobile simple: selection works, header buttons appear at top.
+                                                // And remove individual buttons from Card if possible or keep them?
+                                                // User said "simplify... when selected enabled... else not". 
+                                                // This implies removing them from the item itself. 
+                                                onEdit={() => { }} // Disabled/Removed
+                                                onDelete={() => { }} // Disabled/Removed
+                                                onGeocode={handleGeocode}
+                                                deleting={deleting}
+                                                geocoding={geocoding}
+                                                hideActions={true} // We need to support this prop in DealershipCard or just ignore onEdit/onDelete
+                                            />
+                                        </div>
+                                    </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
@@ -556,25 +671,109 @@ export default function Concesionarios() {
             ) : (
                 /* Desktop View */
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Lista de concesionarios</CardTitle>
-                        <CardDescription>
-                            {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
-                            {searchQuery && ` - Buscando "${searchQuery}"`}
-                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                        </CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <div className="flex flex-col gap-1">
+                            <CardTitle>Lista de concesionarios</CardTitle>
+                            <CardDescription>
+                                {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
+                                {searchQuery && ` - Buscando "${searchQuery}"`}
+                                {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
+                            </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {/* Dynamic Action Buttons inside CardHeader */}
+                            {selectedIds.size === 1 && (() => {
+                                const id = Array.from(selectedIds)[0];
+                                const selectedDealership = dealerships.find(d => d.idDealership === id);
+                                if (selectedDealership && !selectedDealership.isGeolocated) {
+                                    return (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => handleGeocode(id)}
+                                            disabled={geocoding === id}
+                                            className="shrink-0"
+                                        >
+                                            {geocoding === id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                            ) : (
+                                                <div className="flex items-center">
+                                                    <MapPin className="h-4 w-4 mr-2" />
+                                                    <span>Ubicar</span>
+                                                </div>
+                                            )}
+                                        </Button>
+                                    );
+                                }
+                                return null;
+                            })()}
+
+                            {selectedIds.size > 0 && (
+                                <>
+                                    {selectedIds.size === 1 && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                const id = Array.from(selectedIds)[0];
+                                                navigate(`/admin/concesionarios/editar/${id}`);
+                                            }}
+                                            className="shrink-0"
+                                        >
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Editar
+                                        </Button>
+                                    )}
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                    ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={async () => {
+                                                        for (const id of Array.from(selectedIds)) {
+                                                            await handleDelete(id);
+                                                        }
+                                                        setSelectedIds(new Set());
+                                                    }}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                >
+                                                    Eliminar
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Dirección</TableHead>
                                         <TableHead>Teléfono</TableHead>
                                         <TableHead>Zona</TableHead>
                                         <TableHead>Ubicación</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -590,6 +789,23 @@ export default function Concesionarios() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
+                                            <TableHead className="w-[50px]">
+                                                <Checkbox
+                                                    checked={
+                                                        paginatedDealerships.length > 0 &&
+                                                        paginatedDealerships.every(d => selectedIds.has(d.idDealership))
+                                                    }
+                                                    onCheckedChange={(checked) => {
+                                                        const newSelected = new Set(selectedIds);
+                                                        if (checked) {
+                                                            paginatedDealerships.forEach(d => newSelected.add(d.idDealership));
+                                                        } else {
+                                                            paginatedDealerships.forEach(d => newSelected.delete(d.idDealership));
+                                                        }
+                                                        setSelectedIds(newSelected);
+                                                    }}
+                                                />
+                                            </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                 onClick={() => handleSort("name")}
@@ -632,12 +848,6 @@ export default function Concesionarios() {
                                                     <SortIndicator field="isGeolocated" />
                                                 </div>
                                             </TableHead>
-                                            <TableHead className="text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Settings className="h-4 w-4" />
-                                                    Acciones
-                                                </div>
-                                            </TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -651,8 +861,26 @@ export default function Concesionarios() {
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                                                    className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(dealership.idDealership) ? 'bg-muted' : ''}`}
+                                                    onClick={(e) => {
+                                                        // Optional: Allow row click to select, but be careful of text selection
+                                                        // keeping it to checkbox only for now to avoid conflicts
+                                                    }}
                                                 >
+                                                    <TableCell>
+                                                        <Checkbox
+                                                            checked={selectedIds.has(dealership.idDealership)}
+                                                            onCheckedChange={(checked) => {
+                                                                const newSelected = new Set(selectedIds);
+                                                                if (checked) {
+                                                                    newSelected.add(dealership.idDealership);
+                                                                } else {
+                                                                    newSelected.delete(dealership.idDealership);
+                                                                }
+                                                                setSelectedIds(newSelected);
+                                                            }}
+                                                        />
+                                                    </TableCell>
                                                     <TableCell className="font-medium text-base">
                                                         {dealership.name}
                                                     </TableCell>
@@ -705,83 +933,8 @@ export default function Concesionarios() {
                                                                 Ubicado
                                                             </Badge>
                                                         ) : (
-                                                            <Badge variant="secondary">
-                                                                Sin ubicación
-                                                            </Badge>
+                                                            <Badge variant="secondary">Sin ubicación</Badge>
                                                         )}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            <Button
-                                                                variant="default"
-                                                                size="sm"
-                                                                onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
-                                                                className="bg-primary hover:bg-primary/90"
-                                                            >
-                                                                <Pencil className="h-4 w-4 mr-1" />
-                                                                Editar
-                                                            </Button>
-                                                            {!dealership.isGeolocated && (
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="icon"
-                                                                            onClick={() => handleGeocode(dealership.idDealership)}
-                                                                            disabled={geocoding === dealership.idDealership}
-                                                                            aria-label="Geocodificar concesionario"
-                                                                        >
-                                                                            {geocoding === dealership.idDealership ? (
-                                                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                                            ) : (
-                                                                                <MapPin className="h-4 w-4" />
-                                                                            )}
-                                                                        </Button>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Ubicar</TooltipContent>
-                                                                </Tooltip>
-                                                            )}
-                                                            <AlertDialog>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <AlertDialogTrigger asChild>
-                                                                            <Button
-                                                                                variant="outline"
-                                                                                size="icon"
-                                                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                                                                aria-label="Eliminar concesionario"
-                                                                            >
-                                                                                <Trash2 className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </AlertDialogTrigger>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Eliminar</TooltipContent>
-                                                                </Tooltip>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>
-                                                                            ¿Eliminar concesionario?
-                                                                        </AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            Esta acción no se puede deshacer. Se eliminará permanentemente <strong>{dealership.name}</strong> del sistema.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                        <AlertDialogAction
-                                                                            onClick={() => handleDelete(dealership.idDealership)}
-                                                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                            disabled={deleting === dealership.idDealership}
-                                                                        >
-                                                                            {deleting === dealership.idDealership ? (
-                                                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                                                            ) : null}
-                                                                            Eliminar
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
-                                                        </div>
                                                     </TableCell>
                                                 </motion.tr>
                                             ))}
@@ -792,8 +945,9 @@ export default function Concesionarios() {
                             </>
                         )}
                     </CardContent>
-                </Card>
-            )}
+                </Card >
+            )
+            }
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
@@ -814,6 +968,6 @@ export default function Concesionarios() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     )
 }

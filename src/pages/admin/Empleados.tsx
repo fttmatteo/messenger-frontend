@@ -13,7 +13,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -124,6 +126,7 @@ export default function Empleados() {
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState<number | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
 
     // Sorting state
     const [sortField, setSortField] = useState<SortField>(null)
@@ -185,6 +188,7 @@ export default function Empleados() {
     // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
+        setSelectedIds(new Set())
     }, [searchQuery, sortField, sortDirection, roleFilter, itemsPerPage])
 
     const fetchEmployees = async () => {
@@ -428,17 +432,17 @@ export default function Empleados() {
                             <ToggleGroup
                                 type="single"
                                 value={roleFilter}
-                                onValueChange={(value) => setRoleFilter((value as typeof roleFilter) || "all")}
+                                onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
                                 className="justify-start"
                             >
                                 <ToggleGroupItem value="all" aria-label="Todos">
                                     Todos
                                 </ToggleGroupItem>
                                 <ToggleGroupItem value="ADMIN" aria-label="Admin">
-                                    Admin
+                                    Administradores
                                 </ToggleGroupItem>
-                                <ToggleGroupItem value="MESSENGER" aria-label="Mensajero">
-                                    Mensajero
+                                <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros">
+                                    Mensajeros
                                 </ToggleGroupItem>
                             </ToggleGroup>
 
@@ -456,14 +460,17 @@ export default function Empleados() {
                         </div>
                     )}
                 </div>
-                <Button
-                    onClick={() => navigate("/admin/empleados/crear")}
-                    size={isMobile ? "lg" : "default"}
-                    className="shrink-0"
-                >
-                    <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
-                    {!isMobile && "Nuevo empleado"}
-                </Button>
+
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                    <Button
+                        onClick={() => navigate("/admin/empleados/crear")}
+                        size={isMobile ? "lg" : "default"}
+                        className="shrink-0"
+                    >
+                        <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+                        {!isMobile && "Nuevo empleado"}
+                    </Button>
+                </div>
             </div>
 
             {/* Mobile View */}
@@ -473,15 +480,15 @@ export default function Empleados() {
                     <div className="mb-3 space-y-2">
                         <Select
                             value={roleFilter}
-                            onValueChange={(value) => setRoleFilter(value as typeof roleFilter)}
+                            onValueChange={(value) => setRoleFilter(value as "all" | "ADMIN" | "MESSENGER")}
                         >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Filtrar por rol" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos los roles</SelectItem>
-                                <SelectItem value="ADMIN">Admin</SelectItem>
-                                <SelectItem value="MESSENGER">Mensajero</SelectItem>
+                                <SelectItem value="ADMIN">Administradores</SelectItem>
+                                <SelectItem value="MESSENGER">Mensajeros</SelectItem>
                             </SelectContent>
                         </Select>
 
@@ -498,10 +505,67 @@ export default function Empleados() {
                         )}
                     </div>
 
+                    {/* Mobile Actions */}
+                    {selectedIds.size > 0 && (
+                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
+                            {selectedIds.size === 1 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        const id = Array.from(selectedIds)[0];
+                                        navigate(`/admin/empleados/editar/${id}`);
+                                    }}
+                                    className="shrink-0"
+                                >
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    Editar
+                                </Button>
+                            )}
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            ¿Eliminar {selectedIds.size > 1 ? 'empleados seleccionados' : 'empleado'}?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={async () => {
+                                                for (const id of Array.from(selectedIds)) {
+                                                    await handleDelete(id);
+                                                }
+                                                setSelectedIds(new Set());
+                                            }}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                            Eliminar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    )}
+
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
                         {searchQuery && ` - "${searchQuery}"`}
-                        {roleFilter !== "all" && ` (filtro: ${roleFilter === "ADMIN" ? "Admin" : "Mensajero"})`}
+                        {roleFilter !== "all" && ` (rol: ${roleFilter === 'ADMIN' ? 'Administrador' : 'Mensajero'})`}
                     </p>
                     {loading ? (
                         <div className="space-y-3">
@@ -515,13 +579,31 @@ export default function Empleados() {
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedEmployees.map((employee) => (
-                                    <EmployeeCard
-                                        key={employee.idEmployee}
-                                        employee={employee}
-                                        onEdit={(id) => navigate(`/admin/empleados/editar/${id}`)}
-                                        onDelete={handleDelete}
-                                        deleting={deleting}
-                                    />
+                                    <div key={employee.idEmployee} className="flex gap-2 mb-2">
+                                        <div className="pt-4">
+                                            <Checkbox
+                                                checked={selectedIds.has(employee.idEmployee)}
+                                                onCheckedChange={(checked) => {
+                                                    const newSelected = new Set(selectedIds);
+                                                    if (checked) {
+                                                        newSelected.add(employee.idEmployee);
+                                                    } else {
+                                                        newSelected.delete(employee.idEmployee);
+                                                    }
+                                                    setSelectedIds(newSelected);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <EmployeeCard
+                                                employee={employee}
+                                                onEdit={(id) => navigate(`/admin/empleados/editar/${id}`)}
+                                                onDelete={handleDelete}
+                                                deleting={deleting}
+                                                hideActions={true}
+                                            />
+                                        </div>
+                                    </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
@@ -531,24 +613,83 @@ export default function Empleados() {
             ) : (
                 /* Desktop View */
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Lista de empleados</CardTitle>
-                        <CardDescription>
-                            {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
-                            {searchQuery && ` - Buscando "${searchQuery}"`}
-                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                        </CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <div className="flex flex-col gap-1">
+                            <CardTitle>Lista de empleados</CardTitle>
+                            <CardDescription>
+                                {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
+                                {searchQuery && ` - Buscando "${searchQuery}"`}
+                                {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
+                            </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {/* Dynamic Action Buttons inside CardHeader */}
+                            {selectedIds.size > 0 && (
+                                <>
+                                    {selectedIds.size === 1 && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                const id = Array.from(selectedIds)[0];
+                                                navigate(`/admin/empleados/editar/${id}`);
+                                            }}
+                                            className="shrink-0"
+                                        >
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Editar
+                                        </Button>
+                                    )}
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                    ¿Eliminar {selectedIds.size > 1 ? 'empleados seleccionados' : 'empleado'}?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={async () => {
+                                                        for (const id of Array.from(selectedIds)) {
+                                                            await handleDelete(id);
+                                                        }
+                                                        setSelectedIds(new Set());
+                                                    }}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                >
+                                                    Eliminar
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Documento</TableHead>
+                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Nombre</TableHead>
+                                        <TableHead>Rol</TableHead>
+                                        <TableHead>Documento</TableHead>
                                         <TableHead>Teléfono</TableHead>
-                                        <TableHead>Cargo</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -564,15 +705,22 @@ export default function Empleados() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("document")}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <FileText className="h-4 w-4" />
-                                                    Documento
-                                                    <SortIndicator field="document" />
-                                                </div>
+                                            <TableHead className="w-[50px]">
+                                                <Checkbox
+                                                    checked={
+                                                        paginatedEmployees.length > 0 &&
+                                                        paginatedEmployees.every(e => selectedIds.has(e.idEmployee))
+                                                    }
+                                                    onCheckedChange={(checked) => {
+                                                        const newSelected = new Set(selectedIds);
+                                                        if (checked) {
+                                                            paginatedEmployees.forEach(e => newSelected.add(e.idEmployee));
+                                                        } else {
+                                                            paginatedEmployees.forEach(e => newSelected.delete(e.idEmployee));
+                                                        }
+                                                        setSelectedIds(newSelected);
+                                                    }}
+                                                />
                                             </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
@@ -584,26 +732,30 @@ export default function Empleados() {
                                                     <SortIndicator field="fullName" />
                                                 </div>
                                             </TableHead>
-                                            <TableHead>
-                                                <div className="flex items-center gap-2">
-                                                    <Smartphone className="h-4 w-4" />
-                                                    Teléfono
-                                                </div>
-                                            </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                 onClick={() => handleSort("role")}
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Shield className="h-4 w-4" />
-                                                    Cargo
+                                                    Rol
                                                     <SortIndicator field="role" />
                                                 </div>
                                             </TableHead>
-                                            <TableHead className="text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Settings className="h-4 w-4" />
-                                                    Acciones
+                                            <TableHead
+                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
+                                                onClick={() => handleSort("document")}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <FileText className="h-4 w-4" />
+                                                    Documento
+                                                    <SortIndicator field="document" />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead>
+                                                <div className="flex items-center gap-2">
+                                                    <Smartphone className="h-4 w-4" />
+                                                    Teléfono
                                                 </div>
                                             </TableHead>
                                         </TableRow>
@@ -619,20 +771,32 @@ export default function Empleados() {
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                                                    className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(employee.idEmployee) ? 'bg-muted' : ''}`}
                                                 >
-                                                    <TableCell className="font-mono text-base">
-                                                        {employee.document}
+                                                    <TableCell>
+                                                        <Checkbox
+                                                            checked={selectedIds.has(employee.idEmployee)}
+                                                            onCheckedChange={(checked) => {
+                                                                const newSelected = new Set(selectedIds);
+                                                                if (checked) {
+                                                                    newSelected.add(employee.idEmployee);
+                                                                } else {
+                                                                    newSelected.delete(employee.idEmployee);
+                                                                }
+                                                                setSelectedIds(newSelected);
+                                                            }}
+                                                        />
                                                     </TableCell>
                                                     <TableCell className="font-medium text-base">
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>{employee.fullName}</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
+                                                        {formatDisplayName(employee.fullName)}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-sm">
+                                                            {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="font-mono text-base">
+                                                        {employee.document}
                                                     </TableCell>
                                                     <TableCell className="text-base">
                                                         <Tooltip>
@@ -647,64 +811,7 @@ export default function Empleados() {
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell>
-                                                        <span className="text-base font-bold text-muted-foreground">
-                                                            {employee.role === 'ADMIN' ? 'Administrador' : 'Mensajero'}
-                                                        </span>
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            <Button
-                                                                variant="default"
-                                                                size="sm"
-                                                                onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
-                                                                className="bg-primary hover:bg-primary/90"
-                                                            >
-                                                                <Pencil className="h-4 w-4 mr-1" />
-                                                                Editar
-                                                            </Button>
-                                                            <AlertDialog>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <AlertDialogTrigger asChild>
-                                                                            <Button
-                                                                                variant="outline"
-                                                                                size="icon"
-                                                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                                                                aria-label="Eliminar empleado"
-                                                                            >
-                                                                                <Trash2 className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </AlertDialogTrigger>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Eliminar</TooltipContent>
-                                                                </Tooltip>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>
-                                                                            ¿Eliminar empleado?
-                                                                        </AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            Esta acción no se puede deshacer. Se eliminará permanentemente a <strong>{employee.fullName}</strong> del sistema.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                        <AlertDialogAction
-                                                                            onClick={() => handleDelete(employee.idEmployee)}
-                                                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                            disabled={deleting === employee.idEmployee}
-                                                                        >
-                                                                            {deleting === employee.idEmployee ? (
-                                                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                                                            ) : null}
-                                                                            Eliminar
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
-                                                        </div>
-                                                    </TableCell>
+
                                                 </motion.tr>
                                             ))}
                                         </AnimatePresence>
