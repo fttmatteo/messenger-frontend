@@ -116,6 +116,10 @@ export function AppRoutes() {
                 }
             >
                 <Route index element={<MessengerDashboard />} />
+                <Route path="servicios" element={<Servicios />} />
+                <Route path="servicios/crear" element={<CreateServicio />} />
+                <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
+                <Route path="servicios/:id" element={<ViewServicio />} />
                 {/* Add more messenger routes here */}
                 <Route path="entregas" element={<div className="p-4">Mis Entregas - Próximamente</div>} />
                 <Route path="perfil" element={<div className="p-4">Mi Perfil - Próximamente</div>} />

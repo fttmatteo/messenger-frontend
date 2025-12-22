@@ -786,7 +786,14 @@ export default function Empleados() {
                                                         />
                                                     </TableCell>
                                                     <TableCell className="font-medium text-base">
-                                                        {formatDisplayName(employee.fullName)}
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>{employee.fullName}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
                                                         <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-sm">

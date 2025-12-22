@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react"
-import { useNavigate, useOutletContext, Link } from "react-router-dom"
+import { useNavigate, useOutletContext, Link, useLocation } from "react-router-dom"
+import { useAuth } from "@/context/AuthContext"
 import { motion, AnimatePresence } from "framer-motion"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
@@ -119,6 +120,10 @@ function formatDisplayName(fullName: string): string {
 }
 
 export default function Servicios() {
+    const location = useLocation()
+    const isMessenger = location.pathname.includes('/messenger')
+    const basePath = isMessenger ? '/messenger/servicios' : '/admin/servicios'
+
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
@@ -136,6 +141,24 @@ export default function Servicios() {
     // Filter state
     const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
     const [showScrollTop, setShowScrollTop] = useState(false)
+
+    const { user } = useAuth()
+    const isAdmin = user?.role === 'ADMIN'
+    const [selectedMessenger, setSelectedMessenger] = useState<string>("all")
+
+    // Get unique messengers for filter
+    const uniqueMessengers = useMemo(() => {
+        const messengers = new Map()
+        services.forEach(service => {
+            if (service.messenger) {
+                messengers.set(service.messenger.document, {
+                    document: service.messenger.document,
+                    name: formatDisplayName(service.messenger.fullName)
+                })
+            }
+        })
+        return Array.from(messengers.values())
+    }, [services])
 
     const fetchServices = async () => {
         try {
@@ -158,7 +181,7 @@ export default function Servicios() {
 
     // Update status handler
     const handleUpdateStatus = (service: ServiceDelivery) => {
-        navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)
+        navigate(`${basePath}/actualizar/${service.idServiceDelivery}`)
     }
 
 
@@ -179,6 +202,11 @@ export default function Servicios() {
 
             // Status filter
             if (statusFilter.length > 0 && !statusFilter.includes(service.currentStatus)) {
+                return false
+            }
+
+            // Messenger filter
+            if (selectedMessenger !== "all" && String(service.messenger?.document) !== String(selectedMessenger)) {
                 return false
             }
 
@@ -303,7 +331,7 @@ export default function Servicios() {
             </EmptyHeader>
             {!isSearchResult && (
                 <EmptyContent>
-                    <Button onClick={() => navigate("/admin/servicios/crear")}>
+                    <Button onClick={() => navigate(`${basePath}/crear`)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Crear primer servicio
                     </Button>
@@ -429,7 +457,7 @@ export default function Servicios() {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/admin">
+                            <Link to={isMessenger ? "/messenger" : "/admin"}>
                                 <Home className="h-4 w-4" />
                             </Link>
                         </BreadcrumbLink>
@@ -487,7 +515,7 @@ export default function Servicios() {
                     )}
                 </div>
                 <Button
-                    onClick={() => navigate("/admin/servicios/crear")}
+                    onClick={() => navigate(`${basePath}/crear`)}
                     size={isMobile ? "lg" : "default"}
                     className="shrink-0"
                 >
@@ -524,6 +552,30 @@ export default function Servicios() {
                             </SelectContent>
                         </Select>
 
+                        {/* Messenger Filter - Only for Admin */}
+                        {isAdmin && (
+                            <div className="w-full sm:w-[200px]">
+                                <Select
+                                    value={selectedMessenger}
+                                    onValueChange={setSelectedMessenger}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Filtrar por mensajero" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos los mensajeros</SelectItem>
+                                        {uniqueMessengers.map((messenger) => (
+                                            <SelectItem
+                                                key={messenger.document}
+                                                value={messenger.document}
+                                            >
+                                                {messenger.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
                         {statusFilter.length > 0 && (
                             <Button
                                 variant="ghost"
@@ -561,7 +613,7 @@ export default function Servicios() {
                                             <ServiceCard
                                                 service={service}
                                                 onUpdate={handleUpdateStatus}
-                                                onViewDetails={(id) => navigate(`/admin/servicios/${id}`)}
+                                                onViewDetails={(id) => navigate(`${basePath}/${id}`)}
                                             />
                                         </div>
                                     </div>
@@ -723,7 +775,7 @@ export default function Servicios() {
                                                                             <Button
                                                                                 variant="outline"
                                                                                 size="icon"
-                                                                                onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
+                                                                                onClick={() => navigate(`${basePath}/${service.idServiceDelivery}`)}
                                                                                 aria-label="Ver detalles del servicio"
                                                                             >
                                                                                 <Eye className="h-4 w-4" />

@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun, Laptop } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
@@ -25,14 +25,20 @@ export function ModeToggle({ className }: ModeToggleProps) {
             className={cn("rounded-full relative", className)}
             title={`Tema actual: ${theme === 'system' ? 'Sistema' : theme === 'dark' ? 'Oscuro' : 'Claro'}`}
         >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <Sun className={cn(
+                "h-[1.2rem] w-[1.2rem] transition-all",
+                theme === 'system' ? "scale-0 opacity-0" : "rotate-0 scale-100 dark:-rotate-90 dark:scale-0"
+            )} />
+            <Moon className={cn(
+                "absolute h-[1.2rem] w-[1.2rem] transition-all",
+                theme === 'system' ? "scale-0 opacity-0" : "rotate-90 scale-0 dark:rotate-0 dark:scale-100"
+            )} />
 
-            {/* Small indicator dot for system theme */}
-            {theme === 'system' && (
-                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary border border-background" />
-            )}
+            {/* System Mode Icon - Only visible when theme is 'system' */}
+            <Laptop className={cn(
+                "absolute h-[1.2rem] w-[1.2rem] transition-all",
+                theme === 'system' ? "scale-100 rotate-0" : "scale-0 rotate-90"
+            )} />
         </Button>
     )
 }

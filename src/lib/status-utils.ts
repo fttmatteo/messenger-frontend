@@ -12,7 +12,7 @@ interface StatusBadgeConfig {
  */
 export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfig {
     const config: Record<string, StatusBadgeConfig> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-slate-600 text-white' },
+        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
         PENDING: { label: 'Pendiente', className: 'bg-indigo-500 text-white' },
         DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
         RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
@@ -34,7 +34,7 @@ interface StatusIconConfig {
  */
 export function getStatusIconConfig(status: ServiceStatus | string): StatusIconConfig {
     const config: Record<string, StatusIconConfig> = {
-        ASSIGNED: { label: 'Asignado', dotColor: 'bg-slate-600', textColor: 'text-slate-600' },
+        ASSIGNED: { label: 'Asignado', dotColor: 'bg-blue-500', textColor: 'text-blue-500' },
         PENDING: { label: 'Pendiente', dotColor: 'bg-indigo-500', textColor: 'text-indigo-500' },
         DELIVERED: { label: 'Entregado', dotColor: 'bg-green-500', textColor: 'text-green-500' },
         RETURNED: { label: 'Devuelto', dotColor: 'bg-orange-500', textColor: 'text-orange-500' },
