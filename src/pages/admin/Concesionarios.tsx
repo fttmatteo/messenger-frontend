@@ -75,7 +75,6 @@ import {
     Store,
     Globe,
     Navigation,
-    Settings,
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
@@ -862,7 +861,7 @@ export default function Concesionarios() {
                                                     layout
                                                     custom={index}
                                                     className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(dealership.idDealership) ? 'bg-muted' : ''}`}
-                                                    onClick={(e) => {
+                                                    onClick={() => {
                                                         // Optional: Allow row click to select, but be careful of text selection
                                                         // keeping it to checkbox only for now to avoid conflicts
                                                     }}
