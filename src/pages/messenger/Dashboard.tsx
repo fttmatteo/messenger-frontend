@@ -1,29 +1,29 @@
 import { useMessengerServices } from "@/hooks/useMessengerServices"
 import { usePullToRefresh } from "@/hooks/usePullToRefresh"
-import { StatsBar } from "@/components/messenger/StatsBar"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { PullIndicator } from "@/components/messenger/PullIndicator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RefreshCw, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
+import { MessengerNavBar } from "@/components/messenger/MessengerNavBar"
 
 export default function MessengerDashboard() {
     const {
         loading,
         pendingServices,
         completedServices,
-        stats,
         refetch,
         error
     } = useMessengerServices()
 
     const [isOnline, setIsOnline] = useState(navigator.onLine)
+    const [isRefreshing, setIsRefreshing] = useState(false)
 
     // Pull to refresh
     const {
         containerRef,
-        isRefreshing,
+        isRefreshing: isPulling,
         pullDistance
     } = usePullToRefresh({
         onRefresh: refetch,
@@ -47,7 +47,9 @@ export default function MessengerDashboard() {
     // Handle manual refresh
     const handleRefresh = async () => {
         if (!isOnline || isRefreshing) return
+        setIsRefreshing(true)
         await refetch()
+        setIsRefreshing(false)
     }
 
     // Get current date
@@ -69,15 +71,15 @@ export default function MessengerDashboard() {
     return (
         <div
             ref={containerRef}
-            className="flex flex-col h-full overflow-auto"
+            className="flex flex-col h-full overflow-hidden"
         >
             {/* Pull to refresh indicator */}
             <PullIndicator
                 pullDistance={pullDistance}
-                isRefreshing={isRefreshing}
+                isRefreshing={isPulling}
             />
 
-            <div className="p-4 gap-4 flex flex-col">
+            <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
                 {/* Offline Banner */}
                 {!isOnline && (
                     <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-sm">
@@ -100,15 +102,15 @@ export default function MessengerDashboard() {
                         variant="ghost"
                         size="icon"
                         onClick={handleRefresh}
-                        disabled={isRefreshing || !isOnline}
+                        disabled={isRefreshing || isPulling || !isOnline}
                         className="h-9 w-9"
                     >
-                        <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-5 w-5 ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
                     </Button>
                 </header>
 
-                {/* Stats Bar */}
-                <StatsBar stats={stats} loading={loading} />
+                {/* Navigation Bar */}
+                <MessengerNavBar />
 
                 {/* Services Tabs */}
                 <Tabs defaultValue="pending" className="flex-1 flex flex-col min-h-0">
@@ -139,6 +141,7 @@ export default function MessengerDashboard() {
                         />
                     </TabsContent>
                 </Tabs>
+
 
                 {/* Error State */}
                 {error && !loading && (

@@ -1,5 +1,5 @@
 import apiClient from './api-client'
-import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest } from '@/types/service.types'
+import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats } from '@/types/service.types'
 
 class ServiceDeliveryService {
     /**
@@ -97,6 +97,22 @@ class ServiceDeliveryService {
      */
     async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
         const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
+        return response.data
+    }
+
+    /**
+     * Get daily statistics for a messenger
+     */
+    async getDailyStats(messengerId: number, from: Date, to: Date): Promise<DailyStats[]> {
+        const fromDate = from.toISOString().split('T')[0]
+        const toDate = to.toISOString().split('T')[0]
+        const response = await apiClient.get('/services/stats/daily', {
+            params: {
+                messengerId,
+                from: fromDate,
+                to: toDate
+            }
+        })
         return response.data
     }
 }

@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, MapPin, MapPinOff, Plus, ArrowUp } from "lucide-react"
+import { LogOut, MapPin, MapPinOff, Plus, ArrowUp, ChevronLeft } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef, useState, useCallback } from "react"
@@ -24,8 +24,19 @@ export default function MessengerLayout() {
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Hide FAB on create page and update page
-    const showFab = !location.pathname.includes('/crear') && !location.pathname.includes('/actualizar')
+    // Determine if we are in a sub-page
+    const isSubPage = location.pathname.includes('/historial') || location.pathname.includes('/estadisticas')
+
+    // Get page title based on path
+    const getPageTitle = () => {
+        if (location.pathname.includes('historial-estadisticas')) return 'Historial Stats'
+        if (location.pathname.includes('historial-recorrido')) return 'Historial Ruta'
+        if (location.pathname.includes('estadisticas')) return 'Estadísticas'
+        return 'PLAK'
+    }
+
+    // Hide FAB on create page, update page, AND sub-pages
+    const showFab = !location.pathname.includes('/crear') && !location.pathname.includes('/actualizar') && !isSubPage
 
     // Detect keyboard visibility (via visual viewport API)
     useEffect(() => {
@@ -194,13 +205,28 @@ export default function MessengerLayout() {
 
     return (
         <div className="flex flex-col h-screen bg-background">
-            {/* Simplified Header - No Sidebar */}
+            {/* Dynamic Header */}
             <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 shadow-sm">
-                {/* Logo and Brand */}
-                <div className="flex items-center gap-2">
-                    <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                    <span className="font-semibold text-lg">PLAK</span>
-                </div>
+
+                {isSubPage ? (
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => navigate(-1)}
+                            className="h-9 w-9 -ml-2"
+                        >
+                            <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                        <span className="font-semibold text-lg">{getPageTitle()}</span>
+                    </div>
+                ) : (
+                    // Default Header with Logo
+                    <div className="flex items-center gap-2">
+                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
+                        <span className="font-semibold text-lg">PLAK</span>
+                    </div>
+                )}
 
                 {/* Right side: Status + Actions */}
                 <div className="flex items-center gap-2">
