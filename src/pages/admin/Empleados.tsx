@@ -1,9 +1,12 @@
-import { useEffect, useState, useMemo } from "react"
-import { useNavigate, useOutletContext, Link } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { employeeService } from "@/services/employee.service"
-import type { Employee } from "@/types/employee.types"
+import { useEmployees } from "@/hooks/useEmployees"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useScrollToTop } from "@/hooks/useScrollToTop"
+import { listItemVariants, fadeScaleVariants } from "@/lib/animation-variants"
+import { SortIndicator } from "@/components/ui/sort-indicator"
+import { ListEmptyState } from "@/components/ui/list-empty-state"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,222 +14,51 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton, CardSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { EmployeeCard } from "@/components/employee/EmployeeCard"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Empty, EmptyHeader, EmptyMedia, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
-import { Plus, Smartphone, PhoneCall, User, FileText, Shield, ArrowUpDown, ArrowUp, ArrowDown, ChevronUp, Home, Search, Users, X } from "lucide-react"
-import { toast } from "sonner"
+import { Plus, Smartphone, PhoneCall, User, FileText, Shield, ChevronUp, Users, X } from "lucide-react"
 import { formatDisplayName } from "@/lib/format-utils"
 
-// Sorting types
-type SortField = "fullName" | "role" | "document" | null
-type SortDirection = "asc" | "desc"
 
-// Animation variants
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 300,
-            damping: 24,
-        },
-    },
-    exit: {
-        opacity: 0,
-        y: -20,
-        transition: { duration: 0.2 },
-    },
-}
 
 export default function Empleados() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
-    const [employees, setEmployees] = useState<Employee[]>([])
-    const [loading, setLoading] = useState(true)
 
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-    const [showScrollTop, setShowScrollTop] = useState(false)
+    // Use custom hooks
+    const { showScrollTop, scrollToTop } = useScrollToTop({ enabled: isMobile })
+    const {
+        employees,
+        loading,
+        filteredAndSortedEmployees,
+        paginatedEmployees,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort,
+        roleFilter,
+        setRoleFilter,
+    } = useEmployees({ searchQuery })
 
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
-    const [roleFilter, setRoleFilter] = useState<"all" | "ADMIN" | "MESSENGER">("all")
-
-    // Filter and sort employees
-    const filteredAndSortedEmployees = useMemo(() => {
-        let result = employees.filter((employee) => {
-            // Search filter
-            if (searchQuery.trim()) {
-                const query = searchQuery.toLowerCase()
-                const matchesSearch = employee.fullName.toLowerCase().includes(query) ||
-                    String(employee.document).includes(query) ||
-                    employee.phone.includes(query) ||
-                    employee.role.toLowerCase().includes(query)
-
-                if (!matchesSearch) return false
-            }
-
-            // Role filter
-            if (roleFilter !== "all" && employee.role !== roleFilter) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                if (sortField === "fullName") {
-                    comparison = a.fullName.localeCompare(b.fullName)
-                } else if (sortField === "role") {
-                    comparison = a.role.localeCompare(b.role)
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
-        }
-
-        return result
-    }, [employees, searchQuery, roleFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedEmployees.length / itemsPerPage)
-    const paginatedEmployees = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedEmployees.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedEmployees, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters change
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, roleFilter, itemsPerPage])
-
-    const fetchEmployees = async () => {
-        try {
-            setLoading(true)
-            const data = await employeeService.getAll()
-            setEmployees(data)
-        } catch (error: any) {
-            toast.error("Error al cargar empleados", {
-                description: error.message,
-                id: "error-cargar-empleados"
-            })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchEmployees()
-    }, [])
-
-    // Scroll to top functionality for mobile
-    useEffect(() => {
-        if (!isMobile) return
-
-        const handleScroll = () => {
-            const scrolled = window.scrollY > 300
-            setShowScrollTop(scrolled)
-        }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [isMobile])
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
-    }
-
-    // Sort indicator component
-    const SortIndicator = ({ field }: { field: SortField }) => {
-        if (sortField !== field) {
-            return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />
-        }
-        return sortDirection === "asc"
-            ? <ArrowUp className="h-4 w-4 ml-1" />
-            : <ArrowDown className="h-4 w-4 ml-1" />
-    }
-
-    // Empty state component
-    const EmptyState = ({ isSearchResult }: { isSearchResult: boolean }) => (
-        <Empty className="py-12">
-            <EmptyHeader>
-                <EmptyMedia variant="icon">
-                    {isSearchResult ? <Search /> : <Users />}
-                </EmptyMedia>
-                <EmptyTitle>
-                    {isSearchResult ? "Sin resultados" : "Sin empleados"}
-                </EmptyTitle>
-                <EmptyDescription>
-                    {isSearchResult
-                        ? `No se encontraron empleados que coincidan con "${searchQuery}"`
-                        : "Aún no hay empleados registrados en el sistema"
-                    }
-                </EmptyDescription>
-            </EmptyHeader>
-            {!isSearchResult && (
-                <EmptyContent>
-                    <Button onClick={() => navigate("/admin/empleados/crear")}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Crear primer empleado
-                    </Button>
-                </EmptyContent>
-            )}
-        </Empty>
-    )
-
-    // Enhanced Pagination component
-    // Filter label for pagination
     const filterLabel = roleFilter !== "all"
         ? `filtro: ${roleFilter === "ADMIN" ? "Admin" : "Mensajero"}`
         : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Empleados</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+            <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
 
             {/* Header with inline filters on desktop */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-4 flex-wrap">
                     <h1 className="text-2xl md:text-3xl font-bold">Empleados</h1>
 
-                    {/* Desktop Filters - inline with title */}
                     {!isMobile && (
                         <div className="flex items-center gap-3">
                             <ToggleGroup
@@ -235,26 +67,14 @@ export default function Empleados() {
                                 onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
                                 className="justify-start"
                             >
-                                <ToggleGroupItem value="all" aria-label="Todos">
-                                    Todos
-                                </ToggleGroupItem>
-                                <ToggleGroupItem value="ADMIN" aria-label="Admin">
-                                    Administradores
-                                </ToggleGroupItem>
-                                <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros">
-                                    Mensajeros
-                                </ToggleGroupItem>
+                                <ToggleGroupItem value="all" aria-label="Todos">Todos</ToggleGroupItem>
+                                <ToggleGroupItem value="ADMIN" aria-label="Admin">Administradores</ToggleGroupItem>
+                                <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros">Mensajeros</ToggleGroupItem>
                             </ToggleGroup>
 
                             {roleFilter !== "all" && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setRoleFilter("all")}
-                                    className="h-9"
-                                >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Limpiar filtro
+                                <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-9">
+                                    <X className="h-4 w-4 mr-2" />Limpiar filtro
                                 </Button>
                             )}
                         </div>
@@ -262,11 +82,7 @@ export default function Empleados() {
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <Button
-                        onClick={() => navigate("/admin/empleados/crear")}
-                        size={isMobile ? "lg" : "default"}
-                        className="shrink-0"
-                    >
+                    <Button onClick={() => navigate("/admin/empleados/crear")} size={isMobile ? "lg" : "default"} className="shrink-0">
                         <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
                         {!isMobile && "Nuevo empleado"}
                     </Button>
@@ -276,12 +92,8 @@ export default function Empleados() {
             {/* Mobile View */}
             {isMobile ? (
                 <div>
-                    {/* Mobile filter */}
                     <div className="mb-3 space-y-2">
-                        <Select
-                            value={roleFilter}
-                            onValueChange={(value) => setRoleFilter(value as "all" | "ADMIN" | "MESSENGER")}
-                        >
+                        <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as "all" | "ADMIN" | "MESSENGER")}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Filtrar por rol" />
                             </SelectTrigger>
@@ -293,14 +105,8 @@ export default function Empleados() {
                         </Select>
 
                         {roleFilter !== "all" && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setRoleFilter("all")}
-                                className="w-full"
-                            >
-                                <X className="h-4 w-4 mr-2" />
-                                Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="w-full">
+                                <X className="h-4 w-4 mr-2" />Limpiar filtro
                             </Button>
                         )}
                     </div>
@@ -312,45 +118,31 @@ export default function Empleados() {
                     </p>
                     {loading ? (
                         <div className="space-y-3">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <CardSkeleton key={i} />
-                            ))}
+                            {Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)}
                         </div>
                     ) : filteredAndSortedEmployees.length === 0 ? (
-                        <EmptyState isSearchResult={!!searchQuery} />
+                        <ListEmptyState
+                            isSearchResult={!!searchQuery}
+                            searchQuery={searchQuery}
+                            emptyIcon={<Users />}
+                            emptyTitle="Sin empleados"
+                            emptyDescription="Aún no hay empleados registrados en el sistema"
+                            actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
+                        />
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedEmployees.map((employee) => (
-                                    <div
-                                        key={employee.idEmployee}
-                                        className="cursor-pointer"
-                                        onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
-                                    >
-                                        <EmployeeCard
-                                            employee={employee}
-                                            onEdit={() => { }}
-                                            onDelete={() => { }}
-                                            deleting={null}
-                                            hideActions={true}
-                                        />
+                                    <div key={employee.idEmployee} className="cursor-pointer" onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}>
+                                        <EmployeeCard employee={employee} onEdit={() => { }} onDelete={() => { }} deleting={null} hideActions={true} />
                                     </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
                     )}
-                    <TablePagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={filteredAndSortedEmployees.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCurrentPage}
-                        onItemsPerPageChange={setItemsPerPage}
-                        filterLabel={filterLabel}
-                    />
+                    <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedEmployees.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                 </div>
             ) : (
-                /* Desktop View */
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                         <div className="flex flex-col gap-1">
@@ -374,53 +166,43 @@ export default function Empleados() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <TableRowSkeleton key={i} />
-                                    ))}
+                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                                 </TableBody>
                             </Table>
                         ) : filteredAndSortedEmployees.length === 0 ? (
-                            <EmptyState isSearchResult={!!searchQuery} />
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Users />}
+                                emptyTitle="Sin empleados"
+                                emptyDescription="Aún no hay empleados registrados en el sistema"
+                                actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
+                            />
                         ) : (
                             <>
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("fullName")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("fullName")}>
                                                 <div className="flex items-center gap-2">
-                                                    <User className="h-4 w-4" />
-                                                    Nombre
-                                                    <SortIndicator field="fullName" />
+                                                    <User className="h-4 w-4" />Nombre
+                                                    <SortIndicator field="fullName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("role")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("role")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Shield className="h-4 w-4" />
-                                                    Rol
-                                                    <SortIndicator field="role" />
+                                                    <Shield className="h-4 w-4" />Rol
+                                                    <SortIndicator field="role" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("document")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("document")}>
                                                 <div className="flex items-center gap-2">
-                                                    <FileText className="h-4 w-4" />
-                                                    Documento
-                                                    <SortIndicator field="document" />
+                                                    <FileText className="h-4 w-4" />Documento
+                                                    <SortIndicator field="document" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead>
-                                                <div className="flex items-center gap-2">
-                                                    <Smartphone className="h-4 w-4" />
-                                                    Teléfono
-                                                </div>
+                                                <div className="flex items-center gap-2"><Smartphone className="h-4 w-4" />Teléfono</div>
                                             </TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -429,7 +211,7 @@ export default function Empleados() {
                                             {paginatedEmployees.map((employee, index) => (
                                                 <motion.tr
                                                     key={employee.idEmployee}
-                                                    variants={itemVariants}
+                                                    variants={listItemVariants}
                                                     initial="hidden"
                                                     animate="visible"
                                                     exit="exit"
@@ -443,9 +225,7 @@ export default function Empleados() {
                                                             <TooltipTrigger asChild>
                                                                 <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>{employee.fullName}</p>
-                                                            </TooltipContent>
+                                                            <TooltipContent><p>{employee.fullName}</p></TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
@@ -453,63 +233,39 @@ export default function Empleados() {
                                                             {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="font-mono text-base">
-                                                        {employee.document}
-                                                    </TableCell>
+                                                    <TableCell className="font-mono text-base">{employee.document}</TableCell>
                                                     <TableCell className="text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
-                                                                    <PhoneCall className="h-3 w-3" />
-                                                                    {employee.phone}
+                                                                    <PhoneCall className="h-3 w-3" />{employee.phone}
                                                                 </a>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Llamar</p>
-                                                            </TooltipContent>
+                                                            <TooltipContent><p>Llamar</p></TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
-
                                                 </motion.tr>
                                             ))}
                                         </AnimatePresence>
                                     </TableBody>
                                 </Table>
-                                <TablePagination
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    totalItems={filteredAndSortedEmployees.length}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                    filterLabel={filterLabel}
-                                />
+                                <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedEmployees.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                             </>
                         )}
                     </CardContent>
                 </Card>
-            )
-            }
+            )}
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
                 {isMobile && showScrollTop && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed bottom-20 right-4 z-50"
-                    >
-                        <Button
-                            onClick={scrollToTop}
-                            size="icon"
-                            className="h-12 w-12 rounded-full shadow-lg"
-                        >
+                    <motion.div variants={fadeScaleVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-20 right-4 z-50">
+                        <Button onClick={scrollToTop} size="icon" className="h-12 w-12 rounded-full shadow-lg">
                             <ChevronUp className="h-5 w-5" />
                         </Button>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div >
+        </div>
     )
 }

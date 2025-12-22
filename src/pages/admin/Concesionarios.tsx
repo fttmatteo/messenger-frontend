@@ -1,9 +1,14 @@
-import { useEffect, useState, useMemo } from "react"
-import { useNavigate, useOutletContext, Link } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
 import { dealershipService } from "@/services/dealership.service"
-import type { Dealership } from "@/types/dealership.types"
+import { useDealerships } from "@/hooks/useDealerships"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useScrollToTop } from "@/hooks/useScrollToTop"
+import { listItemVariants, fadeScaleVariants } from "@/lib/animation-variants"
+import { SortIndicator } from "@/components/ui/sort-indicator"
+import { ListEmptyState } from "@/components/ui/list-empty-state"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,157 +16,39 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton, CardSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { DealershipCard } from "@/components/dealership/DealershipCard"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty"
-import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ArrowUpDown, ArrowUp, ArrowDown, ChevronUp, Home, Search, X } from "lucide-react"
+import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ChevronUp, X } from "lucide-react"
 import { toast } from "sonner"
 
-// Sorting types
-type SortField = "name" | "zone" | "isGeolocated" | null
-type SortDirection = "asc" | "desc"
 
-// Animation variants
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 300,
-            damping: 24,
-        },
-    },
-    exit: {
-        opacity: 0,
-        y: -20,
-        transition: { duration: 0.2 },
-    },
-}
 export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
-    const [dealerships, setDealerships] = useState<Dealership[]>([])
-    const [loading, setLoading] = useState(true)
     const [geocoding, setGeocoding] = useState<number | null>(null)
 
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
-    const [zoneFilter, setZoneFilter] = useState<string>("all")
-    const [showScrollTop, setShowScrollTop] = useState(false)
-
-    // Get unique zones from dealerships
-    const uniqueZones = useMemo(() => {
-        const zones = new Set(dealerships.map(d => d.zone))
-        return Array.from(zones).sort()
-    }, [dealerships])
-
-    // Filter and sort dealerships
-    const filteredAndSortedDealerships = useMemo(() => {
-        let result = dealerships.filter((dealership) => {
-            // Search filter
-            if (searchQuery.trim()) {
-                const query = searchQuery.toLowerCase()
-                const matchesSearch = (
-                    String(dealership.idDealership).includes(query) ||
-                    dealership.name.toLowerCase().includes(query) ||
-                    dealership.address.toLowerCase().includes(query) ||
-                    dealership.phone.includes(query) ||
-                    dealership.zone.toLowerCase().includes(query)
-                )
-                if (!matchesSearch) return false
-            }
-
-            // Zone filter
-            if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                switch (sortField) {
-                    case "name":
-                        comparison = a.name.localeCompare(b.name)
-                        break
-                    case "zone":
-                        comparison = a.zone.localeCompare(b.zone)
-                        break
-                    case "isGeolocated":
-                        comparison = (a.isGeolocated === b.isGeolocated) ? 0 : a.isGeolocated ? -1 : 1
-                        break
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
-        }
-
-        return result
-    }, [dealerships, searchQuery, zoneFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
-    const paginatedDealerships = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedDealerships.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedDealerships, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters change
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
-
-    const fetchDealerships = async () => {
-        try {
-            setLoading(true)
-            const data = await dealershipService.getAll()
-            setDealerships(data)
-        } catch (error: any) {
-            toast.error("Error al cargar concesionarios", {
-                description: error.message,
-                id: "error-cargar-concesionarios"
-            })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchDealerships()
-    }, [])
-
-    // Scroll to top functionality for mobile
-    useEffect(() => {
-        if (!isMobile) return
-
-        const handleScroll = () => {
-            const scrolled = window.scrollY > 300
-            setShowScrollTop(scrolled)
-        }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [isMobile])
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-
-
+    // Use custom hooks
+    const { showScrollTop, scrollToTop } = useScrollToTop({ enabled: isMobile })
+    const {
+        dealerships,
+        loading,
+        filteredAndSortedDealerships,
+        paginatedDealerships,
+        uniqueZones,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort,
+        zoneFilter,
+        setZoneFilter,
+        fetchDealerships,
+    } = useDealerships({ searchQuery })
 
     const handleGeocode = async (id: number) => {
         try {
@@ -179,83 +66,17 @@ export default function Concesionarios() {
         }
     }
 
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
-    }
-
-    // Sort indicator component
-    const SortIndicator = ({ field }: { field: SortField }) => {
-        if (sortField !== field) {
-            return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />
-        }
-        return sortDirection === "asc"
-            ? <ArrowUp className="h-4 w-4 ml-1" />
-            : <ArrowDown className="h-4 w-4 ml-1" />
-    }
-
-    // Empty state component
-    const EmptyState = ({ isSearchResult }: { isSearchResult: boolean }) => (
-        <Empty className="py-12">
-            <EmptyHeader>
-                <EmptyMedia variant="icon">
-                    {isSearchResult ? <Search /> : <Store />}
-                </EmptyMedia>
-                <EmptyTitle>
-                    {isSearchResult ? "Sin resultados" : "Sin concesionarios"}
-                </EmptyTitle>
-                <EmptyDescription>
-                    {isSearchResult
-                        ? `No se encontraron concesionarios que coincidan con "${searchQuery}"`
-                        : "Aún no hay concesionarios registrados en el sistema"
-                    }
-                </EmptyDescription>
-            </EmptyHeader>
-            {!isSearchResult && (
-                <EmptyContent>
-                    <Button onClick={() => navigate("/admin/concesionarios/crear")}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Crear primer concesionario
-                    </Button>
-                </EmptyContent>
-            )}
-        </Empty>
-    )
-
-    // Enhanced Pagination component
-    // Filter label for pagination
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Concesionarios</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+            <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
 
             {/* Header with inline filters on desktop */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-4 flex-wrap">
                     <h1 className="text-2xl md:text-3xl font-bold">Concesionarios</h1>
 
-                    {/* Desktop Filters - inline with title */}
                     {!isMobile && (
                         <div className="flex items-center gap-3">
                             <ToggleGroup
@@ -264,25 +85,15 @@ export default function Concesionarios() {
                                 onValueChange={(value) => setZoneFilter(value || "all")}
                                 className="justify-start"
                             >
-                                <ToggleGroupItem value="all" aria-label="Todos">
-                                    Todos
-                                </ToggleGroupItem>
+                                <ToggleGroupItem value="all" aria-label="Todos">Todos</ToggleGroupItem>
                                 {uniqueZones.map((zone) => (
-                                    <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
-                                        {zone}
-                                    </ToggleGroupItem>
+                                    <ToggleGroupItem key={zone} value={zone} aria-label={zone}>{zone}</ToggleGroupItem>
                                 ))}
                             </ToggleGroup>
 
                             {zoneFilter !== "all" && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setZoneFilter("all")}
-                                    className="h-9"
-                                >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Limpiar filtro
+                                <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-9">
+                                    <X className="h-4 w-4 mr-2" />Limpiar filtro
                                 </Button>
                             )}
                         </div>
@@ -290,11 +101,7 @@ export default function Concesionarios() {
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <Button
-                        onClick={() => navigate("/admin/concesionarios/crear")}
-                        size={isMobile ? "lg" : "default"}
-                        className="shrink-0"
-                    >
+                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size={isMobile ? "lg" : "default"} className="shrink-0">
                         <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
                         {!isMobile && "Nuevo concesionario"}
                     </Button>
@@ -304,34 +111,22 @@ export default function Concesionarios() {
             {/* Mobile View */}
             {isMobile ? (
                 <div>
-                    {/* Mobile filter */}
                     <div className="mb-3 space-y-2">
-                        <Select
-                            value={zoneFilter}
-                            onValueChange={(value) => setZoneFilter(value)}
-                        >
+                        <Select value={zoneFilter} onValueChange={(value) => setZoneFilter(value)}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Filtrar por zona" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todas las zonas</SelectItem>
                                 {uniqueZones.map((zone) => (
-                                    <SelectItem key={zone} value={zone}>
-                                        {zone}
-                                    </SelectItem>
+                                    <SelectItem key={zone} value={zone}>{zone}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
 
                         {zoneFilter !== "all" && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setZoneFilter("all")}
-                                className="w-full"
-                            >
-                                <X className="h-4 w-4 mr-2" />
-                                Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="w-full">
+                                <X className="h-4 w-4 mr-2" />Limpiar filtro
                             </Button>
                         )}
                     </div>
@@ -343,47 +138,31 @@ export default function Concesionarios() {
                     </p>
                     {loading ? (
                         <div className="space-y-3">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <CardSkeleton key={i} />
-                            ))}
+                            {Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)}
                         </div>
                     ) : filteredAndSortedDealerships.length === 0 ? (
-                        <EmptyState isSearchResult={!!searchQuery} />
+                        <ListEmptyState
+                            isSearchResult={!!searchQuery}
+                            searchQuery={searchQuery}
+                            emptyIcon={<Store />}
+                            emptyTitle="Sin concesionarios"
+                            emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                            actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
+                        />
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedDealerships.map((dealership) => (
-                                    <div
-                                        key={dealership.idDealership}
-                                        className="cursor-pointer"
-                                        onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
-                                    >
-                                        <DealershipCard
-                                            dealership={dealership}
-                                            onEdit={() => { }}
-                                            onDelete={() => { }}
-                                            onGeocode={handleGeocode}
-                                            deleting={null}
-                                            geocoding={geocoding}
-                                            hideActions={true}
-                                        />
+                                    <div key={dealership.idDealership} className="cursor-pointer" onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}>
+                                        <DealershipCard dealership={dealership} onEdit={() => { }} onDelete={() => { }} onGeocode={handleGeocode} deleting={null} geocoding={geocoding} hideActions={true} />
                                     </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
                     )}
-                    <TablePagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={filteredAndSortedDealerships.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCurrentPage}
-                        onItemsPerPageChange={setItemsPerPage}
-                        filterLabel={filterLabel}
-                    />
+                    <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedDealerships.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                 </div>
             ) : (
-                /* Desktop View */
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                         <div className="flex flex-col gap-1">
@@ -408,58 +187,45 @@ export default function Concesionarios() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <TableRowSkeleton key={i} />
-                                    ))}
+                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                                 </TableBody>
                             </Table>
                         ) : filteredAndSortedDealerships.length === 0 ? (
-                            <EmptyState isSearchResult={!!searchQuery} />
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Store />}
+                                emptyTitle="Sin concesionarios"
+                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
+                            />
                         ) : (
                             <>
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("name")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("name")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Store className="h-4 w-4" />
-                                                    Nombre
-                                                    <SortIndicator field="name" />
+                                                    <Store className="h-4 w-4" />Nombre
+                                                    <SortIndicator field="name" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead>
-                                                <div className="flex items-center gap-2">
-                                                    <MapPinned className="h-4 w-4" />
-                                                    Dirección
-                                                </div>
+                                                <div className="flex items-center gap-2"><MapPinned className="h-4 w-4" />Dirección</div>
                                             </TableHead>
                                             <TableHead>
+                                                <div className="flex items-center gap-2"><Smartphone className="h-4 w-4" />Teléfono</div>
+                                            </TableHead>
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("zone")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Smartphone className="h-4 w-4" />
-                                                    Teléfono
+                                                    <Globe className="h-4 w-4" />Zona
+                                                    <SortIndicator field="zone" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("zone")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Globe className="h-4 w-4" />
-                                                    Zona
-                                                    <SortIndicator field="zone" />
-                                                </div>
-                                            </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("isGeolocated")}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <Navigation className="h-4 w-4" />
-                                                    Ubicación
-                                                    <SortIndicator field="isGeolocated" />
+                                                    <Navigation className="h-4 w-4" />Ubicación
+                                                    <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                         </TableRow>
@@ -469,7 +235,7 @@ export default function Concesionarios() {
                                             {paginatedDealerships.map((dealership, index) => (
                                                 <motion.tr
                                                     key={dealership.idDealership}
-                                                    variants={itemVariants}
+                                                    variants={listItemVariants}
                                                     initial="hidden"
                                                     animate="visible"
                                                     exit="exit"
@@ -478,23 +244,16 @@ export default function Concesionarios() {
                                                     className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                     onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                                 >
-                                                    <TableCell className="font-medium text-base">
-                                                        {dealership.name}
-                                                    </TableCell>
-                                                    <TableCell className="max-w-xs truncate text-base">
-                                                        {dealership.address}
-                                                    </TableCell>
+                                                    <TableCell className="font-medium text-base">{dealership.name}</TableCell>
+                                                    <TableCell className="max-w-xs truncate text-base">{dealership.address}</TableCell>
                                                     <TableCell className="text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
-                                                                    <PhoneCall className="h-3 w-3" />
-                                                                    {dealership.phone}
+                                                                    <PhoneCall className="h-3 w-3" />{dealership.phone}
                                                                 </a>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Llamar</p>
-                                                            </TooltipContent>
+                                                            <TooltipContent><p>Llamar</p></TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
@@ -504,31 +263,21 @@ export default function Concesionarios() {
                                                         {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
-                                                                    <Badge
-                                                                        variant="default"
-                                                                        className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                                    <Badge variant="default" className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
                                                                         onClick={() => {
                                                                             const coords = `${dealership.latitude}, ${dealership.longitude}`
                                                                             navigator.clipboard.writeText(coords)
-                                                                            toast.success("Coordenadas copiadas", {
-                                                                                description: coords
-                                                                            })
-                                                                        }}
-                                                                    >
-                                                                        <MapPin className="h-3 w-3 mr-1" />
-                                                                        Ubicado
+                                                                            toast.success("Coordenadas copiadas", { description: coords })
+                                                                        }}>
+                                                                        <MapPin className="h-3 w-3 mr-1" />Ubicado
                                                                     </Badge>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent className="flex items-center gap-2">
-                                                                    <Copy className="h-3 w-3" />
-                                                                    {dealership.latitude}, {dealership.longitude}
+                                                                    <Copy className="h-3 w-3" />{dealership.latitude}, {dealership.longitude}
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         ) : dealership.isGeolocated ? (
-                                                            <Badge variant="default" className="bg-green-500">
-                                                                <MapPin className="h-3 w-3 mr-1" />
-                                                                Ubicado
-                                                            </Badge>
+                                                            <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
                                                         ) : (
                                                             <Badge variant="secondary">Sin ubicación</Badge>
                                                         )}
@@ -538,41 +287,23 @@ export default function Concesionarios() {
                                         </AnimatePresence>
                                     </TableBody>
                                 </Table>
-                                <TablePagination
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    totalItems={filteredAndSortedDealerships.length}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                    filterLabel={filterLabel}
-                                />
+                                <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedDealerships.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                             </>
                         )}
                     </CardContent>
-                </Card >
-            )
-            }
+                </Card>
+            )}
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
                 {isMobile && showScrollTop && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed bottom-20 right-4 z-50"
-                    >
-                        <Button
-                            onClick={scrollToTop}
-                            size="icon"
-                            className="h-12 w-12 rounded-full shadow-lg"
-                        >
+                    <motion.div variants={fadeScaleVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-20 right-4 z-50">
+                        <Button onClick={scrollToTop} size="icon" className="h-12 w-12 rounded-full shadow-lg">
                             <ChevronUp className="h-5 w-5" />
                         </Button>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div >
+        </div>
     )
 }

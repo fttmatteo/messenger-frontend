@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
+import { capitalizeWords } from "@/lib/format-utils"
 
 const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
@@ -23,17 +24,7 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
-/**
- * Capitalizes the first letter of each word
- * Example: "MATEO VALENCIA ARDILA" → "Mateo Valencia Ardila"
- */
-function capitalizeWords(str: string): string {
-    return str
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-}
+
 
 export default function CreateEmployee() {
     const navigate = useNavigate()
