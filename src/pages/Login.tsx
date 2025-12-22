@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff, Power } from "lucide-react"
+import { AlertCircle, Eye, EyeOff } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -81,56 +81,35 @@ export default function Login() {
     }
 
     return (
-        <div className="relative flex items-center justify-center min-h-screen bg-background p-4">
-
-
-            <Card className="w-full max-w-md relative pt-12">
-                {/* Mobile View: Toggle Left, Exit Right */}
-                <div className="md:hidden">
-                    <div className="absolute top-4 left-4">
-                        <ModeToggle className="h-10 w-10" />
-                    </div>
-                    <div className="absolute top-4 right-4">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setShowExitDialog(true)}
-                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 h-10 w-10 rounded-full"
-                        >
-                            <Power className="h-5 w-5" />
-                        </Button>
-                    </div>
+        <div className="relative flex flex-col items-center justify-center min-h-screen h-screen bg-background p-4 overflow-hidden">
+            <Card className="w-full max-w-[380px] relative shadow-lg border-border/50 my-auto">
+                {/* Mode Toggle Button - Consistent Position */}
+                <div className="absolute top-4 right-4 z-10">
+                    <ModeToggle className="h-8 w-8" />
                 </div>
-
-                {/* Desktop View: Toggle Right, Exit Hidden */}
-                <div className="hidden md:block">
-                    <div className="absolute top-4 right-4">
-                        <ModeToggle className="h-10 w-10" />
-                    </div>
-                </div>
-                <CardHeader>
-                    <div className="flex flex-col items-center justify-center mb-4 space-y-2">
-                        <img src={logo} alt="PLAK Logo" className="h-20 w-20 object-contain" />
+                <CardHeader className="space-y-1 pb-2 md:pb-4 pt-12 md:pt-6">
+                    <div className="flex flex-col items-center justify-center mb-2 md:mb-2">
+                        <img src={logo} alt="PLAK Logo" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
                     </div>
                     <div className="flex items-center justify-center">
-                        <CardTitle className="text-2xl text-center">Inicio de sesíon</CardTitle>
+                        <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                     </div>
-                    <CardDescription className="text-center">
+                    <CardDescription className="text-center text-sm text-muted-foreground">
                         Ingrese sus credenciales para continuar
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <CardContent className="pb-6 md:pb-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 md:space-y-3">
                         {error && (
-                            <Alert variant="destructive">
+                            <Alert variant="destructive" className="py-2">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription>{error}</AlertDescription>
+                                <AlertTitle className="text-sm font-semibold">Error</AlertTitle>
+                                <AlertDescription className="text-sm">{error}</AlertDescription>
                             </Alert>
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="document">Documento</Label>
+                            <Label htmlFor="document" className="text-sm font-medium text-foreground/80">Documento</Label>
                             <Input
                                 id="document"
                                 type="text"
@@ -138,14 +117,15 @@ export default function Login() {
                                 placeholder="Ingrese su número de documento"
                                 autoComplete="username"
                                 {...register("document")}
+                                className="h-10 text-sm"
                             />
                             {errors.document && (
-                                <p className="text-sm text-red-500">{errors.document.message}</p>
+                                <p className="text-xs text-red-500 font-medium">{errors.document.message}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password">Contraseña</Label>
+                            <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Contraseña</Label>
                             <div className="relative">
                                 <Input
                                     id="password"
@@ -153,7 +133,7 @@ export default function Login() {
                                     placeholder="Ingrese su contraseña"
                                     autoComplete="current-password"
                                     {...register("password")}
-                                    className="pr-8"
+                                    className="pr-10 h-10 text-sm"
                                 />
                                 <Button
                                     type="button"
@@ -163,19 +143,19 @@ export default function Login() {
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
                                     ) : (
-                                        <Eye className="h-4 w-4" />
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
                                     )}
                                     <span className="sr-only">Toggle password visibility</span>
                                 </Button>
                             </div>
                             {errors.password && (
-                                <p className="text-sm text-red-500">{errors.password.message}</p>
+                                <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>
                             )}
                         </div>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-1">
                             <div className="flex items-center space-x-2">
                                 <Controller
                                     name="rememberMe"
@@ -185,23 +165,24 @@ export default function Login() {
                                             id="rememberMe"
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
+                                            className="h-4 w-4 rounded-sm"
                                         />
                                     )}
                                 />
-                                <Label htmlFor="rememberMe" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <Label htmlFor="rememberMe" className="text-sm text-muted-foreground font-normal cursor-pointer">
                                     Recordar contraseña
                                 </Label>
                             </div>
-                            <Button variant="link" className="px-0 font-normal text-xs text-muted-foreground" type="button">
+                            <Button variant="link" className="px-0 font-normal text-sm text-primary/80 h-auto" type="button">
                                 ¿Olvidó su contraseña?
                             </Button>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full h-10 text-sm font-medium mt-2" disabled={isSubmitting}>
                             {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                         </Button>
-                        <div className="text-center text-sm text-muted-foreground mt-4">
-                            ¿Tienes problemas para entrar? <span className="underline cursor-pointer">Contacta a soporte</span>
+                        <div className="text-center text-sm text-muted-foreground mt-4 pb-2 md:pb-0">
+                            ¿Tienes problemas para entrar? <span className="underline cursor-pointer hover:text-foreground transition-colors">Contacta a soporte</span>
                         </div>
                     </form>
                 </CardContent>
