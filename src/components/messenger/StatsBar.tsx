@@ -14,64 +14,56 @@ interface StatsBarProps {
 export function StatsBar({ stats, loading }: StatsBarProps) {
     const statItems = [
         {
-            title: "Pendientes",
             value: stats.pending,
             icon: Clock,
-            color: "text-yellow-500",
-            bg: "bg-yellow-50 dark:bg-yellow-900/20"
+            color: "text-yellow-600 dark:text-yellow-400",
+            bg: "bg-yellow-100 dark:bg-yellow-900/30"
         },
         {
-            title: "Entregados",
             value: stats.delivered,
             icon: CheckCircle,
-            color: "text-green-500",
-            bg: "bg-green-50 dark:bg-green-900/20"
+            color: "text-green-600 dark:text-green-400",
+            bg: "bg-green-100 dark:bg-green-900/30"
         },
         {
-            title: "Devueltos",
             value: stats.returned,
             icon: CornerDownLeft,
-            color: "text-orange-500",
-            bg: "bg-orange-50 dark:bg-orange-900/20"
+            color: "text-orange-600 dark:text-orange-400",
+            bg: "bg-orange-100 dark:bg-orange-900/30"
         },
         {
-            title: "Total",
             value: stats.total,
             icon: Package,
-            color: "text-blue-500",
-            bg: "bg-blue-50 dark:bg-blue-900/20"
+            color: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-100 dark:bg-blue-900/30"
         },
     ]
 
     if (loading) {
         return (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="flex gap-2 justify-between">
                 {[1, 2, 3, 4].map((i) => (
-                    <Card key={i} className="border-0 shadow-sm animate-pulse">
-                        <CardContent className="p-2 text-center">
-                            <div className="h-5 w-5 bg-muted rounded mx-auto mb-1" />
-                            <div className="h-5 w-8 bg-muted rounded mx-auto mb-0.5" />
-                            <div className="h-3 w-12 bg-muted rounded mx-auto" />
-                        </CardContent>
-                    </Card>
+                    <div
+                        key={i}
+                        className="flex-1 h-14 bg-muted rounded-xl animate-pulse"
+                    />
                 ))}
             </div>
         )
     }
 
     return (
-        <div className="grid grid-cols-4 gap-2">
-            {statItems.map((stat) => (
+        <div className="flex gap-2 justify-between">
+            {statItems.map((stat, index) => (
                 <Card
-                    key={stat.title}
-                    className={`text-center ${stat.bg} border-0 shadow-sm`}
+                    key={index}
+                    className={`flex-1 ${stat.bg} border-0 shadow-sm`}
                 >
-                    <CardContent className="p-2">
-                        <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-0.5 ${stat.color}`} />
-                        <div className="text-lg sm:text-xl font-bold leading-tight">{stat.value}</div>
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
-                            {stat.title}
-                        </p>
+                    <CardContent className="p-2 flex flex-col items-center justify-center min-h-[56px]">
+                        <stat.icon className={`h-4 w-4 ${stat.color} mb-0.5`} />
+                        <span className={`text-xl font-bold leading-none ${stat.color}`}>
+                            {stat.value}
+                        </span>
                     </CardContent>
                 </Card>
             ))}

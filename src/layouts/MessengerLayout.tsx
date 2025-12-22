@@ -1,10 +1,10 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, MapPin, MapPinOff, Plus } from "lucide-react"
+import { LogOut, MapPin, MapPinOff, Plus, ArrowUp } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
@@ -16,13 +16,50 @@ export default function MessengerLayout() {
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const [showScrollTop, setShowScrollTop] = useState(false)
+    const [keyboardVisible, setKeyboardVisible] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const wakeLockRef = useRef<any>(null)
+    const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Hide FAB on create page
-    const showFab = !location.pathname.includes('/crear')
+    // Hide FAB on create page and update page
+    const showFab = !location.pathname.includes('/crear') && !location.pathname.includes('/actualizar')
+
+    // Detect keyboard visibility (via visual viewport API)
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.visualViewport) {
+                const isKeyboard = window.visualViewport.height < window.innerHeight * 0.75
+                setKeyboardVisible(isKeyboard)
+            }
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleResize)
+            return () => window.visualViewport?.removeEventListener('resize', handleResize)
+        }
+    }, [])
+
+    // Track scroll position for "scroll to top" button
+    const handleScroll = useCallback(() => {
+        if (mainRef.current) {
+            setShowScrollTop(mainRef.current.scrollTop > 300)
+        }
+    }, [])
+
+    useEffect(() => {
+        const main = mainRef.current
+        if (main) {
+            main.addEventListener('scroll', handleScroll)
+            return () => main.removeEventListener('scroll', handleScroll)
+        }
+    }, [handleScroll])
+
+    const scrollToTop = () => {
+        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    }
 
     const requestWakeLock = async () => {
         try {
@@ -152,6 +189,9 @@ export default function MessengerLayout() {
         return <MobileOnlyGuard />
     }
 
+    // Calculate FAB bottom position based on keyboard
+    const fabBottomClass = keyboardVisible ? 'bottom-2' : 'bottom-6'
+
     return (
         <div className="flex flex-col h-screen bg-background">
             {/* Simplified Header - No Sidebar */}
@@ -202,20 +242,35 @@ export default function MessengerLayout() {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-auto">
+            <main ref={mainRef} className="flex-1 overflow-auto">
                 <Outlet />
             </main>
 
-            {/* Floating Action Button */}
-            {showFab && (
-                <Button
-                    onClick={() => navigate('/messenger/crear')}
-                    className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 touch-manipulation"
-                    size="icon"
-                >
-                    <Plus className="h-6 w-6" />
-                </Button>
-            )}
+            {/* Floating Action Buttons Container */}
+            <div className={`fixed ${fabBottomClass} left-0 right-0 flex justify-center items-center gap-3 z-50 pointer-events-none transition-all duration-200`}>
+                {/* Scroll to Top Button - Left position, shows when scrolled */}
+                {showScrollTop && showFab && (
+                    <Button
+                        onClick={scrollToTop}
+                        variant="secondary"
+                        size="icon"
+                        className="h-12 w-12 rounded-full shadow-lg pointer-events-auto bg-muted/90 backdrop-blur-sm hover:bg-muted"
+                    >
+                        <ArrowUp className="h-5 w-5" />
+                    </Button>
+                )}
+
+                {/* Create Service FAB - Center, primary action */}
+                {showFab && (
+                    <Button
+                        onClick={() => navigate('/messenger/crear')}
+                        className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all pointer-events-auto bg-primary hover:bg-primary/90"
+                        size="icon"
+                    >
+                        <Plus className="h-6 w-6" />
+                    </Button>
+                )}
+            </div>
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
