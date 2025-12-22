@@ -2,19 +2,13 @@ import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { Building2, User, Calendar, Edit } from "lucide-react"
-
-// Components
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-
-// Utils
 import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
-
-// Types
 import type { ServiceDelivery } from "@/types/service.types"
 
 interface ServiceCardProps {

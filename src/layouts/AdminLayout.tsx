@@ -1,42 +1,9 @@
 import { Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarInset,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import {
-    LayoutDashboard,
-    Users,
-    Store,
-    Bike,
-    LogOut,
-    Settings,
-    Search,
-    Map,
-    ArrowLeft,
-    ChevronUp,
-    Trash2,
-} from "lucide-react"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2, } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import logo from "@/assets/logo.png"

@@ -1,29 +1,9 @@
 import { motion } from "framer-motion"
-import {
-    FileText,
-    PhoneCall,
-    Pencil,
-    Trash2,
-    Loader2,
-} from "lucide-react"
-
-// Components
+import { FileText, PhoneCall, Pencil, Trash2, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
-// Types
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog"
 import type { Employee } from "@/types/employee.types"
 import { formatDisplayName } from "@/lib/format-utils"
 
