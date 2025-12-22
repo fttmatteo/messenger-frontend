@@ -20,6 +20,7 @@ import LiveTracking from '../pages/admin/LiveTracking';
 import MessengerDashboard from '../pages/messenger/Dashboard';
 import MessengerCreateServicio from '../pages/messenger/CreateServicio';
 import MessengerServiceDetails from '../pages/messenger/ServiceDetails';
+import MessengerUpdateStatus from '../pages/messenger/UpdateStatus';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
@@ -114,6 +115,7 @@ export function AppRoutes() {
                 <Route index element={<MessengerDashboard />} />
                 <Route path="crear" element={<MessengerCreateServicio />} />
                 <Route path="servicio/:id" element={<MessengerServiceDetails />} />
+                <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
             </Route>
 
             {/* Catch all */}
