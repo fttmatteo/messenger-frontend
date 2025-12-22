@@ -13,20 +13,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton, CardSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { EmployeeCard } from "@/components/employee/EmployeeCard"
@@ -38,21 +26,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TablePagination } from "@/components/ui/table-pagination"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
     Empty,
@@ -64,8 +39,6 @@ import {
 } from "@/components/ui/empty"
 import {
     Plus,
-    Pencil,
-    Trash2,
     Smartphone,
     PhoneCall,
     User,
@@ -81,6 +54,7 @@ import {
     X,
 } from "lucide-react"
 import { toast } from "sonner"
+import { formatDisplayName } from "@/lib/format-utils"
 
 // Sorting types
 type SortField = "fullName" | "role" | "document" | null
@@ -105,26 +79,12 @@ const itemVariants = {
     },
 }
 
-/**
- * Formats a full name to show first name and initial of last name
- * Example: "Juan Carlos Perez" → "Juan P."
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
-}
-
 export default function Empleados() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
-    const [deleting, setDeleting] = useState<number | null>(null)
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
 
     // Sorting state
     const [sortField, setSortField] = useState<SortField>(null)
@@ -186,7 +146,6 @@ export default function Empleados() {
     // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
-        setSelectedIds(new Set())
     }, [searchQuery, sortField, sortDirection, roleFilter, itemsPerPage])
 
     const fetchEmployees = async () => {
@@ -223,23 +182,6 @@ export default function Empleados() {
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-
-
-    const handleDelete = async (id: number) => {
-        try {
-            setDeleting(id)
-            await employeeService.delete(id)
-            toast.success("Empleado eliminado correctamente")
-            fetchEmployees()
-        } catch (error: any) {
-            toast.error("Error al eliminar empleado", {
-                description: error.message,
-                id: "error-eliminar-empleado"
-            })
-        } finally {
-            setDeleting(null)
-        }
     }
 
     // Sorting handler
@@ -291,114 +233,10 @@ export default function Empleados() {
     )
 
     // Enhanced Pagination component
-    const PaginationControls = () => {
-        const startItem = (currentPage - 1) * itemsPerPage + 1
-        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedEmployees.length)
-        const hasResults = filteredAndSortedEmployees.length > 0
-
-        return (
-            <div className="mt-4 space-y-3">
-                {/* Results info and items per page selector */}
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <p className="text-sm text-muted-foreground">
-                        {hasResults ? (
-                            <>
-                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
-                                <span className="font-medium">{filteredAndSortedEmployees.length}</span> resultado(s)
-                                {roleFilter !== "all" && (
-                                    <span className="text-primary ml-1">
-                                        (filtro: {roleFilter === "ADMIN" ? "Admin" : "Mensajero"})
-                                    </span>
-                                )}
-                            </>
-                        ) : (
-                            "Sin resultados"
-                        )}
-                    </p>
-
-                    {hasResults && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
-                            <Select
-                                value={itemsPerPage.toString()}
-                                onValueChange={(value) => setItemsPerPage(Number(value))}
-                            >
-                                <SelectTrigger className="w-[70px] h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="5">5</SelectItem>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                </div>
-
-                {/* Pagination navigation */}
-                {totalPages > 1 && (
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                                    }}
-                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum: number
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i
-                                } else {
-                                    pageNum = currentPage - 2 + i
-                                }
-
-                                return (
-                                    <PaginationItem key={pageNum}>
-                                        <PaginationLink
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setCurrentPage(pageNum)
-                                            }}
-                                            isActive={currentPage === pageNum}
-                                            className="cursor-pointer"
-                                        >
-                                            {pageNum}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                )
-                            })}
-
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                                    }}
-                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                )}
-            </div>
-        )
-    }
+    // Filter label for pagination
+    const filterLabel = roleFilter !== "all"
+        ? `filtro: ${roleFilter === "ADMIN" ? "Admin" : "Mensajero"}`
+        : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
@@ -503,63 +341,6 @@ export default function Empleados() {
                         )}
                     </div>
 
-                    {/* Mobile Actions */}
-                    {selectedIds.size > 0 && (
-                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-                            {selectedIds.size === 1 && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        const id = Array.from(selectedIds)[0];
-                                        navigate(`/admin/empleados/editar/${id}`);
-                                    }}
-                                    className="shrink-0"
-                                >
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Editar
-                                </Button>
-                            )}
-
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar {selectedIds.size > 1 ? 'empleados seleccionados' : 'empleado'}?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={async () => {
-                                                for (const id of Array.from(selectedIds)) {
-                                                    await handleDelete(id);
-                                                }
-                                                setSelectedIds(new Set());
-                                            }}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    )}
-
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
                         {searchQuery && ` - "${searchQuery}"`}
@@ -577,36 +358,32 @@ export default function Empleados() {
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedEmployees.map((employee) => (
-                                    <div key={employee.idEmployee} className="flex gap-2 mb-2">
-                                        <div className="pt-4">
-                                            <Checkbox
-                                                checked={selectedIds.has(employee.idEmployee)}
-                                                onCheckedChange={(checked) => {
-                                                    const newSelected = new Set(selectedIds);
-                                                    if (checked) {
-                                                        newSelected.add(employee.idEmployee);
-                                                    } else {
-                                                        newSelected.delete(employee.idEmployee);
-                                                    }
-                                                    setSelectedIds(newSelected);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <EmployeeCard
-                                                employee={employee}
-                                                onEdit={(id) => navigate(`/admin/empleados/editar/${id}`)}
-                                                onDelete={handleDelete}
-                                                deleting={deleting}
-                                                hideActions={true}
-                                            />
-                                        </div>
+                                    <div
+                                        key={employee.idEmployee}
+                                        className="cursor-pointer"
+                                        onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
+                                    >
+                                        <EmployeeCard
+                                            employee={employee}
+                                            onEdit={() => { }}
+                                            onDelete={() => { }}
+                                            deleting={null}
+                                            hideActions={true}
+                                        />
                                     </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
                     )}
-                    <PaginationControls />
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={filteredAndSortedEmployees.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                        onItemsPerPageChange={setItemsPerPage}
+                        filterLabel={filterLabel}
+                    />
                 </div>
             ) : (
                 /* Desktop View */
@@ -618,64 +395,7 @@ export default function Empleados() {
                                 {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
                                 {searchQuery && ` - Buscando "${searchQuery}"`}
                                 {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
                             </CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {/* Dynamic Action Buttons inside CardHeader */}
-                            {selectedIds.size > 0 && (
-                                <>
-                                    {selectedIds.size === 1 && (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                const id = Array.from(selectedIds)[0];
-                                                navigate(`/admin/empleados/editar/${id}`);
-                                            }}
-                                            className="shrink-0"
-                                        >
-                                            <Pencil className="h-4 w-4 mr-2" />
-                                            Editar
-                                        </Button>
-                                    )}
-
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>
-                                                    ¿Eliminar {selectedIds.size > 1 ? 'empleados seleccionados' : 'empleado'}?
-                                                </AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={async () => {
-                                                        for (const id of Array.from(selectedIds)) {
-                                                            await handleDelete(id);
-                                                        }
-                                                        setSelectedIds(new Set());
-                                                    }}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    Eliminar
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </>
-                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -683,7 +403,6 @@ export default function Empleados() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Rol</TableHead>
                                         <TableHead>Documento</TableHead>
@@ -703,23 +422,6 @@ export default function Empleados() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="w-[50px]">
-                                                <Checkbox
-                                                    checked={
-                                                        paginatedEmployees.length > 0 &&
-                                                        paginatedEmployees.every(e => selectedIds.has(e.idEmployee))
-                                                    }
-                                                    onCheckedChange={(checked) => {
-                                                        const newSelected = new Set(selectedIds);
-                                                        if (checked) {
-                                                            paginatedEmployees.forEach(e => newSelected.add(e.idEmployee));
-                                                        } else {
-                                                            paginatedEmployees.forEach(e => newSelected.delete(e.idEmployee));
-                                                        }
-                                                        setSelectedIds(newSelected);
-                                                    }}
-                                                />
-                                            </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                 onClick={() => handleSort("fullName")}
@@ -769,22 +471,9 @@ export default function Empleados() {
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(employee.idEmployee) ? 'bg-muted' : ''}`}
+                                                    className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                                                    onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
                                                 >
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedIds.has(employee.idEmployee)}
-                                                            onCheckedChange={(checked) => {
-                                                                const newSelected = new Set(selectedIds);
-                                                                if (checked) {
-                                                                    newSelected.add(employee.idEmployee);
-                                                                } else {
-                                                                    newSelected.delete(employee.idEmployee);
-                                                                }
-                                                                setSelectedIds(newSelected);
-                                                            }}
-                                                        />
-                                                    </TableCell>
                                                     <TableCell className="font-medium text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -822,7 +511,15 @@ export default function Empleados() {
                                         </AnimatePresence>
                                     </TableBody>
                                 </Table>
-                                <PaginationControls />
+                                <TablePagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    totalItems={filteredAndSortedEmployees.length}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                    filterLabel={filterLabel}
+                                />
                             </>
                         )}
                     </CardContent>

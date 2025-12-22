@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 // Utils
 import { getStatusBadge, getPlateTypeIcon } from "@/lib/status-utils"
+import { formatDisplayName } from "@/lib/format-utils"
 
 // Types
 import type { ServiceDelivery } from "@/types/service.types"
@@ -20,17 +21,6 @@ interface ServiceCardProps {
     service: ServiceDelivery
     onUpdate: (service: ServiceDelivery) => void
     onViewDetails: (serviceId: number) => void
-}
-
-/**
- * Formats a full name to show first name and initial of last name
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 /**

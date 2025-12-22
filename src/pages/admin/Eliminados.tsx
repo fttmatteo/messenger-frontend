@@ -57,6 +57,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
+import { formatDisplayName } from "@/lib/format-utils"
 
 // Animation variants
 const itemVariants = {
@@ -71,17 +72,6 @@ const itemVariants = {
         },
     },
     exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
-}
-
-/**
- * Formats a full name to show first name and initial of last name
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 export default function Eliminados() {

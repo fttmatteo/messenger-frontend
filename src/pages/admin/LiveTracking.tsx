@@ -28,6 +28,7 @@ import { toast } from "sonner"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
+import { formatDisplayName } from "@/lib/format-utils"
 
 // Componente para manejar AdvancedMarkerElement
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string, color?: string }) {
@@ -68,17 +69,6 @@ function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { posit
     }, [position])
 
     return null
-}
-
-/**
- * Formats a full name to show first name and initial of last name
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 export default function LiveTracking() {

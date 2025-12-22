@@ -25,24 +25,13 @@ import {
 
 // Types
 import type { Employee } from "@/types/employee.types"
+import { formatDisplayName } from "@/lib/format-utils"
 
 interface EmployeeCardProps {
     employee: Employee
     onEdit: (employeeId: number) => void
     onDelete: (employeeId: number) => void
     deleting: number | null
-}
-
-/**
- * Formats a full name to show first name and initial of last name
- * Example: "Juan Carlos Perez" → "Juan P."
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
 }
 
 /**

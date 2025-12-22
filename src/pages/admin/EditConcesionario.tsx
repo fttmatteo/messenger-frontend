@@ -21,8 +21,19 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, MapPin } from "lucide-react"
+import { Loader2, MapPin, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 // Available zones
@@ -57,6 +68,7 @@ export default function EditConcesionario() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [deleting, setDeleting] = useState(false)
     const [geocoded, setGeocoded] = useState(false)
     const [geocoding, setGeocoding] = useState(false)
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
@@ -159,6 +171,23 @@ export default function EditConcesionario() {
         }
     }
 
+    const handleDelete = async () => {
+        if (!id) return
+        try {
+            setDeleting(true)
+            await dealershipService.delete(Number(id))
+            toast.success("Concesionario eliminado exitosamente")
+            navigate("/admin/concesionarios")
+        } catch (error: any) {
+            toast.error("Error al eliminar concesionario", {
+                description: error.message,
+                id: "error-eliminar-concesionario"
+            })
+        } finally {
+            setDeleting(false)
+        }
+    }
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -258,6 +287,39 @@ export default function EditConcesionario() {
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Guardar cambios
                                 </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 ml-auto"
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Eliminar
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                ¿Eliminar concesionario?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta acción no se puede deshacer. Se eliminará permanentemente este concesionario del sistema.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleDelete}
+                                                disabled={deleting}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                                {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Eliminar
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </form>
                     </CardContent>

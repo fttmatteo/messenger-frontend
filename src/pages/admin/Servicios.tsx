@@ -27,14 +27,6 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
     Empty,
     EmptyHeader,
     EmptyMedia,
@@ -49,6 +41,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { TablePagination } from "@/components/ui/table-pagination"
 import {
     Home,
     Search,
@@ -70,6 +63,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusBadge, getStatusIconConfig } from "@/lib/status-utils"
+import { formatDisplayName } from "@/lib/format-utils"
 
 // Type Definitions
 type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentStatus" | "createdAt" | null
@@ -103,18 +97,6 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'CANCELED', label: 'Cancelado' },
     { value: 'RESOLVED', label: 'Resuelto' },
 ]
-
-/**
- * Formats a full name to show first name and initial of last name
- * Example: "Juan Carlos Perez" → "Juan P."
- */
-function formatDisplayName(fullName: string): string {
-    const parts = fullName.trim().split(/\s+/)
-    if (parts.length === 1) return parts[0]
-    const firstName = parts[0]
-    const lastName = parts[parts.length - 1]
-    return `${firstName} ${lastName.charAt(0).toUpperCase()}.`
-}
 
 export default function Servicios() {
     const navigate = useNavigate()
@@ -307,115 +289,10 @@ export default function Servicios() {
         </Empty>
     )
 
-    // Enhanced Pagination component
-    const PaginationControls = () => {
-        const startItem = (currentPage - 1) * itemsPerPage + 1
-        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedServices.length)
-        const hasResults = filteredAndSortedServices.length > 0
-
-        return (
-            <div className="mt-4 space-y-3">
-                {/* Results info and items per page selector */}
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <p className="text-sm text-muted-foreground">
-                        {hasResults ? (
-                            <>
-                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
-                                <span className="font-medium">{filteredAndSortedServices.length}</span> resultado(s)
-                                {statusFilter.length > 0 && (
-                                    <span className="text-primary ml-1">
-                                        ({statusFilter.length} filtro{statusFilter.length > 1 ? 's' : ''} activo{statusFilter.length > 1 ? 's' : ''})
-                                    </span>
-                                )}
-                            </>
-                        ) : (
-                            "Sin resultados"
-                        )}
-                    </p>
-
-                    {hasResults && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
-                            <Select
-                                value={itemsPerPage.toString()}
-                                onValueChange={(value) => setItemsPerPage(Number(value))}
-                            >
-                                <SelectTrigger className="w-[70px] h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="5">5</SelectItem>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                </div>
-
-                {/* Pagination navigation */}
-                {totalPages > 1 && (
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                                    }}
-                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum: number
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i
-                                } else {
-                                    pageNum = currentPage - 2 + i
-                                }
-
-                                return (
-                                    <PaginationItem key={pageNum}>
-                                        <PaginationLink
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setCurrentPage(pageNum)
-                                            }}
-                                            isActive={currentPage === pageNum}
-                                            className="cursor-pointer"
-                                        >
-                                            {pageNum}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                )
-                            })}
-
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                                    }}
-                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                )}
-            </div>
-        )
-    }
+    // Filter label for pagination
+    const filterLabel = statusFilter.length > 0
+        ? `${statusFilter.length} filtro${statusFilter.length > 1 ? 's' : ''} activo${statusFilter.length > 1 ? 's' : ''}`
+        : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
@@ -557,7 +434,15 @@ export default function Servicios() {
                                 </AnimatePresence>
                             </motion.div>
                         )}
-                        <PaginationControls />
+                        <TablePagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalItems={filteredAndSortedServices.length}
+                            itemsPerPage={itemsPerPage}
+                            onPageChange={setCurrentPage}
+                            onItemsPerPageChange={setItemsPerPage}
+                            filterLabel={filterLabel}
+                        />
                     </div>
                 ) : (
                     /* Desktop View */
@@ -719,7 +604,15 @@ export default function Servicios() {
                                             </TableBody>
                                         </Table>
                                     </div>
-                                    <PaginationControls />
+                                    <TablePagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        totalItems={filteredAndSortedServices.length}
+                                        itemsPerPage={itemsPerPage}
+                                        onPageChange={setCurrentPage}
+                                        onItemsPerPageChange={setItemsPerPage}
+                                        filterLabel={filterLabel}
+                                    />
                                 </>
                             )}
                         </CardContent>

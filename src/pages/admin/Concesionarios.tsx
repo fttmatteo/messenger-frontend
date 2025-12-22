@@ -5,55 +5,16 @@ import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton, CardSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { DealershipCard } from "@/components/dealership/DealershipCard"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { TablePagination } from "@/components/ui/table-pagination"
 import {
     Empty,
     EmptyHeader,
@@ -64,9 +25,6 @@ import {
 } from "@/components/ui/empty"
 import {
     Plus,
-    Pencil,
-    Trash2,
-    Loader2,
     MapPin,
     Smartphone,
     PhoneCall,
@@ -113,9 +71,7 @@ export default function Concesionarios() {
     const isMobile = useIsMobile()
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loading, setLoading] = useState(true)
-    const [deleting, setDeleting] = useState<number | null>(null)
     const [geocoding, setGeocoding] = useState<number | null>(null)
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
 
     // Sorting state
     const [sortField, setSortField] = useState<SortField>(null)
@@ -191,7 +147,6 @@ export default function Concesionarios() {
     // Reset to page 1 when search, sort, or filters change
     useEffect(() => {
         setCurrentPage(1)
-        setSelectedIds(new Set())
     }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
 
     const fetchDealerships = async () => {
@@ -231,21 +186,6 @@ export default function Concesionarios() {
     }
 
 
-    const handleDelete = async (id: number) => {
-        try {
-            setDeleting(id)
-            await dealershipService.delete(id)
-            toast.success("Concesionario eliminado correctamente")
-            fetchDealerships()
-        } catch (error: any) {
-            toast.error("Error al eliminar concesionario", {
-                description: error.message,
-                id: "error-eliminar-concesionario"
-            })
-        } finally {
-            setDeleting(null)
-        }
-    }
 
     const handleGeocode = async (id: number) => {
         try {
@@ -312,114 +252,8 @@ export default function Concesionarios() {
     )
 
     // Enhanced Pagination component
-    const PaginationControls = () => {
-        const startItem = (currentPage - 1) * itemsPerPage + 1
-        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedDealerships.length)
-        const hasResults = filteredAndSortedDealerships.length > 0
-
-        return (
-            <div className="mt-4 space-y-3">
-                {/* Results info and items per page selector */}
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <p className="text-sm text-muted-foreground">
-                        {hasResults ? (
-                            <>
-                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
-                                <span className="font-medium">{filteredAndSortedDealerships.length}</span> resultado(s)
-                                {zoneFilter !== "all" && (
-                                    <span className="text-primary ml-1">
-                                        (zona: {zoneFilter})
-                                    </span>
-                                )}
-                            </>
-                        ) : (
-                            "Sin resultados"
-                        )}
-                    </p>
-
-                    {hasResults && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
-                            <Select
-                                value={itemsPerPage.toString()}
-                                onValueChange={(value) => setItemsPerPage(Number(value))}
-                            >
-                                <SelectTrigger className="w-[70px] h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="5">5</SelectItem>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                </div>
-
-                {/* Pagination navigation */}
-                {totalPages > 1 && (
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                                    }}
-                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum: number
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i
-                                } else {
-                                    pageNum = currentPage - 2 + i
-                                }
-
-                                return (
-                                    <PaginationItem key={pageNum}>
-                                        <PaginationLink
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setCurrentPage(pageNum)
-                                            }}
-                                            isActive={currentPage === pageNum}
-                                            className="cursor-pointer"
-                                        >
-                                            {pageNum}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                )
-                            })}
-
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                                    }}
-                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                )}
-            </div>
-        )
-    }
+    // Filter label for pagination
+    const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
@@ -526,89 +360,6 @@ export default function Concesionarios() {
                         )}
                     </div>
 
-                    {/* Mobile Actions */}
-                    {selectedIds.size > 0 && (
-                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-                            {selectedIds.size === 1 && (() => {
-                                const id = Array.from(selectedIds)[0];
-                                const selectedDealership = dealerships.find(d => d.idDealership === id);
-                                if (selectedDealership && !selectedDealership.isGeolocated) {
-                                    return (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleGeocode(id)}
-                                            disabled={geocoding === id}
-                                            className="shrink-0"
-                                        >
-                                            {geocoding === id ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : (
-                                                <div className="flex items-center">
-                                                    <MapPin className="h-4 w-4 mr-2" />
-                                                    <span>Ubicar</span>
-                                                </div>
-                                            )}
-                                        </Button>
-                                    );
-                                }
-                                return null;
-                            })()}
-
-                            {selectedIds.size === 1 && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        const id = Array.from(selectedIds)[0];
-                                        navigate(`/admin/concesionarios/editar/${id}`);
-                                    }}
-                                    className="shrink-0"
-                                >
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Editar
-                                </Button>
-                            )}
-
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={async () => {
-                                                for (const id of Array.from(selectedIds)) {
-                                                    await handleDelete(id);
-                                                }
-                                                setSelectedIds(new Set());
-                                            }}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    )}
-
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                         {searchQuery && ` - "${searchQuery}"`}
@@ -626,46 +377,34 @@ export default function Concesionarios() {
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedDealerships.map((dealership) => (
-                                    <div key={dealership.idDealership} className="flex gap-2 mb-2">
-                                        <div className="pt-4">
-                                            <Checkbox
-                                                checked={selectedIds.has(dealership.idDealership)}
-                                                onCheckedChange={(checked) => {
-                                                    const newSelected = new Set(selectedIds);
-                                                    if (checked) {
-                                                        newSelected.add(dealership.idDealership);
-                                                    } else {
-                                                        newSelected.delete(dealership.idDealership);
-                                                    }
-                                                    setSelectedIds(newSelected);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <DealershipCard
-                                                dealership={dealership}
-                                                // onEdit removed from mobile card or handled via header selection?
-                                                // Actually for mobile, selection + header buttons is awkward. 
-                                                // User asked to simplify "where I marked the blue circle" (Desktop).
-                                                // But usually standardizing means both. 
-                                                // Let's keep mobile simple: selection works, header buttons appear at top.
-                                                // And remove individual buttons from Card if possible or keep them?
-                                                // User said "simplify... when selected enabled... else not". 
-                                                // This implies removing them from the item itself. 
-                                                onEdit={() => { }} // Disabled/Removed
-                                                onDelete={() => { }} // Disabled/Removed
-                                                onGeocode={handleGeocode}
-                                                deleting={deleting}
-                                                geocoding={geocoding}
-                                                hideActions={true} // We need to support this prop in DealershipCard or just ignore onEdit/onDelete
-                                            />
-                                        </div>
+                                    <div
+                                        key={dealership.idDealership}
+                                        className="cursor-pointer"
+                                        onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
+                                    >
+                                        <DealershipCard
+                                            dealership={dealership}
+                                            onEdit={() => { }}
+                                            onDelete={() => { }}
+                                            onGeocode={handleGeocode}
+                                            deleting={null}
+                                            geocoding={geocoding}
+                                            hideActions={true}
+                                        />
                                     </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
                     )}
-                    <PaginationControls />
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={filteredAndSortedDealerships.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                        onItemsPerPageChange={setItemsPerPage}
+                        filterLabel={filterLabel}
+                    />
                 </div>
             ) : (
                 /* Desktop View */
@@ -677,89 +416,7 @@ export default function Concesionarios() {
                                 {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                                 {searchQuery && ` - Buscando "${searchQuery}"`}
                                 {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
                             </CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {/* Dynamic Action Buttons inside CardHeader */}
-                            {selectedIds.size === 1 && (() => {
-                                const id = Array.from(selectedIds)[0];
-                                const selectedDealership = dealerships.find(d => d.idDealership === id);
-                                if (selectedDealership && !selectedDealership.isGeolocated) {
-                                    return (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => handleGeocode(id)}
-                                            disabled={geocoding === id}
-                                            className="shrink-0"
-                                        >
-                                            {geocoding === id ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : (
-                                                <div className="flex items-center">
-                                                    <MapPin className="h-4 w-4 mr-2" />
-                                                    <span>Ubicar</span>
-                                                </div>
-                                            )}
-                                        </Button>
-                                    );
-                                }
-                                return null;
-                            })()}
-
-                            {selectedIds.size > 0 && (
-                                <>
-                                    {selectedIds.size === 1 && (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                const id = Array.from(selectedIds)[0];
-                                                navigate(`/admin/concesionarios/editar/${id}`);
-                                            }}
-                                            className="shrink-0"
-                                        >
-                                            <Pencil className="h-4 w-4 mr-2" />
-                                            Editar
-                                        </Button>
-                                    )}
-
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>
-                                                    ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
-                                                </AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={async () => {
-                                                        for (const id of Array.from(selectedIds)) {
-                                                            await handleDelete(id);
-                                                        }
-                                                        setSelectedIds(new Set());
-                                                    }}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    Eliminar
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </>
-                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -767,7 +424,6 @@ export default function Concesionarios() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Dirección</TableHead>
                                         <TableHead>Teléfono</TableHead>
@@ -788,23 +444,6 @@ export default function Concesionarios() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="w-[50px]">
-                                                <Checkbox
-                                                    checked={
-                                                        paginatedDealerships.length > 0 &&
-                                                        paginatedDealerships.every(d => selectedIds.has(d.idDealership))
-                                                    }
-                                                    onCheckedChange={(checked) => {
-                                                        const newSelected = new Set(selectedIds);
-                                                        if (checked) {
-                                                            paginatedDealerships.forEach(d => newSelected.add(d.idDealership));
-                                                        } else {
-                                                            paginatedDealerships.forEach(d => newSelected.delete(d.idDealership));
-                                                        }
-                                                        setSelectedIds(newSelected);
-                                                    }}
-                                                />
-                                            </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                 onClick={() => handleSort("name")}
@@ -860,26 +499,9 @@ export default function Concesionarios() {
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(dealership.idDealership) ? 'bg-muted' : ''}`}
-                                                    onClick={() => {
-                                                        // Optional: Allow row click to select, but be careful of text selection
-                                                        // keeping it to checkbox only for now to avoid conflicts
-                                                    }}
+                                                    className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                                 >
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedIds.has(dealership.idDealership)}
-                                                            onCheckedChange={(checked) => {
-                                                                const newSelected = new Set(selectedIds);
-                                                                if (checked) {
-                                                                    newSelected.add(dealership.idDealership);
-                                                                } else {
-                                                                    newSelected.delete(dealership.idDealership);
-                                                                }
-                                                                setSelectedIds(newSelected);
-                                                            }}
-                                                        />
-                                                    </TableCell>
                                                     <TableCell className="font-medium text-base">
                                                         {dealership.name}
                                                     </TableCell>
@@ -940,7 +562,15 @@ export default function Concesionarios() {
                                         </AnimatePresence>
                                     </TableBody>
                                 </Table>
-                                <PaginationControls />
+                                <TablePagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    totalItems={filteredAndSortedDealerships.length}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                    filterLabel={filterLabel}
+                                />
                             </>
                         )}
                     </CardContent>

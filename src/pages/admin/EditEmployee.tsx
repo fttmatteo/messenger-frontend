@@ -21,7 +21,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Eye, EyeOff } from "lucide-react"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Loader2, Eye, EyeOff, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 const employeeSchema = z.object({
@@ -51,6 +62,7 @@ export default function EditEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [deleting, setDeleting] = useState(false)
 
     const {
         register,
@@ -108,6 +120,23 @@ export default function EditEmployee() {
                 description: error.message,
                 id: "error-actualizar-empleado"
             })
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!id) return
+        try {
+            setDeleting(true)
+            await employeeService.delete(Number(id))
+            toast.success("Empleado eliminado exitosamente")
+            navigate("/admin/empleados")
+        } catch (error: any) {
+            toast.error("Error al eliminar empleado", {
+                description: error.message,
+                id: "error-eliminar-empleado"
+            })
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -237,6 +266,39 @@ export default function EditEmployee() {
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Guardar cambios
                             </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 ml-auto"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Eliminar
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            ¿Eliminar empleado?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente este empleado del sistema.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={handleDelete}
+                                            disabled={deleting}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                            {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            Eliminar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     </form>
                 </CardContent>
