@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useNavigate, Link, useLocation } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -51,10 +51,6 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function CreateServicio() {
     const navigate = useNavigate()
-    const location = useLocation()
-    const isMessenger = location.pathname.includes('/messenger')
-    const basePath = isMessenger ? '/messenger/servicios' : '/admin/servicios'
-
     const { user } = useAuth()
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
@@ -239,7 +235,7 @@ export default function CreateServicio() {
                     : "Procesando detección OCR..."
             })
 
-            navigate(basePath)
+            navigate("/admin/servicios")
         } catch (error: any) {
             toast.error("Error al crear servicio", {
                 description: error.response?.data?.message || error.message,
@@ -301,7 +297,7 @@ export default function CreateServicio() {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={isMessenger ? "/messenger" : "/admin"}>
+                            <Link to="/admin">
                                 <Home className="h-4 w-4" />
                             </Link>
                         </BreadcrumbLink>
@@ -309,7 +305,7 @@ export default function CreateServicio() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={basePath}>
+                            <Link to="/admin/servicios">
                                 Servicios
                             </Link>
                         </BreadcrumbLink>
@@ -579,7 +575,7 @@ export default function CreateServicio() {
                                     variant="outline"
                                     onClick={() => {
                                         stopCamera()
-                                        navigate(basePath)
+                                        navigate("/admin/servicios")
                                     }}
                                     disabled={loading}
                                 >

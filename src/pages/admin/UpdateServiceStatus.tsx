@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { Check, X, Home, Loader2, Save, Camera, Upload, Eraser, Maximize2, RotateCw } from "lucide-react"
 import { toast } from "sonner"
 
@@ -47,10 +47,6 @@ import {
 export default function UpdateServiceStatus() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const location = useLocation()
-    const isMessenger = location.pathname.includes('/messenger')
-    const basePath = isMessenger ? '/messenger/servicios' : '/admin/servicios'
-
     const { user } = useAuth()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
@@ -132,14 +128,14 @@ export default function UpdateServiceStatus() {
                 toast.error("Error al cargar servicio", {
                     description: error.message
                 })
-                navigate(basePath)
+                navigate("/admin/servicios")
             } finally {
                 setLoading(false)
             }
         }
 
         fetchService()
-    }, [id, navigate, basePath])
+    }, [id, navigate])
 
     // Stop camera function
     const stopCamera = useCallback(() => {
@@ -290,7 +286,7 @@ export default function UpdateServiceStatus() {
                 description: `Servicio ${service.plate.plateNumber} actualizado`
             })
 
-            navigate(basePath)
+            navigate("/admin/servicios")
         } catch (error: any) {
             toast.error("Error al actualizar estado", {
                 description: error.response?.data?.message || error.message,
@@ -321,7 +317,7 @@ export default function UpdateServiceStatus() {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={isMessenger ? "/messenger" : "/admin"}>
+                            <Link to="/admin">
                                 <Home className="h-4 w-4" />
                             </Link>
                         </BreadcrumbLink>
@@ -329,7 +325,7 @@ export default function UpdateServiceStatus() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={basePath}>
+                            <Link to="/admin/servicios">
                                 Servicios
                             </Link>
                         </BreadcrumbLink>
@@ -337,7 +333,7 @@ export default function UpdateServiceStatus() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={`${basePath}/${id}`}>
+                            <Link to={`/admin/servicios/${id}`}>
                                 {service.plate.plateNumber}
                             </Link>
                         </BreadcrumbLink>
@@ -606,7 +602,7 @@ export default function UpdateServiceStatus() {
                     <div className="flex gap-4 pt-4 border-t mt-6">
                         <Button
                             variant="outline"
-                            onClick={() => navigate(basePath)}
+                            onClick={() => navigate("/admin/servicios")}
                             disabled={updating}
                             type="button"
                         >

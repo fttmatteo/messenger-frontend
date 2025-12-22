@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -61,6 +60,7 @@ export default function EditConcesionario() {
     const [geocoded, setGeocoded] = useState(false)
     const [geocoding, setGeocoding] = useState(false)
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
+    const [initialAddress, setInitialAddress] = useState("")
 
     const {
         register,
@@ -74,6 +74,9 @@ export default function EditConcesionario() {
     })
 
     const selectedZone = watch("zone")
+    const currentAddress = watch("address")
+    // Normalizar ambos lados para detectar cambios reales
+    const addressChanged = currentAddress?.trim() !== "" && currentAddress?.trim() !== initialAddress.trim()
 
     useEffect(() => {
         const fetchDealership = async () => {
@@ -87,6 +90,7 @@ export default function EditConcesionario() {
                     phone: dealership.phone,
                     zone: dealership.zone,
                 })
+                setInitialAddress(dealership.address)
                 setGeocoded(dealership.isGeolocated || false)
                 setCoordinates({
                     lat: dealership.latitude,
@@ -124,21 +128,31 @@ export default function EditConcesionario() {
         }
     }
 
-    const handleGeocode = async () => {
+    // Guardar cambios Y geocodificar en un solo paso
+    const handleSaveAndGeocode = async (data: DealershipFormValues) => {
         if (!id) return
         try {
             setGeocoding(true)
+            // Primero guardar
+            await dealershipService.update(Number(id), {
+                name: capitalizeWords(data.name.trim()),
+                address: capitalizeWords(data.address.trim()),
+                phone: data.phone,
+                zone: data.zone,
+            })
+            // Luego geocodificar
             const result = await dealershipService.geocode(Number(id))
             setGeocoded(true)
             setCoordinates({
                 lat: result.latitude,
                 lng: result.longitude,
             })
-            toast.success("Concesionario geocodificado correctamente")
+            setInitialAddress(capitalizeWords(data.address.trim()))
+            toast.success("Guardado y geocodificado correctamente")
         } catch (error: any) {
-            toast.error("Error al geocodificar", {
+            toast.error("Error al guardar y geocodificar", {
                 description: error.message,
-                id: "error-geocodificar-edit"
+                id: "error-save-geocode"
             })
         } finally {
             setGeocoding(false)
@@ -256,9 +270,6 @@ export default function EditConcesionario() {
                             <MapPin className="h-5 w-5" />
                             Ubicación
                         </CardTitle>
-                        <CardDescription>
-                            Geocodifica el concesionario para obtener sus coordenadas
-                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {geocoded ? (
@@ -271,31 +282,38 @@ export default function EditConcesionario() {
                                     <p><strong>Latitud:</strong> {coordinates.lat?.toFixed(6)}</p>
                                     <p><strong>Longitud:</strong> {coordinates.lng?.toFixed(6)}</p>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={handleGeocode}
-                                    disabled={geocoding}
-                                >
-                                    {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Re-geocodificar
-                                </Button>
+                                {addressChanged && (
+                                    <Button
+                                        className="w-full"
+                                        onClick={handleSubmit(handleSaveAndGeocode)}
+                                        disabled={geocoding || isSubmitting}
+                                    >
+                                        {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        <MapPin className="mr-2 h-4 w-4" />
+                                        Re-geocodificar
+                                    </Button>
+                                )}
                             </>
                         ) : (
                             <>
                                 <Badge variant="secondary">Sin ubicación</Badge>
                                 <p className="text-sm text-muted-foreground">
-                                    Haz clic en el botón para obtener las coordenadas automáticamente a partir de la dirección.
+                                    {addressChanged
+                                        ? "Guarda los cambios primero, luego haz clic en 'Re-geocodificar' para obtener las coordenadas."
+                                        : "Este concesionario aún no ha sido geocodificado."
+                                    }
                                 </p>
-                                <Button
-                                    className="w-full"
-                                    onClick={handleGeocode}
-                                    disabled={geocoding}
-                                >
-                                    {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    <MapPin className="mr-2 h-4 w-4" />
-                                    Geocodificar
-                                </Button>
+                                {addressChanged && (
+                                    <Button
+                                        className="w-full"
+                                        onClick={handleSubmit(handleSaveAndGeocode)}
+                                        disabled={geocoding || isSubmitting}
+                                    >
+                                        {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        <MapPin className="mr-2 h-4 w-4" />
+                                        Re-geocodificar
+                                    </Button>
+                                )}
                             </>
                         )}
                     </CardContent>

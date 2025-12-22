@@ -8,7 +8,6 @@ import {
     User,
     LogOut,
     ArrowLeft,
-    Truck,
 } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
@@ -43,7 +42,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 
 const navItems = [
     { title: "Inicio", icon: Home, url: "/messenger" },
-    { title: "Servicios", icon: Truck, url: "/messenger/servicios" },
     { title: "Entregas", icon: Package, url: "/messenger/entregas" },
     { title: "Perfil", icon: User, url: "/messenger/perfil" },
 ]

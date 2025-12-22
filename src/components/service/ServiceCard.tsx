@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Building2, User, Calendar, Edit, Eye } from "lucide-react"
+import { Building2, User, Calendar, Edit } from "lucide-react"
 
 // Components
 import { PlacaBadge } from "@/components/PlacaBadge"
@@ -43,7 +43,10 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
 
     return (
         <motion.div exit="exit" layout>
-            <Card className="mb-3 hover:shadow-md transition-shadow">
+            <Card
+                className="mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => onViewDetails(service.idServiceDelivery)}
+            >
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 space-y-2 min-w-0">
@@ -88,19 +91,14 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                             <Button
                                 variant="default"
                                 size="lg"
-                                onClick={() => onUpdate(service)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    onUpdate(service)
+                                }}
                                 className="bg-primary hover:bg-primary/90"
                                 aria-label="Actualizar"
                             >
                                 <Edit className="h-5 w-5" />
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="lg"
-                                onClick={() => onViewDetails(service.idServiceDelivery)}
-                                aria-label="Detalles"
-                            >
-                                <Eye className="h-5 w-5" />
                             </Button>
                         </div>
                     </div>

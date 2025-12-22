@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
@@ -54,10 +54,6 @@ export default function ViewServicio() {
     // Router & Auth
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const location = useLocation()
-    const isMessenger = location.pathname.includes('/messenger')
-    const basePath = isMessenger ? '/messenger/servicios' : '/admin/servicios'
-
     const { user } = useAuth()
     const isMobile = useIsMobile()
 
@@ -88,7 +84,7 @@ export default function ViewServicio() {
                     id: "error-cargar-servicio"
                 })
                 if (error.response?.status === 404 || error.response?.status === 403) {
-                    navigate(basePath)
+                    navigate("/admin/servicios")
                 }
             } finally {
                 setLoading(false)
@@ -107,7 +103,7 @@ export default function ViewServicio() {
             toast.success("Servicio eliminado", {
                 description: "El servicio ha sido eliminado exitosamente"
             })
-            navigate(basePath)
+            navigate("/admin/servicios")
         } catch (error: any) {
             toast.error("Error al eliminar servicio", {
                 description: error.response?.data?.message || error.message,
@@ -144,7 +140,7 @@ export default function ViewServicio() {
         return (
             <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-muted-foreground mb-4">Servicio no encontrado</p>
-                <Button onClick={() => navigate(basePath)}>
+                <Button onClick={() => navigate("/admin/servicios")}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al listado
                 </Button>
@@ -161,7 +157,7 @@ export default function ViewServicio() {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={isMessenger ? "/messenger" : "/admin"}>
+                            <Link to="/admin">
                                 <Home className="h-4 w-4" />
                             </Link>
                         </BreadcrumbLink>
@@ -169,7 +165,7 @@ export default function ViewServicio() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={basePath}>
+                            <Link to="/admin/servicios">
                                 Servicios
                             </Link>
                         </BreadcrumbLink>
@@ -219,7 +215,7 @@ export default function ViewServicio() {
                             return (
                                 <Button
                                     variant="outline"
-                                    onClick={() => navigate(`${basePath}/actualizar/${service.idServiceDelivery}`)}
+                                    onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
                                     className="flex-1 md:flex-none"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
