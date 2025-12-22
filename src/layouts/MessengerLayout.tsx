@@ -224,7 +224,6 @@ export default function MessengerLayout() {
                     // Default Header with Logo
                     <div className="flex items-center gap-2">
                         <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                        <span className="font-semibold text-lg">PLAK</span>
                     </div>
                 )}
 

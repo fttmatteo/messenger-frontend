@@ -1,12 +1,13 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { toast } from "sonner"
 import { getStatusBadge } from "@/lib/status-utils"
+import { useDataList } from "@/hooks/useDataList"
 
 // Type Definitions
-type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentStatus" | "createdAt" | null
 type SortDirection = "asc" | "desc"
+
 
 interface UseServicesOptions {
     searchQuery: string
@@ -27,9 +28,9 @@ interface UseServicesReturn {
     setItemsPerPage: (items: number) => void
 
     // Sorting
-    sortField: SortField
+    sortField: string | null
     sortDirection: SortDirection
-    handleSort: (field: SortField) => void
+    handleSort: (field: string) => void
 
     // Filtering
     statusFilter: ServiceStatus[]
@@ -47,90 +48,58 @@ export function useServices({ searchQuery }: UseServicesOptions): UseServicesRet
     // Core state
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
-
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
     const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
 
-    // Filter and sort services
-    const filteredAndSortedServices = useMemo(() => {
-        let result = services.filter((service) => {
-            // Search filter
-            const query = searchQuery.toLowerCase()
-            const matchesSearch = !searchQuery.trim() ||
-                String(service.idServiceDelivery).includes(query) ||
-                service.plate.plateNumber.toLowerCase().includes(query) ||
-                service.dealership.name.toLowerCase().includes(query) ||
-                service.messenger.fullName.toLowerCase().includes(query) ||
-                service.currentStatus.toLowerCase().includes(query) ||
-                getStatusBadge(service.currentStatus).label.toLowerCase().includes(query)
+    // Search Filter Logic
+    const searchFilter = useCallback((service: ServiceDelivery, query: string) => {
+        return (
+            String(service.idServiceDelivery).includes(query) ||
+            service.plate.plateNumber.toLowerCase().includes(query) ||
+            service.dealership.name.toLowerCase().includes(query) ||
+            service.messenger.fullName.toLowerCase().includes(query) ||
+            service.currentStatus.toLowerCase().includes(query) ||
+            getStatusBadge(service.currentStatus).label.toLowerCase().includes(query)
+        )
+    }, [])
 
-            if (!matchesSearch) return false
-
-            // Status filter
-            if (statusFilter.length > 0 && !statusFilter.includes(service.currentStatus)) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                switch (sortField) {
-                    case "plateNumber":
-                        comparison = a.plate.plateNumber.localeCompare(b.plate.plateNumber)
-                        break
-                    case "dealershipName":
-                        comparison = a.dealership.name.localeCompare(b.dealership.name)
-                        break
-                    case "messengerName":
-                        comparison = a.messenger.fullName.localeCompare(b.messenger.fullName)
-                        break
-                    case "currentStatus":
-                        comparison = a.currentStatus.localeCompare(b.currentStatus)
-                        break
-                    case "createdAt":
-                        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                        break
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
+    // Custom Filter Logic (Status)
+    const customFilter = useCallback((service: ServiceDelivery) => {
+        if (statusFilter.length > 0 && !statusFilter.includes(service.currentStatus)) {
+            return false
         }
+        return true
+    }, [statusFilter])
 
-        return result
-    }, [services, searchQuery, statusFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedServices.length / itemsPerPage)
-    const paginatedServices = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedServices.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedServices, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters changes
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, statusFilter, itemsPerPage])
-
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
+    // Sort Resolvers
+    const sortValueResolvers = {
+        "plateNumber": (s: ServiceDelivery) => s.plate.plateNumber,
+        "dealershipName": (s: ServiceDelivery) => s.dealership.name,
+        "messengerName": (s: ServiceDelivery) => s.messenger.fullName,
+        "currentStatus": (s: ServiceDelivery) => s.currentStatus,
+        "createdAt": (s: ServiceDelivery) => new Date(s.createdAt)
     }
+
+    // Use Generic Hook
+    const {
+        filteredAndSortedData,
+        paginatedData,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort
+    } = useDataList<ServiceDelivery>({
+        data: services,
+        searchQuery,
+        searchFilter,
+        customFilter,
+        sortValueResolvers,
+        defaultSortField: null,
+        initialItemsPerPage: 10
+    })
 
     // Fetch services
     const fetchServices = async () => {
@@ -157,8 +126,8 @@ export function useServices({ searchQuery }: UseServicesOptions): UseServicesRet
         // Data
         services,
         loading,
-        filteredAndSortedServices,
-        paginatedServices,
+        filteredAndSortedServices: filteredAndSortedData,
+        paginatedServices: paginatedData,
 
         // Pagination
         currentPage,

@@ -14,7 +14,7 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
 import { RefreshCw, Users, Wifi, WifiOff, CalendarIcon, Clock, MapPin, Navigation, History, PanelRightOpen } from "lucide-react"
-import { toast } from "sonner"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -68,6 +68,7 @@ export default function LiveTracking() {
     const [connected, setConnected] = useState(false)
     const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
     const [sheetOpen, setSheetOpen] = useState(false)
+    const { setSuccess, setError } = useAdminUI()
 
     // History state
     const [historyDate, setHistoryDate] = useState<Date>(new Date())
@@ -91,10 +92,7 @@ export default function LiveTracking() {
             }
 
             if (manual) {
-                toast.success("Monitoreo actualizado", {
-                    description: `${updatedMessengers.length} mensajeros activos`,
-                    id: "manual-refresh-success"
-                })
+                setSuccess(`Monitoreo actualizado: ${updatedMessengers.length} mensajeros activos`)
             }
 
             if (!manual && updatedMessengers.length > 0 && updatedMessengers[0].latitude && updatedMessengers[0].longitude) {
@@ -104,16 +102,13 @@ export default function LiveTracking() {
             console.error("Error fetching messengers:", error)
             const status = error.response?.status
             if (status !== 404) {
-                toast.error("Error al cargar mensajeros", {
-                    description: error.response?.data?.message || error.message,
-                    id: "error-cargar-mensajeros"
-                })
+                setError(error.response?.data?.message || error.message || "Error al cargar mensajeros")
             }
             setMessengers([])
         } finally {
             setLoading(false)
         }
-    }, [selectedMessenger])
+    }, [selectedMessenger, setSuccess, setError])
 
     // Fetch history for selected messenger
     const fetchHistory = useCallback(async () => {

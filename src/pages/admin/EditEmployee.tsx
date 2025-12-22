@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { employeeService } from "@/services/employee.service"
+import { useAdminUI } from "@/context/AdminUIContext"
 import type { EmployeeRole } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff } from "lucide-react"
-import { toast } from "sonner"
 
 const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
@@ -39,6 +39,7 @@ function capitalizeWords(str: string): string {
 export default function EditEmployee() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { setSuccess, setError } = useAdminUI()
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState(false)
@@ -70,17 +71,14 @@ export default function EditEmployee() {
                     role: employee.role,
                 })
             } catch (error: any) {
-                toast.error("Error al cargar empleado", {
-                    description: error.message,
-                    id: "error-cargar-empleado"
-                })
+                setError(error.message || "Error al cargar empleado")
                 navigate("/admin/empleados")
             } finally {
                 setLoading(false)
             }
         }
         fetchEmployee()
-    }, [id, reset, navigate])
+    }, [id, reset, navigate, setError])
 
     const onSubmit = async (data: EmployeeFormValues) => {
         if (!id) return
@@ -92,13 +90,10 @@ export default function EditEmployee() {
                 password: data.password || "", // Send empty if not changed
                 role: data.role as EmployeeRole,
             })
-            toast.success("Empleado actualizado exitosamente")
+            setSuccess("Empleado actualizado exitosamente")
             navigate("/admin/empleados")
         } catch (error: any) {
-            toast.error("Error al actualizar empleado", {
-                description: error.message,
-                id: "error-actualizar-empleado"
-            })
+            setError(error.message || "Error al actualizar empleado")
         }
     }
 
@@ -107,13 +102,10 @@ export default function EditEmployee() {
         try {
             setDeleting(true)
             await employeeService.delete(Number(id))
-            toast.success("Empleado eliminado exitosamente")
+            setSuccess("Empleado eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error: any) {
-            toast.error("Error al eliminar empleado", {
-                description: error.message,
-                id: "error-eliminar-empleado"
-            })
+            setError(error.message || "Error al eliminar empleado")
         } finally {
             setDeleting(false)
         }

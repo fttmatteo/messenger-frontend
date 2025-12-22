@@ -43,7 +43,7 @@ export function HistoryEntryCard({
                 </div>
                 <div className="flex items-center gap-1.5">
                     <User className="h-4 w-4 flex-shrink-0" />
-                    <span>{entry.changedBy.fullName}</span>
+                    <span>{entry.changedBy?.fullName || 'Sistema'}</span>
                 </div>
             </div>
 
