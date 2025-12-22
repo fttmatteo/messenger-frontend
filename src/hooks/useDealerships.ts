@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { toast } from "sonner"
+import { useDataList } from "@/hooks/useDataList"
 
 // Type Definitions
-type SortField = "name" | "zone" | "isGeolocated" | null
 type SortDirection = "asc" | "desc"
 
 interface UseDealershipsOptions {
@@ -27,9 +27,9 @@ interface UseDealershipsReturn {
     setItemsPerPage: (items: number) => void
 
     // Sorting
-    sortField: SortField
+    sortField: string | null
     sortDirection: SortDirection
-    handleSort: (field: SortField) => void
+    handleSort: (field: string) => void
 
     // Filtering
     zoneFilter: string
@@ -47,16 +47,6 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
     // Core state
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loading, setLoading] = useState(true)
-
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
     const [zoneFilter, setZoneFilter] = useState<string>("all")
 
     // Get unique zones from dealerships
@@ -65,73 +55,53 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         return Array.from(zones).sort()
     }, [dealerships])
 
-    // Filter and sort dealerships
-    const filteredAndSortedDealerships = useMemo(() => {
-        let result = dealerships.filter((dealership) => {
-            // Search filter
-            if (searchQuery.trim()) {
-                const query = searchQuery.toLowerCase()
-                const matchesSearch = (
-                    String(dealership.idDealership).includes(query) ||
-                    dealership.name.toLowerCase().includes(query) ||
-                    dealership.address.toLowerCase().includes(query) ||
-                    dealership.phone.includes(query) ||
-                    dealership.zone.toLowerCase().includes(query)
-                )
-                if (!matchesSearch) return false
-            }
+    // Search Filter Logic
+    const searchFilter = useCallback((dealership: Dealership, query: string) => {
+        return (
+            String(dealership.idDealership).includes(query) ||
+            dealership.name.toLowerCase().includes(query) ||
+            dealership.address.toLowerCase().includes(query) ||
+            dealership.phone.includes(query) ||
+            dealership.zone.toLowerCase().includes(query)
+        )
+    }, [])
 
-            // Zone filter
-            if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                switch (sortField) {
-                    case "name":
-                        comparison = a.name.localeCompare(b.name)
-                        break
-                    case "zone":
-                        comparison = a.zone.localeCompare(b.zone)
-                        break
-                    case "isGeolocated":
-                        comparison = (a.isGeolocated === b.isGeolocated) ? 0 : a.isGeolocated ? -1 : 1
-                        break
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
+    // Custom Filter Logic (Zone)
+    const customFilter = useCallback((dealership: Dealership) => {
+        if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
+            return false
         }
+        return true
+    }, [zoneFilter])
 
-        return result
-    }, [dealerships, searchQuery, zoneFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
-    const paginatedDealerships = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedDealerships.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedDealerships, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters change
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
-
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
+    // Sort Resolvers
+    const sortValueResolvers = {
+        "name": (d: Dealership) => d.name,
+        "zone": (d: Dealership) => d.zone,
+        "isGeolocated": (d: Dealership) => d.isGeolocated
     }
+
+    // Use Generic Hook
+    const {
+        filteredAndSortedData,
+        paginatedData,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort
+    } = useDataList<Dealership>({
+        data: dealerships,
+        searchQuery,
+        searchFilter,
+        customFilter,
+        sortValueResolvers,
+        defaultSortField: null,
+        initialItemsPerPage: 10
+    })
 
     // Fetch dealerships
     const fetchDealerships = async () => {
@@ -158,8 +128,8 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         // Data
         dealerships,
         loading,
-        filteredAndSortedDealerships,
-        paginatedDealerships,
+        filteredAndSortedDealerships: filteredAndSortedData,
+        paginatedDealerships: paginatedData,
         uniqueZones,
 
         // Pagination

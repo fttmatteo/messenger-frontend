@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import { toast } from "sonner"
+import { useDataList } from "@/hooks/useDataList"
 
 // Type Definitions
-type SortField = "fullName" | "role" | "document" | null
 type SortDirection = "asc" | "desc"
 type RoleFilter = "all" | "ADMIN" | "MESSENGER"
 
@@ -27,9 +27,9 @@ interface UseEmployeesReturn {
     setItemsPerPage: (items: number) => void
 
     // Sorting
-    sortField: SortField
+    sortField: string | null
     sortDirection: SortDirection
-    handleSort: (field: SortField) => void
+    handleSort: (field: string) => void
 
     // Filtering
     roleFilter: RoleFilter
@@ -47,82 +47,54 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
     // Core state
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
-
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
     const [roleFilter, setRoleFilter] = useState<RoleFilter>("all")
 
-    // Filter and sort employees
-    const filteredAndSortedEmployees = useMemo(() => {
-        let result = employees.filter((employee) => {
-            // Search filter
-            const query = searchQuery.toLowerCase()
-            const matchesSearch = !searchQuery.trim() ||
-                employee.fullName.toLowerCase().includes(query) ||
-                String(employee.document).includes(query) ||
-                employee.phone.includes(query) ||
-                employee.role.toLowerCase().includes(query)
+    // Search Filter Logic
+    const searchFilter = useCallback((employee: Employee, query: string) => {
+        return (
+            employee.fullName.toLowerCase().includes(query) ||
+            String(employee.document).includes(query) ||
+            employee.phone.includes(query) ||
+            employee.role.toLowerCase().includes(query)
+        )
+    }, [])
 
-            if (!matchesSearch) return false
-
-            // Role filter
-            if (roleFilter !== "all" && employee.role !== roleFilter) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                switch (sortField) {
-                    case "fullName":
-                        comparison = a.fullName.localeCompare(b.fullName)
-                        break
-                    case "role":
-                        comparison = a.role.localeCompare(b.role)
-                        break
-                    case "document":
-                        comparison = String(a.document).localeCompare(String(b.document))
-                        break
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
+    // Custom Filter Logic (Role)
+    const customFilter = useCallback((employee: Employee) => {
+        if (roleFilter !== "all" && employee.role !== roleFilter) {
+            return false
         }
+        return true
+    }, [roleFilter])
 
-        return result
-    }, [employees, searchQuery, roleFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedEmployees.length / itemsPerPage)
-    const paginatedEmployees = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedEmployees.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedEmployees, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters changes
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, roleFilter, itemsPerPage])
-
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
+    // Sort Resolvers
+    const sortValueResolvers = {
+        "fullName": (e: Employee) => e.fullName,
+        "role": (e: Employee) => e.role,
+        "document": (e: Employee) => String(e.document)
     }
+
+    // Use Generic Hook
+    const {
+        filteredAndSortedData,
+        paginatedData,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort
+    } = useDataList<Employee>({
+        data: employees,
+        searchQuery,
+        searchFilter,
+        customFilter,
+        sortValueResolvers,
+        defaultSortField: null,
+        initialItemsPerPage: 10
+    })
 
     // Fetch employees
     const fetchEmployees = async () => {
@@ -149,8 +121,8 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         // Data
         employees,
         loading,
-        filteredAndSortedEmployees,
-        paginatedEmployees,
+        filteredAndSortedEmployees: filteredAndSortedData,
+        paginatedEmployees: paginatedData,
 
         // Pagination
         currentPage,
