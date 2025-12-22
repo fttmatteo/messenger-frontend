@@ -64,7 +64,7 @@ class ServiceDeliveryService {
             })
         }
 
-        const response = await apiClient.put(`/services/updateServiceStatus/${id}`, formData)
+        const response = await apiClient.put(`/services/updateService/${id}`, formData)
         return response.data
     }
 
@@ -88,6 +88,15 @@ class ServiceDeliveryService {
      */
     async restore(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.post(`/services/trash/restore/${id}`)
+        return response.data
+    }
+
+    /**
+     * Reassign a service to another messenger - Admin only
+     * Only allowed when service is in CANCELED status
+     */
+    async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
+        const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
         return response.data
     }
 }

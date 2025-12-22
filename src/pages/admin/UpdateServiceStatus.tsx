@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { Check, X, Home, Loader2, Save, Camera, Upload, Eraser, Maximize2, RotateCw } from "lucide-react"
+import { Check, X, Home, Loader2, Save, Camera, Upload, Eraser, Maximize2, RotateCw, UserPlus } from "lucide-react"
 import { toast } from "sonner"
+import { employeeService } from "@/services/employee.service"
+import type { Employee } from "@/types/employee.types"
 import { SignaturePad } from "@/components/SignaturePad"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +34,12 @@ export default function UpdateServiceStatus() {
     const [photosPreviews, setPhotosPreviews] = useState<string[]>([])
     const [updating, setUpdating] = useState(false)
     const [signatureFullscreen, setSignatureFullscreen] = useState(false)
+
+    // Reassign states (only for CANCELED services)
+    const [showReassign, setShowReassign] = useState(false)
+    const [messengers, setMessengers] = useState<Employee[]>([])
+    const [selectedMessenger, setSelectedMessenger] = useState<string>('')
+    const [reassigning, setReassigning] = useState(false)
 
     // Camera states
     const [cameraActive, setCameraActive] = useState(false)
@@ -96,6 +104,18 @@ export default function UpdateServiceStatus() {
                 // Initialize form with current data
                 setNewStatus(data.currentStatus)
                 setObservation('')
+
+                // If service is CANCELED, fetch messengers for reassignment
+                if (data.currentStatus === 'CANCELED' && user?.role === 'ADMIN') {
+                    setShowReassign(true)
+                    try {
+                        const employees = await employeeService.getAll()
+                        const messengersList = employees.filter(e => e.role === 'MESSENGER')
+                        setMessengers(messengersList)
+                    } catch {
+                        // Ignore error, just won't show reassign option
+                    }
+                }
 
             } catch (error: any) {
                 toast.error("Error al cargar servicio", {
@@ -270,6 +290,32 @@ export default function UpdateServiceStatus() {
         }
     }
 
+    // Handle reassign messenger
+    const handleReassign = async () => {
+        if (!service || !selectedMessenger) return
+
+        try {
+            setReassigning(true)
+            await serviceDeliveryService.reassign(
+                service.idServiceDelivery,
+                Number(selectedMessenger)
+            )
+
+            toast.success("Servicio reasignado", {
+                description: `Servicio ${service.plate.plateNumber} reasignado al mensajero`
+            })
+
+            navigate("/admin/servicios")
+        } catch (error: any) {
+            toast.error("Error al reasignar", {
+                description: error.response?.data?.message || error.message,
+                id: "error-reasignar"
+            })
+        } finally {
+            setReassigning(false)
+        }
+    }
+
     if (loading) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
@@ -406,6 +452,55 @@ export default function UpdateServiceStatus() {
                             </>
                         )
                     })()}
+
+                    {/* Reassign Section (only for CANCELED services) */}
+                    {showReassign && messengers.length > 0 && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-4">
+                            <div className="flex items-start gap-2">
+                                <UserPlus className="h-5 w-5 text-red-500 mt-0.5" />
+                                <div>
+                                    <p className="font-medium text-red-800">Servicio cancelado</p>
+                                    <p className="text-sm text-red-700">
+                                        Puedes reasignar este servicio a otro mensajero.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <Select value={selectedMessenger} onValueChange={setSelectedMessenger}>
+                                    <SelectTrigger className="flex-1 bg-white">
+                                        <SelectValue placeholder="Selecciona un mensajero" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {messengers.map((messenger) => (
+                                            <SelectItem
+                                                key={messenger.idEmployee}
+                                                value={String(messenger.idEmployee)}
+                                            >
+                                                {messenger.fullName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    onClick={handleReassign}
+                                    disabled={!selectedMessenger || reassigning}
+                                    className="bg-red-600 hover:bg-red-700"
+                                >
+                                    {reassigning ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Reasignando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <UserPlus className="mr-2 h-4 w-4" />
+                                            Reasignar
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Observation */}
                     <div className="space-y-2">
