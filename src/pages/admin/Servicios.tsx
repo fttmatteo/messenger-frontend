@@ -17,19 +17,6 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
     Breadcrumb,
@@ -80,12 +67,11 @@ import {
     Edit,
     X,
     ChevronUp,
-    Trash2,
 } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge } from "@/lib/status-utils"
+import { getStatusBadge, getStatusIconConfig } from "@/lib/status-utils"
 
 // Type Definitions
 type SortField = "plateNumber" | "dealershipName" | "messengerName" | "currentStatus" | "createdAt" | null
@@ -150,14 +136,6 @@ export default function Servicios() {
     // Filter state
     const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
     const [showScrollTop, setShowScrollTop] = useState(false)
-
-    // Selection state
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-
-    // Reset selection when filters change
-    useEffect(() => {
-        setSelectedIds(new Set())
-    }, [searchQuery, statusFilter, currentPage])
 
     const fetchServices = async () => {
         try {
@@ -266,20 +244,7 @@ export default function Servicios() {
     //     fetchServices()
     // }, [])
 
-    // Handle delete
-    const handleDelete = async (id: number) => {
-        try {
-            await serviceDeliveryService.delete(id)
-            toast.success("Servicio eliminado correctamente")
-            fetchServices() // Refetch after delete
-        } catch (error: any) {
-            console.error(error)
-            toast.error("Error al eliminar el servicio", {
-                description: error.message,
-                id: "error-eliminar-servicio"
-            })
-        }
-    }
+
 
     // Scroll to top functionality for mobile
     useEffect(() => {
@@ -572,47 +537,7 @@ export default function Servicios() {
                         )}
                     </div>
 
-                    {/* Mobile Actions */}
-                    {selectedIds.size > 0 && (
-                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar {selectedIds.size > 1 ? 'servicios seleccionados' : 'servicio'}?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={async () => {
-                                                for (const id of Array.from(selectedIds)) {
-                                                    await handleDelete(id);
-                                                }
-                                                setSelectedIds(new Set());
-                                            }}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    )}
+
 
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedServices.length} de {services.length} servicio(s)
@@ -632,20 +557,6 @@ export default function Servicios() {
                             <AnimatePresence mode="popLayout">
                                 {paginatedServices.map((service) => (
                                     <div key={service.idServiceDelivery} className="flex gap-2 mb-2">
-                                        <div className="pt-4">
-                                            <Checkbox
-                                                checked={selectedIds.has(service.idServiceDelivery)}
-                                                onCheckedChange={(checked) => {
-                                                    const newSelected = new Set(selectedIds);
-                                                    if (checked) {
-                                                        newSelected.add(service.idServiceDelivery);
-                                                    } else {
-                                                        newSelected.delete(service.idServiceDelivery);
-                                                    }
-                                                    setSelectedIds(newSelected);
-                                                }}
-                                            />
-                                        </div>
                                         <div className="flex-1">
                                             <ServiceCard
                                                 service={service}
@@ -670,47 +581,7 @@ export default function Servicios() {
                                 {filteredAndSortedServices.length} de {services.length} servicio(s)
                                 {searchQuery && ` - Buscando "${searchQuery}"`}
                                 {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
                             </CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {selectedIds.size > 0 && (
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                        >
-                                            <Trash2 className="h-4 w-4 mr-2" />
-                                            Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>
-                                                ¿Eliminar {selectedIds.size > 1 ? 'servicios seleccionados' : 'servicio'}?
-                                            </AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={async () => {
-                                                    for (const id of Array.from(selectedIds)) {
-                                                        await handleDelete(id);
-                                                    }
-                                                    setSelectedIds(new Set());
-                                                }}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            >
-                                                Eliminar
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -718,7 +589,6 @@ export default function Servicios() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Placa</TableHead>
                                         <TableHead>Concesionario</TableHead>
                                         <TableHead>Mensajero</TableHead>
@@ -741,23 +611,6 @@ export default function Servicios() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead className="w-[50px]">
-                                                    <Checkbox
-                                                        checked={
-                                                            paginatedServices.length > 0 &&
-                                                            paginatedServices.every(s => selectedIds.has(s.idServiceDelivery))
-                                                        }
-                                                        onCheckedChange={(checked) => {
-                                                            const newSelected = new Set(selectedIds);
-                                                            if (checked) {
-                                                                paginatedServices.forEach(s => newSelected.add(s.idServiceDelivery));
-                                                            } else {
-                                                                paginatedServices.forEach(s => newSelected.delete(s.idServiceDelivery));
-                                                            }
-                                                            setSelectedIds(newSelected);
-                                                        }}
-                                                    />
-                                                </TableHead>
                                                 <TableHead
                                                     className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                                                     onClick={() => handleSort("plateNumber")}
@@ -816,8 +669,6 @@ export default function Servicios() {
                                         <TableBody>
                                             <AnimatePresence mode="popLayout">
                                                 {paginatedServices.map((service, index) => {
-                                                    const statusConfig = getStatusBadge(service.currentStatus)
-
                                                     return (
                                                         <motion.tr
                                                             key={service.idServiceDelivery}
@@ -829,20 +680,6 @@ export default function Servicios() {
                                                             custom={index}
                                                             className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                                                         >
-                                                            <TableCell>
-                                                                <Checkbox
-                                                                    checked={selectedIds.has(service.idServiceDelivery)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        const newSelected = new Set(selectedIds);
-                                                                        if (checked) {
-                                                                            newSelected.add(service.idServiceDelivery);
-                                                                        } else {
-                                                                            newSelected.delete(service.idServiceDelivery);
-                                                                        }
-                                                                        setSelectedIds(newSelected);
-                                                                    }}
-                                                                />
-                                                            </TableCell>
                                                             <TableCell>
                                                                 <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
                                                             </TableCell>
@@ -860,9 +697,12 @@ export default function Servicios() {
                                                                 </Tooltip>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <Badge className={`${statusConfig.className} text-base px-3 py-1`}>
-                                                                    {statusConfig.label}
-                                                                </Badge>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                                                                    <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                                                        {getStatusIconConfig(service.currentStatus).label}
+                                                                    </span>
+                                                                </div>
                                                             </TableCell>
                                                             <TableCell className="whitespace-nowrap text-base">
                                                                 {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
@@ -905,7 +745,8 @@ export default function Servicios() {
                         )}
                     </CardContent>
                 </Card>
-            )}
+            )
+            }
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
@@ -926,6 +767,6 @@ export default function Servicios() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     )
 }

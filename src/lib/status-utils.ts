@@ -22,6 +22,28 @@ export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfi
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
+interface StatusIconConfig {
+    label: string
+    dotColor: string // Color for the circular dot indicator
+    textColor: string // Color for the status text
+}
+
+/**
+ * Get the icon configuration for a service status (circular dot + text).
+ * Used in timeline-style displays like the services list.
+ */
+export function getStatusIconConfig(status: ServiceStatus | string): StatusIconConfig {
+    const config: Record<string, StatusIconConfig> = {
+        ASSIGNED: { label: 'Asignado', dotColor: 'bg-slate-600', textColor: 'text-slate-600' },
+        PENDING: { label: 'Pendiente', dotColor: 'bg-indigo-500', textColor: 'text-indigo-500' },
+        DELIVERED: { label: 'Entregado', dotColor: 'bg-green-500', textColor: 'text-green-500' },
+        RETURNED: { label: 'Devuelto', dotColor: 'bg-orange-500', textColor: 'text-orange-500' },
+        CANCELED: { label: 'Cancelado', dotColor: 'bg-gray-500', textColor: 'text-gray-500' },
+        RESOLVED: { label: 'Resuelto', dotColor: 'bg-emerald-500', textColor: 'text-emerald-500' },
+    }
+    return config[status] || { label: status, dotColor: 'bg-gray-500', textColor: 'text-gray-500' }
+}
+
 /**
  * Get the display label for a plate type.
  */
