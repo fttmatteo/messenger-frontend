@@ -1,8 +1,12 @@
-import { Smartphone, Monitor } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Smartphone, Monitor, LogOut } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import logo from "@/assets/logo.png"
+import { useAuth } from "@/context/AuthContext"
+import { Button } from "@/components/ui/button"
 
 export function MobileOnlyGuard() {
+    const { logout } = useAuth()
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-6">
             <Card className="max-w-md w-full shadow-2xl border-2">
@@ -41,6 +45,16 @@ export function MobileOnlyGuard() {
                         </p>
                     </div>
                 </CardContent>
+                <CardFooter className="flex justify-center pt-2 pb-6">
+                    <Button
+                        variant="outline"
+                        onClick={logout}
+                        className="gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    >
+                        <LogOut className="h-4 w-4" />
+                        Cerrar sesión
+                    </Button>
+                </CardFooter>
             </Card>
         </div>
     )
