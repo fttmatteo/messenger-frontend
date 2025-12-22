@@ -5,54 +5,18 @@ import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton, CardSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { EmployeeCard } from "@/components/employee/EmployeeCard"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyContent,
-    EmptyDescription,
-    EmptyTitle,
-} from "@/components/ui/empty"
-import {
-    Plus,
-    Smartphone,
-    PhoneCall,
-    User,
-    FileText,
-    Shield,
-    ArrowUpDown,
-    ArrowUp,
-    ArrowDown,
-    ChevronUp,
-    Home,
-    Search,
-    Users,
-    X,
-} from "lucide-react"
+import { Empty, EmptyHeader, EmptyMedia, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
+import { Plus, Smartphone, PhoneCall, User, FileText, Shield, ArrowUpDown, ArrowUp, ArrowDown, ChevronUp, Home, Search, Users, X } from "lucide-react"
 import { toast } from "sonner"
 import { formatDisplayName } from "@/lib/format-utils"
 

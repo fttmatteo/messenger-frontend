@@ -8,57 +8,14 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { TableRowSkeleton, CardSkeleton } from "@/components/service/ServiceSkeletons"
 import { ServiceCard } from "@/components/service/ServiceCard"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-    EmptyDescription,
-    EmptyContent,
-} from "@/components/ui/empty"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
-import {
-    Home,
-    Search,
-    Bike,
-    ArrowUpDown,
-    ArrowUp,
-    ArrowDown,
-    Car,
-    Calendar,
-    Building2,
-    User,
-    PackageCheck,
-    Settings,
-    Edit,
-    X,
-    ChevronUp,
-} from "lucide-react"
+import { Home, Search, Bike, ArrowUpDown, ArrowUp, ArrowDown, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X, ChevronUp } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"

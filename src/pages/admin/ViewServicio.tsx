@@ -8,41 +8,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
 import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import {
-    Home,
-    ArrowLeft,
-    Building2,
-    User,
-    Calendar,
-    Trash2,
-    PhoneCall,
-    ChevronUp,
-    Edit,
-} from "lucide-react"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"

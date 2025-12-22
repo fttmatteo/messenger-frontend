@@ -2,47 +2,20 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { Check, X, Home, Loader2, Save, Camera, Upload, Eraser, Maximize2, RotateCw } from "lucide-react"
 import { toast } from "sonner"
-
-// Components
 import { SignaturePad } from "@/components/SignaturePad"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-
-// Services & Types
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useAuth } from "@/context/AuthContext"
-import {
-    getAvailableStatusesForUser,
-    getServiceLockReason,
-    getTimeRemainingIn72hWindow,
-    getStatusBadge,
-} from "@/lib/status-utils"
+import { getAvailableStatusesForUser, getServiceLockReason, getTimeRemainingIn72hWindow, getStatusBadge } from "@/lib/status-utils"
 
 export default function UpdateServiceStatus() {
     const { id } = useParams()
