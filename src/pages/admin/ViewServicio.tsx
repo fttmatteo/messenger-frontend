@@ -47,7 +47,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
+import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
@@ -148,7 +148,6 @@ export default function ViewServicio() {
         )
     }
 
-    const statusConfig = getStatusBadge(service.currentStatus)
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
@@ -182,7 +181,12 @@ export default function ViewServicio() {
             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
                     <div className="flex flex-row items-center gap-4">
-                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-lg font-semibold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                {getStatusIconConfig(service.currentStatus).label}
+                            </span>
+                        </div>
                         {/* 72h Window Indicator */}
                         {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
                             const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
@@ -326,12 +330,8 @@ export default function ViewServicio() {
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
                         {service.history.length > 0 ? (
-                            <div className="py-2">
-                                <Timeline
-                                    layout="vertical"
-                                    centered={false}
-                                    className="w-full"
-                                >
+                            <div className="py-2 pl-2">
+                                <Timeline className="w-full">
                                     {[...service.history].reverse().map((entry, index) => {
                                         const newStatusConfig = getStatusBadge(entry.newStatus)
                                         const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
@@ -340,10 +340,9 @@ export default function ViewServicio() {
                                             <TimelineItem
                                                 key={entry.idStatusHistory}
                                                 isLast={index === service.history.length - 1}
-                                                className="pb-8 last:pb-0"
                                             >
-                                                <TimelineHeader className="pb-2">
-                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1`}>
+                                                <TimelineHeader statusColor={newStatusConfig.className}>
+                                                    <Badge variant="outline" className={`${newStatusConfig.className} border bg-background text-sm px-3 py-1 font-medium`}>
                                                         {newStatusConfig.label}
                                                     </Badge>
                                                 </TimelineHeader>
