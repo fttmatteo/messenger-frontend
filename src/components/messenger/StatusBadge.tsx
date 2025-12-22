@@ -4,6 +4,7 @@ import type { ServiceStatus } from "@/types/service.types"
 interface StatusBadgeProps {
     status: ServiceStatus
     size?: 'sm' | 'md'
+    className?: string
 }
 
 const statusConfig: Partial<Record<ServiceStatus, { label: string; className: string; emoji: string }>> = {
@@ -40,13 +41,13 @@ const defaultConfig = {
     emoji: '⏳'
 }
 
-export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
+export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
     const config = statusConfig[status] || defaultConfig
 
     return (
         <Badge
             variant="outline"
-            className={`${config.className} ${size === 'sm' ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5'} border font-medium`}
+            className={`${config.className} ${size === 'sm' ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5'} border font-medium ${className || ''}`}
         >
             {config.emoji} {config.label}
         </Badge>
