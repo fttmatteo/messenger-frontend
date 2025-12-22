@@ -2,42 +2,13 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import {
-    Home,
-    Package,
-    User,
-    LogOut,
-    ArrowLeft,
-    MapPin,
-    MapPinOff,
-} from "lucide-react"
+import { Home, Package, User, LogOut, ArrowLeft, MapPin, MapPinOff } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarInset,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
 import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -235,55 +206,59 @@ export default function MessengerLayout() {
                 </SidebarContent>
             </Sidebar>
             <SidebarInset>
-                <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
+                <header className="sticky top-0 z-40 flex h-12 items-center gap-2 border-b bg-background px-3 shadow-sm">
                     {isMobile && isNestedPage ? (
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={handleBack}
                             aria-label="Volver"
+                            className="h-8 w-8"
                         >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                     ) : (
-                        <SidebarTrigger />
+                        <SidebarTrigger className="h-8 w-8" />
                     )}
+
                     <div className="flex-1" />
 
-                    <div className="flex items-center gap-3 mr-2">
-                        {/* Dev-only tracking toggle button */}
-                        {import.meta.env.DEV && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => updateUser({ isOnline: !isOnline })}
-                                className={isOnline
-                                    ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                    : "border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                }
-                            >
-                                {isOnline ? (
-                                    <><MapPinOff className="h-4 w-4 mr-1" /> Detener</>
-                                ) : (
-                                    <><MapPin className="h-4 w-4 mr-1" /> Rastrear</>
-                                )}
-                            </Button>
-                        )}
-                        <div className="flex items-center gap-2">
-                            <Badge variant="default" className={isOnline ? "bg-green-500 hover:bg-green-600" : ""}>
-                                {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
-                            </Badge>
-                        </div>
-                    </div>
+                    {/* Dev-only tracking toggle button */}
+                    {import.meta.env.DEV && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateUser({ isOnline: !isOnline })}
+                            className={`h-8 px-2 text-xs ${isOnline
+                                ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                : "border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
+                                }`}
+                        >
+                            {isOnline ? (
+                                <><MapPinOff className="h-3.5 w-3.5 mr-1" /> Detener</>
+                            ) : (
+                                <><MapPin className="h-3.5 w-3.5 mr-1" /> Rastrear</>
+                            )}
+                        </Button>
+                    )}
 
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-black dark:text-white">Doc: {user?.document}</span>
-                    </div>
-                    <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
+                    <Badge
+                        variant="default"
+                        className={`text-xs px-2 py-0.5 ${isOnline ? "bg-green-500 hover:bg-green-600" : ""}`}
+                    >
+                        {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
+                    </Badge>
+
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleLogout}
+                        className="h-8 w-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                    >
                         <LogOut className="h-4 w-4" />
                     </Button>
                 </header>
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-auto p-3 sm:p-4">
                     <Outlet />
                 </main>
             </SidebarInset>
