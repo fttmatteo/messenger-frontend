@@ -1,96 +1,137 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useMessengerServices } from "@/hooks/useMessengerServices"
+import { StatsBar } from "@/components/messenger/StatsBar"
+import { ServiceList } from "@/components/messenger/ServiceList"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RefreshCw, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Package, CheckCircle, Clock, MapPin, Navigation, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export default function MessengerDashboard() {
+    const {
+        loading,
+        pendingServices,
+        completedServices,
+        stats,
+        refetch,
+        error
+    } = useMessengerServices()
 
-    const todayStats = [
-        { title: "Pendientes", value: "5", icon: Clock, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-900/20" },
-        { title: "Completadas", value: "12", icon: CheckCircle, color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20" },
-        { title: "En Ruta", value: "2", icon: MapPin, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
-    ]
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [isOnline, setIsOnline] = useState(navigator.onLine)
+
+    // Listen for online/offline events
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true)
+        const handleOffline = () => setIsOnline(false)
+
+        window.addEventListener('online', handleOnline)
+        window.addEventListener('offline', handleOffline)
+
+        return () => {
+            window.removeEventListener('online', handleOnline)
+            window.removeEventListener('offline', handleOffline)
+        }
+    }, [])
+
+    // Handle refresh
+    const handleRefresh = async () => {
+        if (!isOnline) return
+        setIsRefreshing(true)
+        await refetch()
+        setIsRefreshing(false)
+    }
+
+    // Get current date
+    const today = new Date()
+    const dateString = today.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    })
+
+    // Get greeting based on time
+    const getGreeting = () => {
+        const hour = today.getHours()
+        if (hour < 12) return '¡Buenos días'
+        if (hour < 18) return '¡Buenas tardes'
+        return '¡Buenas noches'
+    }
+
+    // Get first name from user (using document as fallback since fullName isn't stored in auth)
+    const userName = 'Mensajero'
 
     return (
-        <div className="flex flex-col gap-3 sm:gap-4 min-h-0">
-            {/* Welcome Header - Responsive */}
-            <header className="flex-shrink-0">
-                <h1 className="text-lg sm:text-xl font-bold leading-tight">¡Bienvenido!</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                    Tu resumen de entregas de hoy
-                </p>
+        <div className="flex flex-col h-full p-4 gap-4">
+            {/* Offline Banner */}
+            {!isOnline && (
+                <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-sm">
+                    <WifiOff className="h-4 w-4 flex-shrink-0" />
+                    <span>Sin conexión - Mostrando datos guardados</span>
+                </div>
+            )}
+
+            {/* Header with Welcome Message */}
+            <header className="flex items-start justify-between">
+                <div className="min-w-0">
+                    <h1 className="text-xl font-bold leading-tight">
+                        {getGreeting()}, {userName}!
+                    </h1>
+                    <p className="text-sm text-muted-foreground capitalize">
+                        {dateString}
+                    </p>
+                </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleRefresh}
+                    disabled={isRefreshing || !isOnline}
+                    className="h-9 w-9"
+                >
+                    <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                </Button>
             </header>
 
-            {/* Stats Grid - Flexible for all screen sizes */}
-            <section className="grid grid-cols-3 gap-2 sm:gap-3 flex-shrink-0">
-                {todayStats.map((stat) => (
-                    <Card
-                        key={stat.title}
-                        className={`text-center ${stat.bg} border-0 shadow-sm`}
-                    >
-                        <CardContent className="p-2.5 sm:p-3">
-                            <stat.icon className={`h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 ${stat.color}`} />
-                            <div className="text-lg sm:text-xl font-bold leading-tight">{stat.value}</div>
-                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                                {stat.title}
-                            </p>
-                        </CardContent>
-                    </Card>
-                ))}
-            </section>
+            {/* Stats Bar */}
+            <StatsBar stats={stats} loading={loading} />
 
-            {/* Next Delivery Card - Touch-friendly */}
-            <Card className="border-2 border-primary/20 shadow-md flex-shrink-0">
-                <CardHeader className="pb-2 pt-3 sm:pt-4 px-3 sm:px-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <CardTitle className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
-                            <div className="p-1 sm:p-1.5 bg-primary/10 rounded-md sm:rounded-lg flex-shrink-0">
-                                <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                            </div>
-                            <span className="truncate">Próxima Entrega</span>
-                        </CardTitle>
-                        <span className="text-[10px] sm:text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap flex-shrink-0">
-                            Pendiente
-                        </span>
-                    </div>
-                </CardHeader>
-                <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-2 sm:space-y-3">
-                    <div className="min-w-0">
-                        <p className="font-semibold text-sm sm:text-base truncate">Toyota Bogotá Norte</p>
-                        <p className="text-xs sm:text-sm text-muted-foreground flex items-start gap-1 mt-0.5">
-                            <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 mt-0.5 flex-shrink-0" />
-                            <span className="line-clamp-2">Calle 127 # 15-20, Bogotá</span>
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                            Entrega estimada: <span className="font-medium text-foreground">10:30 AM</span>
-                        </p>
-                    </div>
-                    <Button className="w-full h-11 text-sm gap-2 touch-manipulation">
-                        <Navigation className="h-4 w-4" />
-                        Iniciar Navegación
-                    </Button>
-                </CardContent>
-            </Card>
+            {/* Services Tabs */}
+            <Tabs defaultValue="pending" className="flex-1 flex flex-col min-h-0">
+                <TabsList className="grid w-full grid-cols-2 h-11">
+                    <TabsTrigger value="pending" className="text-sm">
+                        Pendientes ({pendingServices.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="completed" className="text-sm">
+                        Completados ({completedServices.length})
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* Today's Deliveries Link - Touch-optimized */}
-            <Card className="active:bg-muted/50 active:scale-[0.98] transition-all cursor-pointer touch-manipulation flex-shrink-0">
-                <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="p-1.5 sm:p-2 bg-muted rounded-md sm:rounded-lg flex-shrink-0">
-                                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                            </div>
-                            <div className="min-w-0">
-                                <p className="font-medium text-sm truncate">Entregas de Hoy</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Ver lista completa
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                    </div>
-                </CardContent>
-            </Card>
+                <TabsContent value="pending" className="flex-1 overflow-auto mt-4">
+                    <ServiceList
+                        services={pendingServices}
+                        loading={loading}
+                        emptyMessage="No tienes servicios pendientes 🎉"
+                        onRefresh={handleRefresh}
+                    />
+                </TabsContent>
+
+                <TabsContent value="completed" className="flex-1 overflow-auto mt-4">
+                    <ServiceList
+                        services={completedServices}
+                        loading={loading}
+                        emptyMessage="Aún no has completado servicios hoy"
+                        onRefresh={handleRefresh}
+                    />
+                </TabsContent>
+            </Tabs>
+
+            {/* Error State */}
+            {error && !loading && (
+                <div className="fixed bottom-20 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-600 dark:text-red-400 text-sm text-center">
+                        {error}
+                    </p>
+                </div>
+            )}
         </div>
     )
 }
-

@@ -1,24 +1,15 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
-import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Home, Package, User, LogOut, ArrowLeft, MapPin, MapPinOff, Plus } from "lucide-react"
+import { LogOut, MapPin, MapPinOff, Plus } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
-import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
-
-const navItems = [
-    { title: "Inicio", icon: Home, url: "/messenger" },
-    { title: "Entregas", icon: Package, url: "/messenger/entregas" },
-    { title: "Perfil", icon: User, url: "/messenger/perfil" },
-]
 
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
@@ -30,16 +21,8 @@ export default function MessengerLayout() {
     const wakeLockRef = useRef<any>(null)
     const isMobile = useIsMobile()
 
-    // Detect if we're on a nested page
-    const isNestedPage = location.pathname.includes('/detalles') ||
-        location.pathname.includes('/entrega/')
-
     // Hide FAB on create page
     const showFab = !location.pathname.includes('/crear')
-
-    const handleBack = () => {
-        navigate(-1)
-    }
 
     const requestWakeLock = async () => {
         try {
@@ -77,7 +60,7 @@ export default function MessengerLayout() {
                     (position) => {
                         const { latitude, longitude, speed, heading } = position.coords
                         trackingService.sendUpdate({
-                            messengerId: user?.id, // Send ID!
+                            messengerId: user?.id,
                             latitude,
                             longitude,
                             speed: speed || 0,
@@ -88,13 +71,11 @@ export default function MessengerLayout() {
                     (error) => {
                         console.warn('Geolocation partial error:', error.message)
 
-                        if (error.code === 1) { // PERMISSION_DENIED
+                        if (error.code === 1) {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
                             logout()
                             navigate("/login")
                         } else {
-                            // Para TIMEOUT o POSITION_UNAVAILABLE, no apagamos el switch.
-                            // Solo mostramos un aviso en consola y dejamos que siga intentando.
                             console.log("Señal GPS débil o agotada. Reintentando...")
                         }
                     },
@@ -116,7 +97,6 @@ export default function MessengerLayout() {
                 watchIdRef.current = null
             }
 
-            // Notify backend before disconnecting
             if (user?.id) {
                 trackingService.sendUpdate({
                     messengerId: user.id,
@@ -124,7 +104,6 @@ export default function MessengerLayout() {
                 })
             }
 
-            // Allow a small window for the message to be sent before closing the connection
             const timer = setTimeout(() => {
                 trackingService.disconnect()
             }, 500)
@@ -137,7 +116,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
         }
-    }, [isOnline, user?.id]) // Add user.id dependency
+    }, [isOnline, user?.id])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -174,58 +153,17 @@ export default function MessengerLayout() {
     }
 
     return (
-        <SidebarProvider>
-            <Sidebar>
-                <SidebarHeader className="border-b border-sidebar-border">
-                    <div className="flex items-center justify-between px-2 py-2">
-                        <div className="flex items-center gap-2">
-                            <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                            <span className="font-semibold">PLAK</span>
-                        </div>
-                        <ModeToggle />
-                    </div>
-                </SidebarHeader>
-                <SidebarContent>
-                    <SidebarGroup>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {navItems.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={location.pathname === item.url || (item.url !== "/messenger" && location.pathname.startsWith(item.url))}
-                                            tooltip={item.title}
-                                        >
-                                            <a href={item.url}>
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                </SidebarContent>
-            </Sidebar>
-            <SidebarInset>
-                <header className="sticky top-0 z-40 flex h-12 items-center gap-2 border-b bg-background px-3 shadow-sm">
-                    {isMobile && isNestedPage ? (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleBack}
-                            aria-label="Volver"
-                            className="h-8 w-8"
-                        >
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
-                    ) : (
-                        <SidebarTrigger className="h-8 w-8" />
-                    )}
+        <div className="flex flex-col h-screen bg-background">
+            {/* Simplified Header - No Sidebar */}
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 shadow-sm">
+                {/* Logo and Brand */}
+                <div className="flex items-center gap-2">
+                    <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
+                    <span className="font-semibold text-lg">PLAK</span>
+                </div>
 
-                    <div className="flex-1" />
-
+                {/* Right side: Status + Actions */}
+                <div className="flex items-center gap-2">
                     {/* Dev-only tracking toggle button */}
                     {import.meta.env.DEV && (
                         <Button
@@ -238,33 +176,35 @@ export default function MessengerLayout() {
                                 }`}
                         >
                             {isOnline ? (
-                                <><MapPinOff className="h-3.5 w-3.5 mr-1" /> Detener</>
+                                <><MapPinOff className="h-3.5 w-3.5 mr-1" /> Stop</>
                             ) : (
-                                <><MapPin className="h-3.5 w-3.5 mr-1" /> Rastrear</>
+                                <><MapPin className="h-3.5 w-3.5 mr-1" /> GPS</>
                             )}
                         </Button>
                     )}
 
                     <Badge
                         variant="default"
-                        className={`text-xs px-2 py-0.5 ${isOnline ? "bg-green-500 hover:bg-green-600" : ""}`}
+                        className={`text-xs px-2 py-0.5 ${isOnline ? "bg-green-500 hover:bg-green-600" : "bg-muted text-muted-foreground"}`}
                     >
-                        {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
+                        {isOnline ? '🟢 ACTIVO' : '⚫ OFFLINE'}
                     </Badge>
 
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
                         onClick={handleLogout}
-                        className="h-8 w-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                        className="h-9 w-9 text-muted-foreground hover:text-red-500"
                     >
-                        <LogOut className="h-4 w-4" />
+                        <LogOut className="h-5 w-5" />
                     </Button>
-                </header>
-                <main className="flex-1 overflow-auto p-3 sm:p-4">
-                    <Outlet />
-                </main>
-            </SidebarInset>
+                </div>
+            </header>
+
+            {/* Main Content Area */}
+            <main className="flex-1 overflow-auto">
+                <Outlet />
+            </main>
 
             {/* Floating Action Button */}
             {showFab && (
@@ -277,12 +217,13 @@ export default function MessengerLayout() {
                 </Button>
             )}
 
+            {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-w-[90vw] rounded-xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            ¿Estás seguro que deseas cerrar sesión?
+                            Se detendrá el rastreo GPS y cerrarás tu sesión.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -293,6 +234,6 @@ export default function MessengerLayout() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </SidebarProvider>
+        </div>
     )
 }
