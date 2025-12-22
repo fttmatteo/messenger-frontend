@@ -3,13 +3,14 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2, } from "lucide-react"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import logo from "@/assets/logo.png"
 import { useState, useRef, useEffect } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { motion, AnimatePresence } from "framer-motion"
+import { AdminUIProvider } from "@/context/AdminUIContext"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -21,7 +22,7 @@ const menuItems = [
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 
-export default function AdminLayout() {
+function AdminLayoutContent() {
     const { logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
@@ -31,7 +32,7 @@ export default function AdminLayout() {
     const [showSearchInput, setShowSearchInput] = useState(false)
     const isMobile = useIsMobile()
 
-    // Detect if we're on a nested page (create/edit/details/update or viewing a specific service)
+    // Detect if we're on a nested page
     const isNestedPage = location.pathname.includes('/crear') ||
         location.pathname.includes('/editar') ||
         location.pathname.includes('/detalles') ||
@@ -79,8 +80,6 @@ export default function AdminLayout() {
         mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
-
-    // Desktop Layout with Sidebar
     return (
         <SidebarProvider>
             <Sidebar>
@@ -146,7 +145,9 @@ export default function AdminLayout() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="flex-1" />
+                                    <div className="flex-1 text-center">
+                                        {/* Mobile Error Display could go here if needed, keeping simple for now */}
+                                    </div>
                                     <Button
                                         variant="ghost"
                                         size="icon"
@@ -163,7 +164,7 @@ export default function AdminLayout() {
                     ) : (
                         // Desktop header layout
                         <>
-                            <div className="relative flex-1 max-w-md">
+                            <div className="relative w-full max-w-md">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Buscar..."
@@ -172,8 +173,10 @@ export default function AdminLayout() {
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                 />
                             </div>
+
                             <div className="flex-1" />
-                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
+
+                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex-shrink-0">
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </>
@@ -183,7 +186,6 @@ export default function AdminLayout() {
                     <Outlet context={{ searchQuery }} />
                 </main>
 
-                {/* Scroll to top button */}
                 <AnimatePresence>
                     {showScrollTop && (
                         <motion.div
@@ -221,5 +223,13 @@ export default function AdminLayout() {
                 </AlertDialogContent>
             </AlertDialog>
         </SidebarProvider>
+    )
+}
+
+export default function AdminLayout() {
+    return (
+        <AdminUIProvider>
+            <AdminLayoutContent />
+        </AdminUIProvider>
     )
 }

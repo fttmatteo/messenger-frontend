@@ -38,6 +38,7 @@ export default function ViewServicio() {
     // UI State
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [showScrollTop, setShowScrollTop] = useState(false)
 
@@ -46,20 +47,35 @@ export default function ViewServicio() {
 
     useEffect(() => {
         const fetchService = async () => {
-            if (!id) return
+            if (!id) {
+                setError("ID de servicio no proporcionado")
+                setLoading(false)
+                return
+            }
 
             try {
                 setLoading(true)
+                // Timeout failsafe
+                const timeoutId = setTimeout(() => {
+                    setLoading((current) => {
+                        if (current) {
+                            setError("Tiempo de espera agotado al cargar el servicio")
+                            return false
+                        }
+                        return current
+                    })
+                }, 10000)
+
                 const data = await serviceDeliveryService.getById(Number(id))
+                clearTimeout(timeoutId)
                 setService(data)
             } catch (error: any) {
+                console.error("Error fetching service:", error)
+                setError(error.response?.data?.message || "Error al cargar la información del servicio")
                 toast.error("Error al cargar servicio", {
                     description: error.response?.data?.message || error.message,
                     id: "error-cargar-servicio"
                 })
-                if (error.response?.status === 404 || error.response?.status === 403) {
-                    navigate("/admin/servicios")
-                }
             } finally {
                 setLoading(false)
             }
@@ -108,6 +124,22 @@ export default function ViewServicio() {
 
     if (loading) {
         return <ViewServicioSkeleton />
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                    <Trash2 className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar servicio</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm">{error}</p>
+                <Button onClick={() => navigate("/admin/servicios")}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Volver al listado
+                </Button>
+            </div>
+        )
     }
 
     if (!service) {
@@ -303,17 +335,17 @@ export default function ViewServicio() {
                         <CardTitle>Historial de estados</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
-                        {service.history.length > 0 ? (
+                        {service.history && service.history.length > 0 ? (
                             <div className="py-2 pl-2">
                                 <Timeline className="w-full">
-                                    {[...service.history].reverse().map((entry, index) => {
+                                    {[...(service.history || [])].reverse().map((entry, index) => {
                                         const newStatusConfig = getStatusBadge(entry.newStatus)
                                         const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
                                         return (
                                             <TimelineItem
                                                 key={entry.idStatusHistory}
-                                                isLast={index === service.history.length - 1}
+                                                isLast={index === (service.history?.length || 0) - 1}
                                             >
                                                 <TimelineHeader statusColor={newStatusConfig.className}>
                                                     <Badge variant="outline" className={`${newStatusConfig.className} border bg-background text-sm px-3 py-1 font-medium`}>
