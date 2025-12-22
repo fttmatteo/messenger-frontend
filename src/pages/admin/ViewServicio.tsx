@@ -182,7 +182,6 @@ export default function ViewServicio() {
             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
                     <div className="flex flex-row items-center gap-4">
-                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                         <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
                         {/* 72h Window Indicator */}
                         {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
@@ -211,7 +210,7 @@ export default function ViewServicio() {
                         if (canEdit) {
                             return (
                                 <Button
-                                    variant="default"
+                                    variant="outline"
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
                                     className="flex-1 md:flex-none"
                                 >
@@ -225,10 +224,10 @@ export default function ViewServicio() {
                     {/* Delete Button - Admin only, not for DELIVERED/RESOLVED outside 72h window */}
                     {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
                         <Button
-                            variant="destructive"
+                            variant="outline"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="flex-1 md:flex-none"
+                            className="flex-1 md:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
@@ -238,36 +237,37 @@ export default function ViewServicio() {
             </div>
 
             {/* General Information - Horizontal layout for desktop */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Información general</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {/* Desktop: Horizontal grid layout */}
-                    <div className="hidden md:grid md:grid-cols-4 gap-6">
+            {/* Split Layout: Info (Left) & History (Right) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* General Information - Vertical Layout */}
+                <Card className="h-[600px] flex flex-col">
+                    <CardHeader>
+                        <CardTitle>Información general</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6 flex-1 overflow-y-auto">
                         <div className="flex items-start gap-3">
-                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <PlateIcon className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-base font-medium">Placa</p>
+                                <p className="text-sm font-medium">Placa</p>
                                 <div className="mt-1">
-                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-base font-medium">Concesionario</p>
-                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm font-medium">Concesionario</p>
+                                <p className="text-sm text-foreground">{service.dealership.name}</p>
+                                <p className="text-xs text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
-                                <p className="text-sm text-muted-foreground mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-4 w-4" />
+                                                <PhoneCall className="h-3 w-3" />
                                                 {service.dealership.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -280,15 +280,15 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <User className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-base font-medium">Mensajero</p>
-                                <p className="text-base text-muted-foreground">{service.messenger.fullName}</p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm font-medium">Mensajero</p>
+                                <p className="text-sm text-foreground">{service.messenger.fullName}</p>
+                                <p className="text-xs text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-4 w-4" />
+                                                <PhoneCall className="h-3 w-3" />
                                                 {service.messenger.phone}
                                             </a>
                                         </TooltipTrigger>
@@ -301,123 +301,36 @@ export default function ViewServicio() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground flex-shrink-0" />
+                            <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-base font-medium">Fecha de Creación</p>
-                                <p className="text-base text-muted-foreground">
-                                    {format(new Date(service.createdAt), "PPPp", { locale: es })}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Desktop: Observations if present */}
-                    {service.observation && (
-                        <div className="hidden md:block pt-4 mt-4 border-t">
-                            <p className="text-base font-medium mb-1">Observaciones</p>
-                            <p className="text-base text-muted-foreground">{service.observation}</p>
-                        </div>
-                    )}
-
-                    {/* Mobile: Vertical layout */}
-                    <div className="md:hidden space-y-4">
-                        <div className="flex items-start gap-3">
-                            <PlateIcon className="h-6 w-6 mt-0.5 text-muted-foreground" />
-                            <div className="flex-1">
-                                <p className="text-base font-medium">Placa</p>
-                                <div className="mt-1">
-                                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-3">
-                            <Building2 className="h-6 w-6 mt-0.5 text-muted-foreground" />
-                            <div className="flex-1">
-                                <p className="text-base font-medium">Concesionario</p>
-                                <p className="text-base text-muted-foreground">{service.dealership.name}</p>
+                                <p className="text-sm font-medium">Fecha de Creación</p>
                                 <p className="text-sm text-muted-foreground">
-                                    {service.dealership.address} • {service.dealership.zone}
-                                </p>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-4 w-4" />
-                                                {service.dealership.phone}
-                                            </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Llamar</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-3">
-                            <User className="h-6 w-6 mt-0.5 text-muted-foreground" />
-                            <div className="flex-1">
-                                <p className="text-base font-medium">Mensajero</p>
-                                <p className="text-base text-muted-foreground">{service.messenger.fullName}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                                <PhoneCall className="h-4 w-4" />
-                                                {service.messenger.phone}
-                                            </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Llamar</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-3">
-                            <Calendar className="h-6 w-6 mt-0.5 text-muted-foreground" />
-                            <div className="flex-1">
-                                <p className="text-base font-medium">Fecha de Creación</p>
-                                <p className="text-base text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
                             </div>
                         </div>
 
                         {service.observation && (
-                            <div className="pt-2 border-t">
-                                <p className="text-base font-medium mb-1">Observaciones</p>
-                                <p className="text-base text-muted-foreground">{service.observation}</p>
+                            <div className="pt-4 border-t">
+                                <p className="text-sm font-medium mb-1">Observaciones</p>
+                                <p className="text-sm text-muted-foreground">{service.observation}</p>
                             </div>
                         )}
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
 
-            {/* Service Tracking Map */}
-            <ServiceTrackingMap
-                serviceId={service.idServiceDelivery}
-                dealershipLat={service.dealership.latitude}
-                dealershipLng={service.dealership.longitude}
-                dealershipName={service.dealership.name}
-            />
-
-            {/* History Timeline */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Historial de estados</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {service.history.length > 0 ? (
-                        <>
-                            {/* Responsive Timeline */}
-                            <div className="py-4 overflow-x-auto">
+                {/* History Timeline - Vertical & Scrollable */}
+                <Card className="h-[600px] flex flex-col">
+                    <CardHeader>
+                        <CardTitle>Historial de estados</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-1 overflow-y-auto pr-2">
+                        {service.history.length > 0 ? (
+                            <div className="py-2">
                                 <Timeline
-                                    layout={isMobile ? "vertical" : "horizontal"}
-                                    centered={isMobile}
-                                    className={isMobile ? "" : "min-w-max md:min-w-0"}
+                                    layout="vertical"
+                                    centered={false}
+                                    className="w-full"
                                 >
                                     {[...service.history].reverse().map((entry, index) => {
                                         const newStatusConfig = getStatusBadge(entry.newStatus)
@@ -427,14 +340,12 @@ export default function ViewServicio() {
                                             <TimelineItem
                                                 key={entry.idStatusHistory}
                                                 isLast={index === service.history.length - 1}
-                                                className={isMobile ? "" : "min-w-[280px]"}
+                                                className="pb-8 last:pb-0"
                                             >
-                                                <TimelineHeader>
-                                                    <div className="h-10 flex items-center justify-center z-10 bg-card">
-                                                        <Badge className={`${newStatusConfig.className} text-base px-6 py-2 shadow-sm`}>
-                                                            {newStatusConfig.label}
-                                                        </Badge>
-                                                    </div>
+                                                <TimelineHeader className="pb-2">
+                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1`}>
+                                                        {newStatusConfig.label}
+                                                    </Badge>
                                                 </TimelineHeader>
                                                 <TimelineContent>
                                                     <HistoryEntryCard
@@ -450,15 +361,24 @@ export default function ViewServicio() {
                                     })}
                                 </Timeline>
                             </div>
+                        ) : (
+                            <div className="h-full flex items-center justify-center">
+                                <p className="text-muted-foreground text-center">
+                                    Sin historial de cambios
+                                </p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
 
-                        </>
-                    ) : (
-                        <p className="text-sm text-muted-foreground text-center py-4">
-                            Sin historial de cambios
-                        </p>
-                    )}
-                </CardContent>
-            </Card>
+            {/* Service Tracking Map - Bottom Section */}
+            <ServiceTrackingMap
+                serviceId={service.idServiceDelivery}
+                dealershipLat={service.dealership.latitude}
+                dealershipLng={service.dealership.longitude}
+                dealershipName={service.dealership.name}
+            />
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

@@ -39,13 +39,13 @@ export function HistoryEntryCard({
     return (
         <div className={`bg-muted/30 rounded-lg p-3 space-y-2.5 border border-border/50 ${className}`}>
             {/* Date and User Info */}
-            <div className="flex flex-row items-center justify-between gap-4 text-base text-muted-foreground">
+            <div className="flex flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
-                    <Clock className="h-5 w-5 flex-shrink-0" />
+                    <Clock className="h-4 w-4 flex-shrink-0" />
                     <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <User className="h-5 w-5 flex-shrink-0" />
+                    <User className="h-4 w-4 flex-shrink-0" />
                     <span>{entry.changedBy.fullName}</span>
                 </div>
             </div>
@@ -53,7 +53,7 @@ export function HistoryEntryCard({
             {/* Plate photos for ASSIGNED */}
             {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-base text-muted-foreground mb-2 text-center">Lectura de placa</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Lectura de placa</p>
                     <div className="flex flex-wrap gap-2 justify-center">
                         {platePhotos.map((photo) => (
                             <div
@@ -80,7 +80,7 @@ export function HistoryEntryCard({
             {/* Signature for DELIVERED */}
             {entry.newStatus === 'DELIVERED' && signaturePath && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-base text-muted-foreground mb-2 text-center">Firma digital</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Firma digital</p>
                     <div className="flex justify-center">
                         <div
                             className="relative group cursor-pointer w-48 h-48 bg-white rounded-md border border-border/50 flex items-center justify-center"
@@ -104,7 +104,7 @@ export function HistoryEntryCard({
             {/* Other photos */}
             {entry.photos && entry.photos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-base text-muted-foreground mb-2 text-center">Evidencia fotográfica</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Evidencia fotográfica</p>
                     <div className="flex flex-wrap gap-2 justify-center">
                         {entry.photos.map((photo) => (
                             <div

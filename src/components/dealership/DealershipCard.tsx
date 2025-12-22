@@ -50,7 +50,8 @@ export function DealershipCard({
     onGeocode,
     deleting,
     geocoding,
-}: DealershipCardProps) {
+    hideActions = false,
+}: DealershipCardProps & { hideActions?: boolean }) {
     return (
         <motion.div exit="exit" layout>
             <Card className="mb-3 hover:shadow-md transition-shadow">
@@ -135,51 +136,55 @@ export function DealershipCard({
                                     )}
                                 </Button>
                             )}
-                            <Button
-                                variant="default"
-                                size="lg"
-                                onClick={() => onEdit(dealership.idDealership)}
-                                className="bg-primary hover:bg-primary/90"
-                                aria-label="Editar concesionario"
-                            >
-                                <Pencil className="h-5 w-5" />
-                            </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
+                            {!hideActions && (
+                                <>
                                     <Button
-                                        variant="outline"
+                                        variant="default"
                                         size="lg"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                        aria-label="Eliminar concesionario"
+                                        onClick={() => onEdit(dealership.idDealership)}
+                                        className="bg-primary hover:bg-primary/90"
+                                        aria-label="Editar concesionario"
                                     >
-                                        <Trash2 className="h-5 w-5" />
+                                        <Pencil className="h-5 w-5" />
                                     </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar concesionario?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente{" "}
-                                            <strong>{dealership.name}</strong> del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() => onDelete(dealership.idDealership)}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            disabled={deleting === dealership.idDealership}
-                                        >
-                                            {deleting === dealership.idDealership ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : null}
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="lg"
+                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                                aria-label="Eliminar concesionario"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                    ¿Eliminar concesionario?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Esta acción no se puede deshacer. Se eliminará permanentemente{" "}
+                                                    <strong>{dealership.name}</strong> del sistema.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => onDelete(dealership.idDealership)}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                    disabled={deleting === dealership.idDealership}
+                                                >
+                                                    {deleting === dealership.idDealership ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                                    ) : null}
+                                                    Eliminar
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
                         </div>
                     </div>
                 </CardContent>

@@ -49,7 +49,13 @@ function formatDisplayName(fullName: string): string {
  * Mobile card component for displaying an employee in list view.
  * Shows name, role, username, document, and phone with action buttons.
  */
-export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeCardProps) {
+export function EmployeeCard({
+    employee,
+    onEdit,
+    onDelete,
+    deleting,
+    hideActions = false,
+}: EmployeeCardProps & { hideActions?: boolean }) {
     return (
         <motion.div exit="exit" layout>
             <Card className="mb-3 hover:shadow-md transition-shadow">
@@ -92,52 +98,54 @@ export function EmployeeCard({ employee, onEdit, onDelete, deleting }: EmployeeC
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                            <Button
-                                variant="default"
-                                size="lg"
-                                onClick={() => onEdit(employee.idEmployee)}
-                                className="bg-primary hover:bg-primary/90"
-                                aria-label="Editar empleado"
-                            >
-                                <Pencil className="h-5 w-5" />
-                            </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="lg"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                        aria-label="Eliminar empleado"
-                                    >
-                                        <Trash2 className="h-5 w-5" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar empleado?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente a <strong>{employee.fullName}</strong> del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() => onDelete(employee.idEmployee)}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            disabled={deleting === employee.idEmployee}
+                        {!hideActions && (
+                            <div className="flex flex-col gap-2">
+                                <Button
+                                    variant="default"
+                                    size="lg"
+                                    onClick={() => onEdit(employee.idEmployee)}
+                                    className="bg-primary hover:bg-primary/90"
+                                    aria-label="Editar empleado"
+                                >
+                                    <Pencil className="h-5 w-5" />
+                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="lg"
+                                            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                            aria-label="Eliminar empleado"
                                         >
-                                            {deleting === employee.idEmployee ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : null}
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
+                                            <Trash2 className="h-5 w-5" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                ¿Eliminar empleado?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta acción no se puede deshacer. Se eliminará permanentemente a <strong>{employee.fullName}</strong> del sistema.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => onDelete(employee.idEmployee)}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                disabled={deleting === employee.idEmployee}
+                                            >
+                                                {deleting === employee.idEmployee ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                                ) : null}
+                                                Eliminar
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
