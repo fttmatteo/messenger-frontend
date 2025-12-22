@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -18,7 +19,6 @@ import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/compo
 import { ImageViewer } from "@/components/ui/image-viewer"
 import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
@@ -29,6 +29,7 @@ export default function ViewServicio() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { user } = useAuth()
+    const { setSuccess, setError: setGlobalError } = useAdminUI()
     const isMobile = useIsMobile()
 
     // Service Data State
@@ -72,17 +73,14 @@ export default function ViewServicio() {
             } catch (error: any) {
                 console.error("Error fetching service:", error)
                 setError(error.response?.data?.message || "Error al cargar la información del servicio")
-                toast.error("Error al cargar servicio", {
-                    description: error.response?.data?.message || error.message,
-                    id: "error-cargar-servicio"
-                })
+                setGlobalError(error.response?.data?.message || error.message || "Error al cargar servicio")
             } finally {
                 setLoading(false)
             }
         }
 
         fetchService()
-    }, [id, navigate])
+    }, [id, navigate, setGlobalError])
 
     const handleDelete = async () => {
         if (!id) return
@@ -90,15 +88,10 @@ export default function ViewServicio() {
         try {
             setDeleting(true)
             await serviceDeliveryService.delete(Number(id))
-            toast.success("Servicio eliminado", {
-                description: "El servicio ha sido eliminado exitosamente"
-            })
+            setSuccess("Servicio eliminado exitosamente")
             navigate("/admin/servicios")
         } catch (error: any) {
-            toast.error("Error al eliminar servicio", {
-                description: error.response?.data?.message || error.message,
-                id: "error-eliminar-servicio"
-            })
+            setGlobalError(error.response?.data?.message || error.message || "Error al eliminar servicio")
         } finally {
             setDeleting(false)
             setDeleteDialogOpen(false)

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { dealershipService } from "@/services/dealership.service"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,7 +16,6 @@ import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Loader2, MapPin } from "lucide-react"
-import { toast } from "sonner"
 
 // Available zones
 const ZONES = [
@@ -79,6 +79,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
 export default function EditConcesionario() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { setSuccess, setError } = useAdminUI()
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [geocoded, setGeocoded] = useState(false)
@@ -121,17 +122,14 @@ export default function EditConcesionario() {
                     lng: dealership.longitude,
                 })
             } catch (error: any) {
-                toast.error("Error al cargar concesionario", {
-                    description: error.message,
-                    id: "error-cargar-concesionario-edit"
-                })
+                setError(error.message || "Error al cargar concesionario")
                 navigate("/admin/concesionarios")
             } finally {
                 setLoading(false)
             }
         }
         fetchDealership()
-    }, [id, reset, navigate])
+    }, [id, reset, navigate, setError])
 
     const onSubmit = async (data: DealershipFormValues) => {
         if (!id) return
@@ -142,13 +140,10 @@ export default function EditConcesionario() {
                 phone: data.phone,
                 zone: data.zone,
             })
-            toast.success("Concesionario actualizado exitosamente")
+            setSuccess("Concesionario actualizado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error: any) {
-            toast.error("Error al actualizar concesionario", {
-                description: error.message,
-                id: "error-actualizar-concesionario"
-            })
+            setError(error.message || "Error al actualizar concesionario")
         }
     }
 
@@ -172,12 +167,9 @@ export default function EditConcesionario() {
                 lng: result.longitude,
             })
             setInitialAddress(capitalizeWords(data.address.trim()))
-            toast.success("Guardado y geocodificado correctamente")
+            setSuccess("Guardado y geocodificado correctamente")
         } catch (error: any) {
-            toast.error("Error al guardar y geocodificar", {
-                description: error.message,
-                id: "error-save-geocode"
-            })
+            setError(error.message || "Error al guardar y geocodificar")
         } finally {
             setGeocoding(false)
         }
@@ -188,13 +180,10 @@ export default function EditConcesionario() {
         try {
             setDeleting(true)
             await dealershipService.delete(Number(id))
-            toast.success("Concesionario eliminado exitosamente")
+            setSuccess("Concesionario eliminado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error: any) {
-            toast.error("Error al eliminar concesionario", {
-                description: error.message,
-                id: "error-eliminar-concesionario"
-            })
+            setError(error.message || "Error al eliminar concesionario")
         } finally {
             setDeleting(false)
         }

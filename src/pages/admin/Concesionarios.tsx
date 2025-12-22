@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
 import { dealershipService } from "@/services/dealership.service"
 import { useDealerships } from "@/hooks/useDealerships"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useScrollToTop } from "@/hooks/useScrollToTop"
 import { listItemVariants, fadeScaleVariants } from "@/lib/animation-variants"
@@ -23,7 +24,6 @@ import { TablePagination } from "@/components/ui/table-pagination"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ChevronUp, X, ExternalLink } from "lucide-react"
-import { toast } from "sonner"
 
 // Marker component for the dealership location
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
@@ -60,6 +60,7 @@ export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
+    const { setSuccess, setError } = useAdminUI()
     const [geocoding, setGeocoding] = useState<number | null>(null)
     const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
 
@@ -88,13 +89,10 @@ export default function Concesionarios() {
         try {
             setGeocoding(id)
             await dealershipService.geocode(id)
-            toast.success("Concesionario geocodificado correctamente")
+            setSuccess("Concesionario geocodificado correctamente")
             fetchDealerships()
         } catch (error: any) {
-            toast.error("Error al geocodificar", {
-                description: error.message,
-                id: "error-geocodificar"
-            })
+            setError(error.message || "Error al geocodificar")
         } finally {
             setGeocoding(null)
         }
@@ -367,7 +365,7 @@ export default function Concesionarios() {
                                         if (locationPopup) {
                                             const coords = `${locationPopup.lat}, ${locationPopup.lng}`
                                             navigator.clipboard.writeText(coords)
-                                            toast.success("Coordenadas copiadas", { description: coords })
+                                            setSuccess("Coordenadas copiadas")
                                         }
                                     }}
                                 >
