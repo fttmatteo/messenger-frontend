@@ -2,7 +2,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Home, Package, User, LogOut, ArrowLeft, MapPin, MapPinOff } from "lucide-react"
+import { Home, Package, User, LogOut, ArrowLeft, MapPin, MapPinOff, Plus } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef } from "react"
@@ -33,6 +33,9 @@ export default function MessengerLayout() {
     // Detect if we're on a nested page
     const isNestedPage = location.pathname.includes('/detalles') ||
         location.pathname.includes('/entrega/')
+
+    // Hide FAB on create page
+    const showFab = !location.pathname.includes('/crear')
 
     const handleBack = () => {
         navigate(-1)
@@ -262,6 +265,17 @@ export default function MessengerLayout() {
                     <Outlet />
                 </main>
             </SidebarInset>
+
+            {/* Floating Action Button */}
+            {showFab && (
+                <Button
+                    onClick={() => navigate('/messenger/crear')}
+                    className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 touch-manipulation"
+                    size="icon"
+                >
+                    <Plus className="h-6 w-6" />
+                </Button>
+            )}
 
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent>
