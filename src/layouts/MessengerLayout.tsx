@@ -8,6 +8,8 @@ import {
     User,
     LogOut,
     ArrowLeft,
+    MapPin,
+    MapPinOff,
 } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
@@ -39,6 +41,7 @@ import {
 import logo from "@/assets/logo.png"
 import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 
 const navItems = [
     { title: "Inicio", icon: Home, url: "/messenger" },
@@ -191,6 +194,11 @@ export default function MessengerLayout() {
         navigate("/login")
     }
 
+    // Block desktop users from accessing the messenger
+    if (!isMobile) {
+        return <MobileOnlyGuard />
+    }
+
     return (
         <SidebarProvider>
             <Sidebar>
@@ -243,6 +251,24 @@ export default function MessengerLayout() {
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-3 mr-2">
+                        {/* Dev-only tracking toggle button */}
+                        {import.meta.env.DEV && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => updateUser({ isOnline: !isOnline })}
+                                className={isOnline
+                                    ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                    : "border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
+                                }
+                            >
+                                {isOnline ? (
+                                    <><MapPinOff className="h-4 w-4 mr-1" /> Detener</>
+                                ) : (
+                                    <><MapPin className="h-4 w-4 mr-1" /> Rastrear</>
+                                )}
+                            </Button>
+                        )}
                         <div className="flex items-center gap-2">
                             <Badge variant="default" className={isOnline ? "bg-green-500 hover:bg-green-600" : ""}>
                                 {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
