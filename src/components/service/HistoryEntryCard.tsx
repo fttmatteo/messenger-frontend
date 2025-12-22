@@ -1,9 +1,6 @@
-// Components
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { Clock, User, Expand } from "lucide-react"
-
-// Types
 import type { StatusHistoryInfo, PhotoInfo } from "@/types/service.types"
 
 interface HistoryEntryCardProps {

@@ -7,21 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { capitalizeWords } from "@/lib/format-utils"
 
 // Available zones
 const ZONES = [
@@ -39,17 +29,7 @@ const dealershipSchema = z.object({
 
 type DealershipFormValues = z.infer<typeof dealershipSchema>
 
-/**
- * Capitalizes the first letter of each word
- * Example: "MUNDO YAMAHA" → "Mundo Yamaha"
- */
-function capitalizeWords(str: string): string {
-    return str
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-}
+
 
 export default function CreateConcesionario() {
     const navigate = useNavigate()

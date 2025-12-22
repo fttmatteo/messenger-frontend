@@ -1,70 +1,157 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Package, CheckCircle, Clock, MapPin } from "lucide-react"
+import { useMessengerServices } from "@/hooks/useMessengerServices"
+import { usePullToRefresh } from "@/hooks/usePullToRefresh"
+import { ServiceList } from "@/components/messenger/ServiceList"
+import { PullIndicator } from "@/components/messenger/PullIndicator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RefreshCw, WifiOff } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
+import { MessengerNavBar } from "@/components/messenger/MessengerNavBar"
 
 export default function MessengerDashboard() {
+    const {
+        loading,
+        pendingServices,
+        completedServices,
+        refetch,
+        error
+    } = useMessengerServices()
 
-    const todayStats = [
-        { title: "Pendientes", value: "5", icon: Clock, color: "text-yellow-500" },
-        { title: "Completadas", value: "12", icon: CheckCircle, color: "text-green-500" },
-        { title: "En Ruta", value: "2", icon: MapPin, color: "text-blue-500" },
-    ]
+    const [isOnline, setIsOnline] = useState(navigator.onLine)
+    const [isRefreshing, setIsRefreshing] = useState(false)
+
+    // Pull to refresh
+    const {
+        containerRef,
+        isRefreshing: isPulling,
+        pullDistance
+    } = usePullToRefresh({
+        onRefresh: refetch,
+        disabled: !isOnline
+    })
+
+    // Listen for online/offline events
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true)
+        const handleOffline = () => setIsOnline(false)
+
+        window.addEventListener('online', handleOnline)
+        window.addEventListener('offline', handleOffline)
+
+        return () => {
+            window.removeEventListener('online', handleOnline)
+            window.removeEventListener('offline', handleOffline)
+        }
+    }, [])
+
+    // Handle manual refresh
+    const handleRefresh = async () => {
+        if (!isOnline || isRefreshing) return
+        setIsRefreshing(true)
+        await refetch()
+        setIsRefreshing(false)
+    }
+
+    // Get current date
+    const today = new Date()
+    const dateString = today.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    })
+
+    // Get greeting based on time
+    const getGreeting = () => {
+        const hour = today.getHours()
+        if (hour < 12) return '¡Buenos días'
+        if (hour < 18) return '¡Buenas tardes'
+        return '¡Buenas noches'
+    }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold">¡Bienvenido!</h1>
-                <p className="text-muted-foreground">
-                    Tu resumen de entregas de hoy
-                </p>
-            </div>
+        <div
+            ref={containerRef}
+            className="flex flex-col h-full overflow-hidden"
+        >
+            {/* Pull to refresh indicator */}
+            <PullIndicator
+                pullDistance={pullDistance}
+                isRefreshing={isPulling}
+            />
 
-            <div className="grid gap-4 grid-cols-3">
-                {todayStats.map((stat) => (
-                    <Card key={stat.title} className="text-center">
-                        <CardContent className="pt-6">
-                            <stat.icon className={`h-8 w-8 mx-auto mb-2 ${stat.color}`} />
-                            <div className="text-2xl font-bold">{stat.value}</div>
-                            <p className="text-sm text-muted-foreground">
-                                {stat.title}
-                            </p>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
+                {/* Offline Banner */}
+                {!isOnline && (
+                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-sm">
+                        <WifiOff className="h-4 w-4 flex-shrink-0" />
+                        <span>Sin conexión - Mostrando datos guardados</span>
+                    </div>
+                )}
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                        <Package className="h-5 w-5" />
-                        Próxima Entrega
-                    </CardTitle>
-                    <CardDescription className="text-sm">
-                        Tu siguiente destino
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2">
-                        <p className="font-medium text-lg">Toyota Bogotá Norte</p>
-                        <p className="text-base text-muted-foreground">
-                            Calle 127 # 15-20, Bogotá
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            Entrega estimada: 10:30 AM
+                {/* Header with Welcome Message */}
+                <header className="flex items-start justify-between">
+                    <div className="min-w-0">
+                        <h1 className="text-xl font-bold leading-tight">
+                            {getGreeting()}, Mensajero!
+                        </h1>
+                        <p className="text-sm text-muted-foreground capitalize">
+                            {dateString}
                         </p>
                     </div>
-                </CardContent>
-            </Card>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRefresh}
+                        disabled={isRefreshing || isPulling || !isOnline}
+                        className="h-9 w-9"
+                    >
+                        <RefreshCw className={`h-5 w-5 ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
+                    </Button>
+                </header>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Entregas de Hoy</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                        Ve a la pestaña "Entregas" para ver tu lista completa
-                    </p>
-                </CardContent>
-            </Card>
+                {/* Navigation Bar */}
+                <MessengerNavBar />
+
+                {/* Services Tabs */}
+                <Tabs defaultValue="pending" className="flex-1 flex flex-col min-h-0">
+                    <TabsList className="grid w-full grid-cols-2 h-11">
+                        <TabsTrigger value="pending" className="text-sm">
+                            Pendientes ({pendingServices.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="completed" className="text-sm">
+                            Completados ({completedServices.length})
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="pending" className="flex-1 mt-4">
+                        <ServiceList
+                            services={pendingServices}
+                            loading={loading}
+                            emptyMessage="No tienes servicios pendientes 🎉"
+                            onRefresh={handleRefresh}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="completed" className="flex-1 mt-4">
+                        <ServiceList
+                            services={completedServices}
+                            loading={loading}
+                            emptyMessage="Aún no has completado servicios hoy"
+                            onRefresh={handleRefresh}
+                        />
+                    </TabsContent>
+                </Tabs>
+
+
+                {/* Error State */}
+                {error && !loading && (
+                    <div className="fixed bottom-20 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg z-40">
+                        <p className="text-red-600 dark:text-red-400 text-sm text-center">
+                            {error}
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

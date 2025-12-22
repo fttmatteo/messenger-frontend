@@ -1,41 +1,35 @@
-import { useState, useEffect, useRef, useCallback } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
+import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { serviceDeliveryService } from "@/services/service.service"
 import { dealershipService } from "@/services/dealership.service"
-import { employeeService } from "@/services/employee.service"
 import type { Dealership } from "@/types/dealership.types"
-import type { Employee } from "@/types/employee.types"
-import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Home, Bike, Upload, X, Loader2, Camera, CameraOff } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Upload, X, Loader2, Camera, CameraOff, ArrowLeft, Bike } from "lucide-react"
 import { toast } from "sonner"
 
-// Form validation schema
+// Form validation schema - simplified for messengers
 const formSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario es obligatorio"),
-    messengerDocument: z.string().optional(),
     manualPlateNumber: z.string().optional(),
     image: z.instanceof(File, { message: "La imagen es obligatoria" })
 })
 
 type FormValues = z.infer<typeof formSchema>
 
-export default function CreateServicio() {
+export default function MessengerCreateServicio() {
     const navigate = useNavigate()
-    const { user } = useAuth()
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
-    const [messengers, setMessengers] = useState<Employee[]>([])
     const [loadingData, setLoadingData] = useState(true)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [showManualPlate, setShowManualPlate] = useState(false)
 
     // Camera states
     const [cameraActive, setCameraActive] = useState(false)
@@ -45,16 +39,27 @@ export default function CreateServicio() {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
 
-    const isAdmin = user?.role === 'ADMIN'
-
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             dealershipId: "",
-            messengerDocument: "",
             manualPlateNumber: "",
         },
     })
+
+    // Group dealerships by zone
+    const groupedDealerships = useMemo(() => {
+        const groups: Record<string, Dealership[]> = {}
+        dealerships.forEach(d => {
+            const zone = d.zone || 'Sin Zona'
+            if (!groups[zone]) {
+                groups[zone] = []
+            }
+            groups[zone].push(d)
+        })
+        // Sort zones alphabetically
+        return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
+    }, [dealerships])
 
     // Stop camera function
     const stopCamera = useCallback(() => {
@@ -73,19 +78,12 @@ export default function CreateServicio() {
         const fetchData = async () => {
             try {
                 setLoadingData(true)
-                const [dealershipsData, employeesData] = await Promise.all([
-                    dealershipService.getAll(),
-                    employeeService.getAll()
-                ])
+                const dealershipsData = await dealershipService.getAll()
                 setDealerships(dealershipsData)
-
-                // Filter only messengers for selection
-                const messengersList = employeesData.filter(e => e.role === 'MESSENGER')
-                setMessengers(messengersList)
             } catch (error: any) {
-                toast.error("Error al cargar datos", {
+                toast.error("Error al cargar concesionarios", {
                     description: error.message,
-                    id: "error-cargar-datos-servicio"
+                    id: "error-cargar-datos"
                 })
             } finally {
                 setLoadingData(false)
@@ -105,11 +103,11 @@ export default function CreateServicio() {
         try {
             setCameraError(null)
             setCameraReady(false)
-            setCameraActive(true) // Show video element first
+            setCameraActive(true)
 
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: { ideal: 'environment' }, // Prefer rear camera
+                    facingMode: { ideal: 'environment' },
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
                 },
@@ -121,7 +119,6 @@ export default function CreateServicio() {
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
 
-                // Wait for video to be ready
                 videoRef.current.onloadedmetadata = () => {
                     if (videoRef.current) {
                         videoRef.current.play()
@@ -166,7 +163,6 @@ export default function CreateServicio() {
             return
         }
 
-        // Set canvas size to video size
         canvas.width = video.videoWidth
         canvas.height = video.videoHeight
 
@@ -176,21 +172,18 @@ export default function CreateServicio() {
             return
         }
 
-        // Draw video frame to canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-        // Convert to blob
         canvas.toBlob((blob) => {
             if (blob) {
                 const file = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
                 form.setValue("image", file)
 
-                // Create preview from canvas
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
                 setImagePreview(dataUrl)
 
                 stopCamera()
-                toast.success("📸 Foto capturada exitosamente")
+                toast.success("📸 Foto capturada")
             } else {
                 toast.error("Error al capturar foto", { id: "error-captura" })
             }
@@ -204,22 +197,40 @@ export default function CreateServicio() {
             await serviceDeliveryService.create({
                 image: values.image,
                 dealershipId: values.dealershipId,
-                messengerDocument: values.messengerDocument,
                 manualPlateNumber: values.manualPlateNumber || undefined
             })
 
             toast.success("Servicio creado exitosamente", {
                 description: values.manualPlateNumber
-                    ? `Placa manual: ${values.manualPlateNumber}`
+                    ? `Placa: ${values.manualPlateNumber}`
                     : "Procesando detección OCR..."
             })
 
-            navigate("/admin/servicios")
+            navigate("/messenger")
         } catch (error: any) {
-            toast.error("Error al crear servicio", {
-                description: error.response?.data?.message || error.message,
-                id: "error-crear-servicio"
-            })
+            const errorMessage = error.response?.data?.message || error.message || ''
+
+            // Check if error is OCR-related (plate not detected)
+            const isOcrError =
+                errorMessage.toLowerCase().includes('ocr') ||
+                errorMessage.toLowerCase().includes('placa') ||
+                errorMessage.toLowerCase().includes('plate') ||
+                errorMessage.toLowerCase().includes('detectar') ||
+                errorMessage.toLowerCase().includes('reconocer')
+
+            if (isOcrError && !showManualPlate) {
+                // First OCR failure - show manual input
+                setShowManualPlate(true)
+                toast.warning("No se pudo detectar la placa", {
+                    description: "Por favor ingresa la placa manualmente",
+                    id: "ocr-failed"
+                })
+            } else {
+                toast.error("Error al crear servicio", {
+                    description: errorMessage,
+                    id: "error-crear-servicio"
+                })
+            }
         } finally {
             setLoading(false)
         }
@@ -228,7 +239,6 @@ export default function CreateServicio() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 toast.error("Archivo inválido", {
                     description: "Por favor selecciona una imagen",
@@ -237,10 +247,9 @@ export default function CreateServicio() {
                 return
             }
 
-            // Validate file size (5MB max)
-            if (file.size > 5 * 1024 * 1024) {
+            if (file.size > 10 * 1024 * 1024) {
                 toast.error("Archivo muy grande", {
-                    description: "El tamaño máximo es 5MB",
+                    description: "El tamaño máximo es 10MB",
                     id: "error-archivo-grande"
                 })
                 return
@@ -248,7 +257,6 @@ export default function CreateServicio() {
 
             form.setValue("image", file)
 
-            // Create preview
             const reader = new FileReader()
             reader.onloadend = () => {
                 setImagePreview(reader.result as string)
@@ -261,94 +269,77 @@ export default function CreateServicio() {
         form.setValue("image", undefined as any)
         setImagePreview(null)
         stopCamera()
-        // Reset file input
         const fileInput = document.getElementById('file-upload') as HTMLInputElement
         if (fileInput) fileInput.value = ''
     }
 
+    const handleBack = () => {
+        stopCamera()
+        navigate(-1)
+    }
+
     return (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-3 sm:gap-4 min-h-0">
             {/* Hidden canvas for capturing */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin/servicios">
-                                Servicios
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Crear</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+            {/* Header with back button */}
+            <header className="flex items-center gap-3">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleBack}
+                    className="h-9 w-9 flex-shrink-0"
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div className="min-w-0">
+                    <h1 className="text-lg sm:text-xl font-bold truncate">Crear Servicio</h1>
+                </div>
+            </header>
 
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold">Crear servicio</h1>
-            </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Información del servicio</CardTitle>
-                </CardHeader>
-                <CardContent>
+            {/* Main Form Card */}
+            <Card className="flex-shrink-0">
+                <CardContent className="px-3 sm:px-4 pb-4 space-y-4">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            {/* Image Upload */}
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            {/* Image Upload - Camera first approach */}
                             <FormField
                                 control={form.control}
                                 name="image"
                                 render={() => (
                                     <FormItem>
-                                        <FormLabel>Imagen de la placa *</FormLabel>
+                                        <FormLabel className="text-sm">Foto de la placa *</FormLabel>
                                         <FormControl>
-                                            <div className="space-y-4">
+                                            <div className="space-y-3">
                                                 {!imagePreview && !cameraActive ? (
-                                                    <div className="w-full space-y-3">
-                                                        {/* Primary: Camera button */}
+                                                    <div className="space-y-2">
+                                                        {/* Camera button */}
                                                         <Button
                                                             type="button"
                                                             onClick={startCamera}
-                                                            className="w-full h-48 flex flex-col items-center justify-center gap-3 text-lg bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary"
-                                                            size="lg"
+                                                            className="w-full h-32 sm:h-40 flex flex-col items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary touch-manipulation"
                                                         >
-                                                            <Camera className="w-16 h-16" />
-                                                            <span className="font-semibold">📷 Abrir cámara</span>
-                                                            <span className="text-xs opacity-80">
-                                                                Tomar foto de la placa
-                                                            </span>
+                                                            <Camera className="w-10 h-10 sm:w-12 sm:h-12" />
+                                                            <span className="font-semibold text-sm">📷 Abrir cámara</span>
                                                         </Button>
 
                                                         {cameraError && (
-                                                            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-destructive text-sm">
+                                                            <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded-lg text-destructive text-xs">
                                                                 <CameraOff className="w-4 h-4 shrink-0" />
                                                                 <span>{cameraError}</span>
                                                             </div>
                                                         )}
 
-                                                        {/* Secondary: File upload */}
+                                                        {/* File upload fallback */}
                                                         <label
                                                             htmlFor="file-upload"
-                                                            className="flex items-center justify-center w-full h-14 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
+                                                            className="flex items-center justify-center w-full h-11 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors touch-manipulation"
                                                         >
                                                             <div className="flex items-center gap-2">
-                                                                <Upload className="w-5 h-5 text-muted-foreground" />
-                                                                <span className="text-sm text-muted-foreground">
-                                                                    o seleccionar archivo de galería
+                                                                <Upload className="w-4 h-4 text-muted-foreground" />
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    Seleccionar de galería
                                                                 </span>
                                                             </div>
                                                             <input
@@ -359,75 +350,59 @@ export default function CreateServicio() {
                                                                 onChange={handleImageChange}
                                                             />
                                                         </label>
-
-                                                        <p className="text-xs text-muted-foreground text-center">
-                                                            PNG, JPG (MAX. 10MB)
-                                                        </p>
                                                     </div>
                                                 ) : cameraActive ? (
-                                                    <div className="space-y-3">
+                                                    <div className="space-y-2">
                                                         {/* Live camera view */}
-                                                        <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
+                                                        <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
                                                             <video
                                                                 ref={videoRef}
                                                                 autoPlay
                                                                 playsInline
                                                                 muted
                                                                 className="w-full h-full object-cover"
-                                                                style={{ transform: 'scaleX(1)' }}
                                                             />
 
-                                                            {/* Loading overlay */}
                                                             {!cameraReady && (
                                                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                                                                     <div className="text-center text-white">
-                                                                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                                                                        <p className="text-sm">Cargando cámara...</p>
+                                                                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-1" />
+                                                                        <p className="text-xs">Cargando...</p>
                                                                     </div>
                                                                 </div>
                                                             )}
 
-                                                            {/* Camera frame overlay */}
                                                             {cameraReady && (
-                                                                <div className="absolute inset-4 border-2 border-white/60 rounded-lg pointer-events-none">
-                                                                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-white" />
-                                                                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-white" />
-                                                                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-white" />
-                                                                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-white" />
+                                                                <div className="absolute inset-3 border-2 border-white/50 rounded-lg pointer-events-none">
+                                                                    <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-white" />
+                                                                    <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-white" />
+                                                                    <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-white" />
+                                                                    <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-white" />
                                                                 </div>
                                                             )}
                                                         </div>
 
                                                         {/* Camera controls */}
-                                                        <div className="flex gap-2 justify-center">
+                                                        <div className="flex gap-2">
                                                             <Button
                                                                 type="button"
                                                                 onClick={capturePhoto}
                                                                 disabled={!cameraReady}
-                                                                className="flex-1 h-14 text-lg"
-                                                                size="lg"
+                                                                className="flex-1 h-12 text-sm touch-manipulation"
                                                             >
                                                                 {cameraReady ? (
-                                                                    <>
-                                                                        <Camera className="mr-2 h-6 w-6" />
-                                                                        📸 Capturar foto
-                                                                    </>
+                                                                    <><Camera className="mr-2 h-5 w-5" /> Capturar</>
                                                                 ) : (
-                                                                    <>
-                                                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                                        Cargando...
-                                                                    </>
+                                                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Cargando...</>
                                                                 )}
                                                             </Button>
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"
                                                                 onClick={stopCamera}
-                                                                className="h-14"
-                                                                size="lg"
+                                                                className="h-12 px-4 touch-manipulation"
                                                             >
                                                                 <X className="h-5 w-5" />
-
                                                             </Button>
                                                         </div>
                                                     </div>
@@ -436,13 +411,13 @@ export default function CreateServicio() {
                                                         <img
                                                             src={imagePreview || ""}
                                                             alt="Preview"
-                                                            className="w-full h-64 object-contain rounded-lg border bg-muted/10"
+                                                            className="w-full aspect-[4/3] object-contain rounded-lg border bg-muted/10"
                                                         />
                                                         <Button
                                                             type="button"
-                                                            variant="outline"
+                                                            variant="secondary"
                                                             size="icon"
-                                                            className="absolute top-2 right-2"
+                                                            className="absolute top-2 right-2 h-8 w-8"
                                                             onClick={clearImage}
                                                         >
                                                             <X className="h-4 w-4" />
@@ -456,54 +431,39 @@ export default function CreateServicio() {
                                 )}
                             />
 
-                            {/* Manual Plate Number */}
-                            <FormField
-                                control={form.control}
-                                name="manualPlateNumber"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Número de Placa (Opcional)</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="ABC123"
-                                                {...field}
-                                                className="font-mono uppercase"
-                                                maxLength={7}
-                                            />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Ingrese la placa manualmente, si la detección OCR falla
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Dealership Select */}
+                            {/* Dealership Select - Grouped by Zone */}
                             <FormField
                                 control={form.control}
                                 name="dealershipId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Concesionario *</FormLabel>
+                                        <FormLabel className="text-sm">Concesionario *</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                             disabled={loadingData}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Selecciona un concesionario" />
+                                                <SelectTrigger className="h-11 touch-manipulation">
+                                                    <SelectValue placeholder="Selecciona destino" />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
-                                                {dealerships.map((dealership) => (
-                                                    <SelectItem
-                                                        key={dealership.idDealership}
-                                                        value={String(dealership.idDealership)}
-                                                    >
-                                                        {dealership.name} - {dealership.zone}
-                                                    </SelectItem>
+                                            <SelectContent className="max-h-[300px]">
+                                                {groupedDealerships.map(([zone, zoneDealerships]) => (
+                                                    <SelectGroup key={zone}>
+                                                        <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
+                                                            📍 {zone}
+                                                        </SelectLabel>
+                                                        {zoneDealerships.map((dealership) => (
+                                                            <SelectItem
+                                                                key={dealership.idDealership}
+                                                                value={String(dealership.idDealership)}
+                                                                className="py-3 pl-4"
+                                                            >
+                                                                {dealership.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -512,69 +472,59 @@ export default function CreateServicio() {
                                 )}
                             />
 
-                            {/* Messenger Select (Admin only) */}
-                            {isAdmin && (
-                                <FormField
-                                    control={form.control}
-                                    name="messengerDocument"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Mensajero *</FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                disabled={loadingData}
-                                            >
+                            {/* Manual Plate Number - Only shown after OCR fails */}
+                            {showManualPlate && (
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                                        <span className="text-amber-600 dark:text-amber-400 text-sm">
+                                            ⚠️ No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
+                                        </span>
+                                    </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="manualPlateNumber"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-sm">Número de placa *</FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Selecciona un mensajero" />
-                                                    </SelectTrigger>
+                                                    <Input
+                                                        placeholder="ABC123"
+                                                        {...field}
+                                                        className="h-11 font-mono uppercase touch-manipulation text-lg tracking-wider"
+                                                        maxLength={7}
+                                                        autoFocus
+                                                    />
                                                 </FormControl>
-                                                <SelectContent>
-                                                    {messengers.map((messenger) => (
-                                                        <SelectItem
-                                                            key={messenger.idEmployee}
-                                                            value={String(messenger.document)}
-                                                        >
-                                                            {messenger.fullName} - {messenger.document}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                                <FormDescription className="text-xs">
+                                                    Ingresa la placa
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             )}
 
                             {/* Actions */}
-                            <div className="flex gap-4">
+                            <div className="flex gap-3 pt-2">
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => {
-                                        stopCamera()
-                                        navigate("/admin/servicios")
-                                    }}
+                                    onClick={handleBack}
                                     disabled={loading}
+                                    className="h-11 touch-manipulation"
                                 >
                                     Cancelar
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading || loadingData || cameraActive}
-                                    className="flex-1 sm:flex-none"
+                                    className="flex-1 h-11 touch-manipulation"
                                 >
                                     {loading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Creando...
-                                        </>
+                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creando...</>
                                     ) : (
-                                        <>
-                                            <Bike className="mr-2 h-4 w-4" />
-                                            Crear servicio
-                                        </>
+                                        <><Bike className="mr-2 h-4 w-4" />Crear servicio</>
                                     )}
                                 </Button>
                             </div>

@@ -1,251 +1,88 @@
-import { useEffect, useState, useMemo } from "react"
-import { useNavigate, useOutletContext, Link } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
+import { useState, useRef, useEffect } from "react"
 import { dealershipService } from "@/services/dealership.service"
-import type { Dealership } from "@/types/dealership.types"
+import { useDealerships } from "@/hooks/useDealerships"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useScrollToTop } from "@/hooks/useScrollToTop"
+import { listItemVariants, fadeScaleVariants } from "@/lib/animation-variants"
+import { SortIndicator } from "@/components/ui/sort-indicator"
+import { ListEmptyState } from "@/components/ui/list-empty-state"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { TableRowSkeleton, CardSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { DealershipCard } from "@/components/dealership/DealershipCard"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-    EmptyDescription,
-    EmptyContent,
-} from "@/components/ui/empty"
-import {
-    Plus,
-    Pencil,
-    Trash2,
-    Loader2,
-    MapPin,
-    Smartphone,
-    PhoneCall,
-    Copy,
-    MapPinned,
-    Store,
-    Globe,
-    Navigation,
-    ArrowUpDown,
-    ArrowUp,
-    ArrowDown,
-    ChevronUp,
-    Home,
-    Search,
-    X,
-} from "lucide-react"
+import { TablePagination } from "@/components/ui/table-pagination"
+import { Map } from "@/components/Map"
+import { useGoogleMap } from "@react-google-maps/api"
+import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, ChevronUp, X, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 
-// Sorting types
-type SortField = "name" | "zone" | "isGeolocated" | null
-type SortDirection = "asc" | "desc"
+// Marker component for the dealership location
+function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
+    const map = useGoogleMap()
+    const markerRef = useRef<any>(null)
 
-// Animation variants
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: "spring" as const,
-            stiffness: 300,
-            damping: 24,
-        },
-    },
-    exit: {
-        opacity: 0,
-        y: -20,
-        transition: { duration: 0.2 },
-    },
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title: "Ubicación del concesionario",
+            content: new google.maps.marker.PinElement({
+                background: '#10b981',
+                borderColor: 'white',
+                glyphColor: 'white',
+            }).element
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map, position])
+
+    return null
 }
+
 export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const isMobile = useIsMobile()
-    const [dealerships, setDealerships] = useState<Dealership[]>([])
-    const [loading, setLoading] = useState(true)
-    const [deleting, setDeleting] = useState<number | null>(null)
     const [geocoding, setGeocoding] = useState<number | null>(null)
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+    const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
 
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(10)
-
-    // Filter state
-    const [zoneFilter, setZoneFilter] = useState<string>("all")
-    const [showScrollTop, setShowScrollTop] = useState(false)
-
-    // Get unique zones from dealerships
-    const uniqueZones = useMemo(() => {
-        const zones = new Set(dealerships.map(d => d.zone))
-        return Array.from(zones).sort()
-    }, [dealerships])
-
-    // Filter and sort dealerships
-    const filteredAndSortedDealerships = useMemo(() => {
-        let result = dealerships.filter((dealership) => {
-            // Search filter
-            if (searchQuery.trim()) {
-                const query = searchQuery.toLowerCase()
-                const matchesSearch = (
-                    String(dealership.idDealership).includes(query) ||
-                    dealership.name.toLowerCase().includes(query) ||
-                    dealership.address.toLowerCase().includes(query) ||
-                    dealership.phone.includes(query) ||
-                    dealership.zone.toLowerCase().includes(query)
-                )
-                if (!matchesSearch) return false
-            }
-
-            // Zone filter
-            if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
-                return false
-            }
-
-            return true
-        })
-
-        // Apply sorting
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                let comparison = 0
-                switch (sortField) {
-                    case "name":
-                        comparison = a.name.localeCompare(b.name)
-                        break
-                    case "zone":
-                        comparison = a.zone.localeCompare(b.zone)
-                        break
-                    case "isGeolocated":
-                        comparison = (a.isGeolocated === b.isGeolocated) ? 0 : a.isGeolocated ? -1 : 1
-                        break
-                }
-                return sortDirection === "asc" ? comparison : -comparison
-            })
-        }
-
-        return result
-    }, [dealerships, searchQuery, zoneFilter, sortField, sortDirection])
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredAndSortedDealerships.length / itemsPerPage)
-    const paginatedDealerships = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage
-        return filteredAndSortedDealerships.slice(start, start + itemsPerPage)
-    }, [filteredAndSortedDealerships, currentPage, itemsPerPage])
-
-    // Reset to page 1 when search, sort, or filters change
-    useEffect(() => {
-        setCurrentPage(1)
-        setSelectedIds(new Set())
-    }, [searchQuery, sortField, sortDirection, zoneFilter, itemsPerPage])
-
-    const fetchDealerships = async () => {
-        try {
-            setLoading(true)
-            const data = await dealershipService.getAll()
-            setDealerships(data)
-        } catch (error: any) {
-            toast.error("Error al cargar concesionarios", {
-                description: error.message,
-                id: "error-cargar-concesionarios"
-            })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchDealerships()
-    }, [])
-
-    // Scroll to top functionality for mobile
-    useEffect(() => {
-        if (!isMobile) return
-
-        const handleScroll = () => {
-            const scrolled = window.scrollY > 300
-            setShowScrollTop(scrolled)
-        }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [isMobile])
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-
-
-    const handleDelete = async (id: number) => {
-        try {
-            setDeleting(id)
-            await dealershipService.delete(id)
-            toast.success("Concesionario eliminado correctamente")
-            fetchDealerships()
-        } catch (error: any) {
-            toast.error("Error al eliminar concesionario", {
-                description: error.message,
-                id: "error-eliminar-concesionario"
-            })
-        } finally {
-            setDeleting(null)
-        }
-    }
+    // Use custom hooks
+    const { showScrollTop, scrollToTop } = useScrollToTop({ enabled: isMobile })
+    const {
+        dealerships,
+        loading,
+        filteredAndSortedDealerships,
+        paginatedDealerships,
+        uniqueZones,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        setCurrentPage,
+        setItemsPerPage,
+        sortField,
+        sortDirection,
+        handleSort,
+        zoneFilter,
+        setZoneFilter,
+        fetchDealerships,
+    } = useDealerships({ searchQuery })
 
     const handleGeocode = async (id: number) => {
         try {
@@ -263,189 +100,17 @@ export default function Concesionarios() {
         }
     }
 
-    // Sorting handler
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
-        } else {
-            setSortField(field)
-            setSortDirection("asc")
-        }
-    }
-
-    // Sort indicator component
-    const SortIndicator = ({ field }: { field: SortField }) => {
-        if (sortField !== field) {
-            return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />
-        }
-        return sortDirection === "asc"
-            ? <ArrowUp className="h-4 w-4 ml-1" />
-            : <ArrowDown className="h-4 w-4 ml-1" />
-    }
-
-    // Empty state component
-    const EmptyState = ({ isSearchResult }: { isSearchResult: boolean }) => (
-        <Empty className="py-12">
-            <EmptyHeader>
-                <EmptyMedia variant="icon">
-                    {isSearchResult ? <Search /> : <Store />}
-                </EmptyMedia>
-                <EmptyTitle>
-                    {isSearchResult ? "Sin resultados" : "Sin concesionarios"}
-                </EmptyTitle>
-                <EmptyDescription>
-                    {isSearchResult
-                        ? `No se encontraron concesionarios que coincidan con "${searchQuery}"`
-                        : "Aún no hay concesionarios registrados en el sistema"
-                    }
-                </EmptyDescription>
-            </EmptyHeader>
-            {!isSearchResult && (
-                <EmptyContent>
-                    <Button onClick={() => navigate("/admin/concesionarios/crear")}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Crear primer concesionario
-                    </Button>
-                </EmptyContent>
-            )}
-        </Empty>
-    )
-
-    // Enhanced Pagination component
-    const PaginationControls = () => {
-        const startItem = (currentPage - 1) * itemsPerPage + 1
-        const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedDealerships.length)
-        const hasResults = filteredAndSortedDealerships.length > 0
-
-        return (
-            <div className="mt-4 space-y-3">
-                {/* Results info and items per page selector */}
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <p className="text-sm text-muted-foreground">
-                        {hasResults ? (
-                            <>
-                                Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
-                                <span className="font-medium">{filteredAndSortedDealerships.length}</span> resultado(s)
-                                {zoneFilter !== "all" && (
-                                    <span className="text-primary ml-1">
-                                        (zona: {zoneFilter})
-                                    </span>
-                                )}
-                            </>
-                        ) : (
-                            "Sin resultados"
-                        )}
-                    </p>
-
-                    {hasResults && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
-                            <Select
-                                value={itemsPerPage.toString()}
-                                onValueChange={(value) => setItemsPerPage(Number(value))}
-                            >
-                                <SelectTrigger className="w-[70px] h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="5">5</SelectItem>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                </div>
-
-                {/* Pagination navigation */}
-                {totalPages > 1 && (
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage > 1) setCurrentPage(prev => prev - 1)
-                                    }}
-                                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum: number
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i
-                                } else {
-                                    pageNum = currentPage - 2 + i
-                                }
-
-                                return (
-                                    <PaginationItem key={pageNum}>
-                                        <PaginationLink
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setCurrentPage(pageNum)
-                                            }}
-                                            isActive={currentPage === pageNum}
-                                            className="cursor-pointer"
-                                        >
-                                            {pageNum}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                )
-                            })}
-
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        if (currentPage < totalPages) setCurrentPage(prev => prev + 1)
-                                    }}
-                                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                )}
-            </div>
-        )
-    }
+    const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
         <div className="space-y-4 md:space-y-6">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Concesionarios</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+            <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
 
             {/* Header with inline filters on desktop */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-4 flex-wrap">
                     <h1 className="text-2xl md:text-3xl font-bold">Concesionarios</h1>
 
-                    {/* Desktop Filters - inline with title */}
                     {!isMobile && (
                         <div className="flex items-center gap-3">
                             <ToggleGroup
@@ -454,25 +119,15 @@ export default function Concesionarios() {
                                 onValueChange={(value) => setZoneFilter(value || "all")}
                                 className="justify-start"
                             >
-                                <ToggleGroupItem value="all" aria-label="Todos">
-                                    Todos
-                                </ToggleGroupItem>
+                                <ToggleGroupItem value="all" aria-label="Todos">Todos</ToggleGroupItem>
                                 {uniqueZones.map((zone) => (
-                                    <ToggleGroupItem key={zone} value={zone} aria-label={zone}>
-                                        {zone}
-                                    </ToggleGroupItem>
+                                    <ToggleGroupItem key={zone} value={zone} aria-label={zone}>{zone}</ToggleGroupItem>
                                 ))}
                             </ToggleGroup>
 
                             {zoneFilter !== "all" && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setZoneFilter("all")}
-                                    className="h-9"
-                                >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Limpiar filtro
+                                <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-9">
+                                    <X className="h-4 w-4 mr-2" />Limpiar filtro
                                 </Button>
                             )}
                         </div>
@@ -480,11 +135,7 @@ export default function Concesionarios() {
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <Button
-                        onClick={() => navigate("/admin/concesionarios/crear")}
-                        size={isMobile ? "lg" : "default"}
-                        className="shrink-0"
-                    >
+                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size={isMobile ? "lg" : "default"} className="shrink-0">
                         <Plus className={isMobile ? "h-5 w-5" : "h-4 w-4 mr-2"} />
                         {!isMobile && "Nuevo concesionario"}
                     </Button>
@@ -494,120 +145,25 @@ export default function Concesionarios() {
             {/* Mobile View */}
             {isMobile ? (
                 <div>
-                    {/* Mobile filter */}
                     <div className="mb-3 space-y-2">
-                        <Select
-                            value={zoneFilter}
-                            onValueChange={(value) => setZoneFilter(value)}
-                        >
+                        <Select value={zoneFilter} onValueChange={(value) => setZoneFilter(value)}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Filtrar por zona" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todas las zonas</SelectItem>
                                 {uniqueZones.map((zone) => (
-                                    <SelectItem key={zone} value={zone}>
-                                        {zone}
-                                    </SelectItem>
+                                    <SelectItem key={zone} value={zone}>{zone}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
 
                         {zoneFilter !== "all" && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setZoneFilter("all")}
-                                className="w-full"
-                            >
-                                <X className="h-4 w-4 mr-2" />
-                                Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="w-full">
+                                <X className="h-4 w-4 mr-2" />Limpiar filtro
                             </Button>
                         )}
                     </div>
-
-                    {/* Mobile Actions */}
-                    {selectedIds.size > 0 && (
-                        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-                            {selectedIds.size === 1 && (() => {
-                                const id = Array.from(selectedIds)[0];
-                                const selectedDealership = dealerships.find(d => d.idDealership === id);
-                                if (selectedDealership && !selectedDealership.isGeolocated) {
-                                    return (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleGeocode(id)}
-                                            disabled={geocoding === id}
-                                            className="shrink-0"
-                                        >
-                                            {geocoding === id ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : (
-                                                <div className="flex items-center">
-                                                    <MapPin className="h-4 w-4 mr-2" />
-                                                    <span>Ubicar</span>
-                                                </div>
-                                            )}
-                                        </Button>
-                                    );
-                                }
-                                return null;
-                            })()}
-
-                            {selectedIds.size === 1 && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        const id = Array.from(selectedIds)[0];
-                                        navigate(`/admin/concesionarios/editar/${id}`);
-                                    }}
-                                    className="shrink-0"
-                                >
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Editar
-                                </Button>
-                            )}
-
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={async () => {
-                                                for (const id of Array.from(selectedIds)) {
-                                                    await handleDelete(id);
-                                                }
-                                                setSelectedIds(new Set());
-                                            }}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    )}
 
                     <p className="text-sm text-muted-foreground mb-3">
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
@@ -616,59 +172,31 @@ export default function Concesionarios() {
                     </p>
                     {loading ? (
                         <div className="space-y-3">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <CardSkeleton key={i} />
-                            ))}
+                            {Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)}
                         </div>
                     ) : filteredAndSortedDealerships.length === 0 ? (
-                        <EmptyState isSearchResult={!!searchQuery} />
+                        <ListEmptyState
+                            isSearchResult={!!searchQuery}
+                            searchQuery={searchQuery}
+                            emptyIcon={<Store />}
+                            emptyTitle="Sin concesionarios"
+                            emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                            actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
+                        />
                     ) : (
                         <motion.div>
                             <AnimatePresence mode="popLayout">
                                 {paginatedDealerships.map((dealership) => (
-                                    <div key={dealership.idDealership} className="flex gap-2 mb-2">
-                                        <div className="pt-4">
-                                            <Checkbox
-                                                checked={selectedIds.has(dealership.idDealership)}
-                                                onCheckedChange={(checked) => {
-                                                    const newSelected = new Set(selectedIds);
-                                                    if (checked) {
-                                                        newSelected.add(dealership.idDealership);
-                                                    } else {
-                                                        newSelected.delete(dealership.idDealership);
-                                                    }
-                                                    setSelectedIds(newSelected);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <DealershipCard
-                                                dealership={dealership}
-                                                // onEdit removed from mobile card or handled via header selection?
-                                                // Actually for mobile, selection + header buttons is awkward. 
-                                                // User asked to simplify "where I marked the blue circle" (Desktop).
-                                                // But usually standardizing means both. 
-                                                // Let's keep mobile simple: selection works, header buttons appear at top.
-                                                // And remove individual buttons from Card if possible or keep them?
-                                                // User said "simplify... when selected enabled... else not". 
-                                                // This implies removing them from the item itself. 
-                                                onEdit={() => { }} // Disabled/Removed
-                                                onDelete={() => { }} // Disabled/Removed
-                                                onGeocode={handleGeocode}
-                                                deleting={deleting}
-                                                geocoding={geocoding}
-                                                hideActions={true} // We need to support this prop in DealershipCard or just ignore onEdit/onDelete
-                                            />
-                                        </div>
+                                    <div key={dealership.idDealership} className="cursor-pointer" onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}>
+                                        <DealershipCard dealership={dealership} onEdit={() => { }} onDelete={() => { }} onGeocode={handleGeocode} deleting={null} geocoding={geocoding} hideActions={true} />
                                     </div>
                                 ))}
                             </AnimatePresence>
                         </motion.div>
                     )}
-                    <PaginationControls />
+                    <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedDealerships.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                 </div>
             ) : (
-                /* Desktop View */
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                         <div className="flex flex-col gap-1">
@@ -677,89 +205,7 @@ export default function Concesionarios() {
                                 {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
                                 {searchQuery && ` - Buscando "${searchQuery}"`}
                                 {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                                {selectedIds.size > 0 && ` • ${selectedIds.size} seleccionado(s)`}
                             </CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {/* Dynamic Action Buttons inside CardHeader */}
-                            {selectedIds.size === 1 && (() => {
-                                const id = Array.from(selectedIds)[0];
-                                const selectedDealership = dealerships.find(d => d.idDealership === id);
-                                if (selectedDealership && !selectedDealership.isGeolocated) {
-                                    return (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => handleGeocode(id)}
-                                            disabled={geocoding === id}
-                                            className="shrink-0"
-                                        >
-                                            {geocoding === id ? (
-                                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                            ) : (
-                                                <div className="flex items-center">
-                                                    <MapPin className="h-4 w-4 mr-2" />
-                                                    <span>Ubicar</span>
-                                                </div>
-                                            )}
-                                        </Button>
-                                    );
-                                }
-                                return null;
-                            })()}
-
-                            {selectedIds.size > 0 && (
-                                <>
-                                    {selectedIds.size === 1 && (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                const id = Array.from(selectedIds)[0];
-                                                navigate(`/admin/concesionarios/editar/${id}`);
-                                            }}
-                                            className="shrink-0"
-                                        >
-                                            <Pencil className="h-4 w-4 mr-2" />
-                                            Editar
-                                        </Button>
-                                    )}
-
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 shrink-0"
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Eliminar {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>
-                                                    ¿Eliminar {selectedIds.size > 1 ? 'concesionarios seleccionados' : 'concesionario'}?
-                                                </AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta acción no se puede deshacer. Se eliminará permanentemente la información del sistema.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={async () => {
-                                                        for (const id of Array.from(selectedIds)) {
-                                                            await handleDelete(id);
-                                                        }
-                                                        setSelectedIds(new Set());
-                                                    }}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    Eliminar
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </>
-                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -767,7 +213,6 @@ export default function Concesionarios() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[50px]"></TableHead>
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Dirección</TableHead>
                                         <TableHead>Teléfono</TableHead>
@@ -776,75 +221,45 @@ export default function Concesionarios() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <TableRowSkeleton key={i} />
-                                    ))}
+                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                                 </TableBody>
                             </Table>
                         ) : filteredAndSortedDealerships.length === 0 ? (
-                            <EmptyState isSearchResult={!!searchQuery} />
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Store />}
+                                emptyTitle="Sin concesionarios"
+                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
+                            />
                         ) : (
                             <>
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="w-[50px]">
-                                                <Checkbox
-                                                    checked={
-                                                        paginatedDealerships.length > 0 &&
-                                                        paginatedDealerships.every(d => selectedIds.has(d.idDealership))
-                                                    }
-                                                    onCheckedChange={(checked) => {
-                                                        const newSelected = new Set(selectedIds);
-                                                        if (checked) {
-                                                            paginatedDealerships.forEach(d => newSelected.add(d.idDealership));
-                                                        } else {
-                                                            paginatedDealerships.forEach(d => newSelected.delete(d.idDealership));
-                                                        }
-                                                        setSelectedIds(newSelected);
-                                                    }}
-                                                />
-                                            </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("name")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("name")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Store className="h-4 w-4" />
-                                                    Nombre
-                                                    <SortIndicator field="name" />
+                                                    <Store className="h-4 w-4" />Nombre
+                                                    <SortIndicator field="name" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead>
-                                                <div className="flex items-center gap-2">
-                                                    <MapPinned className="h-4 w-4" />
-                                                    Dirección
-                                                </div>
+                                                <div className="flex items-center gap-2"><MapPinned className="h-4 w-4" />Dirección</div>
                                             </TableHead>
                                             <TableHead>
+                                                <div className="flex items-center gap-2"><Smartphone className="h-4 w-4" />Teléfono</div>
+                                            </TableHead>
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("zone")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Smartphone className="h-4 w-4" />
-                                                    Teléfono
+                                                    <Globe className="h-4 w-4" />Zona
+                                                    <SortIndicator field="zone" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("zone")}
-                                            >
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
                                                 <div className="flex items-center gap-2">
-                                                    <Globe className="h-4 w-4" />
-                                                    Zona
-                                                    <SortIndicator field="zone" />
-                                                </div>
-                                            </TableHead>
-                                            <TableHead
-                                                className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
-                                                onClick={() => handleSort("isGeolocated")}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <Navigation className="h-4 w-4" />
-                                                    Ubicación
-                                                    <SortIndicator field="isGeolocated" />
+                                                    <Navigation className="h-4 w-4" />Ubicación
+                                                    <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                         </TableRow>
@@ -854,49 +269,25 @@ export default function Concesionarios() {
                                             {paginatedDealerships.map((dealership, index) => (
                                                 <motion.tr
                                                     key={dealership.idDealership}
-                                                    variants={itemVariants}
+                                                    variants={listItemVariants}
                                                     initial="hidden"
                                                     animate="visible"
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    className={`border-b transition-colors hover:bg-muted/50 ${selectedIds.has(dealership.idDealership) ? 'bg-muted' : ''}`}
-                                                    onClick={() => {
-                                                        // Optional: Allow row click to select, but be careful of text selection
-                                                        // keeping it to checkbox only for now to avoid conflicts
-                                                    }}
+                                                    className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                                 >
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedIds.has(dealership.idDealership)}
-                                                            onCheckedChange={(checked) => {
-                                                                const newSelected = new Set(selectedIds);
-                                                                if (checked) {
-                                                                    newSelected.add(dealership.idDealership);
-                                                                } else {
-                                                                    newSelected.delete(dealership.idDealership);
-                                                                }
-                                                                setSelectedIds(newSelected);
-                                                            }}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-base">
-                                                        {dealership.name}
-                                                    </TableCell>
-                                                    <TableCell className="max-w-xs truncate text-base">
-                                                        {dealership.address}
-                                                    </TableCell>
+                                                    <TableCell className="font-medium text-base">{dealership.name}</TableCell>
+                                                    <TableCell className="max-w-xs truncate text-base">{dealership.address}</TableCell>
                                                     <TableCell className="text-base">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
-                                                                    <PhoneCall className="h-3 w-3" />
-                                                                    {dealership.phone}
+                                                                    <PhoneCall className="h-3 w-3" />{dealership.phone}
                                                                 </a>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Llamar</p>
-                                                            </TooltipContent>
+                                                            <TooltipContent><p>Llamar</p></TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
@@ -904,33 +295,22 @@ export default function Concesionarios() {
                                                     </TableCell>
                                                     <TableCell>
                                                         {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Badge
-                                                                        variant="default"
-                                                                        className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
-                                                                        onClick={() => {
-                                                                            const coords = `${dealership.latitude}, ${dealership.longitude}`
-                                                                            navigator.clipboard.writeText(coords)
-                                                                            toast.success("Coordenadas copiadas", {
-                                                                                description: coords
-                                                                            })
-                                                                        }}
-                                                                    >
-                                                                        <MapPin className="h-3 w-3 mr-1" />
-                                                                        Ubicado
-                                                                    </Badge>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent className="flex items-center gap-2">
-                                                                    <Copy className="h-3 w-3" />
-                                                                    {dealership.latitude}, {dealership.longitude}
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        ) : dealership.isGeolocated ? (
-                                                            <Badge variant="default" className="bg-green-500">
-                                                                <MapPin className="h-3 w-3 mr-1" />
-                                                                Ubicado
+                                                            <Badge
+                                                                variant="default"
+                                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setLocationPopup({
+                                                                        name: dealership.name,
+                                                                        lat: dealership.latitude!,
+                                                                        lng: dealership.longitude!
+                                                                    })
+                                                                }}
+                                                            >
+                                                                <MapPin className="h-3 w-3 mr-1" />Ver ubicación
                                                             </Badge>
+                                                        ) : dealership.isGeolocated ? (
+                                                            <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
                                                         ) : (
                                                             <Badge variant="secondary">Sin ubicación</Badge>
                                                         )}
@@ -940,33 +320,79 @@ export default function Concesionarios() {
                                         </AnimatePresence>
                                     </TableBody>
                                 </Table>
-                                <PaginationControls />
+                                <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedDealerships.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                             </>
                         )}
                     </CardContent>
-                </Card >
-            )
-            }
+                </Card>
+            )}
 
             {/* Scroll to top button (mobile only) */}
             <AnimatePresence>
                 {isMobile && showScrollTop && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed bottom-20 right-4 z-50"
-                    >
-                        <Button
-                            onClick={scrollToTop}
-                            size="icon"
-                            className="h-12 w-12 rounded-full shadow-lg"
-                        >
+                    <motion.div variants={fadeScaleVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-20 right-4 z-50">
+                        <Button onClick={scrollToTop} size="icon" className="h-12 w-12 rounded-full shadow-lg">
                             <ChevronUp className="h-5 w-5" />
                         </Button>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div >
+
+            {/* Location Popup Dialog */}
+            <Dialog open={!!locationPopup} onOpenChange={(open) => !open && setLocationPopup(null)}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-green-500" />
+                            {locationPopup?.name}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div className="h-64 rounded-lg overflow-hidden border">
+                            {locationPopup && (
+                                <Map center={{ lat: locationPopup.lat, lng: locationPopup.lng }} zoom={16}>
+                                    <DealershipMarker position={{ lat: locationPopup.lat, lng: locationPopup.lng }} />
+                                </Map>
+                            )}
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground font-mono">
+                                {locationPopup?.lat.toFixed(6)}, {locationPopup?.lng.toFixed(6)}
+                            </span>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (locationPopup) {
+                                            const coords = `${locationPopup.lat}, ${locationPopup.lng}`
+                                            navigator.clipboard.writeText(coords)
+                                            toast.success("Coordenadas copiadas", { description: coords })
+                                        }
+                                    }}
+                                >
+                                    <Copy className="h-4 w-4 mr-2" />
+                                    Copiar
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    onClick={() => {
+                                        if (locationPopup) {
+                                            window.open(
+                                                `https://www.google.com/maps?q=${locationPopup.lat},${locationPopup.lng}`,
+                                                '_blank'
+                                            )
+                                        }
+                                    }}
+                                >
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    Google Maps
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
     )
 }

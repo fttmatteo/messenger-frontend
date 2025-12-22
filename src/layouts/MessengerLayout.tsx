@@ -1,67 +1,75 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
-import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import {
-    Home,
-    Package,
-    User,
-    LogOut,
-    ArrowLeft,
-} from "lucide-react"
+import { LogOut, MapPin, MapPinOff, Plus, ArrowUp, ChevronLeft } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarInset,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
-import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
-
-const navItems = [
-    { title: "Inicio", icon: Home, url: "/messenger" },
-    { title: "Entregas", icon: Package, url: "/messenger/entregas" },
-    { title: "Perfil", icon: User, url: "/messenger/perfil" },
-]
+import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const [showScrollTop, setShowScrollTop] = useState(false)
+    const [keyboardVisible, setKeyboardVisible] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const wakeLockRef = useRef<any>(null)
+    const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Detect if we're on a nested page
-    const isNestedPage = location.pathname.includes('/detalles') ||
-        location.pathname.includes('/entrega/')
+    // Determine if we are in a sub-page
+    const isSubPage = location.pathname.includes('/historial') || location.pathname.includes('/estadisticas')
 
-    const handleBack = () => {
-        navigate(-1)
+    // Get page title based on path
+    const getPageTitle = () => {
+        if (location.pathname.includes('historial-estadisticas')) return 'Historial Stats'
+        if (location.pathname.includes('historial-recorrido')) return 'Historial Ruta'
+        if (location.pathname.includes('estadisticas')) return 'Estadísticas'
+        return 'PLAK'
+    }
+
+    // Hide FAB on create page, update page, AND sub-pages
+    const showFab = !location.pathname.includes('/crear') && !location.pathname.includes('/actualizar') && !isSubPage
+
+    // Detect keyboard visibility (via visual viewport API)
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.visualViewport) {
+                const isKeyboard = window.visualViewport.height < window.innerHeight * 0.75
+                setKeyboardVisible(isKeyboard)
+            }
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleResize)
+            return () => window.visualViewport?.removeEventListener('resize', handleResize)
+        }
+    }, [])
+
+    // Track scroll position for "scroll to top" button
+    const handleScroll = useCallback(() => {
+        if (mainRef.current) {
+            setShowScrollTop(mainRef.current.scrollTop > 300)
+        }
+    }, [])
+
+    useEffect(() => {
+        const main = mainRef.current
+        if (main) {
+            main.addEventListener('scroll', handleScroll)
+            return () => main.removeEventListener('scroll', handleScroll)
+        }
+    }, [handleScroll])
+
+    const scrollToTop = () => {
+        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     const requestWakeLock = async () => {
@@ -100,7 +108,7 @@ export default function MessengerLayout() {
                     (position) => {
                         const { latitude, longitude, speed, heading } = position.coords
                         trackingService.sendUpdate({
-                            messengerId: user?.id, // Send ID!
+                            messengerId: user?.id,
                             latitude,
                             longitude,
                             speed: speed || 0,
@@ -111,13 +119,11 @@ export default function MessengerLayout() {
                     (error) => {
                         console.warn('Geolocation partial error:', error.message)
 
-                        if (error.code === 1) { // PERMISSION_DENIED
+                        if (error.code === 1) {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
                             logout()
                             navigate("/login")
                         } else {
-                            // Para TIMEOUT o POSITION_UNAVAILABLE, no apagamos el switch.
-                            // Solo mostramos un aviso en consola y dejamos que siga intentando.
                             console.log("Señal GPS débil o agotada. Reintentando...")
                         }
                     },
@@ -139,7 +145,6 @@ export default function MessengerLayout() {
                 watchIdRef.current = null
             }
 
-            // Notify backend before disconnecting
             if (user?.id) {
                 trackingService.sendUpdate({
                     messengerId: user.id,
@@ -147,7 +152,6 @@ export default function MessengerLayout() {
                 })
             }
 
-            // Allow a small window for the message to be sent before closing the connection
             const timer = setTimeout(() => {
                 trackingService.disconnect()
             }, 500)
@@ -160,7 +164,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
         }
-    }, [isOnline, user?.id]) // Add user.id dependency
+    }, [isOnline, user?.id])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -191,83 +195,116 @@ export default function MessengerLayout() {
         navigate("/login")
     }
 
+    // Block desktop users from accessing the messenger
+    if (!isMobile) {
+        return <MobileOnlyGuard />
+    }
+
+    // Calculate FAB bottom position based on keyboard
+    const fabBottomClass = keyboardVisible ? 'bottom-2' : 'bottom-6'
+
     return (
-        <SidebarProvider>
-            <Sidebar>
-                <SidebarHeader className="border-b border-sidebar-border">
-                    <div className="flex items-center justify-between px-2 py-2">
-                        <div className="flex items-center gap-2">
-                            <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                            <span className="font-semibold">PLAK</span>
-                        </div>
-                        <ModeToggle />
-                    </div>
-                </SidebarHeader>
-                <SidebarContent>
-                    <SidebarGroup>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {navItems.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={location.pathname === item.url || (item.url !== "/messenger" && location.pathname.startsWith(item.url))}
-                                            tooltip={item.title}
-                                        >
-                                            <a href={item.url}>
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                </SidebarContent>
-            </Sidebar>
-            <SidebarInset>
-                <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    {isMobile && isNestedPage ? (
+        <div className="flex flex-col h-screen bg-background">
+            {/* Dynamic Header */}
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 shadow-sm">
+
+                {isSubPage ? (
+                    <div className="flex items-center gap-2">
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={handleBack}
-                            aria-label="Volver"
+                            onClick={() => navigate(-1)}
+                            className="h-9 w-9 -ml-2"
                         >
-                            <ArrowLeft className="h-5 w-5" />
+                            <ChevronLeft className="h-5 w-5" />
                         </Button>
-                    ) : (
-                        <SidebarTrigger />
+                        <span className="font-semibold text-lg">{getPageTitle()}</span>
+                    </div>
+                ) : (
+                    // Default Header with Logo
+                    <div className="flex items-center gap-2">
+                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
+                        <span className="font-semibold text-lg">PLAK</span>
+                    </div>
+                )}
+
+                {/* Right side: Status + Actions */}
+                <div className="flex items-center gap-2">
+                    {/* Dev-only tracking toggle button */}
+                    {import.meta.env.DEV && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateUser({ isOnline: !isOnline })}
+                            className={`h-8 px-2 text-xs ${isOnline
+                                ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                : "border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
+                                }`}
+                        >
+                            {isOnline ? (
+                                <><MapPinOff className="h-3.5 w-3.5 mr-1" /> Stop</>
+                            ) : (
+                                <><MapPin className="h-3.5 w-3.5 mr-1" /> GPS</>
+                            )}
+                        </Button>
                     )}
-                    <div className="flex-1" />
 
-                    <div className="flex items-center gap-3 mr-2">
-                        <div className="flex items-center gap-2">
-                            <Badge variant="default" className={isOnline ? "bg-green-500 hover:bg-green-600" : ""}>
-                                {isOnline ? 'RASTREANDO' : 'DESCONECTADO'}
-                            </Badge>
-                        </div>
-                    </div>
+                    <Badge
+                        variant="default"
+                        className={`text-xs px-2 py-0.5 ${isOnline ? "bg-green-500 hover:bg-green-600" : "bg-muted text-muted-foreground"}`}
+                    >
+                        {isOnline ? '🟢 ACTIVO' : '⚫ OFFLINE'}
+                    </Badge>
 
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-black dark:text-white">Doc: {user?.document}</span>
-                    </div>
-                    <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
-                        <LogOut className="h-4 w-4" />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleLogout}
+                        className="h-9 w-9 text-muted-foreground hover:text-red-500"
+                    >
+                        <LogOut className="h-5 w-5" />
                     </Button>
-                </header>
-                <main className="flex-1 overflow-auto p-6">
-                    <Outlet />
-                </main>
-            </SidebarInset>
+                </div>
+            </header>
 
+            {/* Main Content Area */}
+            <main ref={mainRef} className="flex-1 overflow-auto">
+                <Outlet />
+            </main>
+
+            {/* Floating Action Buttons Container */}
+            <div className={`fixed ${fabBottomClass} left-0 right-0 flex justify-center items-center gap-3 z-50 pointer-events-none transition-all duration-200`}>
+                {/* Scroll to Top Button - Left position, shows when scrolled */}
+                {showScrollTop && showFab && (
+                    <Button
+                        onClick={scrollToTop}
+                        variant="secondary"
+                        size="icon"
+                        className="h-12 w-12 rounded-full shadow-lg pointer-events-auto bg-muted/90 backdrop-blur-sm hover:bg-muted"
+                    >
+                        <ArrowUp className="h-5 w-5" />
+                    </Button>
+                )}
+
+                {/* Create Service FAB - Center, primary action */}
+                {showFab && (
+                    <Button
+                        onClick={() => navigate('/messenger/crear')}
+                        className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all pointer-events-auto bg-primary hover:bg-primary/90"
+                        size="icon"
+                    >
+                        <Plus className="h-6 w-6" />
+                    </Button>
+                )}
+            </div>
+
+            {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-w-[90vw] rounded-xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            ¿Estás seguro que deseas cerrar sesión?
+                            Se detendrá el rastreo GPS y cerrarás tu sesión.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -278,6 +315,6 @@ export default function MessengerLayout() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </SidebarProvider>
+        </div>
     )
 }

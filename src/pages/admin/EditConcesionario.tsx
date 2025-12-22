@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,21 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
+import { Map } from "@/components/Map"
+import { useGoogleMap } from "@react-google-maps/api"
 import { Loader2, MapPin } from "lucide-react"
 import { toast } from "sonner"
 
@@ -54,13 +45,46 @@ function capitalizeWords(str: string): string {
         .join(' ')
 }
 
+// Marker component for the dealership location
+function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
+    const map = useGoogleMap()
+    const markerRef = useRef<any>(null)
+
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title: "Ubicación del concesionario",
+            content: new google.maps.marker.PinElement({
+                background: '#10b981',
+                borderColor: 'white',
+                glyphColor: 'white',
+            }).element
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map, position])
+
+    return null
+}
+
 export default function EditConcesionario() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [deleting, setDeleting] = useState(false)
     const [geocoded, setGeocoded] = useState(false)
     const [geocoding, setGeocoding] = useState(false)
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
+    const [initialAddress, setInitialAddress] = useState("")
 
     const {
         register,
@@ -74,6 +98,9 @@ export default function EditConcesionario() {
     })
 
     const selectedZone = watch("zone")
+    const currentAddress = watch("address")
+    // Normalizar ambos lados para detectar cambios reales
+    const addressChanged = currentAddress?.trim() !== "" && currentAddress?.trim() !== initialAddress.trim()
 
     useEffect(() => {
         const fetchDealership = async () => {
@@ -87,6 +114,7 @@ export default function EditConcesionario() {
                     phone: dealership.phone,
                     zone: dealership.zone,
                 })
+                setInitialAddress(dealership.address)
                 setGeocoded(dealership.isGeolocated || false)
                 setCoordinates({
                     lat: dealership.latitude,
@@ -124,24 +152,51 @@ export default function EditConcesionario() {
         }
     }
 
-    const handleGeocode = async () => {
+    // Guardar cambios Y geocodificar en un solo paso
+    const handleSaveAndGeocode = async (data: DealershipFormValues) => {
         if (!id) return
         try {
             setGeocoding(true)
+            // Primero guardar
+            await dealershipService.update(Number(id), {
+                name: capitalizeWords(data.name.trim()),
+                address: capitalizeWords(data.address.trim()),
+                phone: data.phone,
+                zone: data.zone,
+            })
+            // Luego geocodificar
             const result = await dealershipService.geocode(Number(id))
             setGeocoded(true)
             setCoordinates({
                 lat: result.latitude,
                 lng: result.longitude,
             })
-            toast.success("Concesionario geocodificado correctamente")
+            setInitialAddress(capitalizeWords(data.address.trim()))
+            toast.success("Guardado y geocodificado correctamente")
         } catch (error: any) {
-            toast.error("Error al geocodificar", {
+            toast.error("Error al guardar y geocodificar", {
                 description: error.message,
-                id: "error-geocodificar-edit"
+                id: "error-save-geocode"
             })
         } finally {
             setGeocoding(false)
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!id) return
+        try {
+            setDeleting(true)
+            await dealershipService.delete(Number(id))
+            toast.success("Concesionario eliminado exitosamente")
+            navigate("/admin/concesionarios")
+        } catch (error: any) {
+            toast.error("Error al eliminar concesionario", {
+                description: error.message,
+                id: "error-eliminar-concesionario"
+            })
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -154,46 +209,33 @@ export default function EditConcesionario() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
+            {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold">Editar concesionario</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">Editar concesionario</h1>
             </div>
 
-            <div className="grid gap-6 max-w-4xl lg:grid-cols-3">
+            <div className="grid gap-4 md:gap-6 max-w-5xl lg:grid-cols-3">
                 <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Información del concesionario</CardTitle>
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg">Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                            {/* Nombre */}
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Nombre del concesionario</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="Mundo Yamaha"
-                                    {...register("name")}
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-red-500">{errors.name.message}</p>
-                                )}
-                            </div>
-
-                            {/* Dirección */}
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Dirección completa</Label>
-                                <Textarea
-                                    id="address"
-                                    placeholder="Calle 123 #45-67, Medellin"
-                                    rows={3}
-                                    {...register("address")}
-                                />
-                                {errors.address && (
-                                    <p className="text-sm text-red-500">{errors.address.message}</p>
-                                )}
-                            </div>
-
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div className="grid gap-4 md:grid-cols-2">
+                                {/* Nombre */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Nombre del concesionario</Label>
+                                    <Input
+                                        id="name"
+                                        placeholder="Mundo Yamaha"
+                                        {...register("name")}
+                                    />
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">{errors.name.message}</p>
+                                    )}
+                                </div>
+
                                 {/* Teléfono */}
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">Teléfono</Label>
@@ -206,7 +248,23 @@ export default function EditConcesionario() {
                                         <p className="text-sm text-red-500">{errors.phone.message}</p>
                                     )}
                                 </div>
+                            </div>
 
+                            {/* Dirección */}
+                            <div className="space-y-2">
+                                <Label htmlFor="address">Dirección completa</Label>
+                                <Textarea
+                                    id="address"
+                                    placeholder="Calle 123 #45-67, Medellin"
+                                    rows={2}
+                                    {...register("address")}
+                                />
+                                {errors.address && (
+                                    <p className="text-sm text-red-500">{errors.address.message}</p>
+                                )}
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
                                 {/* Zona */}
                                 <div className="space-y-2">
                                     <Label htmlFor="zone">Zona</Label>
@@ -232,7 +290,7 @@ export default function EditConcesionario() {
                             </div>
 
                             {/* Submit Buttons */}
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex gap-3 pt-2">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -244,58 +302,102 @@ export default function EditConcesionario() {
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Guardar cambios
                                 </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                ¿Eliminar concesionario?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta acción no se puede deshacer. Se eliminará permanentemente este concesionario del sistema.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleDelete}
+                                                disabled={deleting}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                                {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Eliminar
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </form>
                     </CardContent>
                 </Card>
 
                 {/* Geolocation Card */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                <Card className="flex flex-col">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                             <MapPin className="h-5 w-5" />
                             Ubicación
                         </CardTitle>
-                        <CardDescription>
-                            Geocodifica el concesionario para obtener sus coordenadas
-                        </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        {geocoded ? (
+                    <CardContent className="flex-1 flex flex-col gap-3">
+                        {geocoded && coordinates.lat && coordinates.lng ? (
                             <>
-                                <Badge variant="default" className="bg-green-500">
-                                    <MapPin className="h-3 w-3 mr-1" />
-                                    Geocodificado
-                                </Badge>
-                                <div className="text-sm text-muted-foreground space-y-1">
-                                    <p><strong>Latitud:</strong> {coordinates.lat?.toFixed(6)}</p>
-                                    <p><strong>Longitud:</strong> {coordinates.lng?.toFixed(6)}</p>
+                                <div className="flex-1 min-h-[120px] rounded-lg overflow-hidden border">
+                                    <Map
+                                        center={{ lat: coordinates.lat, lng: coordinates.lng }}
+                                        zoom={16}
+                                    >
+                                        <DealershipMarker position={{ lat: coordinates.lat, lng: coordinates.lng }} />
+                                    </Map>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={handleGeocode}
-                                    disabled={geocoding}
-                                >
-                                    {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Re-geocodificar
-                                </Button>
+                                {addressChanged && (
+                                    <Button
+                                        className="w-full"
+                                        size="sm"
+                                        onClick={handleSubmit(handleSaveAndGeocode)}
+                                        disabled={geocoding || isSubmitting}
+                                    >
+                                        {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        <MapPin className="mr-2 h-4 w-4" />
+                                        Actualizar ubicación
+                                    </Button>
+                                )}
                             </>
                         ) : (
                             <>
+                                <div className="flex-1 min-h-[120px] rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
+                                    <div className="text-center text-muted-foreground">
+                                        <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-xs">Sin ubicación</p>
+                                    </div>
+                                </div>
                                 <Badge variant="secondary">Sin ubicación</Badge>
-                                <p className="text-sm text-muted-foreground">
-                                    Haz clic en el botón para obtener las coordenadas automáticamente a partir de la dirección.
+                                <p className="text-xs text-muted-foreground">
+                                    {addressChanged
+                                        ? "Guarda y geocodifica para obtener las coordenadas."
+                                        : "Este concesionario aún no ha sido ubicado."
+                                    }
                                 </p>
-                                <Button
-                                    className="w-full"
-                                    onClick={handleGeocode}
-                                    disabled={geocoding}
-                                >
-                                    {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    <MapPin className="mr-2 h-4 w-4" />
-                                    Geocodificar
-                                </Button>
+                                {addressChanged && (
+                                    <Button
+                                        className="w-full"
+                                        size="sm"
+                                        onClick={handleSubmit(handleSaveAndGeocode)}
+                                        disabled={geocoding || isSubmitting}
+                                    >
+                                        {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        <MapPin className="mr-2 h-4 w-4" />
+                                        Geocodificar
+                                    </Button>
+                                )}
                             </>
                         )}
                     </CardContent>

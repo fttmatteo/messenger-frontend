@@ -86,3 +86,12 @@ export interface UpdateServiceStatusRequest {
     signature?: File
     photos?: File[]
 }
+
+export interface DailyStats {
+    date: string
+    assigned: number
+    delivered: number
+    returned: number
+    canceled: number
+    total: number
+}

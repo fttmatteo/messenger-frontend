@@ -8,19 +8,9 @@ import type { EmployeeRole } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 
@@ -51,6 +41,7 @@ export default function EditEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [deleting, setDeleting] = useState(false)
 
     const {
         register,
@@ -111,6 +102,23 @@ export default function EditEmployee() {
         }
     }
 
+    const handleDelete = async () => {
+        if (!id) return
+        try {
+            setDeleting(true)
+            await employeeService.delete(Number(id))
+            toast.success("Empleado eliminado exitosamente")
+            navigate("/admin/empleados")
+        } catch (error: any) {
+            toast.error("Error al eliminar empleado", {
+                description: error.message,
+                id: "error-eliminar-empleado"
+            })
+        } finally {
+            setDeleting(false)
+        }
+    }
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -120,17 +128,18 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
+            {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold">Editar empleado</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">Editar empleado</h1>
             </div>
 
-            <Card className="max-w-2xl">
-                <CardHeader>
-                    <CardTitle>Información del empleado</CardTitle>
+            <Card className="max-w-3xl">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2">
                             {/* Documento */}
                             <div className="space-y-2">
@@ -159,20 +168,19 @@ export default function EditEmployee() {
                             </div>
                         </div>
 
-                        {/* Nombre Completo */}
-                        <div className="space-y-2">
-                            <Label htmlFor="fullName">Nombre completo</Label>
-                            <Input
-                                id="fullName"
-                                placeholder="Juan Pérez García"
-                                {...register("fullName")}
-                            />
-                            {errors.fullName && (
-                                <p className="text-sm text-red-500">{errors.fullName.message}</p>
-                            )}
-                        </div>
-
                         <div className="grid gap-4 md:grid-cols-2">
+                            {/* Nombre Completo */}
+                            <div className="space-y-2">
+                                <Label htmlFor="fullName">Nombre completo</Label>
+                                <Input
+                                    id="fullName"
+                                    placeholder="Juan Pérez García"
+                                    {...register("fullName")}
+                                />
+                                {errors.fullName && (
+                                    <p className="text-sm text-red-500">{errors.fullName.message}</p>
+                                )}
+                            </div>
                             {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Nueva contraseña (opcional)</Label>
@@ -225,7 +233,7 @@ export default function EditEmployee() {
                         </div>
 
                         {/* Submit Buttons */}
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex gap-3 pt-2">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -237,6 +245,38 @@ export default function EditEmployee() {
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Guardar cambios
                             </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        Eliminar
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            ¿Eliminar empleado?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente este empleado del sistema.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={handleDelete}
+                                            disabled={deleting}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                            {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            Eliminar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     </form>
                 </CardContent>

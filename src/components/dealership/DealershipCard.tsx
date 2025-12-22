@@ -1,32 +1,10 @@
 import { motion } from "framer-motion"
-import {
-    MapPin,
-    MapPinned,
-    PhoneCall,
-    Copy,
-    Pencil,
-    Trash2,
-    Loader2,
-} from "lucide-react"
-
-// Components
+import { MapPin, MapPinned, PhoneCall, Copy, Pencil, Trash2, Loader2, } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
-// Types
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog"
 import type { Dealership } from "@/types/dealership.types"
 import { toast } from "sonner"
 
