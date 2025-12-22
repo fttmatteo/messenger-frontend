@@ -20,6 +20,34 @@ export const authService = {
         return response.json();
     },
 
+    async refreshToken(): Promise<AuthResponse> {
+        const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+
+        if (!refreshToken) {
+            throw new Error('No refresh token available');
+        }
+
+        const response = await fetch(`${API_URL}/refresh`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ refreshToken }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh token');
+        }
+
+        const data: AuthResponse = await response.json();
+        const storage = localStorage.getItem('refreshToken') ? localStorage : sessionStorage;
+
+        storage.setItem('token', data.token);
+        storage.setItem('refreshToken', data.refreshToken);
+
+        return data;
+    },
+
     logout() {
         const keys = ['token', 'refreshToken', 'role', 'user'];
         keys.forEach(key => {

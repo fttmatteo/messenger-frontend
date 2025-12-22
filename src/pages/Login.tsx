@@ -8,8 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { AlertCircle, Eye, EyeOff } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Eye, EyeOff } from "lucide-react"
+import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
@@ -26,7 +26,6 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function Login() {
     const { login } = useAuth()
     const navigate = useNavigate()
-    const [error, setError] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
     const [showExitDialog, setShowExitDialog] = useState(false)
 
@@ -53,7 +52,6 @@ export default function Login() {
 
     const onSubmit = async (data: LoginFormValues) => {
         try {
-            setError(null)
             await login({
                 document: parseInt(data.document, 10),
                 password: data.password,
@@ -61,7 +59,11 @@ export default function Login() {
             })
             navigate("/")
         } catch (err: any) {
-            setError(err.message || "Algo salió mal")
+            toast.error(err.message || "Algo salió mal", {
+                id: 'login-error',
+                position: 'top-center',
+                duration: 4000
+            })
         }
     }
 
@@ -85,14 +87,6 @@ export default function Login() {
                 </CardHeader>
                 <CardContent className="pb-6 md:pb-6">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 md:space-y-3">
-                        {error && (
-                            <Alert variant="destructive" className="py-2">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle className="text-sm font-semibold">Error</AlertTitle>
-                                <AlertDescription className="text-sm">{error}</AlertDescription>
-                            </Alert>
-                        )}
-
                         <div className="space-y-2">
                             <Label htmlFor="document" className="text-sm font-medium text-foreground/80">Documento</Label>
                             <Input
