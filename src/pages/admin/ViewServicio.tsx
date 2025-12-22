@@ -47,7 +47,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
+import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 
 export default function ViewServicio() {
@@ -148,7 +148,6 @@ export default function ViewServicio() {
         )
     }
 
-    const statusConfig = getStatusBadge(service.currentStatus)
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
@@ -182,7 +181,12 @@ export default function ViewServicio() {
             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                 <div>
                     <div className="flex flex-row items-center gap-4">
-                        <Badge className={`${statusConfig.className} text-base px-4 py-1.5`}>{statusConfig.label}</Badge>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-lg font-semibold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                {getStatusIconConfig(service.currentStatus).label}
+                            </span>
+                        </div>
                         {/* 72h Window Indicator */}
                         {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
                             const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
