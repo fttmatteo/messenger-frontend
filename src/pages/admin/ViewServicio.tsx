@@ -326,12 +326,8 @@ export default function ViewServicio() {
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
                         {service.history.length > 0 ? (
-                            <div className="py-2">
-                                <Timeline
-                                    layout="vertical"
-                                    centered={false}
-                                    className="w-full"
-                                >
+                            <div className="py-2 pl-2">
+                                <Timeline className="w-full">
                                     {[...service.history].reverse().map((entry, index) => {
                                         const newStatusConfig = getStatusBadge(entry.newStatus)
                                         const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
@@ -340,10 +336,9 @@ export default function ViewServicio() {
                                             <TimelineItem
                                                 key={entry.idStatusHistory}
                                                 isLast={index === service.history.length - 1}
-                                                className="pb-8 last:pb-0"
                                             >
-                                                <TimelineHeader className="pb-2">
-                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1`}>
+                                                <TimelineHeader statusColor={newStatusConfig.className}>
+                                                    <Badge variant="outline" className={`${newStatusConfig.className} border bg-background text-sm px-3 py-1 font-medium`}>
                                                         {newStatusConfig.label}
                                                     </Badge>
                                                 </TimelineHeader>

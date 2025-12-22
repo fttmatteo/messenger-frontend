@@ -1,6 +1,7 @@
 import { X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { createPortal } from "react-dom"
 
 interface ImageViewerProps {
     src: string | null
@@ -12,48 +13,50 @@ interface ImageViewerProps {
 export function ImageViewer({ src, alt = "Visualizador de imagen", open, onClose }: ImageViewerProps) {
     if (!src) return null
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {open && (
-                <div className="relative z-[100]">
+                <div className="relative z-[99999]">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99990]"
                     />
 
                     {/* Content Container */}
-                    <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="fixed inset-0 z-[99991] flex items-center justify-center p-4 pointer-events-none">
+                        {/* Close Button - Fixed to viewport */}
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full h-10 w-10 pointer-events-auto z-[99995]"
+                            onClick={onClose}
+                        >
+                            <X className="h-6 w-6" />
+                        </Button>
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                            className="relative max-w-full max-h-[90vh] pointer-events-auto shadow-2xl"
+                            className="relative max-w-[95vw] max-h-[90vh] pointer-events-auto shadow-2xl flex items-center justify-center outline-none"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Close Button */}
-                            <Button
-                                size="icon"
-                                variant="destructive"
-                                className="absolute -top-12 right-0 md:-right-12 rounded-full shadow-lg"
-                                onClick={onClose}
-                            >
-                                <X className="h-5 w-5" />
-                            </Button>
-
                             {/* Image */}
                             <img
                                 src={src}
                                 alt={alt}
-                                className="max-w-full max-h-[80vh] rounded-lg object-contain bg-black/50"
+                                className="max-w-full max-h-[85vh] w-auto h-auto rounded-lg object-contain bg-black/50"
                             />
                         </motion.div>
                     </div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
