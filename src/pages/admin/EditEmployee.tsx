@@ -120,19 +120,19 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col h-full">
             {/* Header */}
-            <div>
+            <div className="mb-4">
                 <h1 className="text-2xl md:text-3xl font-bold">Editar empleado</h1>
             </div>
 
-            <Card className="max-w-3xl">
+            <Card className="flex-1 flex flex-col">
                 <CardHeader className="pb-4">
                     <CardTitle className="text-lg">Información del empleado</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-2">
+                <CardContent className="flex-1">
+                    <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
                             {/* Documento */}
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
@@ -158,11 +158,9 @@ export default function EditEmployee() {
                                     <p className="text-sm text-red-500">{errors.phone.message}</p>
                                 )}
                             </div>
-                        </div>
 
-                        <div className="grid gap-4 md:grid-cols-2">
                             {/* Nombre Completo */}
-                            <div className="space-y-2">
+                            <div className="space-y-2 md:col-span-2 lg:col-span-1">
                                 <Label htmlFor="fullName">Nombre completo</Label>
                                 <Input
                                     id="fullName"
@@ -173,6 +171,7 @@ export default function EditEmployee() {
                                     <p className="text-sm text-red-500">{errors.fullName.message}</p>
                                 )}
                             </div>
+
                             {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Nueva contraseña (opcional)</Label>
@@ -202,30 +201,30 @@ export default function EditEmployee() {
                                     <p className="text-sm text-red-500">{errors.password.message}</p>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Rol */}
-                        <div className="space-y-2">
-                            <Label htmlFor="role">Cargo</Label>
-                            <Select
-                                value={selectedRole}
-                                onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona un rol" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ADMIN">Administrador</SelectItem>
-                                    <SelectItem value="MESSENGER">Mensajero</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.role && (
-                                <p className="text-sm text-red-500">{errors.role.message}</p>
-                            )}
+                            {/* Rol */}
+                            <div className="space-y-2">
+                                <Label htmlFor="role">Cargo</Label>
+                                <Select
+                                    value={selectedRole}
+                                    onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona un rol" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ADMIN">Administrador</SelectItem>
+                                        <SelectItem value="MESSENGER">Mensajero</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.role && (
+                                    <p className="text-sm text-red-500">{errors.role.message}</p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Submit Buttons */}
-                        <div className="flex gap-3 pt-2">
+                        <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
                             <Button
                                 type="button"
                                 variant="outline"
