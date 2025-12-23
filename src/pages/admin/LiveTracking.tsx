@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { trackingApiService } from "@/services/tracking-api.service"
@@ -76,6 +75,7 @@ export default function LiveTracking() {
     const [historyData, setHistoryData] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [showHistoryRoute, setShowHistoryRoute] = useState(false)
+    const [calendarOpen, setCalendarOpen] = useState(false)
 
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
@@ -227,7 +227,7 @@ export default function LiveTracking() {
     }
 
     return (
-        <div className="h-[calc(100vh-8rem)] flex flex-col gap-4 overflow-hidden">
+        <div className="h-full flex flex-col gap-4 overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-2 shrink-0">
                 <div className="flex items-center gap-3">
@@ -307,7 +307,7 @@ export default function LiveTracking() {
                 </Card>
 
                 {/* Map Container */}
-                <Card className="flex-1 overflow-hidden border p-1 bg-muted/20">
+                <Card className="flex-1 overflow-hidden">
                     <CardContent className="p-0 h-full w-full relative">
                         {loading && messengers.length === 0 ? (
                             <Skeleton className="w-full h-full rounded-md" />
@@ -430,38 +430,39 @@ export default function LiveTracking() {
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="w-full"
-                                                        onClick={() => setSelectedMessenger(null)}
-                                                    >
-                                                        Ver todos los mensajeros
-                                                    </Button>
                                                 </div>
                                             </ScrollArea>
                                         </TabsContent>
 
-                                        <TabsContent value="history" className="flex-1 flex flex-col p-0 m-0 overflow-hidden">
-                                            <div className="p-4 space-y-4 shrink-0">
+                                        <TabsContent value="history" className="flex-1 flex flex-col p-0 m-0">
+                                            <div className="p-4 space-y-4 border-b shrink-0">
                                                 {/* Date Picker */}
                                                 <div className="space-y-2">
                                                     <label className="text-sm font-medium">Fecha</label>
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <Button variant="outline" className="w-full justify-start text-left">
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {format(historyDate, "PPP", { locale: es })}
-                                                            </Button>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0" align="start">
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full justify-start text-left"
+                                                        onClick={() => setCalendarOpen(true)}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {format(historyDate, "PPP", { locale: es })}
+                                                    </Button>
+
+                                                    <Dialog open={calendarOpen} onOpenChange={setCalendarOpen} modal={false}>
+                                                        <DialogContent className="max-w-md p-0">
                                                             <Calendar
                                                                 mode="single"
                                                                 selected={historyDate}
-                                                                onSelect={(date) => date && setHistoryDate(date)}
+                                                                onSelect={(date) => {
+                                                                    if (date) {
+                                                                        setHistoryDate(date)
+                                                                        setCalendarOpen(false)
+                                                                    }
+                                                                }}
                                                                 initialFocus
                                                             />
-                                                        </PopoverContent>
-                                                    </Popover>
+                                                        </DialogContent>
+                                                    </Dialog>
                                                 </div>
 
                                                 {/* Show route toggle */}
@@ -477,7 +478,7 @@ export default function LiveTracking() {
                                             </div>
 
                                             {/* History list */}
-                                            <div className="flex-1 overflow-hidden px-4 pb-4">
+                                            <div className="flex-1 overflow-y-auto px-4 py-4">
                                                 {loadingHistory ? (
                                                     <div className="space-y-2">
                                                         {[1, 2, 3].map(i => (
@@ -489,35 +490,33 @@ export default function LiveTracking() {
                                                         No hay historial para esta fecha
                                                     </p>
                                                 ) : (
-                                                    <ScrollArea className="h-full">
-                                                        <div className="space-y-2 pr-3">
-                                                            {historyData.map((item, idx) => (
-                                                                <div
-                                                                    key={item.id || idx}
-                                                                    className="p-3 rounded-lg bg-muted/50 text-sm"
-                                                                >
-                                                                    <div className="flex justify-between items-center">
-                                                                        <span className="font-medium">
-                                                                            {format(new Date(item.timestamp), "HH:mm:ss")}
-                                                                        </span>
-                                                                        {item.speed !== undefined && item.speed > 0 && (
-                                                                            <Badge variant="outline" className="text-xs">
-                                                                                {(item.speed * 3.6).toFixed(1)} km/h
-                                                                            </Badge>
-                                                                        )}
-                                                                    </div>
-                                                                    <p className="text-xs text-muted-foreground mt-1 font-mono">
-                                                                        {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
-                                                                    </p>
+                                                    <div className="space-y-2">
+                                                        {historyData.map((item, idx) => (
+                                                            <div
+                                                                key={item.id || idx}
+                                                                className="p-3 rounded-lg bg-muted/50 text-sm"
+                                                            >
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="font-medium">
+                                                                        {format(new Date(item.timestamp), "HH:mm:ss")}
+                                                                    </span>
+                                                                    {item.speed !== undefined && item.speed > 0 && (
+                                                                        <Badge variant="outline" className="text-xs">
+                                                                            {(item.speed * 3.6).toFixed(1)} km/h
+                                                                        </Badge>
+                                                                    )}
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                    </ScrollArea>
-                                                )}
+                                                                <p className="text-xs text-muted-foreground mt-1 font-mono">
+                                                                    {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
+                                                                </p>
+                                                            </div>
+                                                        ))}
 
-                                                {historyData.length > 0 && !loadingHistory && (
-                                                    <div className="pt-2 border-t text-sm text-muted-foreground mt-2 sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                                                        <p>{historyData.length} puntos registrados</p>
+                                                        {historyData.length > 0 && (
+                                                            <div className="pt-2 border-t text-sm text-muted-foreground mt-2">
+                                                                <p>{historyData.length} puntos registrados</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
