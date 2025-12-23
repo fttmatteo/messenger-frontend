@@ -206,42 +206,42 @@ export default function Servicios() {
                             />
                         ) : (
                             <>
-                                <div className="overflow-hidden">
+                                <div>
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
+                                                <TableHead className="w-[100px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
                                                     <div className="flex items-center">
                                                         <Car className="h-4 w-4 mr-1" />Placa
                                                         <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("dealershipName")}>
+                                                <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
                                                     <div className="flex items-center">
-                                                        <Building2 className="h-4 w-4 mr-1 shrink-0" /><span className="truncate">Concesionario</span>
+                                                        <Building2 className="h-4 w-4 mr-1 shrink-0" />Concesionario
                                                         <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("messengerName")}>
+                                                <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("messengerName")}>
                                                     <div className="flex items-center">
-                                                        <User className="h-4 w-4 mr-1 shrink-0" /><span className="truncate">Mensajero</span>
+                                                        <User className="h-4 w-4 mr-1 shrink-0" />Mensajero
                                                         <SortIndicator field="messengerName" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
+                                                <TableHead className="w-[140px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
                                                     <div className="flex items-center">
                                                         <Bike className="h-4 w-4 mr-1" />Estado
                                                         <SortIndicator field="currentStatus" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("createdAt")}>
+                                                <TableHead className="w-[120px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("createdAt")}>
                                                     <div className="flex items-center">
                                                         <Calendar className="h-4 w-4 mr-1" />Creado
                                                         <SortIndicator field="createdAt" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="text-center">
-                                                    <div className="flex items-center justify-center"><Settings className="h-4 w-4 mr-1" />Acción</div>
+                                                <TableHead className="w-[120px] text-center">
+                                                    <div className="flex items-center justify-center"><Settings className="h-4 w-4 mr-1" /></div>
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -262,13 +262,13 @@ export default function Servicios() {
                                                         <TableCell>
                                                             <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
                                                         </TableCell>
-                                                        <TableCell className="truncate text-base" title={service.dealership.name}>
+                                                        <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.dealership.name}>
                                                             {service.dealership.name}
                                                         </TableCell>
-                                                        <TableCell className="text-base">
+                                                        <TableCell className="max-w-[150px] md:max-w-[200px] truncate">
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
-                                                                    <span className="cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
+                                                                    <span className="cursor-default truncate block">{formatDisplayName(service.messenger.fullName)}</span>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent><p>{service.messenger.fullName}</p></TooltipContent>
                                                             </Tooltip>
@@ -284,10 +284,17 @@ export default function Servicios() {
                                                         <TableCell className="whitespace-nowrap text-base">
                                                             {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                         </TableCell>
-                                                        <TableCell className="text-right">
-                                                            <div className="flex items-center justify-end gap-2">
-                                                                <Button variant="default" size="sm" onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }} className="bg-primary hover:bg-primary/90">
-                                                                    <Edit className="h-4 w-4 mr-1" />Actualizar
+                                                        <TableCell className="text-center">
+                                                            <div className="flex items-center justify-center gap-2">
+                                                                <Button
+                                                                    variant="default"
+                                                                    size="icon"
+                                                                    onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }}
+                                                                    className="h-8 w-8 bg-primary hover:bg-primary/90"
+                                                                    title="Actualizar estado"
+                                                                >
+                                                                    <Edit className="h-4 w-4" />
+                                                                    <span className="sr-only">Actualizar</span>
                                                                 </Button>
                                                             </div>
                                                         </TableCell>

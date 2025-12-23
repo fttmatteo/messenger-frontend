@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff } from "lucide-react"
+import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 
 const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
@@ -112,11 +113,7 @@ export default function EditEmployee() {
     }
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-        )
+        return <EmployeeFormSkeleton />
     }
 
     return (

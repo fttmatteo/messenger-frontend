@@ -9,18 +9,26 @@ import { TableRow, TableCell } from "@/components/ui/table"
 export function TableRowSkeleton() {
     return (
         <TableRow>
-            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-56" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-            <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-            <TableCell><Skeleton className="h-6 w-28 rounded-full" /></TableCell>
-            <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                    <Skeleton className="h-8 w-20 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
+            <TableCell>
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-32" />
                 </div>
             </TableCell>
+            <TableCell>
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-48" />
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-28" />
+                </div>
+            </TableCell>
+            <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+            <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
         </TableRow>
     )
 }
@@ -45,21 +53,86 @@ export function CardSkeleton() {
                                 <Skeleton className="h-4 w-full max-w-xs" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-3 w-16" />
-                            </div>
-                            <div className="flex items-center gap-2">
                                 <Skeleton className="h-3.5 w-3.5 rounded-full" />
                                 <Skeleton className="h-4 w-32" />
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                        <Skeleton className="h-9 w-9 rounded-md" />
-                        <Skeleton className="h-9 w-9 rounded-md" />
+                    {/* Action buttons placeholder */}
+                    <div className="flex flex-col gap-2 opacity-50">
                         <Skeleton className="h-9 w-9 rounded-md" />
                     </div>
                 </div>
             </CardContent>
         </Card>
+    )
+}
+
+/**
+ * Skeleton for Dealership Form (Create/Edit)
+ */
+export function DealershipFormSkeleton() {
+    return (
+        <div className="flex flex-col h-full animate-in fade-in duration-500">
+            {/* Header Skeleton */}
+            <div className="mb-4 space-y-2">
+                <Skeleton className="h-8 w-64" />
+            </div>
+
+            <div className="flex-1 grid gap-4 lg:grid-cols-3">
+                {/* Main Form Information Card */}
+                <Card className="lg:col-span-2 flex flex-col">
+                    <CardContent className="pt-6 flex-1">
+                        <div className="h-full flex flex-col">
+                            <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
+                                {/* Name Field */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-40" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+
+                                {/* Phone Field */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+
+                                {/* Address Field - Spans 2 cols */}
+                                <div className="space-y-2 md:col-span-2">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-20 w-full" />
+                                </div>
+
+                                {/* Zone Field */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-16" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+                            </div>
+
+                            {/* Buttons Footer */}
+                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
+                                <Skeleton className="h-10 w-24" />
+                                <Skeleton className="h-10 w-36" />
+                                <Skeleton className="h-10 w-24 ml-auto" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Location/Map Card Skeleton */}
+                <Card className="flex flex-col h-fit">
+                    <CardContent className="pt-6 flex flex-col gap-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Skeleton className="h-5 w-5 rounded-full" />
+                            <Skeleton className="h-6 w-32" />
+                        </div>
+                        <Skeleton className="h-[200px] w-full rounded-lg" />
+                        <Skeleton className="h-6 w-24 rounded-full" />
+                        <Skeleton className="h-9 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     )
 }

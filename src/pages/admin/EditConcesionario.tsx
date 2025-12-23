@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Loader2, MapPin } from "lucide-react"
+import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 
 // Available zones
 const ZONES = [
@@ -190,11 +191,7 @@ export default function EditConcesionario() {
     }
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-        )
+        return <DealershipFormSkeleton />
     }
 
     return (

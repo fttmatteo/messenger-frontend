@@ -139,12 +139,20 @@
 
   html {
     overflow-x: hidden;
+    /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
+    font-size: 105%;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 110%;
+    }
   }
 
   body {
     @apply bg-background text-foreground;
-    /* Professional base font size for better readability */
-    font-size: 14px;
+    /* Professional base font size for better readability - Increased */
+    font-size: 15px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -154,13 +162,13 @@
   /* Desktop typography scaling */
   @media (min-width: 768px) {
     body {
-      font-size: 15px;
+      font-size: 16px;
     }
   }
 
   @media (min-width: 1024px) {
     body {
-      font-size: 16px;
+      font-size: 17px;
     }
   }
 

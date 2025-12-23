@@ -17,6 +17,7 @@ import UpdateServiceStatus from '../pages/admin/UpdateServiceStatus';
 import ViewServicio from '../pages/admin/ViewServicio';
 import Eliminados from '../pages/admin/Eliminados';
 import LiveTracking from '../pages/admin/LiveTracking';
+import Configuracion from '../pages/admin/Configuracion';
 import MessengerDashboard from '../pages/messenger/Dashboard';
 import MessengerCreateServicio from '../pages/messenger/CreateServicio';
 import MessengerServiceDetails from '../pages/messenger/ServiceDetails';
@@ -103,7 +104,7 @@ export function AppRoutes() {
                 {/* Other routes */}
                 <Route path="eliminados" element={<Eliminados />} />
                 <Route path="tracking" element={<LiveTracking />} />
-                <Route path="configuracion" element={<div className="p-4">Configuración - Próximamente</div>} />
+                <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
             {/* Messenger Routes */}
