@@ -25,6 +25,9 @@ import MessengerUpdateStatus from '../pages/messenger/UpdateStatus';
 import MessengerStatsHistoryPage from '../pages/messenger/StatsHistoryPage';
 import MessengerRouteHistoryPage from '../pages/messenger/RouteHistoryPage';
 import MessengerStatsPage from '../pages/messenger/StatsPage';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileOnlyGuard } from '@/components/MobileOnlyGuard';
+import { DesktopOnlyGuard } from '@/components/DesktopOnlyGuard';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
@@ -62,6 +65,8 @@ function RoleBasedRedirect() {
 }
 
 export function AppRoutes() {
+    const isMobile = useIsMobile()
+
     return (
         <Routes>
             {/* Public Routes */}
@@ -77,12 +82,12 @@ export function AppRoutes() {
                 }
             />
 
-            {/* Admin Routes */}
+            {/* Admin Routes - Desktop Only */}
             <Route
                 path="/admin"
                 element={
                     <ProtectedRoute>
-                        <AdminLayout />
+                        {isMobile ? <DesktopOnlyGuard /> : <AdminLayout />}
                     </ProtectedRoute>
                 }
             >
@@ -107,12 +112,12 @@ export function AppRoutes() {
                 <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
-            {/* Messenger Routes */}
+            {/* Messenger Routes - Mobile Only */}
             <Route
                 path="/messenger"
                 element={
                     <ProtectedRoute>
-                        <MessengerLayout />
+                        {!isMobile ? <MobileOnlyGuard /> : <MessengerLayout />}
                     </ProtectedRoute>
                 }
             >
