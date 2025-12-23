@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { Home, Loader2, Save, UserPlus } from "lucide-react"
-import { toast } from "sonner"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 
@@ -22,6 +22,7 @@ export default function UpdateServiceStatus() {
     const { id } = useParams()
     const navigate = useNavigate()
     const { user } = useAuth()
+    const { setSuccess, setError } = useAdminUI()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -65,9 +66,7 @@ export default function UpdateServiceStatus() {
                 }
 
             } catch (error: any) {
-                toast.error("Error al cargar servicio", {
-                    description: error.message
-                })
+                setError(error.message || "Error al cargar servicio")
                 navigate("/admin/servicios")
             } finally {
                 setLoading(false)
@@ -92,16 +91,11 @@ export default function UpdateServiceStatus() {
                 observation: observation || undefined,
             })
 
-            toast.success("Estado actualizado", {
-                description: `Servicio ${service.plate.plateNumber} actualizado`
-            })
+            setSuccess(`Estado de servicio ${service.plate.plateNumber} actualizado`)
 
             navigate("/admin/servicios")
         } catch (error: any) {
-            toast.error("Error al actualizar estado", {
-                description: error.response?.data?.message || error.message,
-                id: "error-actualizar-estado"
-            })
+            setError(error.response?.data?.message || error.message || "Error al actualizar estado")
         } finally {
             setUpdating(false)
         }
@@ -118,16 +112,11 @@ export default function UpdateServiceStatus() {
                 Number(selectedMessenger)
             )
 
-            toast.success("Servicio reasignado", {
-                description: `Servicio ${service.plate.plateNumber} reasignado al mensajero`
-            })
+            setSuccess(`Servicio ${service.plate.plateNumber} reasignado al mensajero`)
 
             navigate("/admin/servicios")
         } catch (error: any) {
-            toast.error("Error al reasignar", {
-                description: error.response?.data?.message || error.message,
-                id: "error-reasignar"
-            })
+            setError(error.response?.data?.message || error.message || "Error al reasignar")
         } finally {
             setReassigning(false)
         }
@@ -203,6 +192,58 @@ export default function UpdateServiceStatus() {
                 }
                 return null
             })()}
+
+            {/* Reassign Alert - Integrated at top for CANCELED services */}
+            {showReassign && messengers.length > 0 && (
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-4">
+                    <div className="flex items-start gap-3">
+                        <UserPlus className="h-6 w-6 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                            <p className="font-semibold text-base text-red-900 dark:text-red-100">Servicio cancelado - Reasignación disponible</p>
+                            <p className="text-sm text-red-800 dark:text-red-200 mt-1">
+                                Este servicio fue cancelado. Puedes reasignarlo a otro mensajero para reintentar la entrega.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <Select value={selectedMessenger} onValueChange={setSelectedMessenger}>
+                            <SelectTrigger className="flex-1 bg-white dark:bg-gray-800">
+                                <SelectValue placeholder="Selecciona un mensajero" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel className="text-muted-foreground">Mensajeros disponibles</SelectLabel>
+                                    {messengers.map((messenger) => (
+                                        <SelectItem
+                                            key={messenger.idEmployee}
+                                            value={String(messenger.idEmployee)}
+                                        >
+                                            {messenger.fullName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <Button
+                            onClick={handleReassign}
+                            disabled={!selectedMessenger || reassigning}
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            {reassigning ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Reasignando...
+                                </>
+                            ) : (
+                                <>
+                                    <UserPlus className="mr-2 h-4 w-4" />
+                                    Reasignar servicio
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Header */}
             <div>
@@ -291,54 +332,6 @@ export default function UpdateServiceStatus() {
                         return null
                     })()}
 
-                    {/* Reassign Section (only for CANCELED services) */}
-                    {showReassign && messengers.length > 0 && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-4">
-                            <div className="flex items-start gap-2">
-                                <UserPlus className="h-5 w-5 text-red-500 mt-0.5" />
-                                <div>
-                                    <p className="font-medium text-red-800">Servicio cancelado</p>
-                                    <p className="text-sm text-red-700">
-                                        Puedes reasignar este servicio a otro mensajero.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <Select value={selectedMessenger} onValueChange={setSelectedMessenger}>
-                                    <SelectTrigger className="flex-1 bg-white">
-                                        <SelectValue placeholder="Selecciona un mensajero" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {messengers.map((messenger) => (
-                                            <SelectItem
-                                                key={messenger.idEmployee}
-                                                value={String(messenger.idEmployee)}
-                                            >
-                                                {messenger.fullName}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    onClick={handleReassign}
-                                    disabled={!selectedMessenger || reassigning}
-                                    className="bg-red-600 hover:bg-red-700"
-                                >
-                                    {reassigning ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Reasignando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UserPlus className="mr-2 h-4 w-4" />
-                                            Reasignar
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Observation */}
                     <div className="space-y-2">

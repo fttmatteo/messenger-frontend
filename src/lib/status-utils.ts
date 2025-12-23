@@ -17,7 +17,7 @@ export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfi
         DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
         RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
         CANCELED: { label: 'Cancelado', className: 'bg-red-500 text-white' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-emerald-500 text-white' },
+        RESOLVED: { label: 'Resuelto', className: 'bg-purple-500 text-white' },
     }
     return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
@@ -39,7 +39,7 @@ export function getStatusIconConfig(status: ServiceStatus | string): StatusIconC
         DELIVERED: { label: 'Entregado', dotColor: 'bg-green-500', textColor: 'text-green-500' },
         RETURNED: { label: 'Devuelto', dotColor: 'bg-orange-500', textColor: 'text-orange-500' },
         CANCELED: { label: 'Cancelado', dotColor: 'bg-red-500', textColor: 'text-red-500' },
-        RESOLVED: { label: 'Resuelto', dotColor: 'bg-emerald-500', textColor: 'text-emerald-500' },
+        RESOLVED: { label: 'Resuelto', dotColor: 'bg-purple-500', textColor: 'text-purple-500' },
     }
     return config[status] || { label: status, dotColor: 'bg-gray-500', textColor: 'text-gray-500' }
 }
