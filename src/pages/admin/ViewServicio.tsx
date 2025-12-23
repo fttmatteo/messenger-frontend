@@ -341,7 +341,7 @@ export default function ViewServicio() {
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
                                                 <TimelineHeader statusColor={newStatusConfig.className}>
-                                                    <Badge variant="outline" className={`${newStatusConfig.className} border bg-background text-sm px-3 py-1 font-medium`}>
+                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1 font-medium hover:opacity-90 border-0`}>
                                                         {newStatusConfig.label}
                                                     </Badge>
                                                 </TimelineHeader>
