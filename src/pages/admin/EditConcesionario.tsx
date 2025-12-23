@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
@@ -113,7 +113,7 @@ export default function EditConcesionario() {
                     name: dealership.name,
                     address: dealership.address,
                     phone: dealership.phone,
-                    zone: dealership.zone,
+                    zone: dealership.zone ? dealership.zone.toUpperCase() : "",
                 })
                 setInitialAddress(dealership.address)
                 setGeocoded(dealership.isGeolocated || false)
@@ -263,11 +263,14 @@ export default function EditConcesionario() {
                                             <SelectValue placeholder="Selecciona una zona" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {ZONES.map((zone) => (
-                                                <SelectItem key={zone.value} value={zone.value}>
-                                                    {zone.label}
-                                                </SelectItem>
-                                            ))}
+                                            <SelectGroup>
+                                                <SelectLabel className="text-muted-foreground">Selecciona una zona</SelectLabel>
+                                                {ZONES.map((zone) => (
+                                                    <SelectItem key={zone.value} value={zone.value}>
+                                                        {zone.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                     {errors.zone && (
