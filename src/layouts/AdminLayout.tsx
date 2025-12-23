@@ -82,7 +82,7 @@ function AdminLayoutContent() {
 
     return (
         <SidebarProvider>
-            <Sidebar collapsible="none">
+            <Sidebar collapsible="none" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex items-center gap-2">
