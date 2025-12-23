@@ -101,6 +101,7 @@ function AdminLayoutContent() {
                                         <SidebarMenuButton
                                             asChild
                                             tooltip={item.title}
+                                            size="lg"
                                         >
                                             <a href={item.url}>
                                                 <item.icon />

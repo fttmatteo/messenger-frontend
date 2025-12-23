@@ -189,7 +189,7 @@ export default function Servicios() {
                                         <TableHead>Mensajero</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead>Creado</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
+                                        <TableHead>Acción</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -240,8 +240,8 @@ export default function Servicios() {
                                                         <SortIndicator field="createdAt" currentSortField={sortField} sortDirection={sortDirection} />
                                                     </div>
                                                 </TableHead>
-                                                <TableHead className="text-right">
-                                                    <div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />Acciones</div>
+                                                <TableHead className="text-center">
+                                                    <div className="flex items-center justify-center"><Settings className="h-4 w-4 mr-1" />Acción</div>
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
