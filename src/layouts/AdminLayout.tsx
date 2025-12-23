@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -82,7 +82,7 @@ function AdminLayoutContent() {
 
     return (
         <SidebarProvider>
-            <Sidebar>
+            <Sidebar collapsible="none" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex items-center gap-2">
@@ -101,6 +101,7 @@ function AdminLayoutContent() {
                                         <SidebarMenuButton
                                             asChild
                                             tooltip={item.title}
+                                            size="lg"
                                         >
                                             <a href={item.url}>
                                                 <item.icon />
@@ -116,7 +117,7 @@ function AdminLayoutContent() {
             </Sidebar>
             <SidebarInset className="overflow-hidden flex flex-col h-screen">
                 <header className="flex-shrink-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    {isMobile && isNestedPage ? (
+                    {isMobile && isNestedPage && (
                         <Button
                             variant="ghost"
                             size="icon"
@@ -125,8 +126,6 @@ function AdminLayoutContent() {
                         >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
-                    ) : (
-                        <SidebarTrigger />
                     )}
                     {isMobile ? (
                         // Mobile header layout

@@ -14,7 +14,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Upload, X, Loader2, Camera, CameraOff, ArrowLeft, Bike } from "lucide-react"
 import { toast } from "sonner"
 
-// Form validation schema - simplified for messengers
 const formSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario es obligatorio"),
     manualPlateNumber: z.string().optional(),
@@ -30,15 +29,12 @@ export default function MessengerCreateServicio() {
     const [loadingData, setLoadingData] = useState(true)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [showManualPlate, setShowManualPlate] = useState(false)
-
-    // Camera states
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
     const [cameraError, setCameraError] = useState<string | null>(null)
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
-
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -46,8 +42,6 @@ export default function MessengerCreateServicio() {
             manualPlateNumber: "",
         },
     })
-
-    // Group dealerships by zone
     const groupedDealerships = useMemo(() => {
         const groups: Record<string, Dealership[]> = {}
         dealerships.forEach(d => {
@@ -57,11 +51,8 @@ export default function MessengerCreateServicio() {
             }
             groups[zone].push(d)
         })
-        // Sort zones alphabetically
         return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
     }, [dealerships])
-
-    // Stop camera function
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop())
@@ -89,16 +80,11 @@ export default function MessengerCreateServicio() {
                 setLoadingData(false)
             }
         }
-
         fetchData()
-
-        // Cleanup camera on unmount
         return () => {
             stopCamera()
         }
     }, [stopCamera])
-
-    // Start camera
     const startCamera = useCallback(async () => {
         try {
             setCameraError(null)
@@ -142,13 +128,9 @@ export default function MessengerCreateServicio() {
             })
         }
     }, [])
-
-    // Auto-start camera on mount
     useEffect(() => {
         startCamera()
     }, [startCamera])
-
-    // Capture photo from camera
     const capturePhoto = () => {
         const video = videoRef.current
         const canvas = canvasRef.current
@@ -209,8 +191,6 @@ export default function MessengerCreateServicio() {
             navigate("/messenger")
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || ''
-
-            // Check if error is OCR-related (plate not detected)
             const isOcrError =
                 errorMessage.toLowerCase().includes('ocr') ||
                 errorMessage.toLowerCase().includes('placa') ||
@@ -219,7 +199,6 @@ export default function MessengerCreateServicio() {
                 errorMessage.toLowerCase().includes('reconocer')
 
             if (isOcrError && !showManualPlate) {
-                // First OCR failure - show manual input
                 setShowManualPlate(true)
                 toast.warning("No se pudo detectar la placa", {
                     description: "Por favor ingresa la placa manualmente",

@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Loader2, MapPin } from "lucide-react"
+import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 
 // Available zones
 const ZONES = [
@@ -113,7 +114,7 @@ export default function EditConcesionario() {
                     name: dealership.name,
                     address: dealership.address,
                     phone: dealership.phone,
-                    zone: dealership.zone,
+                    zone: dealership.zone ? dealership.zone.toUpperCase() : "",
                 })
                 setInitialAddress(dealership.address)
                 setGeocoded(dealership.isGeolocated || false)
@@ -190,28 +191,24 @@ export default function EditConcesionario() {
     }
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-        )
+        return <DealershipFormSkeleton />
     }
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col h-full">
             {/* Header */}
-            <div>
+            <div className="mb-4">
                 <h1 className="text-2xl md:text-3xl font-bold">Editar concesionario</h1>
             </div>
 
-            <div className="grid gap-4 md:gap-6 max-w-5xl lg:grid-cols-3">
-                <Card className="lg:col-span-2">
+            <div className="flex-1 grid gap-4 lg:grid-cols-3">
+                <Card className="lg:col-span-2 flex flex-col">
                     <CardHeader className="pb-4">
                         <CardTitle className="text-lg">Información del concesionario</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2">
+                    <CardContent className="flex-1">
+                        <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                            <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
                                 {/* Nombre */}
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Nombre del concesionario</Label>
@@ -237,23 +234,21 @@ export default function EditConcesionario() {
                                         <p className="text-sm text-red-500">{errors.phone.message}</p>
                                     )}
                                 </div>
-                            </div>
 
-                            {/* Dirección */}
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Dirección completa</Label>
-                                <Textarea
-                                    id="address"
-                                    placeholder="Calle 123 #45-67, Medellin"
-                                    rows={2}
-                                    {...register("address")}
-                                />
-                                {errors.address && (
-                                    <p className="text-sm text-red-500">{errors.address.message}</p>
-                                )}
-                            </div>
+                                {/* Dirección */}
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label htmlFor="address">Dirección completa</Label>
+                                    <Textarea
+                                        id="address"
+                                        placeholder="Calle 123 #45-67, Medellin"
+                                        rows={2}
+                                        {...register("address")}
+                                    />
+                                    {errors.address && (
+                                        <p className="text-sm text-red-500">{errors.address.message}</p>
+                                    )}
+                                </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
                                 {/* Zona */}
                                 <div className="space-y-2">
                                     <Label htmlFor="zone">Zona</Label>
@@ -265,11 +260,14 @@ export default function EditConcesionario() {
                                             <SelectValue placeholder="Selecciona una zona" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {ZONES.map((zone) => (
-                                                <SelectItem key={zone.value} value={zone.value}>
-                                                    {zone.label}
-                                                </SelectItem>
-                                            ))}
+                                            <SelectGroup>
+                                                <SelectLabel className="text-muted-foreground">Selecciona una zona</SelectLabel>
+                                                {ZONES.map((zone) => (
+                                                    <SelectItem key={zone.value} value={zone.value}>
+                                                        {zone.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                     {errors.zone && (
@@ -279,7 +277,7 @@ export default function EditConcesionario() {
                             </div>
 
                             {/* Submit Buttons */}
-                            <div className="flex gap-3 pt-2">
+                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -339,7 +337,7 @@ export default function EditConcesionario() {
                     <CardContent className="flex-1 flex flex-col gap-3">
                         {geocoded && coordinates.lat && coordinates.lng ? (
                             <>
-                                <div className="flex-1 min-h-[120px] rounded-lg overflow-hidden border">
+                                <div className="flex-1 min-h-[200px] rounded-lg overflow-hidden border">
                                     <Map
                                         center={{ lat: coordinates.lat, lng: coordinates.lng }}
                                         zoom={16}
@@ -362,7 +360,7 @@ export default function EditConcesionario() {
                             </>
                         ) : (
                             <>
-                                <div className="flex-1 min-h-[120px] rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
+                                <div className="flex-1 min-h-[200px] rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
                                     <div className="text-center text-muted-foreground">
                                         <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
                                         <p className="text-xs">Sin ubicación</p>

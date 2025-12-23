@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react"
-import { Map } from "@/components/Map"
+import { Map as MapComponent } from "@/components/Map"
 import { InfoWindow, useGoogleMap, Polyline } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
@@ -19,6 +18,7 @@ import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { employeeService } from "@/services/employee.service"
 
 // Componente para manejar AdvancedMarkerElement
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string, color?: string }) {
@@ -75,28 +75,69 @@ export default function LiveTracking() {
     const [historyData, setHistoryData] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [showHistoryRoute, setShowHistoryRoute] = useState(false)
+    const [calendarOpen, setCalendarOpen] = useState(false)
 
-    // Fetch initial data via REST
-    const fetchActiveMessengers = useCallback(async (manual = false) => {
+    // Fetch initial data via REST (All messengers + status)
+    const fetchMessengers = useCallback(async (manual = false) => {
         try {
             setLoading(true)
-            const data = await trackingApiService.getActiveMessengers()
-            const updatedMessengers = data || []
+
+            // 1. Get all messengers
+            const allEmployees = await employeeService.getAll()
+            const messengerEmployees = allEmployees.filter(e => e.role === 'MESSENGER')
+
+            // 2. Get active sessions
+            const activeMessengers = await trackingApiService.getActiveMessengers()
+            const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
+
+            // 3. Merge data
+            const combinedRequests = messengerEmployees.map(async (emp) => {
+                // If active, use active data
+                if (activeMap.has(emp.idEmployee)) {
+                    return activeMap.get(emp.idEmployee)!
+                }
+
+                // If offline, try to get last location
+                try {
+                    const lastLoc = await trackingApiService.getLastLocation(emp.idEmployee)
+                    if (lastLoc) {
+                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: emp.fullName }
+                    }
+                } catch (e) {
+                    // Ignore 404/error, just fallback
+                }
+
+                // Default offline structure without location
+                return {
+                    messengerId: emp.idEmployee,
+                    messengerName: emp.fullName,
+                    latitude: 0,
+                    longitude: 0,
+                    lastUpdate: new Date().toISOString(),
+                    status: 'OFFLINE' as const,
+                    speed: 0,
+                    heading: 0
+                }
+            })
+
+            const updatedMessengers = await Promise.all(combinedRequests)
             setMessengers(updatedMessengers)
 
-            if (selectedMessenger) {
-                const refreshed = updatedMessengers.find(m => m.messengerId === selectedMessenger.messengerId)
-                if (refreshed) {
-                    setSelectedMessenger(refreshed)
-                }
-            }
+            // Update selected messenger if exists in new data
+            setSelectedMessenger(current => {
+                if (!current) return null
+                const refreshed = updatedMessengers.find(m => m.messengerId === current.messengerId)
+                return refreshed || current
+            })
 
             if (manual) {
-                setSuccess(`Monitoreo actualizado: ${updatedMessengers.length} mensajeros activos`)
+                setSuccess(`Monitoreo actualizado`)
             }
 
-            if (!manual && updatedMessengers.length > 0 && updatedMessengers[0].latitude && updatedMessengers[0].longitude) {
-                setMapCenter({ lat: updatedMessengers[0].latitude, lng: updatedMessengers[0].longitude })
+            // Center map on first active messenger if available and no manual update
+            const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && m.latitude !== 0)
+            if (!manual && firstActive) {
+                setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
             }
         } catch (error: any) {
             console.error("Error fetching messengers:", error)
@@ -104,11 +145,10 @@ export default function LiveTracking() {
             if (status !== 404) {
                 setError(error.response?.data?.message || error.message || "Error al cargar mensajeros")
             }
-            setMessengers([])
         } finally {
             setLoading(false)
         }
-    }, [selectedMessenger, setSuccess, setError])
+    }, [setSuccess, setError])
 
     // Fetch history for selected messenger
     const fetchHistory = useCallback(async () => {
@@ -129,28 +169,31 @@ export default function LiveTracking() {
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
-        if (update.status === 'OFFLINE') {
-            setMessengers(prev => prev.filter(m => m.messengerId !== update.messengerId))
-            setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? null : prev)
-            return
-        }
-
         setMessengers(prev => {
-            const existing = prev.findIndex(m => m.messengerId === update.messengerId)
-            if (existing >= 0) {
-                const updated = [...prev]
-                updated[existing] = update
-                return updated
+            const existingIndex = prev.findIndex(m => m.messengerId === update.messengerId)
+
+            if (existingIndex >= 0) {
+                const updatedList = [...prev]
+                // Preserve name if update doesn't have it (though update usually has it)
+                const existing = prev[existingIndex]
+                updatedList[existingIndex] = { ...existing, ...update, messengerName: update.messengerName || existing.messengerName }
+                return updatedList
             }
+
             return [...prev, update]
         })
 
-        setSelectedMessenger(prev => prev?.messengerId === update.messengerId ? update : prev)
+        setSelectedMessenger(prev => {
+            if (prev?.messengerId === update.messengerId) {
+                return { ...prev, ...update }
+            }
+            return prev
+        })
     }, [])
 
     // Connect to WebSocket on mount
     useEffect(() => {
-        fetchActiveMessengers()
+        fetchMessengers()
 
         trackingService.connect(() => {
             setConnected(true)
@@ -161,7 +204,7 @@ export default function LiveTracking() {
             trackingService.disconnect()
             setConnected(false)
         }
-    }, [fetchActiveMessengers, handleTrackingUpdate])
+    }, [fetchMessengers, handleTrackingUpdate])
 
     // Fetch history when messenger or date changes
     useEffect(() => {
@@ -177,27 +220,25 @@ export default function LiveTracking() {
 
     const selectMessenger = (messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
-        setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+        if (messenger.latitude && messenger.longitude) {
+            setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+        }
         setSheetOpen(true)
     }
 
     return (
-        <div className="h-[calc(100vh-8rem)] flex flex-col gap-4">
+        <div className="h-full flex flex-col gap-4 overflow-hidden">
             {/* Header */}
-            <div className="flex justify-between items-center flex-wrap gap-2">
+            <div className="flex justify-between items-center flex-wrap gap-2 shrink-0">
                 <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo en Vivo</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo en vivo</h1>
                     <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${connected ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
                     </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${messengers.length > 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
-                        <Users className="h-3 w-3" />
-                        {messengers.length} Activos
-                    </Badge>
-                    <Button variant="outline" size="sm" onClick={() => fetchActiveMessengers(true)} disabled={loading}>
+                    <Button variant="outline" size="sm" onClick={() => fetchMessengers(true)} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Actualizar
                     </Button>
@@ -205,16 +246,16 @@ export default function LiveTracking() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex gap-4">
+            <div className="flex-1 flex gap-4 overflow-hidden">
                 {/* Messenger List (Desktop) */}
-                <Card className="hidden lg:flex lg:flex-col w-72 shrink-0">
-                    <CardHeader className="py-3">
+                <Card className="hidden lg:flex lg:flex-col w-72 shrink-0 overflow-hidden">
+                    <CardHeader className="py-3 shrink-0">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Users className="h-4 w-4" />
                             Mensajeros
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0 flex-1">
+                    <CardContent className="p-0 flex-1 overflow-hidden">
                         <ScrollArea className="h-full">
                             {loading && messengers.length === 0 ? (
                                 <div className="space-y-2 p-4">
@@ -224,7 +265,7 @@ export default function LiveTracking() {
                                 </div>
                             ) : messengers.length === 0 ? (
                                 <div className="p-4 text-center text-muted-foreground text-sm">
-                                    No hay mensajeros activos
+                                    No hay mensajeros disponibles
                                 </div>
                             ) : (
                                 <div className="divide-y">
@@ -266,20 +307,20 @@ export default function LiveTracking() {
                 </Card>
 
                 {/* Map Container */}
-                <Card className="flex-1 overflow-hidden border p-1 bg-muted/20">
+                <Card className="flex-1 overflow-hidden">
                     <CardContent className="p-0 h-full w-full relative">
                         {loading && messengers.length === 0 ? (
                             <Skeleton className="w-full h-full rounded-md" />
                         ) : (
-                            <Map className="w-full h-full rounded-md" center={mapCenter} zoom={13}>
+                            <MapComponent className="w-full h-full rounded-md" center={mapCenter} zoom={13}>
                                 {messengers.map((messenger) => (
-                                    messenger.latitude && messenger.longitude && (
+                                    messenger.latitude && messenger.longitude && messenger.latitude !== 0 && (
                                         <AdvancedMarker
                                             key={messenger.messengerId}
                                             position={{ lat: messenger.latitude, lng: messenger.longitude }}
                                             onClick={() => selectMessenger(messenger)}
                                             title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
-                                            color={selectedMessenger?.messengerId === messenger.messengerId ? '#10b981' : '#4f46e5'}
+                                            color={messenger.status === 'ACTIVE' ? '#10b981' : '#6b7280'}
                                         />
                                     )
                                 ))}
@@ -321,12 +362,12 @@ export default function LiveTracking() {
                                         </div>
                                     </InfoWindow>
                                 )}
-                            </Map>
+                            </MapComponent>
                         )}
 
-                        {/* Mobile FAB to open messenger list */}
-                        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                            <SheetTrigger asChild>
+                        {/* Mobile FAB and Details Popup */}
+                        <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
+                            <DialogTrigger asChild>
                                 <Button
                                     variant="default"
                                     size="icon"
@@ -334,20 +375,20 @@ export default function LiveTracking() {
                                 >
                                     <PanelRightOpen className="h-5 w-5" />
                                 </Button>
-                            </SheetTrigger>
-                            <SheetContent side="right" className="w-80 p-0">
-                                <SheetHeader className="p-4 border-b">
-                                    <SheetTitle>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md p-0 flex flex-col max-h-[90vh] overflow-hidden">
+                                <DialogHeader className="p-4 border-b shrink-0">
+                                    <DialogTitle>
                                         {selectedMessenger
                                             ? (selectedMessenger.messengerName ? formatDisplayName(selectedMessenger.messengerName) : `Mensajero #${selectedMessenger.messengerId}`)
                                             : "Mensajeros"
                                         }
-                                    </SheetTitle>
-                                </SheetHeader>
+                                    </DialogTitle>
+                                </DialogHeader>
 
                                 {selectedMessenger ? (
-                                    <Tabs defaultValue="info" className="h-full">
-                                        <TabsList className="w-full rounded-none">
+                                    <Tabs defaultValue="info" className="flex-1 flex flex-col overflow-hidden">
+                                        <TabsList className="w-full rounded-none shrink-0">
                                             <TabsTrigger value="info" className="flex-1">
                                                 <MapPin className="h-4 w-4 mr-2" />
                                                 Info
@@ -358,90 +399,97 @@ export default function LiveTracking() {
                                             </TabsTrigger>
                                         </TabsList>
 
-                                        <TabsContent value="info" className="p-4 space-y-4 m-0">
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-sm text-muted-foreground">Estado</span>
-                                                    <Badge variant={selectedMessenger.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                                                        {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                                    </Badge>
-                                                </div>
-                                                {selectedMessenger.speed !== undefined && (
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-sm text-muted-foreground">Velocidad</span>
-                                                        <span className="font-medium">{(selectedMessenger.speed * 3.6).toFixed(1)} km/h</span>
+                                        <TabsContent value="info" className="flex-1 p-0 m-0 overflow-hidden">
+                                            <ScrollArea className="h-full">
+                                                <div className="p-4 space-y-4">
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm text-muted-foreground">Estado</span>
+                                                            <Badge variant={selectedMessenger.status === 'ACTIVE' ? 'default' : 'secondary'}>
+                                                                {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
+                                                            </Badge>
+                                                        </div>
+                                                        {selectedMessenger.speed !== undefined && (
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-sm text-muted-foreground">Velocidad</span>
+                                                                <span className="font-medium">{(selectedMessenger.speed * 3.6).toFixed(1)} km/h</span>
+                                                            </div>
+                                                        )}
+                                                        {selectedMessenger.lastUpdate && (
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-sm text-muted-foreground">Última actualización</span>
+                                                                <span className="text-sm">
+                                                                    {formatDistanceToNow(new Date(selectedMessenger.lastUpdate), { addSuffix: true, locale: es })}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm text-muted-foreground">Coordenadas</span>
+                                                            <span className="text-sm font-mono">
+                                                                {selectedMessenger.latitude.toFixed(5)}, {selectedMessenger.longitude.toFixed(5)}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                )}
-                                                {selectedMessenger.lastUpdate && (
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-sm text-muted-foreground">Última actualización</span>
-                                                        <span className="text-sm">
-                                                            {formatDistanceToNow(new Date(selectedMessenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-sm text-muted-foreground">Coordenadas</span>
-                                                    <span className="text-sm font-mono">
-                                                        {selectedMessenger.latitude.toFixed(5)}, {selectedMessenger.longitude.toFixed(5)}
-                                                    </span>
                                                 </div>
-                                            </div>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full"
-                                                onClick={() => setSelectedMessenger(null)}
-                                            >
-                                                Ver todos los mensajeros
-                                            </Button>
+                                            </ScrollArea>
                                         </TabsContent>
 
-                                        <TabsContent value="history" className="p-4 space-y-4 m-0">
-                                            {/* Date Picker */}
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium">Fecha</label>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button variant="outline" className="w-full justify-start text-left">
-                                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                                            {format(historyDate, "PPP", { locale: es })}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0" align="start">
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={historyDate}
-                                                            onSelect={(date) => date && setHistoryDate(date)}
-                                                            initialFocus
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover>
+                                        <TabsContent value="history" className="flex-1 flex flex-col p-0 m-0">
+                                            <div className="p-4 space-y-4 border-b shrink-0">
+                                                {/* Date Picker */}
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-medium">Fecha</label>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full justify-start text-left"
+                                                        onClick={() => setCalendarOpen(true)}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {format(historyDate, "PPP", { locale: es })}
+                                                    </Button>
+
+                                                    <Dialog open={calendarOpen} onOpenChange={setCalendarOpen} modal={false}>
+                                                        <DialogContent className="max-w-md p-0">
+                                                            <Calendar
+                                                                mode="single"
+                                                                selected={historyDate}
+                                                                onSelect={(date) => {
+                                                                    if (date) {
+                                                                        setHistoryDate(date)
+                                                                        setCalendarOpen(false)
+                                                                    }
+                                                                }}
+                                                                initialFocus
+                                                            />
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                </div>
+
+                                                {/* Show route toggle */}
+                                                <Button
+                                                    variant={showHistoryRoute ? "default" : "outline"}
+                                                    className="w-full"
+                                                    onClick={() => setShowHistoryRoute(!showHistoryRoute)}
+                                                    disabled={historyPath.length < 2}
+                                                >
+                                                    <Navigation className="mr-2 h-4 w-4" />
+                                                    {showHistoryRoute ? "Ocultar ruta" : "Mostrar ruta en mapa"}
+                                                </Button>
                                             </div>
 
-                                            {/* Show route toggle */}
-                                            <Button
-                                                variant={showHistoryRoute ? "default" : "outline"}
-                                                className="w-full"
-                                                onClick={() => setShowHistoryRoute(!showHistoryRoute)}
-                                                disabled={historyPath.length < 2}
-                                            >
-                                                <Navigation className="mr-2 h-4 w-4" />
-                                                {showHistoryRoute ? "Ocultar ruta" : "Mostrar ruta en mapa"}
-                                            </Button>
-
                                             {/* History list */}
-                                            {loadingHistory ? (
-                                                <div className="space-y-2">
-                                                    {[1, 2, 3].map(i => (
-                                                        <Skeleton key={i} className="h-12 w-full" />
-                                                    ))}
-                                                </div>
-                                            ) : historyData.length === 0 ? (
-                                                <p className="text-center text-muted-foreground text-sm py-4">
-                                                    No hay historial para esta fecha
-                                                </p>
-                                            ) : (
-                                                <ScrollArea className="h-[300px]">
+                                            <div className="flex-1 overflow-y-auto px-4 py-4">
+                                                {loadingHistory ? (
+                                                    <div className="space-y-2">
+                                                        {[1, 2, 3].map(i => (
+                                                            <Skeleton key={i} className="h-12 w-full" />
+                                                        ))}
+                                                    </div>
+                                                ) : historyData.length === 0 ? (
+                                                    <p className="text-center text-muted-foreground text-sm py-4">
+                                                        No hay historial para esta fecha
+                                                    </p>
+                                                ) : (
                                                     <div className="space-y-2">
                                                         {historyData.map((item, idx) => (
                                                             <div
@@ -463,55 +511,59 @@ export default function LiveTracking() {
                                                                 </p>
                                                             </div>
                                                         ))}
-                                                    </div>
-                                                </ScrollArea>
-                                            )}
 
-                                            {historyData.length > 0 && (
-                                                <div className="pt-2 border-t text-sm text-muted-foreground">
-                                                    <p>{historyData.length} puntos registrados</p>
-                                                </div>
-                                            )}
+                                                        {historyData.length > 0 && (
+                                                            <div className="pt-2 border-t text-sm text-muted-foreground mt-2">
+                                                                <p>{historyData.length} puntos registrados</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </TabsContent>
                                     </Tabs>
                                 ) : (
-                                    <ScrollArea className="h-full">
-                                        {messengers.length === 0 ? (
-                                            <div className="p-4 text-center text-muted-foreground text-sm">
-                                                No hay mensajeros activos
-                                            </div>
-                                        ) : (
-                                            <div className="divide-y">
-                                                {messengers.map((messenger) => (
-                                                    <button
-                                                        key={messenger.messengerId}
-                                                        className="w-full p-4 text-left hover:bg-muted/50 transition-colors"
-                                                        onClick={() => {
-                                                            setSelectedMessenger(messenger)
-                                                            setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
-                                                        }}
-                                                    >
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="font-medium">
-                                                                {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
-                                                            </span>
-                                                            <Badge variant={messenger.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
-                                                                {messenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                                            </Badge>
-                                                        </div>
-                                                        {messenger.lastUpdate && (
-                                                            <p className="text-xs text-muted-foreground mt-1">
-                                                                {formatDistanceToNow(new Date(messenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                            </p>
-                                                        )}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </ScrollArea>
+                                    <div className="flex-1 overflow-hidden">
+                                        <ScrollArea className="h-full">
+                                            {messengers.length === 0 ? (
+                                                <div className="p-4 text-center text-muted-foreground text-sm">
+                                                    No hay mensajeros disponibles
+                                                </div>
+                                            ) : (
+                                                <div className="divide-y">
+                                                    {messengers.map((messenger) => (
+                                                        <button
+                                                            key={messenger.messengerId}
+                                                            className="w-full p-4 text-left hover:bg-muted/50 transition-colors"
+                                                            onClick={() => {
+                                                                setSelectedMessenger(messenger)
+                                                                if (messenger.latitude && messenger.longitude) {
+                                                                    setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+                                                                }
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <span className="font-medium">
+                                                                    {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
+                                                                </span>
+                                                                <Badge variant={messenger.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
+                                                                    {messenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
+                                                                </Badge>
+                                                            </div>
+                                                            {messenger.lastUpdate && (
+                                                                <p className="text-xs text-muted-foreground mt-1">
+                                                                    {formatDistanceToNow(new Date(messenger.lastUpdate), { addSuffix: true, locale: es })}
+                                                                </p>
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </ScrollArea>
+                                    </div>
                                 )}
-                            </SheetContent>
-                        </Sheet>
+                            </DialogContent>
+                        </Dialog>
                     </CardContent>
                 </Card>
             </div>

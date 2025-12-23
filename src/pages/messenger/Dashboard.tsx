@@ -9,28 +9,14 @@ import { useState, useEffect } from "react"
 import { MessengerNavBar } from "@/components/messenger/MessengerNavBar"
 
 export default function MessengerDashboard() {
-    const {
-        loading,
-        pendingServices,
-        completedServices,
-        refetch,
-        error
-    } = useMessengerServices()
-
+    const { loading, pendingServices, completedServices, refetch, error } = useMessengerServices()
     const [isOnline, setIsOnline] = useState(navigator.onLine)
     const [isRefreshing, setIsRefreshing] = useState(false)
-
-    // Pull to refresh
-    const {
-        containerRef,
-        isRefreshing: isPulling,
-        pullDistance
-    } = usePullToRefresh({
+    const { containerRef, isRefreshing: isPulling, pullDistance } = usePullToRefresh({
         onRefresh: refetch,
         disabled: !isOnline
     })
 
-    // Listen for online/offline events
     useEffect(() => {
         const handleOnline = () => setIsOnline(true)
         const handleOffline = () => setIsOnline(false)
@@ -44,7 +30,6 @@ export default function MessengerDashboard() {
         }
     }, [])
 
-    // Handle manual refresh
     const handleRefresh = async () => {
         if (!isOnline || isRefreshing) return
         setIsRefreshing(true)
@@ -52,7 +37,6 @@ export default function MessengerDashboard() {
         setIsRefreshing(false)
     }
 
-    // Get current date
     const today = new Date()
     const dateString = today.toLocaleDateString('es-CO', {
         weekday: 'long',
@@ -60,7 +44,6 @@ export default function MessengerDashboard() {
         month: 'long'
     })
 
-    // Get greeting based on time
     const getGreeting = () => {
         const hour = today.getHours()
         if (hour < 12) return '¡Buenos días'

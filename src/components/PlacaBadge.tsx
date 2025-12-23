@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 interface PlacaBadgeProps {
     plateNumber: string
     plateType?: 'MOTO' | 'CARRO' | string
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg' | 'xl'
     className?: string
 }
 
@@ -29,6 +29,7 @@ export function PlacaBadge({
         sm: 'text-sm px-2 py-0.5 rounded',
         md: 'text-base px-3 py-1 rounded-md',
         lg: 'text-xl px-4 py-2 rounded-lg',
+        xl: 'text-2xl px-5 py-2.5 rounded-lg',
     }
 
     const isMoto = plateType?.toUpperCase() === 'MOTO'

@@ -177,12 +177,12 @@ export default function ViewServicio() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
-                    <div className="flex flex-row items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                         <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-lg font-semibold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            <div className={`w-6 h-6 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-3xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
                                 {getStatusIconConfig(service.currentStatus).label}
                             </span>
                         </div>
@@ -191,13 +191,14 @@ export default function ViewServicio() {
                             const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
                             if (timeRemaining) {
                                 return (
-                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                                        ⏱️ {timeRemaining.hours}h {timeRemaining.minutes}m
-                                    </Badge>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800">
+                                        <span className="text-lg">⏱️</span>
+                                        <span className="font-medium text-lg">{timeRemaining.hours}h {timeRemaining.minutes}m</span>
+                                    </div>
                                 )
                             }
                             return (
-                                <Badge variant="outline" className="bg-gray-100 text-gray-500 border-gray-200">
+                                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
                                     🔒 Inmutable
                                 </Badge>
                             )
@@ -213,7 +214,6 @@ export default function ViewServicio() {
                         if (canEdit) {
                             return (
                                 <Button
-                                    variant="outline"
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
                                     className="flex-1 md:flex-none"
                                 >
@@ -341,7 +341,7 @@ export default function ViewServicio() {
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
                                                 <TimelineHeader statusColor={newStatusConfig.className}>
-                                                    <Badge variant="outline" className={`${newStatusConfig.className} border bg-background text-sm px-3 py-1 font-medium`}>
+                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1 font-medium hover:opacity-90 border-0`}>
                                                         {newStatusConfig.label}
                                                     </Badge>
                                                 </TimelineHeader>

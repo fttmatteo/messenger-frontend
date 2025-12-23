@@ -17,6 +17,7 @@ import UpdateServiceStatus from '../pages/admin/UpdateServiceStatus';
 import ViewServicio from '../pages/admin/ViewServicio';
 import Eliminados from '../pages/admin/Eliminados';
 import LiveTracking from '../pages/admin/LiveTracking';
+import Configuracion from '../pages/admin/Configuracion';
 import MessengerDashboard from '../pages/messenger/Dashboard';
 import MessengerCreateServicio from '../pages/messenger/CreateServicio';
 import MessengerServiceDetails from '../pages/messenger/ServiceDetails';
@@ -24,6 +25,9 @@ import MessengerUpdateStatus from '../pages/messenger/UpdateStatus';
 import MessengerStatsHistoryPage from '../pages/messenger/StatsHistoryPage';
 import MessengerRouteHistoryPage from '../pages/messenger/RouteHistoryPage';
 import MessengerStatsPage from '../pages/messenger/StatsPage';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileOnlyGuard } from '@/components/MobileOnlyGuard';
+import { DesktopOnlyGuard } from '@/components/DesktopOnlyGuard';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
@@ -61,6 +65,8 @@ function RoleBasedRedirect() {
 }
 
 export function AppRoutes() {
+    const isMobile = useIsMobile()
+
     return (
         <Routes>
             {/* Public Routes */}
@@ -76,12 +82,12 @@ export function AppRoutes() {
                 }
             />
 
-            {/* Admin Routes */}
+            {/* Admin Routes - Desktop Only */}
             <Route
                 path="/admin"
                 element={
                     <ProtectedRoute>
-                        <AdminLayout />
+                        {isMobile ? <DesktopOnlyGuard /> : <AdminLayout />}
                     </ProtectedRoute>
                 }
             >
@@ -103,15 +109,15 @@ export function AppRoutes() {
                 {/* Other routes */}
                 <Route path="eliminados" element={<Eliminados />} />
                 <Route path="tracking" element={<LiveTracking />} />
-                <Route path="configuracion" element={<div className="p-4">Configuración - Próximamente</div>} />
+                <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
-            {/* Messenger Routes */}
+            {/* Messenger Routes - Mobile Only */}
             <Route
                 path="/messenger"
                 element={
                     <ProtectedRoute>
-                        <MessengerLayout />
+                        {!isMobile ? <MobileOnlyGuard /> : <MessengerLayout />}
                     </ProtectedRoute>
                 }
             >

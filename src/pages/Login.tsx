@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, HelpCircle } from "lucide-react"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -61,34 +61,45 @@ export default function Login() {
         } catch (err: any) {
             toast.error(err.message || "Algo salió mal", {
                 id: 'login-error',
-                position: 'top-center',
+                position: 'top-left',
                 duration: 4000
             })
         }
     }
 
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-screen h-screen bg-background p-4 overflow-hidden">
-            <Card className="w-full max-w-[380px] relative shadow-lg border-border/50 my-auto">
+        <div className="flex items-center justify-center h-screen bg-background p-2 sm:p-4 overflow-auto">
+            <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
+                {/* Help Button - Top Left */}
+                <div className="absolute top-3 left-3 z-10">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button">
+                        <HelpCircle className="h-5 w-5" />
+                    </Button>
+                </div>
                 {/* Mode Toggle Button - Consistent Position */}
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-3 right-3 z-10">
                     <ModeToggle className="h-8 w-8" />
                 </div>
-                <CardHeader className="space-y-1 pb-2 md:pb-4 pt-12 md:pt-6">
-                    <div className="flex flex-col items-center justify-center mb-2 md:mb-2">
-                        <img src={logo} alt="PLAK Logo" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
+                <CardHeader className="space-y-1 pb-2 pt-10 sm:pt-6">
+                    <div className="flex flex-col items-center justify-center mb-1 sm:mb-2">
+                        <img src={logo} alt="PLAK Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 object-contain" />
                     </div>
                     <div className="flex items-center justify-center">
                         <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                     </div>
                     <CardDescription className="text-center text-sm text-muted-foreground">
-                        Ingrese sus credenciales para continuar
+                        Ingrese sus credenciales
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="pb-6 md:pb-6">
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 md:space-y-3">
-                        <div className="space-y-2">
-                            <Label htmlFor="document" className="text-sm font-medium text-foreground/80">Documento</Label>
+                <CardContent className="pb-4 sm:pb-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3">
+                        <div className="space-y-1.5 sm:space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="document" className="text-sm font-medium text-foreground/80">Documento</Label>
+                                {errors.document && (
+                                    <p className="text-xs text-red-500 font-medium">{errors.document.message}</p>
+                                )}
+                            </div>
                             <Input
                                 id="document"
                                 type="text"
@@ -96,15 +107,17 @@ export default function Login() {
                                 placeholder="Ingrese su número de documento"
                                 autoComplete="username"
                                 {...register("document")}
-                                className="h-10 text-sm"
+                                className="h-9 sm:h-10 text-sm"
                             />
-                            {errors.document && (
-                                <p className="text-xs text-red-500 font-medium">{errors.document.message}</p>
-                            )}
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Contraseña</Label>
+                        <div className="space-y-1.5 sm:space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Contraseña</Label>
+                                {errors.password && (
+                                    <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>
+                                )}
+                            </div>
                             <div className="relative">
                                 <Input
                                     id="password"
@@ -112,7 +125,7 @@ export default function Login() {
                                     placeholder="Ingrese su contraseña"
                                     autoComplete="current-password"
                                     {...register("password")}
-                                    className="pr-10 h-10 text-sm"
+                                    className="pr-10 h-9 sm:h-10 text-sm"
                                 />
                                 <Button
                                     type="button"
@@ -129,12 +142,9 @@ export default function Login() {
                                     <span className="sr-only">Toggle password visibility</span>
                                 </Button>
                             </div>
-                            {errors.password && (
-                                <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>
-                            )}
                         </div>
 
-                        <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center justify-between pt-0.5 sm:pt-1">
                             <div className="flex items-center space-x-2">
                                 <Controller
                                     name="rememberMe"
@@ -148,21 +158,18 @@ export default function Login() {
                                         />
                                     )}
                                 />
-                                <Label htmlFor="rememberMe" className="text-sm text-muted-foreground font-normal cursor-pointer">
+                                <Label htmlFor="rememberMe" className="text-xs text-muted-foreground font-normal cursor-pointer">
                                     Recordar contraseña
                                 </Label>
                             </div>
-                            <Button variant="link" className="px-0 font-normal text-sm text-primary/80 h-auto" type="button">
+                            <Button variant="link" className="px-0 font-normal text-xs text-primary/80 h-auto" type="button">
                                 ¿Olvidó su contraseña?
                             </Button>
                         </div>
 
-                        <Button type="submit" className="w-full h-10 text-sm font-medium mt-2" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full h-9 sm:h-10 text-sm font-medium mt-1.5 sm:mt-2" disabled={isSubmitting}>
                             {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                         </Button>
-                        <div className="text-center text-sm text-muted-foreground mt-4 pb-2 md:pb-0">
-                            ¿Tienes problemas para entrar? <span className="underline cursor-pointer hover:text-foreground transition-colors">Contacta a soporte</span>
-                        </div>
                     </form>
                 </CardContent>
             </Card>

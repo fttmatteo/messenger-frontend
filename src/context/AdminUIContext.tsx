@@ -2,8 +2,8 @@ import React, { createContext, useContext, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
 interface AdminUIContextType {
-    setError: (error: string | null) => void;
-    setSuccess: (success: string | null) => void;
+    setError: (error: string | null, id?: string) => void;
+    setSuccess: (success: string | null, id?: string) => void;
     clearError: () => void;
     clearSuccess: () => void;
 }
@@ -12,10 +12,11 @@ const AdminUIContext = createContext<AdminUIContextType | undefined>(undefined);
 
 export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
-    // Wrapper around sonner toast.error
-    const setError = (msg: string | null) => {
+    // Wrapper around sonner toast.error with optional ID to prevent duplicates
+    const setError = (msg: string | null, id?: string) => {
         if (!msg) return;
         toast.error(msg, {
+            id: id || msg, // Use message as ID if not provided
             position: 'top-center',
             duration: 3000,
             className: 'bg-red-500 text-white border-red-600',
@@ -23,10 +24,11 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
         });
     };
 
-    // Wrapper around sonner toast.success
-    const setSuccess = (msg: string | null) => {
+    // Wrapper around sonner toast.success with optional ID to prevent duplicates
+    const setSuccess = (msg: string | null, id?: string) => {
         if (!msg) return;
         toast.success(msg, {
+            id: id || msg, // Use message as ID if not provided
             position: 'top-center',
             duration: 3000,
             className: 'bg-green-500 text-white border-green-600',

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { capitalizeWords } from "@/lib/format-utils"
@@ -71,45 +71,32 @@ export default function CreateConcesionario() {
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Nuevo concesionario</h1>
+        <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold">Nuevo concesionario</h1>
             </div>
 
-            <Card className="max-w-2xl">
-                <CardHeader>
-                    <CardTitle>Información del concesionario</CardTitle>
+            <Card className="flex-1 flex flex-col">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">Información del concesionario</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        {/* Nombre */}
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Nombre del concesionario</Label>
-                            <Input
-                                id="name"
-                                placeholder="Mundo Yamaha"
-                                {...register("name")}
-                            />
-                            {errors.name && (
-                                <p className="text-sm text-red-500">{errors.name.message}</p>
-                            )}
-                        </div>
+                <CardContent className="flex-1">
+                    <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
+                            {/* Nombre */}
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nombre del concesionario</Label>
+                                <Input
+                                    id="name"
+                                    placeholder="Mundo Yamaha"
+                                    {...register("name")}
+                                />
+                                {errors.name && (
+                                    <p className="text-sm text-red-500">{errors.name.message}</p>
+                                )}
+                            </div>
 
-                        {/* Dirección */}
-                        <div className="space-y-2">
-                            <Label htmlFor="address">Dirección completa</Label>
-                            <Textarea
-                                id="address"
-                                placeholder="Calle 123 #45-67, Medellin"
-                                rows={3}
-                                {...register("address")}
-                            />
-                            {errors.address && (
-                                <p className="text-sm text-red-500">{errors.address.message}</p>
-                            )}
-                        </div>
-
-                        <div className="grid gap-4 md:grid-cols-2">
                             {/* Teléfono */}
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Teléfono</Label>
@@ -134,21 +121,38 @@ export default function CreateConcesionario() {
                                         <SelectValue placeholder="Selecciona una zona" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {ZONES.map((zone) => (
-                                            <SelectItem key={zone.value} value={zone.value}>
-                                                {zone.label}
-                                            </SelectItem>
-                                        ))}
+                                        <SelectGroup>
+                                            <SelectLabel className="text-muted-foreground">Selecciona una zona</SelectLabel>
+                                            {ZONES.map((zone) => (
+                                                <SelectItem key={zone.value} value={zone.value}>
+                                                    {zone.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
                                     </SelectContent>
                                 </Select>
                                 {errors.zone && (
                                     <p className="text-sm text-red-500">{errors.zone.message}</p>
                                 )}
                             </div>
+
+                            {/* Dirección - spans full width */}
+                            <div className="space-y-2 md:col-span-2 lg:col-span-3">
+                                <Label htmlFor="address">Dirección completa</Label>
+                                <Textarea
+                                    id="address"
+                                    placeholder="Calle 123 #45-67, Medellin"
+                                    rows={2}
+                                    {...register("address")}
+                                />
+                                {errors.address && (
+                                    <p className="text-sm text-red-500">{errors.address.message}</p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Submit Buttons */}
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex gap-4 pt-6 mt-auto border-t">
                             <Button
                                 type="button"
                                 variant="outline"

@@ -2,28 +2,23 @@ import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useServices } from "@/hooks/useServices"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { useScrollToTop } from "@/hooks/useScrollToTop"
-import { listItemVariants, fadeScaleVariants } from "@/lib/animation-variants"
+import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
 import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { PlacaBadge } from "@/components/PlacaBadge"
-import { TableRowSkeleton, CardSkeleton } from "@/components/service/ServiceSkeletons"
-import { ServiceCard } from "@/components/service/ServiceCard"
+import { TableRowSkeleton } from "@/components/service/ServiceSkeletons"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X, ChevronUp } from "lucide-react"
+import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
-
-
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -38,10 +33,8 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 export default function Servicios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
-    const isMobile = useIsMobile()
 
     // Use custom hooks
-    const { showScrollTop, scrollToTop } = useScrollToTop({ enabled: isMobile })
     const {
         services,
         loading,
@@ -71,45 +64,12 @@ export default function Servicios() {
         <div className="space-y-4 md:space-y-6">
             <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
 
-            {/* Header with inline filters on desktop */}
+            {/* Header with inline filters */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-4 flex-wrap">
                     <h1 className="text-2xl md:text-3xl font-bold">Servicios</h1>
 
-                    {!isMobile && (
-                        <div className="flex items-center gap-3">
-                            <Select
-                                value={statusFilter.length === 1 ? statusFilter[0] : "all"}
-                                onValueChange={(value) => {
-                                    if (value === "all") setStatusFilter([])
-                                    else setStatusFilter([value as ServiceStatus])
-                                }}
-                            >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Estado" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todos los estados</SelectItem>
-                                    {AVAILABLE_STATUSES.map(status => (
-                                        <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-
-                            {statusFilter.length > 0 && (
-                                <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-9">
-                                    <X className="h-4 w-4 mr-2" />Limpiar filtro
-                                </Button>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Mobile View */}
-            {isMobile ? (
-                <div>
-                    <div className="mb-3 space-y-2">
+                    <div className="flex items-center gap-3">
                         <Select
                             value={statusFilter.length === 1 ? statusFilter[0] : "all"}
                             onValueChange={(value) => {
@@ -117,8 +77,8 @@ export default function Servicios() {
                                 else setStatusFilter([value as ServiceStatus])
                             }}
                         >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Filtrar por estado" />
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Estado" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos los estados</SelectItem>
@@ -129,21 +89,42 @@ export default function Servicios() {
                         </Select>
 
                         {statusFilter.length > 0 && (
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="w-full">
+                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-9">
                                 <X className="h-4 w-4 mr-2" />Limpiar filtro
                             </Button>
                         )}
                     </div>
+                </div>
+            </div>
 
-                    <p className="text-sm text-muted-foreground mb-3">
-                        {filteredAndSortedServices.length} de {services.length} servicio(s)
-                        {searchQuery && ` - "${searchQuery}"`}
-                        {statusFilter.length > 0 && ` (${statusFilter.length} filtro activo)`}
-                    </p>
+            <Card>
+                <CardHeader>
+                    <div className="flex flex-col gap-1">
+                        <CardTitle>Lista de servicios</CardTitle>
+                        <CardDescription>
+                            {filteredAndSortedServices.length} de {services.length} servicio(s)
+                            {searchQuery && ` - Buscando "${searchQuery}"`}
+                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                        </CardDescription>
+                    </div>
+                </CardHeader>
+                <CardContent>
                     {loading ? (
-                        <div className="space-y-3">
-                            {Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)}
-                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Placa</TableHead>
+                                    <TableHead>Concesionario</TableHead>
+                                    <TableHead>Mensajero</TableHead>
+                                    <TableHead>Estado</TableHead>
+                                    <TableHead>Creado</TableHead>
+                                    <TableHead>Acción</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
+                            </TableBody>
+                        </Table>
                     ) : filteredAndSortedServices.length === 0 ? (
                         <ListEmptyState
                             isSearchResult={!!searchQuery}
@@ -153,167 +134,110 @@ export default function Servicios() {
                             emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
                         />
                     ) : (
-                        <motion.div>
-                            <AnimatePresence mode="popLayout">
-                                {paginatedServices.map((service) => (
-                                    <div key={service.idServiceDelivery} className="flex gap-2 mb-2">
-                                        <div className="flex-1">
-                                            <ServiceCard service={service} onUpdate={handleUpdateStatus} onViewDetails={(id) => navigate(`/admin/servicios/${id}`)} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </AnimatePresence>
-                        </motion.div>
+                        <>
+                            <div>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
+                                                <div className="flex items-center">
+                                                    <Car className="h-4 w-4 mr-1" />Placa
+                                                    <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
+                                                <div className="flex items-center">
+                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Concesionario
+                                                    <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("messengerName")}>
+                                                <div className="flex items-center">
+                                                    <User className="h-4 w-4 mr-1 shrink-0" />Mensajero
+                                                    <SortIndicator field="messengerName" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="w-[140px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
+                                                <div className="flex items-center">
+                                                    <Bike className="h-4 w-4 mr-1" />Estado
+                                                    <SortIndicator field="currentStatus" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="w-[120px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("createdAt")}>
+                                                <div className="flex items-center">
+                                                    <Calendar className="h-4 w-4 mr-1" />Creado
+                                                    <SortIndicator field="createdAt" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="w-[120px] text-center">
+                                                <div className="flex items-center justify-center"><Settings className="h-4 w-4 mr-1" /></div>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <AnimatePresence mode="popLayout">
+                                            {paginatedServices.map((service, index) => (
+                                                <motion.tr
+                                                    key={service.idServiceDelivery}
+                                                    variants={listItemVariants}
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                    exit="exit"
+                                                    layout
+                                                    custom={index}
+                                                    onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
+                                                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
+                                                >
+                                                    <TableCell>
+                                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.dealership.name}>
+                                                        {service.dealership.name}
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[150px] md:max-w-[200px] truncate">
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="cursor-default truncate block">{formatDisplayName(service.messenger.fullName)}</span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent><p>{service.messenger.fullName}</p></TooltipContent>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                                                            <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                                                {getStatusIconConfig(service.currentStatus).label}
+                                                            </span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="whitespace-nowrap text-base">
+                                                        {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
+                                                    </TableCell>
+                                                    <TableCell className="text-center">
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Button
+                                                                variant="default"
+                                                                size="icon"
+                                                                onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }}
+                                                                className="h-8 w-8 bg-primary hover:bg-primary/90"
+                                                                title="Actualizar estado"
+                                                            >
+                                                                <Edit className="h-4 w-4" />
+                                                                <span className="sr-only">Actualizar</span>
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </motion.tr>
+                                            ))}
+                                        </AnimatePresence>
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedServices.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
+                        </>
                     )}
-                    <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedServices.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
-                </div>
-            ) : (
-                <Card>
-                    <CardHeader>
-                        <div className="flex flex-col gap-1">
-                            <CardTitle>Lista de servicios</CardTitle>
-                            <CardDescription>
-                                {filteredAndSortedServices.length} de {services.length} servicio(s)
-                                {searchQuery && ` - Buscando "${searchQuery}"`}
-                                {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                            </CardDescription>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        {loading ? (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Placa</TableHead>
-                                        <TableHead>Concesionario</TableHead>
-                                        <TableHead>Mensajero</TableHead>
-                                        <TableHead>Estado</TableHead>
-                                        <TableHead>Creado</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
-                                </TableBody>
-                            </Table>
-                        ) : filteredAndSortedServices.length === 0 ? (
-                            <ListEmptyState
-                                isSearchResult={!!searchQuery}
-                                searchQuery={searchQuery}
-                                emptyIcon={<PackageCheck />}
-                                emptyTitle="Sin servicios"
-                                emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
-                            />
-                        ) : (
-                            <>
-                                <div className="overflow-hidden">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
-                                                    <div className="flex items-center">
-                                                        <Car className="h-4 w-4 mr-1" />Placa
-                                                        <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("dealershipName")}>
-                                                    <div className="flex items-center">
-                                                        <Building2 className="h-4 w-4 mr-1 shrink-0" /><span className="truncate">Concesionario</span>
-                                                        <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("messengerName")}>
-                                                    <div className="flex items-center">
-                                                        <User className="h-4 w-4 mr-1 shrink-0" /><span className="truncate">Mensajero</span>
-                                                        <SortIndicator field="messengerName" currentSortField={sortField} sortDirection={sortDirection} />
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
-                                                    <div className="flex items-center">
-                                                        <Bike className="h-4 w-4 mr-1" />Estado
-                                                        <SortIndicator field="currentStatus" currentSortField={sortField} sortDirection={sortDirection} />
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("createdAt")}>
-                                                    <div className="flex items-center">
-                                                        <Calendar className="h-4 w-4 mr-1" />Creado
-                                                        <SortIndicator field="createdAt" currentSortField={sortField} sortDirection={sortDirection} />
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="text-right">
-                                                    <div className="flex items-center justify-end"><Settings className="h-4 w-4 mr-1" />Acciones</div>
-                                                </TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            <AnimatePresence mode="popLayout">
-                                                {paginatedServices.map((service, index) => (
-                                                    <motion.tr
-                                                        key={service.idServiceDelivery}
-                                                        variants={listItemVariants}
-                                                        initial="hidden"
-                                                        animate="visible"
-                                                        exit="exit"
-                                                        layout
-                                                        custom={index}
-                                                        onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
-                                                        className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
-                                                    >
-                                                        <TableCell>
-                                                            <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
-                                                        </TableCell>
-                                                        <TableCell className="truncate text-base" title={service.dealership.name}>
-                                                            {service.dealership.name}
-                                                        </TableCell>
-                                                        <TableCell className="text-base">
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <span className="cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent><p>{service.messenger.fullName}</p></TooltipContent>
-                                                            </Tooltip>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <div className="flex items-center gap-2">
-                                                                <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                                <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                                    {getStatusIconConfig(service.currentStatus).label}
-                                                                </span>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="whitespace-nowrap text-base">
-                                                            {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
-                                                        </TableCell>
-                                                        <TableCell className="text-right">
-                                                            <div className="flex items-center justify-end gap-2">
-                                                                <Button variant="default" size="sm" onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }} className="bg-primary hover:bg-primary/90">
-                                                                    <Edit className="h-4 w-4 mr-1" />Actualizar
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </motion.tr>
-                                                ))}
-                                            </AnimatePresence>
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                                <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedServices.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Scroll to top button (mobile only) */}
-            <AnimatePresence>
-                {isMobile && showScrollTop && (
-                    <motion.div variants={fadeScaleVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-20 right-4 z-50">
-                        <Button onClick={scrollToTop} size="icon" className="h-12 w-12 rounded-full shadow-lg">
-                            <ChevronUp className="h-5 w-5" />
-                        </Button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                </CardContent>
+            </Card>
         </div>
     )
 }
