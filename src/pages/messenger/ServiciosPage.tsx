@@ -5,7 +5,7 @@ import { Search } from "lucide-react"
 import { useState, useMemo } from "react"
 
 export default function ServiciosPage() {
-    const { loading, completedServices, refetch, error } = useMessengerServices()
+    const { loading, completedServices, error } = useMessengerServices()
     const [searchTerm, setSearchTerm] = useState("")
 
     // Filter services based on search
@@ -44,7 +44,6 @@ export default function ServiciosPage() {
                     services={filteredServices}
                     loading={loading}
                     emptyMessage={searchTerm ? "No se encontraron servicios" : "No hay servicios completados hoy"}
-                    onRefresh={refetch}
                 />
             </div>
 

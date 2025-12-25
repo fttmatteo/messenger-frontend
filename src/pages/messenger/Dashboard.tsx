@@ -98,7 +98,6 @@ export default function MessengerDashboard() {
                         services={pendingServices}
                         loading={loading}
                         emptyMessage="No tienes servicios asignados"
-                        onRefresh={handleRefresh}
                     />
                 </div>
 
