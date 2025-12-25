@@ -67,9 +67,38 @@ function RoleBasedRedirect() {
 export function AppRoutes() {
     const isMobile = useIsMobile()
 
+    // Helper to render device-appropriate layout or loading state
+    const renderAdminRoute = () => {
+        if (isMobile === undefined) {
+            return (
+                <div className="flex items-center justify-center min-h-screen bg-background">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Cargando...</p>
+                    </div>
+                </div>
+            );
+        }
+        return isMobile ? <DesktopOnlyGuard /> : <AdminLayout />;
+    };
+
+    const renderMessengerRoute = () => {
+        if (isMobile === undefined) {
+            return (
+                <div className="flex items-center justify-center min-h-screen bg-background">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-muted-foreground">Cargando...</p>
+                    </div>
+                </div>
+            );
+        }
+        return !isMobile ? <MobileOnlyGuard /> : <MessengerLayout />;
+    };
+
     return (
         <Routes>
-            {/* Public Routes */}
+            {/* Public Routes - Login is universal */}
             <Route path="/login" element={<Login />} />
 
             {/* Role-based redirect */}
@@ -87,7 +116,7 @@ export function AppRoutes() {
                 path="/admin"
                 element={
                     <ProtectedRoute>
-                        {isMobile ? <DesktopOnlyGuard /> : <AdminLayout />}
+                        {renderAdminRoute()}
                     </ProtectedRoute>
                 }
             >
@@ -117,7 +146,7 @@ export function AppRoutes() {
                 path="/messenger"
                 element={
                     <ProtectedRoute>
-                        {!isMobile ? <MobileOnlyGuard /> : <MessengerLayout />}
+                        {renderMessengerRoute()}
                     </ProtectedRoute>
                 }
             >
@@ -135,3 +164,4 @@ export function AppRoutes() {
         </Routes>
     );
 }
+

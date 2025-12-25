@@ -103,8 +103,11 @@ export default function LiveTracking() {
                     if (lastLoc) {
                         return { ...lastLoc, status: 'OFFLINE' as const, messengerName: emp.fullName }
                     }
-                } catch (e) {
-                    // Ignore 404/error, just fallback
+                } catch (e: any) {
+                    // Ignore 404 errors (mensajero sin ubicación previa), but log other errors
+                    if (e.response?.status !== 404) {
+                        console.error(`Error fetching last location for messenger ${emp.idEmployee}:`, e)
+                    }
                 }
 
                 // Default offline structure without location
