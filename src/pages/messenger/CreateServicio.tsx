@@ -192,11 +192,14 @@ export default function MessengerCreateServicio() {
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || ''
             const isOcrError =
-                errorMessage.toLowerCase().includes('ocr') ||
-                errorMessage.toLowerCase().includes('placa') ||
-                errorMessage.toLowerCase().includes('plate') ||
-                errorMessage.toLowerCase().includes('detectar') ||
-                errorMessage.toLowerCase().includes('reconocer')
+                (errorMessage.toLowerCase().includes('ocr') ||
+                    errorMessage.toLowerCase().includes('placa') ||
+                    errorMessage.toLowerCase().includes('plate') ||
+                    errorMessage.toLowerCase().includes('detectar') ||
+                    errorMessage.toLowerCase().includes('reconocer')) &&
+                !errorMessage.toLowerCase().includes('ya tiene') &&
+                !errorMessage.toLowerCase().includes('existe') &&
+                !errorMessage.toLowerCase().includes('registrado')
 
             if (isOcrError && !showManualPlate) {
                 setShowManualPlate(true)
