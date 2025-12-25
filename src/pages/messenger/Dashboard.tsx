@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RefreshCw, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
-import { MessengerNavBar } from "@/components/messenger/MessengerNavBar"
 
 export default function MessengerDashboard() {
     const { loading, pendingServices, completedServices, refetch, error } = useMessengerServices()
@@ -39,16 +38,16 @@ export default function MessengerDashboard() {
 
     const today = new Date()
     const dateString = today.toLocaleDateString('es-CO', {
-        weekday: 'long',
+        weekday: 'short',
         day: 'numeric',
-        month: 'long'
+        month: 'short'
     })
 
     const getGreeting = () => {
         const hour = today.getHours()
-        if (hour < 12) return '¡Buenos días'
-        if (hour < 18) return '¡Buenas tardes'
-        return '¡Buenas noches'
+        if (hour < 12) return 'Buenos días'
+        if (hour < 18) return 'Buenas tardes'
+        return 'Buenas noches'
     }
 
     return (
@@ -62,60 +61,54 @@ export default function MessengerDashboard() {
                 isRefreshing={isPulling}
             />
 
-            <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
+            <div className="flex flex-col h-full p-3 gap-3 overflow-auto">
                 {/* Offline Banner */}
                 {!isOnline && (
-                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-sm">
-                        <WifiOff className="h-4 w-4 flex-shrink-0" />
+                    <div className="flex items-center gap-2 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-xs">
+                        <WifiOff className="h-3.5 w-3.5 flex-shrink-0" />
                         <span>Sin conexión - Mostrando datos guardados</span>
                     </div>
                 )}
 
-                {/* Header with Welcome Message */}
-                <header className="flex items-start justify-between">
-                    <div className="min-w-0">
-                        <h1 className="text-xl font-bold leading-tight">
-                            {getGreeting()}, Mensajero!
-                        </h1>
-                        <p className="text-sm text-muted-foreground capitalize">
-                            {dateString}
-                        </p>
+                {/* Compact Header with Greeting + Stats */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-muted-foreground">
+                            {getGreeting()} · <span className="capitalize">{dateString}</span>
+                        </span>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleRefresh}
                         disabled={isRefreshing || isPulling || !isOnline}
-                        className="h-9 w-9"
+                        className="h-8 w-8"
                     >
-                        <RefreshCw className={`h-5 w-5 ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
                     </Button>
-                </header>
-
-                {/* Navigation Bar */}
-                <MessengerNavBar />
+                </div>
 
                 {/* Services Tabs */}
                 <Tabs defaultValue="pending" className="flex-1 flex flex-col min-h-0">
-                    <TabsList className="grid w-full grid-cols-2 h-11">
-                        <TabsTrigger value="pending" className="text-sm">
+                    <TabsList className="grid w-full grid-cols-2 h-10">
+                        <TabsTrigger value="pending" className="text-xs">
                             Pendientes ({pendingServices.length})
                         </TabsTrigger>
-                        <TabsTrigger value="completed" className="text-sm">
+                        <TabsTrigger value="completed" className="text-xs">
                             Completados ({completedServices.length})
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="pending" className="flex-1 mt-4">
+                    <TabsContent value="pending" className="flex-1 mt-3">
                         <ServiceList
                             services={pendingServices}
                             loading={loading}
-                            emptyMessage="No tienes servicios pendientes 🎉"
+                            emptyMessage="No tienes servicios pendientes"
                             onRefresh={handleRefresh}
                         />
                     </TabsContent>
 
-                    <TabsContent value="completed" className="flex-1 mt-4">
+                    <TabsContent value="completed" className="flex-1 mt-3">
                         <ServiceList
                             services={completedServices}
                             loading={loading}
@@ -125,10 +118,9 @@ export default function MessengerDashboard() {
                     </TabsContent>
                 </Tabs>
 
-
                 {/* Error State */}
                 {error && !loading && (
-                    <div className="fixed bottom-20 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg z-40">
+                    <div className="fixed bottom-24 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg z-40">
                         <p className="text-red-600 dark:text-red-400 text-sm text-center">
                             {error}
                         </p>
@@ -138,3 +130,4 @@ export default function MessengerDashboard() {
         </div>
     )
 }
+

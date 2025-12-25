@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { Bike } from 'lucide-react'
 
 interface PlacaBadgeProps {
     plateNumber: string
@@ -59,10 +60,11 @@ export function PlacaBadge({
                 </>
             )}
             {isMoto && (
-                <span className="ml-1 text-[0.6em] bg-black text-yellow-400 px-1 rounded text-xs">
-                    🏍️
+                <span className="ml-1 bg-black text-yellow-400 p-0.5 rounded">
+                    <Bike className="h-3 w-3" />
                 </span>
             )}
         </span>
     )
 }
+

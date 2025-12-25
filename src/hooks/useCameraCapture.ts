@@ -135,7 +135,7 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                 setImagePreview(dataUrl)
 
                 stopCamera()
-                toast.success("📸 Foto capturada exitosamente")
+                toast.success("Foto capturada exitosamente")
             } else {
                 toast.error("Error al capturar foto", { id: "error-captura" })
             }

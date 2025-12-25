@@ -165,7 +165,7 @@ export default function MessengerCreateServicio() {
                 setImagePreview(dataUrl)
 
                 stopCamera()
-                toast.success("📸 Foto capturada")
+                toast.success("Foto capturada")
             } else {
                 toast.error("Error al capturar foto", { id: "error-captura" })
             }
@@ -300,7 +300,7 @@ export default function MessengerCreateServicio() {
                                                             className="w-full h-32 sm:h-40 flex flex-col items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary touch-manipulation"
                                                         >
                                                             <Camera className="w-10 h-10 sm:w-12 sm:h-12" />
-                                                            <span className="font-semibold text-sm">📷 Abrir cámara</span>
+                                                            <span className="font-semibold text-sm">Abrir cámara</span>
                                                         </Button>
 
                                                         {cameraError && (
@@ -431,7 +431,7 @@ export default function MessengerCreateServicio() {
                                                 {groupedDealerships.map(([zone, zoneDealerships]) => (
                                                     <SelectGroup key={zone}>
                                                         <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
-                                                            📍 {zone}
+                                                            {zone}
                                                         </SelectLabel>
                                                         {zoneDealerships.map((dealership) => (
                                                             <SelectItem
@@ -456,7 +456,7 @@ export default function MessengerCreateServicio() {
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                                         <span className="text-amber-600 dark:text-amber-400 text-sm">
-                                            ⚠️ No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
+                                            No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
                                         </span>
                                     </div>
                                     <FormField

@@ -87,7 +87,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 const file = new File([blob], `evidencia_${Date.now()}.jpg`, { type: 'image/jpeg' })
                 onPhotosChange([...photos, file])
                 stopCamera()
-                toast.success('📸 Foto capturada')
+                toast.success('Foto capturada')
             }
         }, 'image/jpeg', 0.9)
     }

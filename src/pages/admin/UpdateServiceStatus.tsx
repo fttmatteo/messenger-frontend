@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { Home, Loader2, Save, UserPlus } from "lucide-react"
+import { Home, Loader2, Save, UserPlus, Clock, AlertTriangle } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
@@ -180,7 +180,7 @@ export default function UpdateServiceStatus() {
                 if (!lockReason && timeRemaining) {
                     return (
                         <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-100 px-4 py-3 rounded-lg flex items-start gap-3">
-                            <span className="text-blue-600 dark:text-blue-400 text-xl mt-0.5">⏱️</span>
+                            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="font-semibold text-base">Ventana de edición activa</p>
                                 <p className="text-sm mt-1">
@@ -321,7 +321,7 @@ export default function UpdateServiceStatus() {
                         if (lockReason) {
                             return (
                                 <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 px-4 py-3 rounded-lg flex items-start gap-2">
-                                    <span className="text-amber-600 dark:text-amber-400 text-xl mt-0.5">⚠️</span>
+                                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                                     <div>
                                         <p className="font-semibold">Servicio bloqueado</p>
                                         <p className="text-sm mt-1">{lockReason}</p>

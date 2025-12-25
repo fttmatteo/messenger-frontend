@@ -145,7 +145,7 @@ export function SignaturePad({
                 {isEmpty && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <p className="text-muted-foreground text-sm">
-                            ✍️ Firma aquí con tu dedo
+                            Firma aquí con tu dedo
                         </p>
                     </div>
                 )}

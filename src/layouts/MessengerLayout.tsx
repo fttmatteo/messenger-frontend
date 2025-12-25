@@ -1,76 +1,49 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, MapPin, MapPinOff, Plus, ArrowUp, ChevronLeft } from "lucide-react"
+import { LogOut, MapPin, MapPinOff, ChevronLeft } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
+import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-    const [showScrollTop, setShowScrollTop] = useState(false)
-    const [keyboardVisible, setKeyboardVisible] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const wakeLockRef = useRef<any>(null)
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Determine if we are in a sub-page
-    const isSubPage = location.pathname.includes('/historial') || location.pathname.includes('/estadisticas')
+    // Determine if we are in a sub-page (detail pages that need back button)
+    const isSubPage = location.pathname.includes('/servicio/') ||
+        location.pathname.includes('/historial') ||
+        location.pathname.includes('/actualizar')
+
+    // Hide bottom nav on create and update pages for cleaner UX
+    const hideBottomNav = location.pathname.includes('/crear') || location.pathname.includes('/actualizar')
 
     // Get page title based on path
     const getPageTitle = () => {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial Stats'
         if (location.pathname.includes('historial-recorrido')) return 'Historial Ruta'
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
-        return 'PLAK'
+        if (location.pathname.includes('configuracion')) return 'Configuración'
+        if (location.pathname.includes('servicio/')) return 'Detalle Servicio'
+        if (location.pathname.includes('crear')) return 'Nuevo Servicio'
+        if (location.pathname.includes('actualizar')) return 'Actualizar Estado'
+        return null // Will show logo instead
     }
 
-    // Hide FAB on create page, update page, AND sub-pages
-    const showFab = !location.pathname.includes('/crear') && !location.pathname.includes('/actualizar') && !isSubPage
-
-    // Detect keyboard visibility (via visual viewport API)
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.visualViewport) {
-                const isKeyboard = window.visualViewport.height < window.innerHeight * 0.75
-                setKeyboardVisible(isKeyboard)
-            }
-        }
-
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', handleResize)
-            return () => window.visualViewport?.removeEventListener('resize', handleResize)
-        }
-    }, [])
-
-    // Track scroll position for "scroll to top" button
-    const handleScroll = useCallback(() => {
-        if (mainRef.current) {
-            setShowScrollTop(mainRef.current.scrollTop > 300)
-        }
-    }, [])
-
-    useEffect(() => {
-        const main = mainRef.current
-        if (main) {
-            main.addEventListener('scroll', handleScroll)
-            return () => main.removeEventListener('scroll', handleScroll)
-        }
-    }, [handleScroll])
-
-    const scrollToTop = () => {
-        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-    }
+    const pageTitle = getPageTitle()
 
     const requestWakeLock = async () => {
         try {
@@ -212,102 +185,78 @@ export default function MessengerLayout() {
         return <MobileOnlyGuard />
     }
 
-    // Calculate FAB bottom position based on keyboard
-    const fabBottomClass = keyboardVisible ? 'bottom-2' : 'bottom-6'
-
     return (
         <div className="flex flex-col h-screen bg-background">
-            {/* Dynamic Header */}
-            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 shadow-sm">
-
+            {/* Simplified Header */}
+            <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4">
+                {/* Left: Back button or Logo */}
                 {isSubPage ? (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => navigate(-1)}
-                            className="h-9 w-9 -ml-2"
-                        >
-                            <ChevronLeft className="h-5 w-5" />
-                        </Button>
-                        <span className="font-semibold text-lg">{getPageTitle()}</span>
-                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => navigate(-1)}
+                        className="h-8 w-8 -ml-2"
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                    </Button>
                 ) : (
-                    // Default Header with Logo
-                    <div className="flex items-center gap-2">
-                        <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                    </div>
+                    <img src={logo} alt="PLAK" className="h-7 w-7 object-contain" />
                 )}
 
-                {/* Right side: Status + Actions */}
-                <div className="flex items-center gap-2">
+                {/* Center: Page title or Status */}
+                {pageTitle ? (
+                    <span className="font-semibold text-sm">{pageTitle}</span>
+                ) : (
+                    <Badge
+                        variant="default"
+                        className={`text-xs px-2.5 py-0.5 ${isOnline
+                            ? "bg-green-500/90 hover:bg-green-500 shadow-sm shadow-green-500/30"
+                            : "bg-muted text-muted-foreground"
+                            }`}
+                    >
+                        {isOnline ? 'ACTIVO' : 'OFFLINE'}
+                    </Badge>
+                )}
+
+                {/* Right: Dev toggle + Logout */}
+                <div className="flex items-center gap-1">
                     {/* Dev-only tracking toggle button */}
                     {import.meta.env.DEV && (
                         <Button
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => updateUser({ isOnline: !isOnline })}
-                            className={`h-8 px-2 text-xs ${isOnline
-                                ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                : "border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                }`}
+                            className="h-8 w-8"
                         >
                             {isOnline ? (
-                                <><MapPinOff className="h-3.5 w-3.5 mr-1" /> Stop</>
+                                <MapPinOff className="h-4 w-4 text-red-500" />
                             ) : (
-                                <><MapPin className="h-3.5 w-3.5 mr-1" /> GPS</>
+                                <MapPin className="h-4 w-4 text-green-500" />
                             )}
                         </Button>
                     )}
-
-                    <Badge
-                        variant="default"
-                        className={`text-xs px-2 py-0.5 ${isOnline ? "bg-green-500 hover:bg-green-600" : "bg-muted text-muted-foreground"}`}
-                    >
-                        {isOnline ? '🟢 ACTIVO' : '⚫ OFFLINE'}
-                    </Badge>
 
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleLogout}
-                        className="h-9 w-9 text-muted-foreground hover:text-red-500"
+                        className="h-8 w-8 text-muted-foreground hover:text-red-500"
                     >
-                        <LogOut className="h-5 w-5" />
+                        <LogOut className="h-4 w-4" />
                     </Button>
                 </div>
             </header>
 
-            {/* Main Content Area */}
-            <main ref={mainRef} className="flex-1 overflow-auto">
+            {/* Main Content Area - with bottom padding for nav */}
+            <main
+                ref={mainRef}
+                className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-20'}`}
+            >
                 <Outlet />
             </main>
 
-            {/* Floating Action Buttons Container */}
-            <div className={`fixed ${fabBottomClass} left-0 right-0 flex justify-center items-center gap-3 z-50 pointer-events-none transition-all duration-200`}>
-                {/* Scroll to Top Button - Left position, shows when scrolled */}
-                {showScrollTop && showFab && (
-                    <Button
-                        onClick={scrollToTop}
-                        variant="secondary"
-                        size="icon"
-                        className="h-12 w-12 rounded-full shadow-lg pointer-events-auto bg-muted/90 backdrop-blur-sm hover:bg-muted"
-                    >
-                        <ArrowUp className="h-5 w-5" />
-                    </Button>
-                )}
-
-                {/* Create Service FAB - Center, primary action */}
-                {showFab && (
-                    <Button
-                        onClick={() => navigate('/messenger/crear')}
-                        className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all pointer-events-auto bg-primary hover:bg-primary/90"
-                        size="icon"
-                    >
-                        <Plus className="h-6 w-6" />
-                    </Button>
-                )}
-            </div>
+            {/* Bottom Navigation */}
+            {!hideBottomNav && <BottomNavigation />}
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
@@ -329,3 +278,4 @@ export default function MessengerLayout() {
         </div>
     )
 }
+
