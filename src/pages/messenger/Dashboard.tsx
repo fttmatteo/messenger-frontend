@@ -2,13 +2,12 @@ import { useMessengerServices } from "@/hooks/useMessengerServices"
 import { usePullToRefresh } from "@/hooks/usePullToRefresh"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { PullIndicator } from "@/components/messenger/PullIndicator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RefreshCw, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 
 export default function MessengerDashboard() {
-    const { loading, pendingServices, completedServices, refetch, error } = useMessengerServices()
+    const { loading, pendingServices, refetch, error } = useMessengerServices()
     const [isOnline, setIsOnline] = useState(navigator.onLine)
     const [isRefreshing, setIsRefreshing] = useState(false)
     const { containerRef, isRefreshing: isPulling, pullDistance } = usePullToRefresh({
@@ -70,7 +69,7 @@ export default function MessengerDashboard() {
                     </div>
                 )}
 
-                {/* Compact Header with Greeting + Stats */}
+                {/* Compact Header with Greeting */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-muted-foreground">
@@ -88,35 +87,20 @@ export default function MessengerDashboard() {
                     </Button>
                 </div>
 
-                {/* Services Tabs */}
-                <Tabs defaultValue="pending" className="flex-1 flex flex-col min-h-0">
-                    <TabsList className="grid w-full grid-cols-2 h-10">
-                        <TabsTrigger value="pending" className="text-xs">
-                            Pendientes ({pendingServices.length})
-                        </TabsTrigger>
-                        <TabsTrigger value="completed" className="text-xs">
-                            Completados ({completedServices.length})
-                        </TabsTrigger>
-                    </TabsList>
+                {/* Assigned Services Title */}
+                <p className="text-xs text-muted-foreground">
+                    {pendingServices.length} servicio{pendingServices.length !== 1 ? 's' : ''} asignado{pendingServices.length !== 1 ? 's' : ''}
+                </p>
 
-                    <TabsContent value="pending" className="flex-1 mt-3">
-                        <ServiceList
-                            services={pendingServices}
-                            loading={loading}
-                            emptyMessage="No tienes servicios pendientes"
-                            onRefresh={handleRefresh}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="completed" className="flex-1 mt-3">
-                        <ServiceList
-                            services={completedServices}
-                            loading={loading}
-                            emptyMessage="Aún no has completado servicios hoy"
-                            onRefresh={handleRefresh}
-                        />
-                    </TabsContent>
-                </Tabs>
+                {/* Assigned Services List */}
+                <div className="flex-1 overflow-auto">
+                    <ServiceList
+                        services={pendingServices}
+                        loading={loading}
+                        emptyMessage="No tienes servicios asignados"
+                        onRefresh={handleRefresh}
+                    />
+                </div>
 
                 {/* Error State */}
                 {error && !loading && (
@@ -130,4 +114,3 @@ export default function MessengerDashboard() {
         </div>
     )
 }
-

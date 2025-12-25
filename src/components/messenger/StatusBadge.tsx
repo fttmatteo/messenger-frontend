@@ -2,11 +2,13 @@ import { Badge } from "@/components/ui/badge"
 import type { ServiceStatus } from "@/types/service.types"
 import { Bike, CheckCircle, CornerDownLeft, XCircle, CheckCheck, Clock } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface StatusBadgeProps {
     status: ServiceStatus
     size?: 'sm' | 'md'
     className?: string
+    showLabel?: boolean
 }
 
 const statusConfig: Partial<Record<ServiceStatus, { label: string; className: string; Icon: LucideIcon }>> = {
@@ -43,19 +45,34 @@ const defaultConfig = {
     Icon: Clock
 }
 
-export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
+export function StatusBadge({ status, size = 'md', className, showLabel = false }: StatusBadgeProps) {
     const config = statusConfig[status] || defaultConfig
     const Icon = config.Icon
-    const iconSize = size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'
+    const iconSize = size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'
 
-    return (
+    const badge = (
         <Badge
             variant="outline"
-            className={`${config.className} ${size === 'sm' ? 'text-[10px] px-1.5 py-0' : 'text-xs px-2 py-0.5'} border font-medium ${className || ''}`}
+            className={`${config.className} ${size === 'sm' ? 'p-1' : 'p-1.5'} border ${className || ''}`}
         >
-            <Icon className={`${iconSize} mr-1`} />
-            {config.label}
+            <Icon className={iconSize} />
+            {showLabel && <span className="ml-1 text-xs font-medium">{config.label}</span>}
         </Badge>
     )
-}
 
+    // If no label shown, wrap with tooltip for accessibility
+    if (!showLabel) {
+        return (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    {badge}
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{config.label}</p>
+                </TooltipContent>
+            </Tooltip>
+        )
+    }
+
+    return badge
+}

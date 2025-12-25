@@ -5,27 +5,20 @@ import { Search } from "lucide-react"
 import { useState, useMemo } from "react"
 
 export default function ServiciosPage() {
-    const { loading, pendingServices, completedServices, refetch, error } = useMessengerServices()
+    const { loading, completedServices, refetch, error } = useMessengerServices()
     const [searchTerm, setSearchTerm] = useState("")
-
-    // Combine all services
-    const allServices = useMemo(() => {
-        return [...pendingServices, ...completedServices].sort((a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-    }, [pendingServices, completedServices])
 
     // Filter services based on search
     const filteredServices = useMemo(() => {
-        if (!searchTerm.trim()) return allServices
+        if (!searchTerm.trim()) return completedServices
 
         const term = searchTerm.toLowerCase()
-        return allServices.filter(service =>
+        return completedServices.filter(service =>
             service.plate.plateNumber.toLowerCase().includes(term) ||
             service.dealership.name.toLowerCase().includes(term) ||
             service.dealership.zone?.toLowerCase().includes(term)
         )
-    }, [allServices, searchTerm])
+    }, [completedServices, searchTerm])
 
     return (
         <div className="flex flex-col h-full p-3 gap-3">
@@ -42,7 +35,7 @@ export default function ServiciosPage() {
 
             {/* Results count */}
             <p className="text-xs text-muted-foreground">
-                {filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''} de hoy
+                {filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''} completado{filteredServices.length !== 1 ? 's' : ''}
             </p>
 
             {/* Services List */}
@@ -50,7 +43,7 @@ export default function ServiciosPage() {
                 <ServiceList
                     services={filteredServices}
                     loading={loading}
-                    emptyMessage={searchTerm ? "No se encontraron servicios" : "No hay servicios hoy"}
+                    emptyMessage={searchTerm ? "No se encontraron servicios" : "No hay servicios completados hoy"}
                     onRefresh={refetch}
                 />
             </div>
@@ -66,3 +59,4 @@ export default function ServiciosPage() {
         </div>
     )
 }
+
