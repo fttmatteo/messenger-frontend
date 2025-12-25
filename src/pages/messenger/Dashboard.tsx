@@ -89,7 +89,7 @@ export default function MessengerDashboard() {
 
                 {/* Assigned Services Title */}
                 <p className="text-xs text-muted-foreground">
-                    {pendingServices.length} servicio{pendingServices.length !== 1 ? 's' : ''} asignado{pendingServices.length !== 1 ? 's' : ''}
+                    {pendingServices.length} servicio{pendingServices.length !== 1 ? 's' : ''} creados{pendingServices.length !== 1 ? 's' : ''}
                 </p>
 
                 {/* Assigned Services List */}
@@ -97,7 +97,7 @@ export default function MessengerDashboard() {
                     <ServiceList
                         services={pendingServices}
                         loading={loading}
-                        emptyMessage="No tienes servicios asignados"
+                        emptyMessage="No tienes servicios creados"
                     />
                 </div>
 
