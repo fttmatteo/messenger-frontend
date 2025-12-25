@@ -9,7 +9,7 @@ import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -79,53 +79,50 @@ export default function Concesionarios() {
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-2">
             <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
 
             {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex items-center gap-4 flex-wrap">
-                    <h1 className="text-2xl md:text-3xl font-bold">Concesionarios</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl md:text-2xl font-bold">Concesionarios</h1>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <ToggleGroup
                             type="single"
                             value={zoneFilter}
                             onValueChange={(value) => setZoneFilter(value || "all")}
                             className="justify-start"
                         >
-                            <ToggleGroupItem value="all" aria-label="Todos">Todos</ToggleGroupItem>
+                            <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
                             {uniqueZones.map((zone) => (
-                                <ToggleGroupItem key={zone} value={zone} aria-label={zone}>{zone}</ToggleGroupItem>
+                                <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
                             ))}
                         </ToggleGroup>
 
                         {zoneFilter !== "all" && (
-                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-9">
-                                <X className="h-4 w-4 mr-2" />Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs">
+                                <X className="h-3 w-3 mr-1" />Limpiar
                             </Button>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size="default" className="shrink-0">
-                        <Plus className="h-4 w-4 mr-2" />
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                        <Plus className="h-3 w-3 mr-1" />
                         Nuevo concesionario
                     </Button>
                 </div>
             </div>
 
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <div className="flex flex-col gap-1">
-                        <CardTitle>Lista de concesionarios</CardTitle>
-                        <CardDescription>
-                            {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
-                            {searchQuery && ` - Buscando "${searchQuery}"`}
-                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                        </CardDescription>
-                    </div>
+            <Card className="gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
+                    <CardDescription>
+                        {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
+                        {searchQuery && ` - Buscando "${searchQuery}"`}
+                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
@@ -136,7 +133,7 @@ export default function Concesionarios() {
                                     <TableHead>Dirección</TableHead>
                                     <TableHead>Teléfono</TableHead>
                                     <TableHead>Zona</TableHead>
-                                    <TableHead>Ubicación</TableHead>
+                                    <TableHead>GPS</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -177,7 +174,7 @@ export default function Concesionarios() {
                                         </TableHead>
                                         <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
                                             <div className="flex items-center gap-2">
-                                                <Navigation className="h-4 w-4" />Ubicación
+                                                <Navigation className="h-4 w-4" />GPS
                                                 <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
                                             </div>
                                         </TableHead>
@@ -239,7 +236,7 @@ export default function Concesionarios() {
                                                                 })
                                                             }}
                                                         >
-                                                            <MapPin className="h-3 w-3 mr-1" />Ver
+                                                            <MapPin className="h-3 w-3 mr-1" />Ubicación
                                                         </Badge>
                                                     ) : dealership.isGeolocated ? (
                                                         <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
