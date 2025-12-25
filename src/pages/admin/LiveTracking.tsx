@@ -1,20 +1,17 @@
 import { useEffect, useState, useCallback, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
-import { InfoWindow, useGoogleMap, Polyline } from "@react-google-maps/api"
+import { InfoWindow, useGoogleMap } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Calendar } from "@/components/ui/calendar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
-import type { TrackingHistoryItem } from "@/types/location.types"
-import { RefreshCw, Users, Wifi, WifiOff, CalendarIcon, Clock, MapPin, Navigation, History, PanelRightOpen } from "lucide-react"
+import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
-import { format, formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
@@ -62,20 +59,13 @@ function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { posit
 }
 
 export default function LiveTracking() {
+    const navigate = useNavigate()
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
     const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
-    const [sheetOpen, setSheetOpen] = useState(false)
     const { setSuccess, setError } = useAdminUI()
-
-    // History state
-    const [historyDate, setHistoryDate] = useState<Date>(new Date())
-    const [historyData, setHistoryData] = useState<TrackingHistoryItem[]>([])
-    const [loadingHistory, setLoadingHistory] = useState(false)
-    const [showHistoryRoute, setShowHistoryRoute] = useState(false)
-    const [calendarOpen, setCalendarOpen] = useState(false)
 
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
@@ -153,22 +143,7 @@ export default function LiveTracking() {
         }
     }, [setSuccess, setError])
 
-    // Fetch history for selected messenger
-    const fetchHistory = useCallback(async () => {
-        if (!selectedMessenger) return
 
-        try {
-            setLoadingHistory(true)
-            const dateStr = format(historyDate, 'yyyy-MM-dd')
-            const data = await trackingApiService.getHistory(selectedMessenger.messengerId, dateStr)
-            setHistoryData(data || [])
-        } catch (error: any) {
-            console.error("Error fetching history:", error)
-            setHistoryData([])
-        } finally {
-            setLoadingHistory(false)
-        }
-    }, [selectedMessenger, historyDate])
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
@@ -209,24 +184,15 @@ export default function LiveTracking() {
         }
     }, [fetchMessengers, handleTrackingUpdate])
 
-    // Fetch history when messenger or date changes
-    useEffect(() => {
-        if (selectedMessenger && sheetOpen) {
-            fetchHistory()
-        }
-    }, [selectedMessenger, historyDate, sheetOpen, fetchHistory])
 
-    // Generate polyline path from history
-    const historyPath = historyData
-        .filter(h => h.latitude && h.longitude)
-        .map(h => ({ lat: h.latitude, lng: h.longitude }))
 
     const selectMessenger = (messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
         if (messenger.latitude && messenger.longitude) {
             setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
         }
-        setSheetOpen(true)
+        // Navigate to messenger details page
+        navigate(`/admin/tracking/mensajero/${messenger.messengerId}`)
     }
 
     return (
@@ -328,18 +294,6 @@ export default function LiveTracking() {
                                     )
                                 ))}
 
-                                {/* History route polyline */}
-                                {showHistoryRoute && historyPath.length > 1 && (
-                                    <Polyline
-                                        path={historyPath}
-                                        options={{
-                                            strokeColor: '#4f46e5',
-                                            strokeOpacity: 0.8,
-                                            strokeWeight: 4,
-                                        }}
-                                    />
-                                )}
-
                                 {selectedMessenger && selectedMessenger.latitude && selectedMessenger.longitude && (
                                     <InfoWindow
                                         position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
@@ -367,206 +321,6 @@ export default function LiveTracking() {
                                 )}
                             </MapComponent>
                         )}
-
-                        {/* Mobile FAB and Details Popup */}
-                        <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
-                            <DialogTrigger asChild>
-                                <Button
-                                    variant="default"
-                                    size="icon"
-                                    className="lg:hidden absolute bottom-4 right-4 h-12 w-12 rounded-full shadow-lg"
-                                >
-                                    <PanelRightOpen className="h-5 w-5" />
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md p-0 flex flex-col max-h-[90vh] overflow-hidden">
-                                <DialogHeader className="p-4 border-b shrink-0">
-                                    <DialogTitle>
-                                        {selectedMessenger
-                                            ? (selectedMessenger.messengerName ? formatDisplayName(selectedMessenger.messengerName) : `Mensajero #${selectedMessenger.messengerId}`)
-                                            : "Mensajeros"
-                                        }
-                                    </DialogTitle>
-                                </DialogHeader>
-
-                                {selectedMessenger ? (
-                                    <Tabs defaultValue="info" className="flex-1 flex flex-col overflow-hidden">
-                                        <TabsList className="w-full rounded-none shrink-0">
-                                            <TabsTrigger value="info" className="flex-1">
-                                                <MapPin className="h-4 w-4 mr-2" />
-                                                Info
-                                            </TabsTrigger>
-                                            <TabsTrigger value="history" className="flex-1">
-                                                <History className="h-4 w-4 mr-2" />
-                                                Historial
-                                            </TabsTrigger>
-                                        </TabsList>
-
-                                        <TabsContent value="info" className="flex-1 p-0 m-0 overflow-hidden">
-                                            <ScrollArea className="h-full">
-                                                <div className="p-4 space-y-4">
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-sm text-muted-foreground">Estado</span>
-                                                            <Badge variant={selectedMessenger.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                                                                {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                                            </Badge>
-                                                        </div>
-                                                        {selectedMessenger.speed !== undefined && (
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-sm text-muted-foreground">Velocidad</span>
-                                                                <span className="font-medium">{(selectedMessenger.speed * 3.6).toFixed(1)} km/h</span>
-                                                            </div>
-                                                        )}
-                                                        {selectedMessenger.lastUpdate && (
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-sm text-muted-foreground">Última actualización</span>
-                                                                <span className="text-sm">
-                                                                    {formatDistanceToNow(new Date(selectedMessenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-sm text-muted-foreground">Coordenadas</span>
-                                                            <span className="text-sm font-mono">
-                                                                {selectedMessenger.latitude.toFixed(5)}, {selectedMessenger.longitude.toFixed(5)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ScrollArea>
-                                        </TabsContent>
-
-                                        <TabsContent value="history" className="flex-1 flex flex-col p-0 m-0">
-                                            <div className="p-4 space-y-4 border-b shrink-0">
-                                                {/* Date Picker */}
-                                                <div className="space-y-2">
-                                                    <label className="text-sm font-medium">Fecha</label>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="w-full justify-start text-left"
-                                                        onClick={() => setCalendarOpen(true)}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                                        {format(historyDate, "PPP", { locale: es })}
-                                                    </Button>
-
-                                                    <Dialog open={calendarOpen} onOpenChange={setCalendarOpen} modal={false}>
-                                                        <DialogContent className="max-w-md p-0">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={historyDate}
-                                                                onSelect={(date) => {
-                                                                    if (date) {
-                                                                        setHistoryDate(date)
-                                                                        setCalendarOpen(false)
-                                                                    }
-                                                                }}
-                                                                initialFocus
-                                                            />
-                                                        </DialogContent>
-                                                    </Dialog>
-                                                </div>
-
-                                                {/* Show route toggle */}
-                                                <Button
-                                                    variant={showHistoryRoute ? "default" : "outline"}
-                                                    className="w-full"
-                                                    onClick={() => setShowHistoryRoute(!showHistoryRoute)}
-                                                    disabled={historyPath.length < 2}
-                                                >
-                                                    <Navigation className="mr-2 h-4 w-4" />
-                                                    {showHistoryRoute ? "Ocultar ruta" : "Mostrar ruta en mapa"}
-                                                </Button>
-                                            </div>
-
-                                            {/* History list */}
-                                            <div className="flex-1 overflow-y-auto px-4 py-4">
-                                                {loadingHistory ? (
-                                                    <div className="space-y-2">
-                                                        {[1, 2, 3].map(i => (
-                                                            <Skeleton key={i} className="h-12 w-full" />
-                                                        ))}
-                                                    </div>
-                                                ) : historyData.length === 0 ? (
-                                                    <p className="text-center text-muted-foreground text-sm py-4">
-                                                        No hay historial para esta fecha
-                                                    </p>
-                                                ) : (
-                                                    <div className="space-y-2">
-                                                        {historyData.map((item, idx) => (
-                                                            <div
-                                                                key={item.id || idx}
-                                                                className="p-3 rounded-lg bg-muted/50 text-sm"
-                                                            >
-                                                                <div className="flex justify-between items-center">
-                                                                    <span className="font-medium">
-                                                                        {format(new Date(item.timestamp), "HH:mm:ss")}
-                                                                    </span>
-                                                                    {item.speed !== undefined && item.speed > 0 && (
-                                                                        <Badge variant="outline" className="text-xs">
-                                                                            {(item.speed * 3.6).toFixed(1)} km/h
-                                                                        </Badge>
-                                                                    )}
-                                                                </div>
-                                                                <p className="text-xs text-muted-foreground mt-1 font-mono">
-                                                                    {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
-                                                                </p>
-                                                            </div>
-                                                        ))}
-
-                                                        {historyData.length > 0 && (
-                                                            <div className="pt-2 border-t text-sm text-muted-foreground mt-2">
-                                                                <p>{historyData.length} puntos registrados</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TabsContent>
-                                    </Tabs>
-                                ) : (
-                                    <div className="flex-1 overflow-hidden">
-                                        <ScrollArea className="h-full">
-                                            {messengers.length === 0 ? (
-                                                <div className="p-4 text-center text-muted-foreground text-sm">
-                                                    No hay mensajeros disponibles
-                                                </div>
-                                            ) : (
-                                                <div className="divide-y">
-                                                    {messengers.map((messenger) => (
-                                                        <button
-                                                            key={messenger.messengerId}
-                                                            className="w-full p-4 text-left hover:bg-muted/50 transition-colors"
-                                                            onClick={() => {
-                                                                setSelectedMessenger(messenger)
-                                                                if (messenger.latitude && messenger.longitude) {
-                                                                    setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
-                                                                }
-                                                            }}
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="font-medium">
-                                                                    {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
-                                                                </span>
-                                                                <Badge variant={messenger.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
-                                                                    {messenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                                                </Badge>
-                                                            </div>
-                                                            {messenger.lastUpdate && (
-                                                                <p className="text-xs text-muted-foreground mt-1">
-                                                                    {formatDistanceToNow(new Date(messenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                                </p>
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </ScrollArea>
-                                    </div>
-                                )}
-                            </DialogContent>
-                        </Dialog>
                     </CardContent>
                 </Card>
             </div>
