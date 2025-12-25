@@ -90,6 +90,8 @@ export default function MessengerLayout() {
                             heading: heading || 0,
                             status: 'ACTIVE'
                         })
+                        // Cache locally for instant navigation
+                        trackingService.setLastLocation(latitude, longitude)
                     },
                     (error) => {
                         console.warn('Geolocation partial error:', error.message)

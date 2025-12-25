@@ -19,6 +19,7 @@ import {
     AlertCircle
 } from "lucide-react"
 import { toast } from "sonner"
+import { trackingService } from "@/services/tracking.service"
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
@@ -60,14 +61,79 @@ export default function ServiceDetails() {
 
         const { latitude, longitude, address } = service.dealership
 
-        if (latitude && longitude) {
-            // Open Google Maps with coordinates
-            window.open(`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`, '_blank')
-        } else if (address) {
-            // Fallback to address search
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')
+        // Show loading toast because getting location takes time
+        const toastId = toast.loading("Obteniendo ubicación precisa...")
+
+        const openMaps = (originLat?: number, originLng?: number) => {
+            let url = ''
+
+            if (latitude && longitude) {
+                // Use dir action with destination and optional origin
+                url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
+                if (originLat && originLng) {
+                    url += `&origin=${originLat},${originLng}`
+                }
+            } else if (address) {
+                // Fallback to search query
+                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+            } else {
+                toast.error('No hay ubicación disponible para este concesionario', { id: toastId })
+                return
+            }
+
+            toast.dismiss(toastId)
+            window.open(url, '_blank')
+        }
+
+        // 1. Try to use cached location from background tracking (instant)
+        const cached = trackingService.getLastKnownLocation()
+        // Use cache if it's recent (less than 2 minutes old)
+        if (cached && (Date.now() - cached.timestamp < 120000)) {
+            toast.dismiss(toastId)
+            openMaps(cached.latitude, cached.longitude)
+            // Optional: notify user we used cached location
+            // toast.success("Usando ubicación actual", { duration: 1500 })
+            return
+        }
+
+        // 2. If no cache, fetch fresh location
+        if ('geolocation' in navigator) {
+            // First try high accuracy
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    openMaps(position.coords.latitude, position.coords.longitude)
+                },
+                (error) => {
+                    console.warn("High accuracy error", error)
+
+                    // Fallback to low accuracy if high accuracy fails (timeout or unavailable)
+                    toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
+
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            openMaps(pos.coords.latitude, pos.coords.longitude)
+                        },
+                        (err) => {
+                            console.warn("Low accuracy error", err)
+                            toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
+                            // Final fallback without explicit origin
+                            openMaps()
+                        },
+                        {
+                            enableHighAccuracy: false,
+                            timeout: 10000,
+                            maximumAge: 60000 // Accept 1 min old cached position
+                        }
+                    )
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000, // Increased timeout to 15s
+                    maximumAge: 0
+                }
+            )
         } else {
-            toast.error('No hay ubicación disponible para este concesionario')
+            openMaps()
         }
     }
 
