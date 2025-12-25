@@ -205,7 +205,11 @@ export default function Concesionarios() {
                                                             </span>
                                                         </TooltipTrigger>
                                                         <TooltipContent side="bottom" className="max-w-sm">
-                                                            <p>{dealership.address}</p>
+                                                            <p>
+                                                                {dealership.address.includes(',')
+                                                                    ? dealership.address.substring(dealership.address.indexOf(',') + 1).trim()
+                                                                    : dealership.address}
+                                                            </p>
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TableCell>
