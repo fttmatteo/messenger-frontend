@@ -190,7 +190,7 @@ export default function CreateServicio() {
                 setImagePreview(dataUrl)
 
                 stopCamera()
-                toast.success("📸 Foto capturada exitosamente")
+                toast.success("Foto capturada exitosamente")
             } else {
                 toast.error("Error al capturar foto", { id: "error-captura" })
             }
@@ -327,7 +327,7 @@ export default function CreateServicio() {
                                                             size="lg"
                                                         >
                                                             <Camera className="w-16 h-16" />
-                                                            <span className="font-semibold">📷 Abrir cámara</span>
+                                                            <span className="font-semibold">Abrir cámara</span>
                                                             <span className="text-xs opacity-80">
                                                                 Tomar foto de la placa
                                                             </span>
@@ -410,7 +410,7 @@ export default function CreateServicio() {
                                                                 {cameraReady ? (
                                                                     <>
                                                                         <Camera className="mr-2 h-6 w-6" />
-                                                                        📸 Capturar foto
+                                                                        Capturar foto
                                                                     </>
                                                                 ) : (
                                                                     <>

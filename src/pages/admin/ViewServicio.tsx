@@ -17,7 +17,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit } from "lucide-react"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -192,14 +192,14 @@ export default function ViewServicio() {
                             if (timeRemaining) {
                                 return (
                                     <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800">
-                                        <span className="text-lg">⏱️</span>
+                                        <Clock className="h-4 w-4" />
                                         <span className="font-medium text-lg">{timeRemaining.hours}h {timeRemaining.minutes}m</span>
                                     </div>
                                 )
                             }
                             return (
-                                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                                    🔒 Inmutable
+                                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium gap-1">
+                                    <Lock className="h-3 w-3" /> Inmutable
                                 </Badge>
                             )
                         })()}

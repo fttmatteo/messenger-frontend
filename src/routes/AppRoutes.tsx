@@ -25,6 +25,8 @@ import MessengerUpdateStatus from '../pages/messenger/UpdateStatus';
 import MessengerStatsHistoryPage from '../pages/messenger/StatsHistoryPage';
 import MessengerRouteHistoryPage from '../pages/messenger/RouteHistoryPage';
 import MessengerStatsPage from '../pages/messenger/StatsPage';
+import MessengerServiciosPage from '../pages/messenger/ServiciosPage';
+import MessengerConfiguracionPage from '../pages/messenger/ConfiguracionPage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileOnlyGuard } from '@/components/MobileOnlyGuard';
 import { DesktopOnlyGuard } from '@/components/DesktopOnlyGuard';
@@ -157,6 +159,8 @@ export function AppRoutes() {
                 <Route path="historial-estadisticas" element={<MessengerStatsHistoryPage />} />
                 <Route path="historial-recorrido" element={<MessengerRouteHistoryPage />} />
                 <Route path="estadisticas" element={<MessengerStatsPage />} />
+                <Route path="servicios" element={<MessengerServiciosPage />} />
+                <Route path="configuracion" element={<MessengerConfiguracionPage />} />
             </Route>
 
             {/* Catch all */}

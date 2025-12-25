@@ -136,7 +136,7 @@ export default function ServiceDetails() {
                     <h1 className="font-bold text-lg truncate">{service.plate.plateNumber}</h1>
                     <p className="text-xs text-muted-foreground">Servicio #{service.idServiceDelivery}</p>
                 </div>
-                <StatusBadge status={service.currentStatus} />
+                <StatusBadge status={service.currentStatus} showLabel />
             </header>
 
             {/* Content */}

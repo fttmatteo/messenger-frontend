@@ -350,7 +350,7 @@ export default function LiveTracking() {
                                                 {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
                                             </p>
                                             <p className="text-xs text-gray-600">
-                                                {selectedMessenger.status === 'ACTIVE' ? '🟢 Activo' : '🔴 Inactivo'}
+                                                {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
                                             </p>
                                             {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
                                                 <p className="text-xs text-gray-600">

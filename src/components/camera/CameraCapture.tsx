@@ -113,7 +113,7 @@ export function CameraCapture({
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
                 stopCamera()
                 onCapture(file, dataUrl)
-                toast.success("📸 Foto capturada exitosamente")
+                toast.success("Foto capturada exitosamente")
             }
         }, 'image/jpeg', 0.9)
     }
@@ -209,7 +209,7 @@ export function CameraCapture({
                         {cameraReady ? (
                             <>
                                 <Camera className="mr-2 h-6 w-6" />
-                                📸 Capturar Foto
+                                Capturar Foto
                             </>
                         ) : (
                             <>
@@ -244,7 +244,7 @@ export function CameraCapture({
                 size="lg"
             >
                 <Camera className="w-16 h-16" />
-                <span className="font-semibold">📷 Abrir Cámara</span>
+                <span className="font-semibold">Abrir Cámara</span>
                 <span className="text-xs opacity-80">Tomar foto de la placa</span>
             </Button>
 

@@ -242,7 +242,7 @@ export default function Eliminados() {
                                             <TableHead>Mensajero</TableHead>
                                             <TableHead>Eliminado</TableHead>
                                             <TableHead>Tiempo restante</TableHead>
-                                            <TableHead className="text-right">Acciones</TableHead>
+                                            <TableHead className="text-right">Acción</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
