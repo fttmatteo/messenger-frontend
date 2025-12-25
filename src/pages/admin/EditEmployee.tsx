@@ -106,7 +106,8 @@ export default function EditEmployee() {
             setSuccess("Empleado eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error: any) {
-            setError(error.message || "Error al eliminar empleado")
+            const message = error.response?.data?.message || error.message || "Error al eliminar empleado"
+            setError(message)
         } finally {
             setDeleting(false)
         }
