@@ -50,7 +50,7 @@ function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { posit
                 markerRef.current.map = null
             }
         }
-    }, [map, color])
+    }, [map, color, onClick, position, title])
 
     useEffect(() => {
         if (markerRef.current) {
