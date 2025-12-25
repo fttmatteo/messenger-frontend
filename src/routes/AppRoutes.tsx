@@ -12,7 +12,7 @@ import Concesionarios from '../pages/admin/Concesionarios';
 import CreateConcesionario from '../pages/admin/CreateConcesionario';
 import EditConcesionario from '../pages/admin/EditConcesionario';
 import Servicios from '../pages/admin/Servicios';
-import CreateServicio from '../pages/admin/CreateServicio';
+// import CreateServicio from '../pages/admin/CreateServicio';
 import UpdateServiceStatus from '../pages/admin/UpdateServiceStatus';
 import ViewServicio from '../pages/admin/ViewServicio';
 import Eliminados from '../pages/admin/Eliminados';
@@ -135,7 +135,7 @@ export function AppRoutes() {
                 <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
                 {/* Services routes */}
                 <Route path="servicios" element={<Servicios />} />
-                <Route path="servicios/crear" element={<CreateServicio />} />
+                {/* <Route path="servicios/crear" element={<CreateServicio />} /> */}
                 <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
                 <Route path="servicios/:id" element={<ViewServicio />} />
                 {/* Other routes */}

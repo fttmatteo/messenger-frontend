@@ -202,8 +202,8 @@ export default function EditConcesionario() {
             </div>
 
             <div className="flex-1 grid gap-4 lg:grid-cols-3">
-                <Card className="lg:col-span-2 flex flex-col">
-                    <CardHeader className="pb-4">
+                <Card className="lg:col-span-2 flex flex-col gap-1 py-1">
+                    <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-lg">Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
@@ -327,8 +327,8 @@ export default function EditConcesionario() {
                 </Card>
 
                 {/* Geolocation Card */}
-                <Card className="flex flex-col">
-                    <CardHeader className="pb-3">
+                <Card className="flex flex-col gap-1 py-1">
+                    <CardHeader className="p-2 pb-0">
                         <CardTitle className="flex items-center gap-2 text-lg">
                             <MapPin className="h-5 w-5" />
                             Ubicación
