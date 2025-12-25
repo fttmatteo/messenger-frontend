@@ -217,9 +217,9 @@ export default function LiveTracking() {
             {/* Main Content */}
             <div className="flex-1 flex gap-4 overflow-hidden">
                 {/* Messenger List (Desktop) */}
-                <Card className="hidden lg:flex lg:flex-col w-72 shrink-0 overflow-hidden">
+                <Card className="hidden lg:flex lg:flex-col w-72 shrink-0 overflow-hidden gap-0 py-0">
                     <CardHeader className="py-3 shrink-0">
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="text-base flex items-center gap-2">
                             <Users className="h-4 w-4" />
                             Mensajeros
                         </CardTitle>

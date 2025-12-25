@@ -198,7 +198,20 @@ export default function Concesionarios() {
                                                 onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                             >
                                                 <TableCell className="font-medium text-base">{dealership.name}</TableCell>
-                                                <TableCell className="max-w-xs truncate text-base">{dealership.address}</TableCell>
+                                                <TableCell className="max-w-xs text-base">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <span className="cursor-default">
+                                                                {dealership.address.includes(',')
+                                                                    ? dealership.address.split(',')[0]
+                                                                    : dealership.address}
+                                                            </span>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent side="bottom" className="max-w-sm">
+                                                            <p>{dealership.address}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TableCell>
                                                 <TableCell className="text-base">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
@@ -226,7 +239,7 @@ export default function Concesionarios() {
                                                                 })
                                                             }}
                                                         >
-                                                            <MapPin className="h-3 w-3 mr-1" />Ver ubicación
+                                                            <MapPin className="h-3 w-3 mr-1" />Ver
                                                         </Badge>
                                                     ) : dealership.isGeolocated ? (
                                                         <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
