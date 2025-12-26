@@ -18,6 +18,7 @@ import { Trash2, RotateCcw, Loader2, Home, Calendar, User, Building2, Clock } fr
 import { motion, AnimatePresence } from "framer-motion"
 import { formatDisplayName } from "@/lib/format-utils"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Animation variants
 const itemVariants = {
@@ -47,8 +48,8 @@ export default function Eliminados() {
             setLoading(true)
             const data = await serviceDeliveryService.getTrash()
             setServices(data)
-        } catch (error: any) {
-            setError(error.message || "Error al cargar elementos eliminados")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
@@ -64,8 +65,8 @@ export default function Eliminados() {
             await serviceDeliveryService.restore(id)
             setSuccess("Servicio restaurado correctamente")
             fetchDeletedServices()
-        } catch (error: any) {
-            setError(error.message || "Error al restaurar servicio")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setRestoring(null)
         }
@@ -77,8 +78,8 @@ export default function Eliminados() {
             const result = await serviceDeliveryService.emptyTrash()
             setSuccess(`Papelera vaciada: ${result.deletedCount} servicio(s) eliminado(s)`)
             setServices([])
-        } catch (error: any) {
-            setError(error.message || "Error al vaciar papelera")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setEmptying(false)
         }

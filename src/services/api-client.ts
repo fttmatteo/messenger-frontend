@@ -25,14 +25,21 @@ apiClient.interceptors.request.use(
 
 // Flag to track if token refresh is already in progress
 let isRefreshing = false
-// Queue to hold requests that are waiting for the token refresh
-let failedQueue: any[] = []
 
-const processQueue = (error: any, token: string | null = null) => {
+// Type for queued requests waiting for token refresh
+interface QueuedRequest {
+    resolve: (token: string) => void
+    reject: (error: unknown) => void
+}
+
+// Queue to hold requests that are waiting for the token refresh
+let failedQueue: QueuedRequest[] = []
+
+const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue.forEach((prom) => {
         if (error) {
             prom.reject(error)
-        } else {
+        } else if (token) {
             prom.resolve(token)
         }
     })

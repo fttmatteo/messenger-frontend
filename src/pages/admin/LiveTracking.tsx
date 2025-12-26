@@ -16,6 +16,7 @@ import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { employeeService } from "@/services/employee.service"
+import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 
 // Componente para manejar AdvancedMarkerElement
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string, color?: string }) {
@@ -93,9 +94,9 @@ export default function LiveTracking() {
                     if (lastLoc) {
                         return { ...lastLoc, status: 'OFFLINE' as const, messengerName: emp.fullName }
                     }
-                } catch (e: any) {
+                } catch (e) {
                     // Ignore 404 errors (mensajero sin ubicación previa), but log other errors
-                    if (e.response?.status !== 404) {
+                    if (isAxiosError(e) && e.response?.status !== 404) {
                         console.error(`Error fetching last location for messenger ${emp.idEmployee}:`, e)
                     }
                 }
@@ -132,11 +133,10 @@ export default function LiveTracking() {
             if (!manual && firstActive) {
                 setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error fetching messengers:", error)
-            const status = error.response?.status
-            if (status !== 404) {
-                setError(error.response?.data?.message || error.message || "Error al cargar mensajeros")
+            if (isAxiosError(error) && error.response?.status !== 404) {
+                setError(getErrorMessage(error))
             }
         } finally {
             setLoading(false)

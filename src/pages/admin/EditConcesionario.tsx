@@ -17,6 +17,7 @@ import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Loader2, MapPin } from "lucide-react"
 import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Available zones
 const ZONES = [
@@ -122,8 +123,8 @@ export default function EditConcesionario() {
                     lat: dealership.latitude,
                     lng: dealership.longitude,
                 })
-            } catch (error: any) {
-                setError(error.message || "Error al cargar concesionario")
+            } catch (error) {
+                setError(getErrorMessage(error))
                 navigate("/admin/concesionarios")
             } finally {
                 setLoading(false)
@@ -143,8 +144,8 @@ export default function EditConcesionario() {
             })
             setSuccess("Concesionario actualizado exitosamente")
             navigate("/admin/concesionarios")
-        } catch (error: any) {
-            setError(error.message || "Error al actualizar concesionario")
+        } catch (error) {
+            setError(getErrorMessage(error))
         }
     }
 
@@ -169,8 +170,8 @@ export default function EditConcesionario() {
             })
             setInitialAddress(capitalizeWords(data.address.trim()))
             setSuccess("Guardado y geocodificado correctamente")
-        } catch (error: any) {
-            setError(error.message || "Error al guardar y geocodificar")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setGeocoding(false)
         }
@@ -183,8 +184,8 @@ export default function EditConcesionario() {
             await dealershipService.delete(Number(id))
             setSuccess("Concesionario eliminado exitosamente")
             navigate("/admin/concesionarios")
-        } catch (error: any) {
-            setError(error.message || "Error al eliminar concesionario")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setDeleting(false)
         }

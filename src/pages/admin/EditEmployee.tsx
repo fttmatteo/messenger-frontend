@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
+import { getErrorMessage } from "@/lib/error-utils"
 
 const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
@@ -71,8 +72,8 @@ export default function EditEmployee() {
                     password: "", // Don't populate password
                     role: employee.role,
                 })
-            } catch (error: any) {
-                setError(error.message || "Error al cargar empleado")
+            } catch (error) {
+                setError(getErrorMessage(error))
                 navigate("/admin/empleados")
             } finally {
                 setLoading(false)
@@ -93,8 +94,8 @@ export default function EditEmployee() {
             })
             setSuccess("Empleado actualizado exitosamente")
             navigate("/admin/empleados")
-        } catch (error: any) {
-            setError(error.message || "Error al actualizar empleado")
+        } catch (error) {
+            setError(getErrorMessage(error))
         }
     }
 
@@ -105,9 +106,8 @@ export default function EditEmployee() {
             await employeeService.delete(Number(id))
             setSuccess("Empleado eliminado exitosamente")
             navigate("/admin/empleados")
-        } catch (error: any) {
-            const message = error.response?.data?.message || error.message || "Error al eliminar empleado"
-            setError(message)
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setDeleting(false)
         }

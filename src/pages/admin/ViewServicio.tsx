@@ -23,6 +23,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 
 export default function ViewServicio() {
     // Router & Auth
@@ -70,10 +71,11 @@ export default function ViewServicio() {
                 const data = await serviceDeliveryService.getById(Number(id))
                 clearTimeout(timeoutId)
                 setService(data)
-            } catch (error: any) {
+            } catch (error) {
                 console.error("Error fetching service:", error)
-                setError(error.response?.data?.message || "Error al cargar la información del servicio")
-                setGlobalError(error.response?.data?.message || error.message || "Error al cargar servicio")
+                const message = getErrorMessage(error)
+                setError(message)
+                setGlobalError(message)
             } finally {
                 setLoading(false)
             }
@@ -90,8 +92,8 @@ export default function ViewServicio() {
             await serviceDeliveryService.delete(Number(id))
             setSuccess("Servicio eliminado exitosamente")
             navigate("/admin/servicios")
-        } catch (error: any) {
-            setGlobalError(error.response?.data?.message || error.message || "Error al eliminar servicio")
+        } catch (error) {
+            setGlobalError(getErrorMessage(error))
         } finally {
             setDeleting(false)
             setDeleteDialogOpen(false)
