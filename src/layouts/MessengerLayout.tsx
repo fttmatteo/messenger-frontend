@@ -73,9 +73,7 @@ export default function MessengerLayout() {
             requestWakeLock()
 
             trackingService.connect(() => {
-                toast.success("Conectado al servidor de rastreo", {
-                    id: 'tracking-connected'
-                })
+                // Connected silently
             })
 
             if ('geolocation' in navigator) {

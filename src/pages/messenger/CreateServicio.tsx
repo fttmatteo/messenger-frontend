@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Upload, X, Loader2, Camera, CameraOff, ArrowLeft, Bike } from "lucide-react"
+// import { Card, CardContent } from "@/components/ui/card"
+import { Upload, X, Loader2, Camera, CameraOff, Bike } from "lucide-react"
 import { toast } from "sonner"
 
 const formSchema = z.object({
@@ -182,11 +182,12 @@ export default function MessengerCreateServicio() {
                 manualPlateNumber: values.manualPlateNumber || undefined
             })
 
-            toast.success("Servicio creado exitosamente", {
-                description: values.manualPlateNumber
-                    ? `Placa: ${values.manualPlateNumber}`
-                    : "Procesando detección OCR..."
-            })
+            // Success notification removed per request - Only show errors
+            // toast.success("Servicio creado exitosamente", {
+            //     description: values.manualPlateNumber
+            //         ? `Placa: ${values.manualPlateNumber}`
+            //         : "Procesando detección OCR..."
+            // })
 
             navigate("/messenger")
         } catch (error: any) {
@@ -267,253 +268,243 @@ export default function MessengerCreateServicio() {
 
             {/* Header with back button */}
             <header className="flex items-center gap-3">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleBack}
-                    className="h-9 w-9 flex-shrink-0"
-                >
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
                 <div className="min-w-0">
                     <h1 className="text-lg sm:text-xl font-bold truncate">Crear Servicio</h1>
                 </div>
             </header>
 
-            {/* Main Form Card */}
-            <Card className="flex-shrink-0">
-                <CardContent className="px-3 sm:px-4 pb-4 space-y-4">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            {/* Image Upload - Camera first approach */}
-                            <FormField
-                                control={form.control}
-                                name="image"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm">Foto de la placa *</FormLabel>
-                                        <FormControl>
-                                            <div className="space-y-3">
-                                                {!imagePreview && !cameraActive ? (
-                                                    <div className="space-y-2">
-                                                        {/* Camera button */}
-                                                        <Button
-                                                            type="button"
-                                                            onClick={startCamera}
-                                                            className="w-full h-32 sm:h-40 flex flex-col items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary touch-manipulation"
-                                                        >
-                                                            <Camera className="w-10 h-10 sm:w-12 sm:h-12" />
-                                                            <span className="font-semibold text-sm">Abrir cámara</span>
-                                                        </Button>
+            {/* Main Form Area */}
+            <div className="px-1 pb-4 space-y-4">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {/* Image Upload - Camera first approach */}
+                        <FormField
+                            control={form.control}
+                            name="image"
+                            render={() => (
+                                <FormItem>
+                                    <FormLabel className="text-sm">Foto de la placa *</FormLabel>
+                                    <FormControl>
+                                        <div className="space-y-3">
+                                            {!imagePreview && !cameraActive ? (
+                                                <div className="space-y-2">
+                                                    {/* Camera button */}
+                                                    <Button
+                                                        type="button"
+                                                        onClick={startCamera}
+                                                        className="w-full h-32 sm:h-40 flex flex-col items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 text-primary touch-manipulation"
+                                                    >
+                                                        <Camera className="w-10 h-10 sm:w-12 sm:h-12" />
+                                                        <span className="font-semibold text-sm">Abrir cámara</span>
+                                                    </Button>
 
-                                                        {cameraError && (
-                                                            <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded-lg text-destructive text-xs">
-                                                                <CameraOff className="w-4 h-4 shrink-0" />
-                                                                <span>{cameraError}</span>
+                                                    {cameraError && (
+                                                        <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded-lg text-destructive text-xs">
+                                                            <CameraOff className="w-4 h-4 shrink-0" />
+                                                            <span>{cameraError}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* File upload fallback */}
+                                                    <label
+                                                        htmlFor="file-upload"
+                                                        className="flex items-center justify-center w-full h-11 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors touch-manipulation"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <Upload className="w-4 h-4 text-muted-foreground" />
+                                                            <span className="text-xs text-muted-foreground">
+                                                                Seleccionar de galería
+                                                            </span>
+                                                        </div>
+                                                        <input
+                                                            id="file-upload"
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={handleImageChange}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : cameraActive ? (
+                                                <div className="space-y-2">
+                                                    {/* Live camera view */}
+                                                    <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
+                                                        <video
+                                                            ref={videoRef}
+                                                            autoPlay
+                                                            playsInline
+                                                            muted
+                                                            className="w-full h-full object-cover"
+                                                        />
+
+                                                        {!cameraReady && (
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                                                                <div className="text-center text-white">
+                                                                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-1" />
+                                                                    <p className="text-xs">Cargando...</p>
+                                                                </div>
                                                             </div>
                                                         )}
 
-                                                        {/* File upload fallback */}
-                                                        <label
-                                                            htmlFor="file-upload"
-                                                            className="flex items-center justify-center w-full h-11 border-2 border-dashed rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors touch-manipulation"
-                                                        >
-                                                            <div className="flex items-center gap-2">
-                                                                <Upload className="w-4 h-4 text-muted-foreground" />
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    Seleccionar de galería
-                                                                </span>
+                                                        {cameraReady && (
+                                                            <div className="absolute inset-3 border-2 border-white/50 rounded-lg pointer-events-none">
+                                                                <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-white" />
+                                                                <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-white" />
+                                                                <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-white" />
+                                                                <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-white" />
                                                             </div>
-                                                            <input
-                                                                id="file-upload"
-                                                                type="file"
-                                                                className="hidden"
-                                                                accept="image/*"
-                                                                onChange={handleImageChange}
-                                                            />
-                                                        </label>
+                                                        )}
                                                     </div>
-                                                ) : cameraActive ? (
-                                                    <div className="space-y-2">
-                                                        {/* Live camera view */}
-                                                        <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
-                                                            <video
-                                                                ref={videoRef}
-                                                                autoPlay
-                                                                playsInline
-                                                                muted
-                                                                className="w-full h-full object-cover"
-                                                            />
 
-                                                            {!cameraReady && (
-                                                                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                                                                    <div className="text-center text-white">
-                                                                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-1" />
-                                                                        <p className="text-xs">Cargando...</p>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-
-                                                            {cameraReady && (
-                                                                <div className="absolute inset-3 border-2 border-white/50 rounded-lg pointer-events-none">
-                                                                    <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-white" />
-                                                                    <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-white" />
-                                                                    <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-white" />
-                                                                    <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-white" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Camera controls */}
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                type="button"
-                                                                onClick={capturePhoto}
-                                                                disabled={!cameraReady}
-                                                                className="flex-1 h-12 text-sm touch-manipulation"
-                                                            >
-                                                                {cameraReady ? (
-                                                                    <><Camera className="mr-2 h-5 w-5" /> Capturar</>
-                                                                ) : (
-                                                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Cargando...</>
-                                                                )}
-                                                            </Button>
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                onClick={stopCamera}
-                                                                className="h-12 px-4 touch-manipulation"
-                                                            >
-                                                                <X className="h-5 w-5" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="relative">
-                                                        <img
-                                                            src={imagePreview || ""}
-                                                            alt="Preview"
-                                                            className="w-full aspect-[4/3] object-contain rounded-lg border bg-muted/10"
-                                                        />
+                                                    {/* Camera controls */}
+                                                    <div className="flex gap-2">
                                                         <Button
                                                             type="button"
-                                                            variant="secondary"
-                                                            size="icon"
-                                                            className="absolute top-2 right-2 h-8 w-8"
-                                                            onClick={clearImage}
+                                                            onClick={capturePhoto}
+                                                            disabled={!cameraReady}
+                                                            className="flex-1 h-12 text-sm touch-manipulation"
                                                         >
-                                                            <X className="h-4 w-4" />
+                                                            {cameraReady ? (
+                                                                <><Camera className="mr-2 h-5 w-5" /> Capturar</>
+                                                            ) : (
+                                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Cargando...</>
+                                                            )}
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={stopCamera}
+                                                            className="h-12 px-4 touch-manipulation"
+                                                        >
+                                                            <X className="h-5 w-5" />
                                                         </Button>
                                                     </div>
-                                                )}
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Dealership Select - Grouped by Zone */}
-                            <FormField
-                                control={form.control}
-                                name="dealershipId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm">Concesionario *</FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                            disabled={loadingData}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger className="h-11 touch-manipulation">
-                                                    <SelectValue placeholder="Selecciona destino" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="max-h-[300px]">
-                                                {groupedDealerships.map(([zone, zoneDealerships]) => (
-                                                    <SelectGroup key={zone}>
-                                                        <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
-                                                            {zone}
-                                                        </SelectLabel>
-                                                        {zoneDealerships.map((dealership) => (
-                                                            <SelectItem
-                                                                key={dealership.idDealership}
-                                                                value={String(dealership.idDealership)}
-                                                                className="py-3 pl-4"
-                                                            >
-                                                                {dealership.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Manual Plate Number - Only shown after OCR fails */}
-                            {showManualPlate && (
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                                        <span className="text-amber-600 dark:text-amber-400 text-sm">
-                                            No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
-                                        </span>
-                                    </div>
-                                    <FormField
-                                        control={form.control}
-                                        name="manualPlateNumber"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-sm">Número de placa *</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="ABC123"
-                                                        {...field}
-                                                        className="h-11 font-mono uppercase touch-manipulation text-lg tracking-wider"
-                                                        maxLength={7}
-                                                        autoFocus
+                                                </div>
+                                            ) : (
+                                                <div className="relative">
+                                                    <img
+                                                        src={imagePreview || ""}
+                                                        alt="Preview"
+                                                        className="w-full aspect-[4/3] object-contain rounded-lg border bg-muted/10"
                                                     />
-                                                </FormControl>
-                                                <FormDescription className="text-xs">
-                                                    Ingresa la placa
-                                                </FormDescription>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="secondary"
+                                                        size="icon"
+                                                        className="absolute top-2 right-2 h-8 w-8"
+                                                        onClick={clearImage}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
                             )}
+                        />
 
-                            {/* Actions */}
-                            <div className="flex gap-3 pt-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={handleBack}
-                                    disabled={loading}
-                                    className="h-11 touch-manipulation"
-                                >
-                                    Cancelar
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={loading || loadingData || cameraActive}
-                                    className="flex-1 h-11 touch-manipulation"
-                                >
-                                    {loading ? (
-                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creando...</>
-                                    ) : (
-                                        <><Bike className="mr-2 h-4 w-4" />Crear servicio</>
+                        {/* Dealership Select - Grouped by Zone */}
+                        <FormField
+                            control={form.control}
+                            name="dealershipId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-sm">Concesionario *</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        disabled={loadingData}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="h-11 touch-manipulation">
+                                                <SelectValue placeholder="Selecciona destino" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="max-h-[300px]">
+                                            {groupedDealerships.map(([zone, zoneDealerships]) => (
+                                                <SelectGroup key={zone}>
+                                                    <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
+                                                        {zone}
+                                                    </SelectLabel>
+                                                    {zoneDealerships.map((dealership) => (
+                                                        <SelectItem
+                                                            key={dealership.idDealership}
+                                                            value={String(dealership.idDealership)}
+                                                            className="py-3 pl-4"
+                                                        >
+                                                            {dealership.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Manual Plate Number - Only shown after OCR fails */}
+                        {showManualPlate && (
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                                    <span className="text-amber-600 dark:text-amber-400 text-sm">
+                                        No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
+                                    </span>
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="manualPlateNumber"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-sm">Número de placa *</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="ABC123"
+                                                    {...field}
+                                                    className="h-11 font-mono uppercase touch-manipulation text-lg tracking-wider"
+                                                    maxLength={7}
+                                                    autoFocus
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-xs">
+                                                Ingresa la placa
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                </Button>
+                                />
                             </div>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex gap-3 pt-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleBack}
+                                disabled={loading}
+                                className="h-11 touch-manipulation"
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={loading || loadingData || cameraActive}
+                                className="flex-1 h-11 touch-manipulation"
+                            >
+                                {loading ? (
+                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creando...</>
+                                ) : (
+                                    <><Bike className="mr-2 h-4 w-4" />Crear servicio</>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </div>
         </div>
     )
 }
