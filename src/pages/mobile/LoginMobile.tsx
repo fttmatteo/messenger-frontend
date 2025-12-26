@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import logo from "@/assets/logo.png"
 import { ModeToggle } from "@/components/mode-toggle"
+import { getErrorMessage } from "@/lib/error-utils"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -44,8 +45,8 @@ export default function LoginMobile() {
                 rememberMe: data.rememberMe
             })
             navigate("/")
-        } catch (err: any) {
-            toast.error(err.message || "Algo salió mal", {
+        } catch (error) {
+            toast.error(getErrorMessage(error), {
                 id: 'login-error',
                 position: 'top-left',
                 duration: 4000

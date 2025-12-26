@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { capitalizeWords } from "@/lib/format-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Available zones
 const ZONES = [
@@ -62,9 +63,9 @@ export default function CreateConcesionario() {
             })
             toast.success("Concesionario creado exitosamente")
             navigate("/admin/concesionarios")
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al crear concesionario", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-crear-concesionario"
             })
         }

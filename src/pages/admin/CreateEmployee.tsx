@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 import { capitalizeWords } from "@/lib/format-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 
 const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
@@ -53,9 +54,9 @@ export default function CreateEmployee() {
             })
             toast.success("Empleado creado exitosamente")
             navigate("/admin/empleados")
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al crear empleado", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-crear-empleado"
             })
         }
