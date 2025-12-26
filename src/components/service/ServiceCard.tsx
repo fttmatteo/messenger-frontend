@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -25,11 +24,7 @@ interface ServiceCardProps {
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
 
-    // Memoize the icon component to avoid recreating during every render
-    const PlateIcon = useMemo(
-        () => getPlateTypeIcon(service.plate.plateType),
-        [service.plate.plateType]
-    )
+    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
         <motion.div exit="exit" layout>

@@ -33,6 +33,32 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false)
     const [showExitDialog, setShowExitDialog] = useState(false)
 
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+    })
+
+    const onSubmit = async (data: LoginFormValues) => {
+        try {
+            await login({
+                document: parseInt(data.document, 10),
+                password: data.password,
+                rememberMe: data.rememberMe
+            })
+            navigate("/")
+        } catch (error) {
+            toast.error(getErrorMessage(error), {
+                id: 'login-error',
+                position: 'top-left',
+                duration: 4000
+            })
+        }
+    }
+
     // Show loading while detecting device type
     if (isMobile === undefined) {
         return (
@@ -60,32 +86,6 @@ export default function Login() {
                 window.location.href = "about:blank";
             }
         }, 300);
-    }
-
-    const {
-        register,
-        handleSubmit,
-        control,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-    })
-
-    const onSubmit = async (data: LoginFormValues) => {
-        try {
-            await login({
-                document: parseInt(data.document, 10),
-                password: data.password,
-                rememberMe: data.rememberMe
-            })
-            navigate("/")
-        } catch (error) {
-            toast.error(getErrorMessage(error), {
-                id: 'login-error',
-                position: 'top-left',
-                duration: 4000
-            })
-        }
     }
 
     return (

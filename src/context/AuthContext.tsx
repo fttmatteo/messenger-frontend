@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { authService } from '../services/auth.service';
 import type { LoginCredentials, User } from '../types/auth.types';
 
@@ -14,17 +14,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
+    const [user, setUser] = useState<User | null>(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
+            try {
+                return JSON.parse(storedUser);
+            } catch (e) {
+                console.error("Error parsing stored user", e);
+                return null;
+            }
         }
-        setIsLoading(false);
-    }, []);
+        return null;
+    });
+    const [isLoading, setIsLoading] = useState(false);
 
     const login = async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);
