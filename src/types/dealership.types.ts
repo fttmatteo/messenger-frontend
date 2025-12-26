@@ -16,4 +16,4 @@ export interface CreateDealershipRequest {
     zone: string
 }
 
-export interface UpdateDealershipRequest extends CreateDealershipRequest { }
+export type UpdateDealershipRequest = CreateDealershipRequest

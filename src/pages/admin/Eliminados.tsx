@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
@@ -18,6 +18,7 @@ import { Trash2, RotateCcw, Loader2, Home, Calendar, User, Building2, Clock } fr
 import { motion, AnimatePresence } from "framer-motion"
 import { formatDisplayName } from "@/lib/format-utils"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Animation variants
 const itemVariants = {
@@ -42,21 +43,21 @@ export default function Eliminados() {
     const [restoring, setRestoring] = useState<number | null>(null)
     const [emptying, setEmptying] = useState(false)
 
-    const fetchDeletedServices = async () => {
+    const fetchDeletedServices = useCallback(async () => {
         try {
             setLoading(true)
             const data = await serviceDeliveryService.getTrash()
             setServices(data)
-        } catch (error: any) {
-            setError(error.message || "Error al cargar elementos eliminados")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
-    }
+    }, [setError])
 
     useEffect(() => {
         fetchDeletedServices()
-    }, [])
+    }, [fetchDeletedServices])
 
     const handleRestore = async (id: number) => {
         try {
@@ -64,8 +65,8 @@ export default function Eliminados() {
             await serviceDeliveryService.restore(id)
             setSuccess("Servicio restaurado correctamente")
             fetchDeletedServices()
-        } catch (error: any) {
-            setError(error.message || "Error al restaurar servicio")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setRestoring(null)
         }
@@ -77,8 +78,8 @@ export default function Eliminados() {
             const result = await serviceDeliveryService.emptyTrash()
             setSuccess(`Papelera vaciada: ${result.deletedCount} servicio(s) eliminado(s)`)
             setServices([])
-        } catch (error: any) {
-            setError(error.message || "Error al vaciar papelera")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setEmptying(false)
         }

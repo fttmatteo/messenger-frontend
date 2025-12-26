@@ -1,4 +1,4 @@
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader, type Libraries } from '@react-google-maps/api'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useTheme } from "next-themes"
 
@@ -12,7 +12,11 @@ const defaultCenter = {
     lng: -75.5812
 }
 
-const LIBRARIES: ("marker")[] = ["marker"];
+// Type-safe libraries array
+const LIBRARIES: Libraries = ["marker"];
+
+// Google Maps color scheme types
+type ColorScheme = 'DARK' | 'LIGHT' | 'FOLLOW_SYSTEM';
 
 interface MapProps {
     center?: google.maps.LatLngLiteral
@@ -30,7 +34,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: LIBRARIES as any
+        libraries: LIBRARIES
     })
 
     const handleLoad = useCallback((mapInstance: google.maps.Map) => {
@@ -43,14 +47,19 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
         if (onUnmount) onUnmount(mapInstance)
     }, [onUnmount])
 
+    // Get color scheme based on theme
+    const getColorScheme = useCallback((): ColorScheme => {
+        return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
+    }, [resolvedTheme])
+
     // Update map options when theme changes or map instance is ready
     useEffect(() => {
         if (map) {
             map.setOptions({
-                colorScheme: resolvedTheme === 'dark' ? 'DARK' as any : 'LIGHT' as any
+                colorScheme: getColorScheme()
             })
         }
-    }, [map, resolvedTheme])
+    }, [map, getColorScheme])
 
     if (!isLoaded) {
         return <div className={`w-full h-full bg-muted animate-pulse rounded-lg ${className || ''}`} />
@@ -71,7 +80,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                     streetViewControl: false,
                     mapTypeControl: false,
                     fullscreenControl: true,
-                    colorScheme: resolvedTheme === 'dark' ? 'DARK' as any : 'LIGHT' as any,
+                    colorScheme: getColorScheme(),
                 }}
             >
                 {children}

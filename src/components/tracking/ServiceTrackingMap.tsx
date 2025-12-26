@@ -10,6 +10,7 @@ import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
 import { MapPin, Navigation, Route, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { getErrorMessage } from "@/lib/error-utils"
 
 interface ServiceTrackingMapProps {
     serviceId: number
@@ -27,7 +28,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
     label?: string
 }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return
@@ -53,7 +54,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
                 markerRef.current.map = null
             }
         }
-    }, [map, color, label])
+    }, [map, color, label, position, title])
 
     useEffect(() => {
         if (markerRef.current) {
@@ -86,7 +87,7 @@ export function ServiceTrackingMap({
                 setLoading(true)
                 const data = await trackingApiService.getHistoryByService(serviceId)
                 setTrackingData(data || [])
-            } catch (error: any) {
+            } catch (error) {
                 console.error("Error fetching service tracking:", error)
                 setTrackingData([])
             } finally {
@@ -119,9 +120,9 @@ export function ServiceTrackingMap({
                 meters: result.distanceMeters,
                 seconds: result.durationSeconds
             })
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al calcular distancia", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-calcular-distancia"
             })
         } finally {

@@ -1,251 +1,169 @@
 <div align="center">
 
-# 📱 PLAK Frontend
+# 📱 Messenger Frontend - Messenger Management System
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-Passing-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)
 
-**Interfaz de usuario moderna y responsiva para el sistema de gestión de entregas PLAK.**
+**Plataforma integral para la gestión de logística y mensajería en tiempo real.**
+Interfaz moderna, responsiva y accesible para administradores y mensajeros.
 
-*Modern and responsive user interface for the PLAK delivery management system.*
+[Características](#-características-principales) • [Tecnología](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
 
 </div>
 
 ---
 
-<details>
-<summary><b>🇺🇸 English Version</b> (Click to expand)</summary>
+## 📋 Descripción General
 
-## 📋 Table of Contents
+**Messenger Frontend** es la interfaz de usuario del sistema PLAK, diseñada para orquestar operaciones de mensajería urbana. La aplicación ofrece dos experiencias distintas según el rol del usuario:
+1.  **Dashboard Administrativo**: Para el monitoreo global, gestión de empleados, concesionarios y creación de servicios.
+2.  **App de Mensajero (Mobile PWA)**: Optimizada para uso en campo, permite gestionar asignaciones, actualizar estados y capturar evidencias.
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Setup & Installation](#-setup--installation)
-- [Environment Variables](#-environment-variables)
-- [Deployment](#-deployment)
+El sistema destaca por su capacidad de **tracking en tiempo real** utilizando WebSockets y la API de Google Maps con Advanced Markers.
 
----
+## ✨ Características Principales
 
-### ✨ Features
+### 📱 Experiencia de Usuario (UX)
+-   **Diseño Mobile-First**: Interfaz adaptativa optimizada para dispositivos táctiles (App Mensajero).
+-   **Modo Oscuro**: Soporte nativo para temas claro y oscuro.
+-   **PWA Ready**: Preparada para instalación en dispositivos móviles.
+-   **Accesibilidad (A11y)**: Navegación por teclado, etiquetas ARIA y roles semánticos implementados.
 
-- **Mobile-First Design**: Optimized for messengers on the go.
-- **Real-Time Tracking**: Live visualization of active messengers using Google Maps.
-- **Digital Signatures**: Capture customer signatures directly on screen.
-- **Evidence Management**: Upload multiple photos for delivery verification.
-- **Role-Based Access**: Specialized interfaces for Admins and Messengers.
-- **Authentication**: Secure JWT login with auto-refresh mechanism.
-- **Dark Mode**: Built-in theme switching.
+### 🗺️ Geolocalización y Mapas
+-   **Tracking en Vivo**: Visualización en tiempo real de la flota de mensajeros sobre Google Maps.
+-   **Marcadores Avanzados**: Uso de `AdvancedMarkerElement` para íconos personalizados y mejor rendimiento.
+-   **Rutas y Distancias**: Cálculo automático de trayectos optimizados.
 
----
+### ⚙️ Funcionalidades Operativas
+-   **Gestión de Ciclo de Vida**: Flujo completo de servicio (Asignado → En Progreso → Entregado/Devuelto).
+-   **Captura de Evidencias**:
+    -   📸 Carga de fotografías como prueba de entrega.
+    -   ✍️ Firma digital en pantalla táctil (`canvas`).
+-   **Seguridad y Roles**: Autenticación JWT con rotación de tokens y protección de rutas por rol (`ADMIN`, `MESSENGER`).
 
-### 💻 Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Core** | React 19, TypeScript |
-| **Build Tool** | Vite |
-| **Styling** | Tailwind CSS v4, shadcn/ui |
-| **Icons** | Lucide React |
-| **Forms** | React Hook Form + Zod |
-| **Maps** | @react-google-maps/api |
-| **Animations** | Framer Motion |
-| **HTTP Client** | Axios |
-
-</details>
+### ⚡ Rendimiento y DX
+-   **Lazy Loading**: Carga diferida de rutas y componentes pesados.
+-   **Type Safety**: Código base 100% tipado estáticamente con TypeScript y Zod.
+-   **Testing Robusto**: Suite de pruebas unitarias e integración con Vitest y React Testing Library.
 
 ---
 
-## 📋 Tabla de Contenidos
+## 🛠 Stack Tecnológico
 
-- [Características](#-características)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Instalación](#-instalación)
-- [Variables de Entorno](#-variables-de-entorno)
-- [Roles y Vistas](#-roles-y-vistas)
+El proyecto utiliza tecnologías de vanguardia para asegurar escalabilidad y mantenibilidad:
 
----
-
-## ✨ Características
-
-### 📱 Experiencia Móvil Optimizada
-Diseñado pensando primero en los mensajeros. La interfaz se adapta perfectamente a dispositivos móviles, facilitando la gestión de entregas en terreno.
-
-### 🗺️ Tracking y Mapas
-- **Visualización en Vivo:** Los administradores pueden ver la ubicación de todos los mensajeros activos.
-- **Geocodificación:** Los concesionarios se ubican automáticamente en el mapa.
-
-### ✍️ Gestión de Evidencias
-- **Firma Digital:** Componente integrado para capturar firmas táctiles.
-- **Fotos:** Carga múltiple de imágenes (evidencia de entrega, fallos, etc.).
-- **Validación:** Reglas estrictas para asegurar que cada entrega tenga su soporte.
-
-### 🔒 Seguridad y Acceso
-- **JWT Persistente:** Manejo automático de tokens de acceso y refresco.
-- **Rutas Protegidas:** Redirección inteligente basada en roles (Admin vs Mensajero).
+| Categoría | Tecnologías | Propósito |
+| :--- | :--- | :--- |
+| **Core** | `React 19`, `TypeScript` | Base del framework y seguridad de tipos. |
+| **Build & Tooling** | `Vite` | Entorno de desarrollo y bundler optimizado. |
+| **Estilos & UI** | `Tailwind CSS v4`, `Shadcn/UI`, `Class Variance Authority` | Sistema de diseño, componentes accesibles y estilos atómicos. |
+| **Estado & Lógica** | `Context API`, `React Hooks` | Gestión de estado global y lógica reutilizable. |
+| **Formularios** | `React Hook Form`, `Zod` | Manejo de formularios complejos y validación de esquemas. |
+| **Mapas** | `@react-google-maps/api` | Integración con Google Maps Javascript API. |
+| **Real-time** | `@stomp/stompjs`, `SockJS` | Comunicación WebSocket para actualizaciones en vivo. |
+| **Testing** | `Vitest`, `React Testing Library`, `JSDOM` | Pruebas unitarias y de integración. |
+| **Animaciones** | `Framer Motion` | Transiciones suaves y micro-interacciones. |
 
 ---
 
-## 💻 Stack Tecnológico
+## 🏗 Arquitectura del Proyecto
 
-| Componente | Tecnología | Descripción |
-|------------|------------|-------------|
-| **Core** | React 19 + TypeScript | Rendimiento y seguridad de tipos |
-| **Build** | Vite | Entorno de desarrollo ultrarrápido |
-| **Estilos** | Tailwind CSS v4 | Motor de estilos utility-first moderno |
-| **UI Kit** | shadcn/ui | Componentes accesibles y personalizables |
-| **Formularios** | React Hook Form + Zod | Validación robusta de datos |
-| **Mapas** | Google Maps API | Integración nativa de mapas |
-| **Animaciones** | Framer Motion | Transiciones fluidas y micro-interacciones |
-
----
-
-## 📁 Estructura del Proyecto
+Estructura de directorios organizada por dominio y funcionalidad:
 
 ```
 src/
-├── assets/              # Imágenes y recursos estáticos
-├── components/          # Componentes reutilizables
-│   ├── ui/              # Componentes base (shadcn/ui)
-│   ├── Map.tsx          # Componente de Google Maps
-│   ├── SignaturePad.tsx # Captura de firmas
+├── components/          # 🧩 Componentes UI reutilizables
+│   ├── ui/              # Componentes base (Shadcn - botones, inputs, etc.)
+│   ├── service/         # Componentes de dominio (ServiceCard, ServiceDetails)
+│   ├── tracking/        # Componentes de mapa y rastreo
 │   └── ...
-├── context/             # Estado global (Auth, Theme)
-├── hooks/               # Custom hooks (useMobile, etc.)
-├── layouts/             # Plantillas de estructuras (Admin, Messenger)
-├── lib/                 # Utilidades y configuración (utils, axios)
-├── pages/               # Vistas principales
-│   ├── admin/           # Panel de control administrativo
-│   ├── messenger/       # Vistas para mensajeros
-│   └── Login.tsx        # Página de autenticación
-├── services/            # Comunicación con API (Axios services)
-└── types/               # Definiciones de tipos TypeScript
+├── context/             # 🌐 Proveedores de estado global (Auth, AdminUI)
+├── hooks/               # 🎣 Custom Hooks (useService, useAuth, useMap)
+├── layouts/             # 📐 Estructuras de página (MessengerLayout, AdminLayout)
+├── lib/                 # 🛠 Utilidades puras, formateadores y configuración
+├── pages/               # 📄 Vistas de la aplicación
+│   ├── admin/           # Rutas protegidas de Administrador
+│   └── messenger/       # Rutas protegidas de Mensajero
+├── services/            # 📡 Capa de servicio API (Axios, WebSocket)
+├── test/                # 🧪 Utilidades de prueba y mocks globales
+└── types/               # 📝 Definiciones de tipos TypeScript compartidas
 ```
 
 ---
 
-## 🚀 Instalación
+## 🚀 Instalación y Despliegue
 
 ### Prerrequisitos
-- Node.js 18+
-- npm o pnpm
+-   Node.js v18.0.0 o superior
+-   npm o pnpm
+-   API Key de Google Maps habilitada
 
-### Pasos
+### Pasos de Instalación
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone <url-del-repositorio>
-   cd messenger-frontend
-   ```
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone https://github.com/tu-usuario/plak-frontend.git
+    cd plak-frontend
+    ```
 
-2. **Instalar dependencias**
-   ```bash
-   npm install
-   ```
+2.  **Instalar dependencias:**
+    ```bash
+    npm install
+    # o si usas pnpm
+    pnpm install
+    ```
 
-3. **Configurar entorno**
-   Crea un archivo `.env` en la raíz (ver sección de variables).
+3.  **Configurar Variables de Entorno:**
+    Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:
 
-4. **Ejecutar en desarrollo**
-   ```bash
-   npm run dev
-   ```
+    ```env
+    # URL del Backend API (Spring Boot)
+    VITE_API_URL=http://localhost:8080
 
-## 📜 Scripts Disponibles
+    # Configuración de Google Maps
+    VITE_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
+    VITE_GOOGLE_MAPS_MAP_ID=tu_map_id_aqui  # Requerido para Advanced Markers
+    ```
 
-En el directorio del proyecto, puedes ejecutar:
+4.  **Ejecutar en Desarrollo:**
+    ```bash
+    npm run dev
+    ```
+    La aplicación estará disponible en `http://localhost:5173`.
 
-### `npm run dev`
-Inicia la aplicación en modo de desarrollo.\
-Abre [http://localhost:5173](http://localhost:5173) para verla en el navegador.
+### Scripts Disponibles
 
-### `npm run build`
-Construye la aplicación para producción en la carpeta `dist`.\
-Optimiza React y minifica el código para el mejor rendimiento.
-
-### `npm run lint`
-Ejecuta el linter (ESLint) para encontrar y arreglar problemas en el código.
-
-### `npm run preview`
-Sirve localmente la versión de producción construida para probarla antes de desplegar.
-
----
-
-## 📸 Capturas de Pantalla
-
-| Dashboard Admin | Tracking en Vivo |
-|:---:|:---:|
-| ![Dashboard](../assets/dashboard-placeholder.png) | ![Tracking](../assets/tracking-placeholder.png) |
-| *Vista general del sistema* | *Monitoreo en tiempo real* |
+| Script | Descripción |
+| :--- | :--- |
+| `npm run dev` | Inicia servidor de desarrollo con Hot Module Replacement (HMR). |
+| `npm run build` | Compila y optimiza la aplicación para producción en `/dist`. |
+| `npm run preview` | Sirve localmente la versión de producción compilada. |
+| `npm run lint` | Ejecuta ESLint para analizar calidad de código. |
+| `npm run test` | Ejecuta la suite de pruebas completa con Vitest. |
+| `npm run test:ui` | Abre interfaz gráfica para visualizar pruebas. |
 
 ---
 
-## 🚀 Despliegue
+## 🔒 Seguridad y Buenas Prácticas
 
-### Vercel (Recomendado)
-La forma más fácil de desplegar es usando [Vercel](https://vercel.com).
-1. Importa tu repositorio en Vercel.
-2. Vercel detectará automáticamente que es un proyecto **Vite**.
-3. Agrega las variables de entorno (`VITE_API_URL`, etc.).
-4. ¡Despliega!
+-   **Autenticación**: El sistema utiliza `Access Tokens` de corta duración y `Refresh Tokens` seguros vía HTTP-only cookies (configuración backend dependiente).
+-   **Manejo de Errores**: Sistema centralizado de manejo de errores con tipos `AppError` personalizados.
+-   **CI/CD**: Pipeline de GitHub Actions configurado para Linting, Testing y Build automático en cada Push/PR.
 
-### Docker
-También puedes crear una imagen Docker para servir los archivos estáticos con Nginx.
+## 🤝 Contribución
 
-```dockerfile
-FROM node:18-alpine as build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+¡Las contribuciones son bienvenidas! Por favor sigue estos pasos:
 
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
----
-
-## 🔧 Variables de Entorno
-
-Crea un archivo `.env` en la raíz del proyecto:
-
-```env
-# URL del Backend
-VITE_API_URL=http://localhost:8080
-
-# Google Maps API Key (con permisos de Maps JS API y Geocoding)
-VITE_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
-```
-
----
-
-## 👥 Roles y Vistas
-
-### 🛡️ Administrador (PLAK Admin)
-Acceso total al sistema a través de un dashboard completo de escritorio (responsive).
-- **Dashboard:** Estadísticas generales.
-- **Empleados:** Gestión de usuarios (Admin/Messenger).
-- **Concesionarios:** Gestión de puntos de entrega.
-- **Servicios:** Vista detallada de todas las entregas.
-- **Mapa:** Tracking en tiempo real.
-
-### 🛵 Mensajero (PLAK Messenger)
-Interfaz simplificada enfocada en la operatividad diaria.
-- **Inicio:** Resumen de tareas pendientes.
-- **Entregas:** Lista de servicios asignados.
-- **Perfil:** Información personal y estado.
+1.  Asegúrate de que todas las pruebas pasen: `npm run test:run`
+2.  Verifica que no haya errores de linting: `npm run lint`
+3.  Usa Conventional Commits para tus mensajes de commit.
 
 ---
 
 <div align="center">
-
-**Made with ❤️ using React 19 & Tailwind**
-
+  <sub>Desarrollado para Messenger Delivery System © 2024</sub>
 </div>

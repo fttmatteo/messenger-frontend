@@ -54,6 +54,7 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAdminUI = () => {
     const context = useContext(AdminUIContext);
     if (context === undefined) {

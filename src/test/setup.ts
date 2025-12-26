@@ -23,6 +23,7 @@ afterEach(() => {
 });
 
 // Mock ResizeObserver (required by Radix UI components)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).ResizeObserver = class ResizeObserver {
     observe() { }
     unobserve() { }
@@ -30,6 +31,7 @@ afterEach(() => {
 };
 
 // Mock IntersectionObserver (required by some components)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).IntersectionObserver = class IntersectionObserver {
     constructor() { }
     observe() { }

@@ -17,6 +17,7 @@ import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useAuth } from "@/context/AuthContext"
 import { getAvailableStatusesForUser, getServiceLockReason, getTimeRemainingIn72hWindow, getStatusIconConfig } from "@/lib/status-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 
 export default function UpdateServiceStatus() {
     const { id } = useParams()
@@ -65,8 +66,8 @@ export default function UpdateServiceStatus() {
                     }
                 }
 
-            } catch (error: any) {
-                setError(error.message || "Error al cargar servicio")
+            } catch (error) {
+                setError(getErrorMessage(error))
                 navigate("/admin/servicios")
             } finally {
                 setLoading(false)
@@ -74,7 +75,7 @@ export default function UpdateServiceStatus() {
         }
 
         fetchService()
-    }, [id, navigate])
+    }, [id, navigate, setError, user?.role])
 
 
 
@@ -94,8 +95,8 @@ export default function UpdateServiceStatus() {
             setSuccess(`Estado de servicio ${service.plate.plateNumber} actualizado`)
 
             navigate("/admin/servicios")
-        } catch (error: any) {
-            setError(error.response?.data?.message || error.message || "Error al actualizar estado")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setUpdating(false)
         }
@@ -115,8 +116,8 @@ export default function UpdateServiceStatus() {
             setSuccess(`Servicio ${service.plate.plateNumber} reasignado al mensajero`)
 
             navigate("/admin/servicios")
-        } catch (error: any) {
-            setError(error.response?.data?.message || error.message || "Error al reasignar")
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setReassigning(false)
         }

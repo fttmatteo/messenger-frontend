@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { serviceDeliveryService } from '@/services/service.service'
 import type { ServiceDelivery } from '@/types/service.types'
 import { toast } from 'sonner'
+import { getErrorMessage } from '@/lib/error-utils'
 
 interface UseMessengerServicesReturn {
     services: ServiceDelivery[]
@@ -37,8 +38,8 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                 new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             )
             setServices(sorted)
-        } catch (err: any) {
-            const message = err.response?.data?.message || err.message || 'Error al cargar servicios'
+        } catch (error) {
+            const message = getErrorMessage(error)
             setError(message)
             toast.error('Error al cargar servicios', {
                 description: message,

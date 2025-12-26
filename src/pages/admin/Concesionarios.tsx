@@ -23,7 +23,7 @@ import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Nav
 // Marker component for the dealership location
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return

@@ -16,6 +16,7 @@ import logo from "@/assets/logo.png"
 import { ModeToggle } from "@/components/mode-toggle"
 import { useIsMobile } from "@/hooks/use-mobile"
 import LoginMobile from "@/pages/mobile/LoginMobile"
+import { getErrorMessage } from "@/lib/error-utils"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -31,6 +32,32 @@ export default function Login() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [showExitDialog, setShowExitDialog] = useState(false)
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+    })
+
+    const onSubmit = async (data: LoginFormValues) => {
+        try {
+            await login({
+                document: parseInt(data.document, 10),
+                password: data.password,
+                rememberMe: data.rememberMe
+            })
+            navigate("/")
+        } catch (error) {
+            toast.error(getErrorMessage(error), {
+                id: 'login-error',
+                position: 'top-left',
+                duration: 4000
+            })
+        }
+    }
 
     // Show loading while detecting device type
     if (isMobile === undefined) {
@@ -61,38 +88,12 @@ export default function Login() {
         }, 300);
     }
 
-    const {
-        register,
-        handleSubmit,
-        control,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-    })
-
-    const onSubmit = async (data: LoginFormValues) => {
-        try {
-            await login({
-                document: parseInt(data.document, 10),
-                password: data.password,
-                rememberMe: data.rememberMe
-            })
-            navigate("/")
-        } catch (err: any) {
-            toast.error(err.message || "Algo salió mal", {
-                id: 'login-error',
-                position: 'top-left',
-                duration: 4000
-            })
-        }
-    }
-
     return (
         <div className="flex items-center justify-center h-screen bg-background p-2 sm:p-4 overflow-auto">
             <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
                 {/* Help Button - Top Left */}
                 <div className="absolute top-3 left-3 z-10">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button" aria-label="Ayuda">
                         <HelpCircle className="h-5 w-5" />
                     </Button>
                 </div>

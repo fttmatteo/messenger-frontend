@@ -12,6 +12,22 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 
+// Type definitions for Wake Lock API
+// These provide type safety for the WakeLockSentinel returned by navigator.wakeLock.request()
+interface WakeLockSentinel extends EventTarget {
+    readonly released: boolean;
+    readonly type: 'screen';
+    release(): Promise<void>;
+}
+
+// Type-safe navigator check for Wake Lock support
+const getWakeLock = (): { request: (type: 'screen') => Promise<WakeLockSentinel> } | undefined => {
+    if ('wakeLock' in navigator) {
+        return navigator.wakeLock as { request: (type: 'screen') => Promise<WakeLockSentinel> };
+    }
+    return undefined;
+}
+
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
@@ -19,7 +35,7 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
-    const wakeLockRef = useRef<any>(null)
+    const wakeLockRef = useRef<WakeLockSentinel | null>(null)
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
@@ -47,16 +63,18 @@ export default function MessengerLayout() {
 
     const requestWakeLock = async () => {
         try {
-            if ('wakeLock' in navigator) {
-                wakeLockRef.current = await (navigator as any).wakeLock.request('screen')
+            const wakeLock = getWakeLock()
+            if (wakeLock) {
+                wakeLockRef.current = await wakeLock.request('screen')
                 console.log('Wake Lock activo: la pantalla no se apagará')
 
                 wakeLockRef.current.addEventListener('release', () => {
                     console.log('Wake Lock liberado')
                 })
             }
-        } catch (err: any) {
-            console.warn(`No se pudo activar el Wake Lock: ${err.name}, ${err.message}`)
+        } catch (err) {
+            // Wake Lock can fail for various reasons (e.g., low battery)
+            console.warn('No se pudo activar el Wake Lock:', err)
         }
     }
 
@@ -139,7 +157,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
         }
-    }, [isOnline, user?.id])
+    }, [isOnline, user?.id, logout, navigate, updateUser])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -189,9 +207,16 @@ export default function MessengerLayout() {
 
     return (
         <div className="flex flex-col h-screen bg-background">
+            {/* Skip link for keyboard navigation */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
+            >
+                Saltar al contenido principal
+            </a>
             {/* Simplified Header */}
             {/* Simplified Header */}
-            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative">
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative" role="banner">
                 {/* Left: Back button or Logo */}
                 <div className="flex-1 flex justify-start z-10">
                     {isSubPage ? (
@@ -200,6 +225,7 @@ export default function MessengerLayout() {
                             size="icon"
                             onClick={() => navigate(-1)}
                             className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
+                            aria-label="Volver"
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
@@ -232,6 +258,7 @@ export default function MessengerLayout() {
                         size="icon"
                         onClick={handleLogout}
                         className="h-9 w-9 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        aria-label="Cerrar sesión"
                     >
                         <LogOut className="h-4 w-4" />
                     </Button>
@@ -240,8 +267,10 @@ export default function MessengerLayout() {
 
             {/* Main Content Area - with bottom padding for nav */}
             <main
+                id="main-content"
                 ref={mainRef}
                 className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-20'}`}
+                role="main"
             >
                 <Outlet />
             </main>

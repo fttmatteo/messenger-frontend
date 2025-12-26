@@ -1,3 +1,4 @@
+import { createElement } from "react"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -23,7 +24,8 @@ interface ServiceCardProps {
  */
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
-    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
+
+
 
     return (
         <motion.div exit="exit" layout>
@@ -45,7 +47,9 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                                             plateType={service.plate.plateType}
                                             size="md"
                                         />
-                                        <PlateIcon className="h-5 w-5 text-muted-foreground" />
+                                        {createElement(getPlateTypeIcon(service.plate.plateType), {
+                                            className: "h-5 w-5 text-muted-foreground"
+                                        })}
                                     </div>
                                 </div>
                             </div>

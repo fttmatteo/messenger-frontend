@@ -39,7 +39,7 @@ interface TrackingHistoryItem {
 // Marker component
 function MessengerMarker({ position, color = '#10b981' }: { position: google.maps.LatLngLiteral, color?: string }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return

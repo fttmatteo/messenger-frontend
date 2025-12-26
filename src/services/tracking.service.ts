@@ -102,7 +102,7 @@ class TrackingService {
                         if (typeof body === 'object' && body.messengerId) {
                             callback(body);
                         }
-                    } catch (e) {
+                    } catch {
                         // ignore non-json messages
                     }
                 }

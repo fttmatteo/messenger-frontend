@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getErrorMessage } from '@/lib/error-utils'
 
 interface EvidenceCaptureProps {
     maxPhotos?: number
@@ -60,11 +61,11 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                         })
                 }
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
             toast.error('Error de cámara', {
-                description: error.message || 'No se pudo acceder a la cámara'
+                description: getErrorMessage(error)
             })
         }
     }, [photos.length, maxPhotos, stopCamera])

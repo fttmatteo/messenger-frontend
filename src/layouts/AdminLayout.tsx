@@ -82,6 +82,13 @@ function AdminLayoutContent() {
 
     return (
         <SidebarProvider>
+            {/* Skip link for keyboard navigation */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
+            >
+                Saltar al contenido principal
+            </a>
             <Sidebar collapsible="none" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
@@ -151,12 +158,19 @@ function AdminLayoutContent() {
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => setShowSearchInput(true)}
+                                        aria-label="Abrir búsqueda"
                                     >
                                         <Search className="h-4 w-4" />
                                     </Button>
                                 </>
                             )}
-                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={handleLogout}
+                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                aria-label="Cerrar sesión"
+                            >
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </>
@@ -175,13 +189,19 @@ function AdminLayoutContent() {
 
                             <div className="flex-1" />
 
-                            <Button variant="outline" size="icon" onClick={handleLogout} className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex-shrink-0">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={handleLogout}
+                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex-shrink-0"
+                                aria-label="Cerrar sesión"
+                            >
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </>
                     )}
                 </header>
-                <main ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+                <main id="main-content" ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto p-6" role="main">
                     <Outlet context={{ searchQuery }} />
                 </main>
 
@@ -197,6 +217,7 @@ function AdminLayoutContent() {
                                 onClick={scrollToTop}
                                 size="icon"
                                 className="h-12 w-12 rounded-full shadow-lg"
+                                aria-label="Volver arriba"
                             >
                                 <ChevronUp className="h-5 w-5" />
                             </Button>

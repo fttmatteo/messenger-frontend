@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, Upload, X } from "lucide-react"
 import { toast } from "sonner"
+import { getErrorMessage } from "@/lib/error-utils"
 
 interface CameraCaptureProps {
     onCapture: (file: File, preview: string) => void
@@ -29,14 +30,7 @@ export function CameraCapture({
     const [cameraReady, setCameraReady] = useState(false)
     const [cameraError, setCameraError] = useState<string | null>(null)
 
-    // Cleanup camera on unmount
-    useEffect(() => {
-        return () => {
-            stopCamera()
-        }
-    }, [])
-
-    const stopCamera = () => {
+    const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop())
             streamRef.current = null
@@ -46,7 +40,14 @@ export function CameraCapture({
         }
         setCameraActive(false)
         setCameraReady(false)
-    }
+    }, [])
+
+    // Cleanup camera on unmount
+    useEffect(() => {
+        return () => {
+            stopCamera()
+        }
+    }, [stopCamera])
 
     const startCamera = async () => {
         try {
@@ -79,12 +80,12 @@ export function CameraCapture({
                         })
                 }
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {
-                description: error.message || "No se pudo acceder a la cámara",
+                description: getErrorMessage(error),
                 id: "error-camara"
             })
         }

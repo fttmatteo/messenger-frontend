@@ -4,6 +4,7 @@ import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { toast } from "sonner"
 import { getStatusBadge } from "@/lib/status-utils"
 import { useDataList } from "@/hooks/useDataList"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Type Definitions
 type SortDirection = "asc" | "desc"
@@ -107,9 +108,9 @@ export function useServices({ searchQuery }: UseServicesOptions): UseServicesRet
             setLoading(true)
             const data = await serviceDeliveryService.getAll()
             setServices(data)
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al cargar servicios", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-cargar-servicios"
             })
         } finally {

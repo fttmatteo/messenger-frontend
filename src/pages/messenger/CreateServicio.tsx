@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 // import { Card, CardContent } from "@/components/ui/card"
 import { Upload, X, Loader2, Camera, CameraOff, Bike } from "lucide-react"
 import { toast } from "sonner"
+import { getErrorMessage } from "@/lib/error-utils"
 
 const formSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario es obligatorio"),
@@ -71,9 +72,9 @@ export default function MessengerCreateServicio() {
                 setLoadingData(true)
                 const dealershipsData = await dealershipService.getAll()
                 setDealerships(dealershipsData)
-            } catch (error: any) {
+            } catch (error) {
                 toast.error("Error al cargar concesionarios", {
-                    description: error.message,
+                    description: getErrorMessage(error),
                     id: "error-cargar-datos"
                 })
             } finally {
@@ -118,12 +119,12 @@ export default function MessengerCreateServicio() {
                     }
                 }
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {
-                description: error.message || "No se pudo acceder a la cámara",
+                description: getErrorMessage(error),
                 id: "error-camara"
             })
         }
@@ -190,8 +191,8 @@ export default function MessengerCreateServicio() {
             // })
 
             navigate("/messenger")
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || ''
+        } catch (error) {
+            const errorMessage = getErrorMessage(error)
             const isOcrError =
                 (errorMessage.toLowerCase().includes('ocr') ||
                     errorMessage.toLowerCase().includes('placa') ||
@@ -249,7 +250,7 @@ export default function MessengerCreateServicio() {
     }
 
     const clearImage = () => {
-        form.setValue("image", undefined as any)
+        form.setValue("image", undefined as unknown as File)
         setImagePreview(null)
         stopCamera()
         const fileInput = document.getElementById('file-upload') as HTMLInputElement

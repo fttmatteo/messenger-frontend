@@ -15,14 +15,11 @@ export default function ServiciosPage() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [calendarOpen, setCalendarOpen] = useState(false)
 
-    // Filter services based on date and search
     const filteredServices = useMemo(() => {
-        // First filter by date
         let services = completedServices.filter(service =>
             isSameDay(new Date(service.createdAt), selectedDate)
         )
 
-        // Then filter by search term
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
             services = services.filter(service =>
