@@ -3,21 +3,8 @@ import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-// import { StatusBadge } from "@/components/messenger/StatusBadge"
-import {
-    MapPin,
-    Navigation,
-    Phone,
-    Clock,
-    User,
-    Building2,
-    FileImage,
-    Loader2,
-    AlertCircle,
-    Edit // Added Edit import
-} from "lucide-react"
+import { MapPin, Navigation, Phone, Clock, User, Building2, FileImage, Loader2, AlertCircle, Edit } from "lucide-react"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
@@ -58,21 +45,16 @@ export default function ServiceDetails() {
         if (!service?.dealership) return
 
         const { latitude, longitude, address } = service.dealership
-
-        // Show loading toast because getting location takes time
         const toastId = toast.loading("Obteniendo ubicación precisa...")
-
         const openMaps = (originLat?: number, originLng?: number) => {
             let url = ''
 
             if (latitude && longitude) {
-                // Use dir action with destination and optional origin
                 url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
                 if (originLat && originLng) {
                     url += `&origin=${originLat},${originLng}`
                 }
             } else if (address) {
-                // Fallback to search query
                 url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
             } else {
                 toast.error('No hay ubicación disponible para este concesionario', { id: toastId })
@@ -83,30 +65,21 @@ export default function ServiceDetails() {
             window.open(url, '_blank')
         }
 
-        // 1. Try to use cached location from background tracking (instant)
         const cached = trackingService.getLastKnownLocation()
-        // Use cache if it's recent (less than 2 minutes old)
         if (cached && (Date.now() - cached.timestamp < 120000)) {
             toast.dismiss(toastId)
             openMaps(cached.latitude, cached.longitude)
-            // Optional: notify user we used cached location
-            // toast.success("Usando ubicación actual", { duration: 1500 })
             return
         }
 
-        // 2. If no cache, fetch fresh location
         if ('geolocation' in navigator) {
-            // First try high accuracy
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     openMaps(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
                     console.warn("High accuracy error", error)
-
-                    // Fallback to low accuracy if high accuracy fails (timeout or unavailable)
                     toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
-
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
                             openMaps(pos.coords.latitude, pos.coords.longitude)
@@ -114,19 +87,18 @@ export default function ServiceDetails() {
                         (err) => {
                             console.warn("Low accuracy error", err)
                             toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
-                            // Final fallback without explicit origin
                             openMaps()
                         },
                         {
                             enableHighAccuracy: false,
                             timeout: 10000,
-                            maximumAge: 60000 // Accept 1 min old cached position
+                            maximumAge: 60000
                         }
                     )
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 15000, // Increased timeout to 15s
+                    timeout: 15000,
                     maximumAge: 0
                 }
             )
@@ -151,7 +123,6 @@ export default function ServiceDetails() {
         })
     }
 
-    // Loading state
     if (loading) {
         return (
             <div className="flex flex-col h-full">
@@ -165,7 +136,6 @@ export default function ServiceDetails() {
         )
     }
 
-    // Error state
     if (error || !service) {
         return (
             <div className="flex flex-col h-full">

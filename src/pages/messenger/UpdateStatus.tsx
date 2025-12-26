@@ -3,30 +3,14 @@ import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import {
-    Loader2,
-    AlertCircle,
-    CheckCircle,
-    CornerDownLeft,
-    Send
-} from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send } from "lucide-react"
 import { toast } from "sonner"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 type MessengerStatus = 'DELIVERED' | 'RETURNED'
 
@@ -61,20 +45,16 @@ const statusOptions: StatusOption[] = [
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
-
     const [selectedStatus, setSelectedStatus] = useState<MessengerStatus | null>(null)
     const [observation, setObservation] = useState('')
     const [photos, setPhotos] = useState<File[]>([])
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
-    // Fetch service
     useEffect(() => {
         const fetchService = async () => {
             if (!id) return
@@ -152,7 +132,6 @@ export default function UpdateStatus() {
         }
     }
 
-    // Loading state
     if (loading) {
         return (
             <div className="flex flex-col h-full">
@@ -166,7 +145,6 @@ export default function UpdateStatus() {
         )
     }
 
-    // Error state
     if (error || !service) {
         return (
             <div className="flex flex-col h-full">
