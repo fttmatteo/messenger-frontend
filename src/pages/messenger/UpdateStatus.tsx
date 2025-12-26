@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { getStatusIconConfig } from "@/lib/status-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -63,8 +64,9 @@ export default function UpdateStatus() {
                 setLoading(true)
                 const data = await serviceDeliveryService.getById(Number(id))
                 setService(data)
-            } catch (err: any) {
-                setError(err.response?.data?.message || err.message)
+            } catch (error) {
+                const message = getErrorMessage(error)
+                setError(message)
             } finally {
                 setLoading(false)
             }
@@ -122,9 +124,9 @@ export default function UpdateStatus() {
             })
 
             navigate('/messenger')
-        } catch (err: any) {
+        } catch (error) {
             toast.error('Error al actualizar', {
-                description: err.response?.data?.message || err.message
+                description: getErrorMessage(error)
             })
         } finally {
             setSubmitting(false)

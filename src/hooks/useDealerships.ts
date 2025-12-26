@@ -3,6 +3,7 @@ import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { toast } from "sonner"
 import { useDataList } from "@/hooks/useDataList"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Type Definitions
 type SortDirection = "asc" | "desc"
@@ -109,9 +110,9 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
             setLoading(true)
             const data = await dealershipService.getAll()
             setDealerships(data)
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al cargar concesionarios", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-cargar-concesionarios"
             })
         } finally {

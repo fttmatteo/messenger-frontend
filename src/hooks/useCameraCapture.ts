@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react"
 import { toast } from "sonner"
+import { getErrorMessage } from "@/lib/error-utils"
 
 interface UseCameraCaptureReturn {
     // State
@@ -84,12 +85,12 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                     }
                 }
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {
-                description: error.message || "No se pudo acceder a la cámara",
+                description: getErrorMessage(error),
                 id: "error-camara"
             })
         }

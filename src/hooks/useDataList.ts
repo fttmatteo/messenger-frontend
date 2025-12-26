@@ -90,7 +90,8 @@ export function useDataList<T>({
 
         // 2. Apply sorting
         if (sortField) {
-            const resolver = sortValueResolvers[sortField] || ((item: any) => item[sortField])
+            const resolver = sortValueResolvers[sortField] ||
+                ((item: T) => item[sortField as keyof T])
 
             result = [...result].sort((a, b) => {
                 const valA = resolver(a)

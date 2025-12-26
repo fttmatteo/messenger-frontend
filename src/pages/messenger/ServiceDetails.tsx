@@ -9,6 +9,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
+import { getErrorMessage } from "@/lib/error-utils"
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
@@ -26,8 +27,8 @@ export default function ServiceDetails() {
                 setError(null)
                 const data = await serviceDeliveryService.getById(Number(id))
                 setService(data)
-            } catch (err: any) {
-                const message = err.response?.data?.message || err.message || 'Error al cargar servicio'
+            } catch (error) {
+                const message = getErrorMessage(error)
                 setError(message)
                 toast.error('Error al cargar servicio', {
                     description: message,

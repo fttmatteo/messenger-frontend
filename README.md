@@ -148,12 +148,63 @@ src/
    ```
 
 3. **Configurar entorno**
-   Crea un archivo `.env` en la raíz (ver sección de variables).
+   Crea un archivo `.env` en la raíz copiando `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Luego edita `.env` y configura tus valores (ver siguiente sección).
 
 4. **Ejecutar en desarrollo**
    ```bash
    npm run dev
    ```
+
+---
+
+## 🔐 Configuración de Seguridad
+
+### Google Maps API Key
+
+Esta aplicación requiere una Google Maps API Key para funcionalidades de mapas y geolocalización.
+
+#### Pasos para configurar:
+
+1. **Crear API Key**
+   - Ir a [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   - Crear un nuevo proyecto o seleccionar uno existente
+   - Click en "Create Credentials" → "API Key"
+
+2. **Habilitar APIs necesarias**
+   - [Maps JavaScript API](https://console.cloud.google.com/apis/library/maps-backend.googleapis.com)
+   - [Geocoding API](https://console.cloud.google.com/apis/library/geocoding-backend.googleapis.com)
+
+3. **Configurar restricciones de seguridad** (⚠️ CRÍTICO)
+   - En la API Key creada, click en "Edit API key"
+   - **Application restrictions:**
+     - Seleccionar "HTTP referrers (websites)"
+   - **Website restrictions:**
+     - Agregar: `localhost:*` (para desarrollo local)
+     - Agregar: `*.vercel.app/*` (para despliegues en Vercel)
+     - Agregar tu dominio de producción si aplica
+   - **API restrictions:**
+     - Seleccionar "Restrict key"
+     - Marcar solo: Maps JavaScript API y Geocoding API
+   - Click en "Save"
+
+4. **Configurar en el proyecto**
+   - Copiar la API Key
+   - Abrir el archivo `.env`
+   - Reemplazar `your_google_maps_api_key_here` con tu key real
+
+#### ⚠️ Advertencias de seguridad:
+
+- **NUNCA** subir el archivo `.env` al repositorio (ya está en `.gitignore`)
+- **SIEMPRE** configurar restricciones en la API Key
+- **Si expones** accidentalmente la key, regenerarla inmediatamente en Google Cloud Console
+- Monitorear el uso en [Google Cloud Console](https://console.cloud.google.com/apis/dashboard) regularmente
+
+---
 
 ## 📜 Scripts Disponibles
 

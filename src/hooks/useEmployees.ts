@@ -3,6 +3,7 @@ import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import { toast } from "sonner"
 import { useDataList } from "@/hooks/useDataList"
+import { getErrorMessage } from "@/lib/error-utils"
 
 // Type Definitions
 type SortDirection = "asc" | "desc"
@@ -102,9 +103,9 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
             setLoading(true)
             const data = await employeeService.getAll()
             setEmployees(data)
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Error al cargar empleados", {
-                description: error.message,
+                description: getErrorMessage(error),
                 id: "error-cargar-empleados"
             })
         } finally {
