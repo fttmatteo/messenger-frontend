@@ -5,7 +5,7 @@ import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { StatusBadge } from "@/components/messenger/StatusBadge"
+// import { StatusBadge } from "@/components/messenger/StatusBadge"
 import {
     MapPin,
     Navigation,
@@ -21,6 +21,7 @@ import {
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
+import { getStatusIconConfig } from "@/lib/status-utils"
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
@@ -185,57 +186,47 @@ export default function ServiceDetails() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
+            {/* Header */}
             <header className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
-                <div className="flex items-center gap-3">
-                    <PlacaBadge
-                        plateNumber={service.plate.plateNumber}
-                        plateType={service.plate.plateType}
+                <PlacaBadge
+                    plateNumber={service.plate.plateNumber}
+                    plateType={service.plate.plateType}
+                    size="sm"
+                />
+
+                {service.currentStatus === 'ASSIGNED' && (
+                    <Button
                         size="sm"
-                    />
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <StatusBadge status={service.currentStatus} showLabel />
-
-                    {service.currentStatus === 'ASSIGNED' && (
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 hover:bg-muted rounded-full"
-                            onClick={handleUpdateStatus}
-                            title="Actualizar Estado"
-                        >
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    )}
-                </div>
+                        variant="outline"
+                        className="gap-2"
+                        onClick={handleUpdateStatus}
+                    >
+                        <Edit className="h-4 w-4" />
+                        Actualizar
+                    </Button>
+                )}
             </header>
 
             {/* Content */}
             <div className="flex-1 overflow-auto p-4">
-                {/* Plate Image - from photos array */}
-                {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
-                    <>
-                        <div className="mb-6">
-                            <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
-                                <FileImage className="h-4 w-4" />
-                                Imagen de la Placa
-                            </h3>
-                            <img
-                                src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
-                                alt="Placa del vehículo"
-                                className="w-full rounded-lg border object-contain max-h-48"
-                            />
-                        </div>
-                        <Separator className="my-6" />
-                    </>
-                )}
+                {/* Status Section - Minimalist */}
+                <div className="mb-8 flex items-center gap-4 px-1">
+                    <div className={`h-3 w-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                    <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
+                            Estado del servicio
+                        </span>
+                        <span className={`text-xl font-bold tracking-tight ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            {getStatusIconConfig(service.currentStatus).label}
+                        </span>
+                    </div>
+                </div>
 
                 {/* Dealership Info */}
                 <div>
                     <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
                         <Building2 className="h-4 w-4" />
-                        Concesionario Destino
+                        Concesionario destino
                     </h3>
                     <div className="space-y-3">
                         <div>
@@ -267,7 +258,7 @@ export default function ServiceDetails() {
                             onClick={handleNavigate}
                         >
                             <Navigation className="h-5 w-5" />
-                            Iniciar Navegación
+                            Iniciar navegación
                         </Button>
                     </div>
                 </div>
@@ -278,17 +269,19 @@ export default function ServiceDetails() {
                 <div>
                     <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
                         <Clock className="h-4 w-4" />
-                        Información del Servicio
+                        Información del servicio
                     </h3>
                     <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between items-center text-sm">
                             <span className="text-muted-foreground">Creado:</span>
                             <span>{formatDateTime(service.createdAt)}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-muted-foreground">Mensajero:</span>
+                        <div className="flex justify-between items-center text-sm">
+                            <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Mensajero:</span>
+                            </div>
                             <span className="font-medium">{service.messenger.fullName}</span>
                         </div>
                     </div>
@@ -301,6 +294,24 @@ export default function ServiceDetails() {
                         <div>
                             <h3 className="font-semibold text-sm mb-2">Observaciones</h3>
                             <p className="text-sm text-muted-foreground">{service.observation}</p>
+                        </div>
+                    </>
+                )}
+
+                {/* Plate Image - from photos array */}
+                {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
+                    <>
+                        <Separator className="my-6" />
+                        <div className="mb-6">
+                            <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                                <FileImage className="h-4 w-4" />
+                                Lectura de la placa
+                            </h3>
+                            <img
+                                src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
+                                alt="Placa del vehículo"
+                                className="w-full rounded-lg border object-contain max-h-48"
+                            />
                         </div>
                     </>
                 )}

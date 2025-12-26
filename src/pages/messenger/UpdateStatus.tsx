@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
-import { StatusBadge } from "@/components/messenger/StatusBadge"
+import { getStatusIconConfig } from "@/lib/status-utils"
 import {
     Loader2,
     AlertCircle,
@@ -34,7 +34,6 @@ interface StatusOption {
     value: MessengerStatus
     label: string
     icon: React.ReactNode
-    description: string
     requiresSignature: boolean
     requiresPhotos: boolean
     requiresObservation: boolean
@@ -45,7 +44,6 @@ const statusOptions: StatusOption[] = [
         value: 'DELIVERED',
         label: 'Entregado',
         icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-        description: 'El vehículo fue entregado exitosamente',
         requiresSignature: true,
         requiresPhotos: true,
         requiresObservation: false
@@ -54,7 +52,6 @@ const statusOptions: StatusOption[] = [
         value: 'RETURNED',
         label: 'Devuelto',
         icon: <CornerDownLeft className="h-6 w-6 text-orange-500" />,
-        description: 'El vehículo fue devuelto sin entregar',
         requiresSignature: false,
         requiresPhotos: false,
         requiresObservation: true
@@ -160,7 +157,7 @@ export default function UpdateStatus() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <span className="font-semibold">Actualizar Estado</span>
+                    <span className="font-semibold">Actualizar estado</span>
                 </header>
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -174,7 +171,7 @@ export default function UpdateStatus() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <span className="font-semibold">Actualizar Estado</span>
+                    <span className="font-semibold">Actualizar estado</span>
                 </header>
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
@@ -192,12 +189,17 @@ export default function UpdateStatus() {
             {/* Header */}
             <header className="flex items-center gap-3 p-4 border-b bg-background sticky top-0 z-10">
                 <div className="flex-1 min-w-0">
-                    <h1 className="font-bold text-lg">Actualizar Estado</h1>
+                    <h1 className="font-bold text-lg">Actualizar estado</h1>
                     <p className="text-xs text-muted-foreground">
                         {service.plate.plateNumber} · {service.dealership.name}
                     </p>
                 </div>
-                <StatusBadge status={service.currentStatus} />
+                <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                    <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                        {getStatusIconConfig(service.currentStatus).label}
+                    </span>
+                </div>
             </header>
 
             {/* Content */}
@@ -219,7 +221,6 @@ export default function UpdateStatus() {
                                 {option.icon}
                                 <div className="flex-1">
                                     <p className="font-medium">{option.label}</p>
-                                    <p className="text-xs text-muted-foreground">{option.description}</p>
                                 </div>
                             </button>
                         ))}
@@ -234,7 +235,7 @@ export default function UpdateStatus() {
                             <>
                                 <Separator className="my-6" />
                                 <div>
-                                    <h3 className="text-sm font-semibold mb-3">Firma del receptor *</h3>
+                                    <h3 className="text-sm font-semibold mb-3">Firma del asesor *</h3>
                                     <SignatureCanvas
                                         ref={signatureRef}
                                         width={280}
@@ -249,7 +250,7 @@ export default function UpdateStatus() {
                             <>
                                 <Separator className="my-6" />
                                 <div>
-                                    <h3 className="text-sm font-semibold mb-3">Fotos de evidencia *</h3>
+                                    <h3 className="text-sm font-semibold mb-3">Foto de evidencia *</h3>
                                     <EvidenceCapture
                                         maxPhotos={3}
                                         photos={photos}
