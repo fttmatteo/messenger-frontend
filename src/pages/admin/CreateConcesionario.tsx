@@ -77,8 +77,8 @@ export default function CreateConcesionario() {
                 <h1 className="text-2xl md:text-3xl font-bold">Nuevo concesionario</h1>
             </div>
 
-            <Card className="flex-1 flex flex-col">
-                <CardHeader className="pb-4">
+            <Card className="flex-1 flex flex-col gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-lg">Información del concesionario</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">

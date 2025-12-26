@@ -4,28 +4,28 @@ import { TableRow, TableCell } from "@/components/ui/table"
 
 /**
  * Skeleton component for an employee table row.
- * Used in desktop view while loading.
+ * Matches the actual table structure in Empleados.tsx
  */
 export function TableRowSkeleton() {
     return (
         <TableRow>
+            {/* Nombre - with icon */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-32" />
-                </div>
+                <Skeleton className="h-4 w-36" />
             </TableCell>
-            <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
+            {/* Rol - badge */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-24 font-mono" />
-                </div>
+                <Skeleton className="h-6 w-20 rounded-full" />
             </TableCell>
+            {/* Documento - mono font */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-28" />
+            </TableCell>
+            {/* Teléfono */}
+            <TableCell>
+                <div className="flex items-center gap-1">
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
                 </div>
             </TableCell>
         </TableRow>

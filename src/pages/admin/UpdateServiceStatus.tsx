@@ -133,7 +133,7 @@ export default function UpdateServiceStatus() {
     if (!service) return null
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-2">
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -247,11 +247,11 @@ export default function UpdateServiceStatus() {
 
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold">Actualizar estado</h1>
+                <h1 className="text-xl font-bold">Actualizar estado</h1>
             </div>
 
-            <Card>
-                <CardHeader>
+            <Card className="gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <PlacaBadge
                             plateNumber={service.plate.plateNumber}

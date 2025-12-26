@@ -3,13 +3,13 @@ import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
-import { StatusBadge } from "@/components/messenger/StatusBadge"
+import { getStatusIconConfig } from "@/lib/status-utils"
 import {
-    ArrowLeft,
     Loader2,
     AlertCircle,
     CheckCircle,
@@ -34,7 +34,6 @@ interface StatusOption {
     value: MessengerStatus
     label: string
     icon: React.ReactNode
-    description: string
     requiresSignature: boolean
     requiresPhotos: boolean
     requiresObservation: boolean
@@ -45,7 +44,6 @@ const statusOptions: StatusOption[] = [
         value: 'DELIVERED',
         label: 'Entregado',
         icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-        description: 'El vehículo fue entregado exitosamente',
         requiresSignature: true,
         requiresPhotos: true,
         requiresObservation: false
@@ -54,7 +52,6 @@ const statusOptions: StatusOption[] = [
         value: 'RETURNED',
         label: 'Devuelto',
         icon: <CornerDownLeft className="h-6 w-6 text-orange-500" />,
-        description: 'El vehículo fue devuelto sin entregar',
         requiresSignature: false,
         requiresPhotos: false,
         requiresObservation: true
@@ -95,10 +92,6 @@ export default function UpdateStatus() {
 
         fetchService()
     }, [id])
-
-    const handleBack = () => {
-        navigate(-1)
-    }
 
     const getSelectedOption = () => statusOptions.find(o => o.value === selectedStatus)
 
@@ -164,10 +157,7 @@ export default function UpdateStatus() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <span className="font-semibold">Actualizar Estado</span>
+                    <span className="font-semibold">Actualizar estado</span>
                 </header>
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -181,15 +171,12 @@ export default function UpdateStatus() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <span className="font-semibold">Actualizar Estado</span>
+                    <span className="font-semibold">Actualizar estado</span>
                 </header>
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
                     <p className="text-muted-foreground mb-4">{error || 'Servicio no encontrado'}</p>
-                    <Button variant="outline" onClick={handleBack}>Volver</Button>
+                    <Button variant="outline" onClick={() => navigate(-1)}>Volver</Button>
                 </div>
             </div>
         )
@@ -201,26 +188,26 @@ export default function UpdateStatus() {
         <div className="flex flex-col h-full">
             {/* Header */}
             <header className="flex items-center gap-3 p-4 border-b bg-background sticky top-0 z-10">
-                <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
                 <div className="flex-1 min-w-0">
-                    <h1 className="font-bold text-lg">Actualizar Estado</h1>
+                    <h1 className="font-bold text-lg">Actualizar estado</h1>
                     <p className="text-xs text-muted-foreground">
                         {service.plate.plateNumber} · {service.dealership.name}
                     </p>
                 </div>
-                <StatusBadge status={service.currentStatus} />
+                <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                    <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                        {getStatusIconConfig(service.currentStatus).label}
+                    </span>
+                </div>
             </header>
 
             {/* Content */}
             <div className="flex-1 overflow-auto p-4 space-y-4">
                 {/* Status Selection */}
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Seleccionar nuevo estado</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
+                <div>
+                    <h3 className="text-sm font-semibold mb-3">Seleccionar nuevo estado</h3>
+                    <div className="space-y-2">
                         {statusOptions.map((option) => (
                             <button
                                 key={option.value}
@@ -234,69 +221,63 @@ export default function UpdateStatus() {
                                 {option.icon}
                                 <div className="flex-1">
                                     <p className="font-medium">{option.label}</p>
-                                    <p className="text-xs text-muted-foreground">{option.description}</p>
                                 </div>
                             </button>
                         ))}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Evidence Forms - Show based on selected status */}
                 {selectedOption && (
                     <>
                         {/* Signature */}
                         {selectedOption.requiresSignature && (
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm">Firma del receptor *</CardTitle>
-                                </CardHeader>
-                                <CardContent>
+                            <>
+                                <Separator className="my-6" />
+                                <div>
+                                    <h3 className="text-sm font-semibold mb-3">Firma del asesor *</h3>
                                     <SignatureCanvas
                                         ref={signatureRef}
                                         width={280}
                                         height={140}
                                     />
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </>
                         )}
 
                         {/* Photos */}
                         {selectedOption.requiresPhotos && (
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm">Fotos de evidencia *</CardTitle>
-                                </CardHeader>
-                                <CardContent>
+                            <>
+                                <Separator className="my-6" />
+                                <div>
+                                    <h3 className="text-sm font-semibold mb-3">Foto de evidencia *</h3>
                                     <EvidenceCapture
                                         maxPhotos={3}
                                         photos={photos}
                                         onPhotosChange={setPhotos}
                                     />
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </>
                         )}
 
                         {/* Observation */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm">
-                                    Observaciones {selectedOption.requiresObservation ? '*' : '(opcional)'}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Textarea
-                                    placeholder={
-                                        selectedOption.value === 'RETURNED'
-                                            ? 'Explique el motivo de la devolución...'
-                                            : 'Notas adicionales sobre la entrega...'
-                                    }
-                                    value={observation}
-                                    onChange={(e) => setObservation(e.target.value)}
-                                    rows={3}
-                                    className="resize-none"
-                                />
-                            </CardContent>
-                        </Card>
+                        <Separator className="my-6" />
+                        <div>
+                            <h3 className="text-sm font-semibold mb-3">
+                                Observaciones {selectedOption.requiresObservation ? '*' : '(opcional)'}
+                            </h3>
+                            <Textarea
+                                placeholder={
+                                    selectedOption.value === 'RETURNED'
+                                        ? 'Explique el motivo de la devolución...'
+                                        : 'Notas adicionales sobre la entrega...'
+                                }
+                                value={observation}
+                                onChange={(e) => setObservation(e.target.value)}
+                                rows={3}
+                                className="resize-none"
+                            />
+                        </div>
                     </>
                 )}
             </div>

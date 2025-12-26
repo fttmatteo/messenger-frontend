@@ -4,21 +4,37 @@ import { TableRow, TableCell } from "@/components/ui/table"
 
 /**
  * Skeleton component for a service table row.
- * Used in desktop view while loading.
+ * Matches the actual table structure in Servicios.tsx
  */
 export function TableRowSkeleton() {
     return (
         <TableRow>
-            <TableCell>
-                <Skeleton className="h-8 w-24 rounded" />
+            {/* Placa - w-[100px] */}
+            <TableCell className="w-[100px]">
+                <Skeleton className="h-7 w-[90px] rounded-md" />
             </TableCell>
-            <TableCell><Skeleton className="h-4 w-36" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-            <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-            <TableCell className="text-right">
-                <div className="flex justify-end gap-1">
-                    <Skeleton className="h-8 w-8 rounded-md" />
+            {/* Concesionario - max-w-[200px] */}
+            <TableCell className="max-w-[200px]">
+                <Skeleton className="h-4 w-32" />
+            </TableCell>
+            {/* Mensajero - max-w-[200px] */}
+            <TableCell className="max-w-[200px]">
+                <Skeleton className="h-4 w-28" />
+            </TableCell>
+            {/* Estado - w-[140px] */}
+            <TableCell className="w-[140px]">
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                    <Skeleton className="h-4 w-20" />
+                </div>
+            </TableCell>
+            {/* Creado - w-[120px] */}
+            <TableCell className="w-[120px]">
+                <Skeleton className="h-4 w-24" />
+            </TableCell>
+            {/* Acción - w-[120px] */}
+            <TableCell className="w-[120px] text-center">
+                <div className="flex justify-center">
                     <Skeleton className="h-8 w-8 rounded-md" />
                 </div>
             </TableCell>

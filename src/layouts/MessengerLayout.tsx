@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, MapPin, MapPinOff, ChevronLeft } from "lucide-react"
+import { LogOut, ChevronLeft } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
@@ -73,7 +73,7 @@ export default function MessengerLayout() {
             requestWakeLock()
 
             trackingService.connect(() => {
-                toast.success("Conectado al servidor de rastreo")
+                // Connected silently
             })
 
             if ('geolocation' in navigator) {
@@ -88,6 +88,8 @@ export default function MessengerLayout() {
                             heading: heading || 0,
                             status: 'ACTIVE'
                         })
+                        // Cache locally for instant navigation
+                        trackingService.setLastLocation(latitude, longitude)
                     },
                     (error) => {
                         console.warn('Geolocation partial error:', error.message)
@@ -188,59 +190,48 @@ export default function MessengerLayout() {
     return (
         <div className="flex flex-col h-screen bg-background">
             {/* Simplified Header */}
-            <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4">
+            {/* Simplified Header */}
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative">
                 {/* Left: Back button or Logo */}
-                {isSubPage ? (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate(-1)}
-                        className="h-8 w-8 -ml-2"
-                    >
-                        <ChevronLeft className="h-5 w-5" />
-                    </Button>
-                ) : (
-                    <img src={logo} alt="PLAK" className="h-7 w-7 object-contain" />
-                )}
-
-                {/* Center: Page title or Status */}
-                {pageTitle ? (
-                    <span className="font-semibold text-sm">{pageTitle}</span>
-                ) : (
-                    <Badge
-                        variant="default"
-                        className={`text-xs px-2.5 py-0.5 ${isOnline
-                            ? "bg-green-500/90 hover:bg-green-500 shadow-sm shadow-green-500/30"
-                            : "bg-muted text-muted-foreground"
-                            }`}
-                    >
-                        {isOnline ? 'ACTIVO' : 'OFFLINE'}
-                    </Badge>
-                )}
-
-                {/* Right: Dev toggle + Logout */}
-                <div className="flex items-center gap-1">
-                    {/* Dev-only tracking toggle button */}
-                    {import.meta.env.DEV && (
+                <div className="flex-1 flex justify-start z-10">
+                    {isSubPage ? (
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => updateUser({ isOnline: !isOnline })}
-                            className="h-8 w-8"
+                            onClick={() => navigate(-1)}
+                            className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
                         >
-                            {isOnline ? (
-                                <MapPinOff className="h-4 w-4 text-red-500" />
-                            ) : (
-                                <MapPin className="h-4 w-4 text-green-500" />
-                            )}
+                            <ChevronLeft className="h-5 w-5" />
                         </Button>
+                    ) : (
+                        <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
                     )}
+                </div>
 
+                {/* Center: Page title or Status - Absolutely Centered */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
+                    {pageTitle ? (
+                        <span className="font-semibold text-sm block">{pageTitle}</span>
+                    ) : (
+                        <Badge
+                            variant="secondary"
+                            className={`text-xs px-3 py-0.5 pointer-events-auto font-medium border-0 ${isOnline
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-muted text-muted-foreground"
+                                }`}
+                        >
+                            {isOnline ? 'ACTIVO' : 'OFFLINE'}
+                        </Badge>
+                    )}
+                </div>
+
+                {/* Right: Logout */}
+                <div className="flex-1 flex justify-end items-center gap-1 z-10">
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleLogout}
-                        className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                        className="h-9 w-9 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                     >
                         <LogOut className="h-4 w-4" />
                     </Button>

@@ -1,9 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { StatusBadge } from "./StatusBadge"
-import { MapPin, Clock, ChevronRight } from "lucide-react"
+// import { StatusBadge } from "./StatusBadge"
+import { MapPin, Navigation, Edit } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/components/PlacaBadge"
+import { Button } from "@/components/ui/button"
+import { trackingService } from "@/services/tracking.service"
+import { toast } from "sonner"
+// import { TooltipProvider } from "@/components/ui/tooltip"
+import { getStatusIconConfig } from "@/lib/status-utils"
 
 interface ServiceCardProps {
     service: ServiceDelivery
@@ -16,71 +21,149 @@ export function ServiceCard({ service }: ServiceCardProps) {
         navigate(`/messenger/servicio/${service.idServiceDelivery}`)
     }
 
-    // Format date
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString)
-        const today = new Date()
-        const isToday = date.toDateString() === today.toDateString()
+    // Get status color for border and button
+    const getStatusColor = (status: string) => {
+        const colors: Record<string, string> = {
+            ASSIGNED: '#3b82f6', // blue-500
+            PENDING: '#6366f1', // indigo-500
+            DELIVERED: '#22c55e', // green-500
+            RETURNED: '#f97316', // orange-500
+            CANCELED: '#ef4444', // red-500
+            RESOLVED: '#a855f7', // purple-500
+        }
+        return colors[status] || '#6b7280' // gray-500
+    }
 
-        if (isToday) return 'Hoy'
+    const handleNavigate = (e: React.MouseEvent) => {
+        e.stopPropagation()
 
-        const yesterday = new Date(today)
-        yesterday.setDate(yesterday.getDate() - 1)
-        if (date.toDateString() === yesterday.toDateString()) return 'Ayer'
+        if (!service?.dealership) return
 
-        return date.toLocaleDateString('es-CO', {
-            day: 'numeric',
-            month: 'short'
-        })
+        const { latitude, longitude, address } = service.dealership
+
+        const toastId = toast.loading("Obteniendo ubicación...", { duration: 2000 })
+
+        const openMaps = (originLat?: number, originLng?: number) => {
+            let url = ''
+
+            if (latitude && longitude) {
+                url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
+                if (originLat && originLng) {
+                    url += `&origin=${originLat},${originLng}`
+                }
+            } else if (address) {
+                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+            } else {
+                toast.error('Ubicación no disponible', { id: toastId })
+                return
+            }
+
+            toast.dismiss(toastId)
+            window.open(url, '_blank')
+        }
+
+        // 1. Try cache
+        const cached = trackingService.getLastKnownLocation()
+        if (cached && (Date.now() - cached.timestamp < 120000)) {
+            toast.dismiss(toastId)
+            openMaps(cached.latitude, cached.longitude)
+            return
+        }
+
+        // 2. Try GPS
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    openMaps(position.coords.latitude, position.coords.longitude)
+                },
+                (error) => {
+                    console.warn("GPS error", error)
+                    toast.warning("Usando ubicación aproximada", { id: toastId })
+                    openMaps()
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            )
+        } else {
+            openMaps()
+        }
+    }
+
+    const handleUpdate = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        navigate(`/messenger/servicio/${service.idServiceDelivery}/actualizar`)
     }
 
     return (
         <Card
-            className="active:bg-muted/50 active:scale-[0.99] transition-all cursor-pointer touch-manipulation border-l-4"
+            className="active:bg-muted/50 transition-all cursor-pointer touch-manipulation border-l-4 overflow-hidden relative"
             style={{
-                borderLeftColor: service.currentStatus === 'ASSIGNED' ? '#3b82f6' :
-                    service.currentStatus === 'DELIVERED' ? '#22c55e' :
-                        service.currentStatus === 'RETURNED' ? '#f97316' :
-                            service.currentStatus === 'CANCELED' ? '#ef4444' : '#a855f7'
+                borderLeftColor: getStatusColor(service.currentStatus)
             }}
             onClick={handleClick}
         >
-            <CardContent className="p-2.5 sm:p-3">
-                <div className="flex items-center justify-between gap-2">
-                    {/* Main Content */}
-                    <div className="flex-1 min-w-0 grid gap-1">
-                        <div className="flex items-center justify-between mr-1">
-                            <PlacaBadge
-                                plateNumber={service.plate.plateNumber}
-                                plateType={service.plate.plateType}
-                                size="sm"
-                                className="scale-90 origin-left"
-                            />
-                            <StatusBadge status={service.currentStatus} size="sm" className="scale-90 origin-right" />
+            <CardContent className="p-2.5 flex items-center gap-3">
+                {/* Left: Info */}
+                <div className="flex-1 flex flex-col gap-2 min-w-0">
+                    {/* Header: Plate + Status */}
+                    <div className="flex flex-col items-start gap-1">
+                        <PlacaBadge
+                            plateNumber={service.plate.plateNumber}
+                            plateType={service.plate.plateType}
+                            size="sm"
+                            className="shadow-sm"
+                        />
+                        {/* Status */}
+                        <div className="flex items-center gap-1.5">
+                            <div className={`w-2 h-2 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-xs font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                {getStatusIconConfig(service.currentStatus).label}
+                            </span>
                         </div>
+                    </div>
 
-                        {/* Dealership Name */}
+                    {/* Dealership Info */}
+                    <div className="grid gap-0.5">
                         <p className="text-sm font-medium text-foreground truncate leading-none">
                             {service.dealership.name}
                         </p>
 
-                        {/* Footer: Address & Time */}
-                        <div className="flex items-center gap-3 text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                            <div className="flex items-center gap-1 min-w-0">
-                                <MapPin className="h-3 w-3 flex-shrink-0" />
-                                <span className="truncate">
-                                    {service.dealership.address || 'Sin dirección'}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1 flex-shrink-0 ml-auto mr-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatDate(service.createdAt)}</span>
-                            </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground min-w-0">
+                            <MapPin className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">
+                                {service.dealership.address || 'Sin dirección'}
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    {/* Chevron */}
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+                {/* Right: Actions */}
+                <div className="flex flex-col gap-2 shrink-0">
+                    <Button
+                        variant="default"
+                        size="icon"
+                        className="h-9 w-9 rounded-full shadow-sm text-white border-0"
+                        style={{ backgroundColor: getStatusColor(service.currentStatus) }}
+                        onClick={handleNavigate}
+                        title="Navegar"
+                    >
+                        <Navigation className="h-4 w-4" />
+                    </Button>
+
+                    {service.currentStatus === 'ASSIGNED' && (
+                        <Button
+                            variant="default"
+                            size="icon"
+                            className="h-9 w-9 rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-md border-0"
+                            onClick={handleUpdate}
+                            title="Actualizar"
+                        >
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
             </CardContent>
         </Card>

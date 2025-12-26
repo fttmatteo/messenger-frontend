@@ -131,8 +131,16 @@ export function useDataList<T>({
 
     const handleSort = (field: string) => {
         if (sortField === field) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
+            // Same field clicked - cycle: asc → desc → null (clear)
+            if (sortDirection === "asc") {
+                setSortDirection("desc")
+            } else {
+                // Was desc, now clear the sort
+                setSortField(null)
+                setSortDirection("asc") // Reset direction for next use
+            }
         } else {
+            // New field - start with ascending
             setSortField(field)
             setSortDirection("asc")
         }

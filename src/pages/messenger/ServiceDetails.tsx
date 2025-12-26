@@ -3,11 +3,10 @@ import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { StatusBadge } from "@/components/messenger/StatusBadge"
+// import { StatusBadge } from "@/components/messenger/StatusBadge"
 import {
-    ArrowLeft,
     MapPin,
     Navigation,
     Phone,
@@ -16,9 +15,13 @@ import {
     Building2,
     FileImage,
     Loader2,
-    AlertCircle
+    AlertCircle,
+    Edit // Added Edit import
 } from "lucide-react"
+import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
+import { trackingService } from "@/services/tracking.service"
+import { getStatusIconConfig } from "@/lib/status-utils"
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
@@ -51,23 +54,84 @@ export default function ServiceDetails() {
         fetchService()
     }, [id])
 
-    const handleBack = () => {
-        navigate(-1)
-    }
-
     const handleNavigate = () => {
         if (!service?.dealership) return
 
         const { latitude, longitude, address } = service.dealership
 
-        if (latitude && longitude) {
-            // Open Google Maps with coordinates
-            window.open(`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`, '_blank')
-        } else if (address) {
-            // Fallback to address search
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')
+        // Show loading toast because getting location takes time
+        const toastId = toast.loading("Obteniendo ubicación precisa...")
+
+        const openMaps = (originLat?: number, originLng?: number) => {
+            let url = ''
+
+            if (latitude && longitude) {
+                // Use dir action with destination and optional origin
+                url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
+                if (originLat && originLng) {
+                    url += `&origin=${originLat},${originLng}`
+                }
+            } else if (address) {
+                // Fallback to search query
+                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+            } else {
+                toast.error('No hay ubicación disponible para este concesionario', { id: toastId })
+                return
+            }
+
+            toast.dismiss(toastId)
+            window.open(url, '_blank')
+        }
+
+        // 1. Try to use cached location from background tracking (instant)
+        const cached = trackingService.getLastKnownLocation()
+        // Use cache if it's recent (less than 2 minutes old)
+        if (cached && (Date.now() - cached.timestamp < 120000)) {
+            toast.dismiss(toastId)
+            openMaps(cached.latitude, cached.longitude)
+            // Optional: notify user we used cached location
+            // toast.success("Usando ubicación actual", { duration: 1500 })
+            return
+        }
+
+        // 2. If no cache, fetch fresh location
+        if ('geolocation' in navigator) {
+            // First try high accuracy
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    openMaps(position.coords.latitude, position.coords.longitude)
+                },
+                (error) => {
+                    console.warn("High accuracy error", error)
+
+                    // Fallback to low accuracy if high accuracy fails (timeout or unavailable)
+                    toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
+
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            openMaps(pos.coords.latitude, pos.coords.longitude)
+                        },
+                        (err) => {
+                            console.warn("Low accuracy error", err)
+                            toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
+                            // Final fallback without explicit origin
+                            openMaps()
+                        },
+                        {
+                            enableHighAccuracy: false,
+                            timeout: 10000,
+                            maximumAge: 60000 // Accept 1 min old cached position
+                        }
+                    )
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000, // Increased timeout to 15s
+                    maximumAge: 0
+                }
+            )
         } else {
-            toast.error('No hay ubicación disponible para este concesionario')
+            openMaps()
         }
     }
 
@@ -92,9 +156,6 @@ export default function ServiceDetails() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
                     <div className="h-6 w-32 bg-muted rounded animate-pulse" />
                 </header>
                 <div className="flex-1 flex items-center justify-center">
@@ -109,15 +170,12 @@ export default function ServiceDetails() {
         return (
             <div className="flex flex-col h-full">
                 <header className="flex items-center gap-3 p-4 border-b">
-                    <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
                     <span className="font-semibold">Detalle del Servicio</span>
                 </header>
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
                     <p className="text-muted-foreground mb-4">{error || 'Servicio no encontrado'}</p>
-                    <Button variant="outline" onClick={handleBack}>
+                    <Button variant="outline" onClick={() => navigate(-1)}>
                         Volver
                     </Button>
                 </div>
@@ -128,49 +186,51 @@ export default function ServiceDetails() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <header className="flex items-center gap-3 p-4 border-b bg-background sticky top-0 z-10">
-                <Button variant="ghost" size="icon" onClick={handleBack} className="h-9 w-9">
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div className="flex-1 min-w-0">
-                    <h1 className="font-bold text-lg truncate">{service.plate.plateNumber}</h1>
-                    <p className="text-xs text-muted-foreground">Servicio #{service.idServiceDelivery}</p>
-                </div>
-                <StatusBadge status={service.currentStatus} showLabel />
+            {/* Header */}
+            <header className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
+                <PlacaBadge
+                    plateNumber={service.plate.plateNumber}
+                    plateType={service.plate.plateType}
+                    size="sm"
+                />
+
+                {service.currentStatus === 'ASSIGNED' && (
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                        onClick={handleUpdateStatus}
+                    >
+                        <Edit className="h-4 w-4" />
+                        Actualizar
+                    </Button>
+                )}
             </header>
 
             {/* Content */}
-            <div className="flex-1 overflow-auto p-4 space-y-4">
-                {/* Plate Image - from photos array */}
-                {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <FileImage className="h-4 w-4" />
-                                Imagen de la Placa
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <img
-                                src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
-                                alt="Placa del vehículo"
-                                className="w-full rounded-lg border object-contain max-h-48"
-                            />
-                        </CardContent>
-                    </Card>
-                )}
+            <div className="flex-1 overflow-auto p-4">
+                {/* Status Section - Minimalist */}
+                <div className="mb-8 flex items-center gap-4 px-1">
+                    <div className={`h-3 w-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                    <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
+                            Estado del servicio
+                        </span>
+                        <span className={`text-xl font-bold tracking-tight ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            {getStatusIconConfig(service.currentStatus).label}
+                        </span>
+                    </div>
+                </div>
 
                 {/* Dealership Info */}
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            Concesionario Destino
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
+                <div>
+                    <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                        <Building2 className="h-4 w-4" />
+                        Concesionario destino
+                    </h3>
+                    <div className="space-y-3">
                         <div>
-                            <p className="font-semibold">{service.dealership.name}</p>
+                            <p className="font-semibold text-base">{service.dealership.name}</p>
                             <p className="text-sm text-muted-foreground">{service.dealership.zone}</p>
                         </div>
 
@@ -194,62 +254,68 @@ export default function ServiceDetails() {
                         )}
 
                         <Button
-                            className="w-full h-12 text-base gap-2"
+                            className="w-full h-12 text-base gap-2 mt-2"
                             onClick={handleNavigate}
                         >
                             <Navigation className="h-5 w-5" />
-                            Iniciar Navegación
+                            Iniciar navegación
                         </Button>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
+
+                <Separator className="my-6" />
 
                 {/* Service Info */}
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            Información del Servicio
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <div className="flex justify-between text-sm">
+                <div>
+                    <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                        <Clock className="h-4 w-4" />
+                        Información del servicio
+                    </h3>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm">
                             <span className="text-muted-foreground">Creado:</span>
                             <span>{formatDateTime(service.createdAt)}</span>
                         </div>
 
-                        <Separator />
-
-                        <div className="flex items-center gap-2 text-sm">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-muted-foreground">Mensajero:</span>
+                        <div className="flex justify-between items-center text-sm">
+                            <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Mensajero:</span>
+                            </div>
                             <span className="font-medium">{service.messenger.fullName}</span>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Observation */}
                 {service.observation && (
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm">Observaciones</CardTitle>
-                        </CardHeader>
-                        <CardContent>
+                    <>
+                        <Separator className="my-6" />
+                        <div>
+                            <h3 className="font-semibold text-sm mb-2">Observaciones</h3>
                             <p className="text-sm text-muted-foreground">{service.observation}</p>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </>
+                )}
+
+                {/* Plate Image - from photos array */}
+                {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
+                    <>
+                        <Separator className="my-6" />
+                        <div className="mb-6">
+                            <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                                <FileImage className="h-4 w-4" />
+                                Lectura de la placa
+                            </h3>
+                            <img
+                                src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
+                                alt="Placa del vehículo"
+                                className="w-full rounded-lg border object-contain max-h-48"
+                            />
+                        </div>
+                    </>
                 )}
             </div>
-
-            {/* Bottom Actions */}\n            {service.currentStatus === 'ASSIGNED' && (
-                <div className="p-4 border-t bg-background">
-                    <Button
-                        className="w-full h-12 text-base"
-                        onClick={handleUpdateStatus}
-                    >
-                        Actualizar Estado
-                    </Button>
-                </div>
-            )}
         </div>
     )
 }

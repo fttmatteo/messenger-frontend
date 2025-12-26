@@ -7,7 +7,7 @@ import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton } from "@/components/employee/EmployeeSkeletons"
@@ -45,52 +45,49 @@ export default function Empleados() {
         : undefined
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-2">
             <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
 
             {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex items-center gap-4 flex-wrap">
-                    <h1 className="text-2xl md:text-3xl font-bold">Empleados</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl md:text-2xl font-bold">Empleados</h1>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <ToggleGroup
                             type="single"
                             value={roleFilter}
                             onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
                             className="justify-start"
                         >
-                            <ToggleGroupItem value="all" aria-label="Todos">Todos</ToggleGroupItem>
-                            <ToggleGroupItem value="ADMIN" aria-label="Admin">Administradores</ToggleGroupItem>
-                            <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros">Mensajeros</ToggleGroupItem>
+                            <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
+                            <ToggleGroupItem value="ADMIN" aria-label="Admin" className="h-8 px-2 text-xs">Administradores</ToggleGroupItem>
+                            <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros" className="h-8 px-2 text-xs">Mensajeros</ToggleGroupItem>
                         </ToggleGroup>
 
                         {roleFilter !== "all" && (
-                            <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-9">
-                                <X className="h-4 w-4 mr-2" />Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-8 text-xs">
+                                <X className="h-3 w-3 mr-1" />Limpiar
                             </Button>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <Button onClick={() => navigate("/admin/empleados/crear")} size="default" className="shrink-0">
-                        <Plus className="h-4 w-4 mr-2" />
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                    <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                        <Plus className="h-3 w-3 mr-1" />
                         Nuevo empleado
                     </Button>
                 </div>
             </div>
 
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <div className="flex flex-col gap-1">
-                        <CardTitle>Lista de empleados</CardTitle>
-                        <CardDescription>
-                            {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
-                            {searchQuery && ` - Buscando "${searchQuery}"`}
-                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                        </CardDescription>
-                    </div>
+            <Card className="gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
+                    <CardDescription>
+                        {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
+                        {searchQuery && ` - Buscando "${searchQuery}"`}
+                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {loading ? (

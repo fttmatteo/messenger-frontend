@@ -150,7 +150,7 @@ export default function ViewServicio() {
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -244,7 +244,7 @@ export default function ViewServicio() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* General Information - Vertical Layout */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader>
+                    <CardHeader className="p-3 pb-2">
                         <CardTitle>Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 flex-1 overflow-y-auto">
@@ -324,7 +324,7 @@ export default function ViewServicio() {
 
                 {/* History Timeline - Vertical & Scrollable */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader>
+                    <CardHeader className="p-3 pb-2">
                         <CardTitle>Historial de estados</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">

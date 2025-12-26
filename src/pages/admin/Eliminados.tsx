@@ -15,9 +15,9 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Empty, EmptyHeader, EmptyMedia, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
 import { Trash2, RotateCcw, Loader2, Home, Calendar, User, Building2, Clock } from "lucide-react"
-import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { formatDisplayName } from "@/lib/format-utils"
+import { useAdminUI } from "@/context/AdminUIContext"
 
 // Animation variants
 const itemVariants = {
@@ -36,9 +36,11 @@ const itemVariants = {
 
 export default function Eliminados() {
     const isMobile = useIsMobile()
+    const { setSuccess, setError } = useAdminUI()
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
     const [restoring, setRestoring] = useState<number | null>(null)
+    const [emptying, setEmptying] = useState(false)
 
     const fetchDeletedServices = async () => {
         try {
@@ -46,10 +48,7 @@ export default function Eliminados() {
             const data = await serviceDeliveryService.getTrash()
             setServices(data)
         } catch (error: any) {
-            toast.error("Error al cargar elementos eliminados", {
-                description: error.message,
-                id: "error-cargar-eliminados"
-            })
+            setError(error.message || "Error al cargar elementos eliminados")
         } finally {
             setLoading(false)
         }
@@ -63,15 +62,25 @@ export default function Eliminados() {
         try {
             setRestoring(id)
             await serviceDeliveryService.restore(id)
-            toast.success("Servicio restaurado correctamente")
+            setSuccess("Servicio restaurado correctamente")
             fetchDeletedServices()
         } catch (error: any) {
-            toast.error("Error al restaurar servicio", {
-                description: error.message,
-                id: "error-restaurar-servicio"
-            })
+            setError(error.message || "Error al restaurar servicio")
         } finally {
             setRestoring(null)
+        }
+    }
+
+    const handleEmptyTrash = async () => {
+        try {
+            setEmptying(true)
+            const result = await serviceDeliveryService.emptyTrash()
+            setSuccess(`Papelera vaciada: ${result.deletedCount} servicio(s) eliminado(s)`)
+            setServices([])
+        } catch (error: any) {
+            setError(error.message || "Error al vaciar papelera")
+        } finally {
+            setEmptying(false)
         }
     }
 
@@ -124,6 +133,41 @@ export default function Eliminados() {
                     <Trash2 className="h-7 w-7" />
                     Servicios eliminados
                 </h1>
+                {services.length > 0 && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                disabled={emptying}
+                            >
+                                {emptying ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : (
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                )}
+                                Vaciar papelera
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Esta acción eliminará permanentemente <strong>{services.length} servicio(s)</strong> de la papelera. Esta acción no se puede deshacer.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleEmptyTrash}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                    Vaciar papelera
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
             </div>
 
             {/* Content */}

@@ -121,6 +121,16 @@ class TrackingService {
             };
         }
     }
+
+    private lastLocation: { latitude: number; longitude: number; timestamp: number } | null = null;
+
+    public setLastLocation(latitude: number, longitude: number) {
+        this.lastLocation = { latitude, longitude, timestamp: Date.now() };
+    }
+
+    public getLastKnownLocation() {
+        return this.lastLocation;
+    }
 }
 
 export const trackingService = new TrackingService();

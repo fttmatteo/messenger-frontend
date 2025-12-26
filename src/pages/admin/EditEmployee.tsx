@@ -106,7 +106,8 @@ export default function EditEmployee() {
             setSuccess("Empleado eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error: any) {
-            setError(error.message || "Error al eliminar empleado")
+            const message = error.response?.data?.message || error.message || "Error al eliminar empleado"
+            setError(message)
         } finally {
             setDeleting(false)
         }
@@ -119,13 +120,13 @@ export default function EditEmployee() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold">Editar empleado</h1>
+            <div className="mb-2">
+                <h1 className="text-xl md:text-2xl font-bold">Editar empleado</h1>
             </div>
 
-            <Card className="flex-1 flex flex-col">
-                <CardHeader className="pb-4">
-                    <CardTitle className="text-lg">Información del empleado</CardTitle>
+            <Card className="flex-1 flex flex-col gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
+                    <CardTitle className="text-base">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">

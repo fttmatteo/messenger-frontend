@@ -10,7 +10,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { TableRowSkeleton } from "@/components/service/ServiceSkeletons"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
@@ -61,15 +61,15 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-2">
             <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
 
             {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex items-center gap-4 flex-wrap">
-                    <h1 className="text-2xl md:text-3xl font-bold">Servicios</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl md:text-2xl font-bold">Servicios</h1>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <Select
                             value={statusFilter.length === 1 ? statusFilter[0] : "all"}
                             onValueChange={(value) => {
@@ -77,36 +77,33 @@ export default function Servicios() {
                                 else setStatusFilter([value as ServiceStatus])
                             }}
                         >
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="h-8 w-[160px] text-xs">
                                 <SelectValue placeholder="Estado" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Todos los estados</SelectItem>
+                                <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
                                 {AVAILABLE_STATUSES.map(status => (
-                                    <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
+                                    <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
 
                         {statusFilter.length > 0 && (
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-9">
-                                <X className="h-4 w-4 mr-2" />Limpiar filtro
+                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
+                                <X className="h-3 w-3 mr-1" />Limpiar
                             </Button>
                         )}
                     </div>
                 </div>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <div className="flex flex-col gap-1">
-                        <CardTitle>Lista de servicios</CardTitle>
-                        <CardDescription>
-                            {filteredAndSortedServices.length} de {services.length} servicio(s)
-                            {searchQuery && ` - Buscando "${searchQuery}"`}
-                            {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                        </CardDescription>
-                    </div>
+            <Card className="gap-1 py-1">
+                <CardHeader className="p-2 pb-0">
+                    <CardDescription>
+                        {filteredAndSortedServices.length} de {services.length} servicio(s)
+                        {searchQuery && ` - Buscando "${searchQuery}"`}
+                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {loading ? (

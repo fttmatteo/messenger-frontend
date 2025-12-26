@@ -4,31 +4,34 @@ import { TableRow, TableCell } from "@/components/ui/table"
 
 /**
  * Skeleton component for a dealership table row.
- * Used in desktop view while loading.
+ * Matches the actual table structure in Concesionarios.tsx
  */
 export function TableRowSkeleton() {
     return (
         <TableRow>
+            {/* Nombre */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-36" />
+            </TableCell>
+            {/* Dirección - truncated */}
+            <TableCell className="max-w-xs">
+                <Skeleton className="h-4 w-48" />
+            </TableCell>
+            {/* Teléfono */}
+            <TableCell>
+                <div className="flex items-center gap-1">
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
                 </div>
             </TableCell>
+            {/* Zona - badge */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-48" />
-                </div>
+                <Skeleton className="h-6 w-16 rounded-full" />
             </TableCell>
+            {/* Ubicación - badge */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-28" />
-                </div>
+                <Skeleton className="h-6 w-24 rounded-full" />
             </TableCell>
-            <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-            <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
         </TableRow>
     )
 }
