@@ -93,7 +93,7 @@ export default function Login() {
             <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
                 {/* Help Button - Top Left */}
                 <div className="absolute top-3 left-3 z-10">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button" aria-label="Ayuda">
                         <HelpCircle className="h-5 w-5" />
                     </Button>
                 </div>

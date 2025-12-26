@@ -207,9 +207,16 @@ export default function MessengerLayout() {
 
     return (
         <div className="flex flex-col h-screen bg-background">
+            {/* Skip link for keyboard navigation */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
+            >
+                Saltar al contenido principal
+            </a>
             {/* Simplified Header */}
             {/* Simplified Header */}
-            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative">
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative" role="banner">
                 {/* Left: Back button or Logo */}
                 <div className="flex-1 flex justify-start z-10">
                     {isSubPage ? (
@@ -218,6 +225,7 @@ export default function MessengerLayout() {
                             size="icon"
                             onClick={() => navigate(-1)}
                             className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
+                            aria-label="Volver"
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
@@ -250,6 +258,7 @@ export default function MessengerLayout() {
                         size="icon"
                         onClick={handleLogout}
                         className="h-9 w-9 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        aria-label="Cerrar sesión"
                     >
                         <LogOut className="h-4 w-4" />
                     </Button>
@@ -258,8 +267,10 @@ export default function MessengerLayout() {
 
             {/* Main Content Area - with bottom padding for nav */}
             <main
+                id="main-content"
                 ref={mainRef}
                 className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-20'}`}
+                role="main"
             >
                 <Outlet />
             </main>

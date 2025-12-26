@@ -1,36 +1,51 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from '../pages/Login';
 import { useAuth } from '../context/AuthContext';
-import AdminLayout from '../layouts/AdminLayout';
-import MessengerLayout from '../layouts/MessengerLayout';
-import AdminDashboard from '../pages/admin/Dashboard';
-import Empleados from '../pages/admin/Empleados';
-import CreateEmployee from '../pages/admin/CreateEmployee';
-import EditEmployee from '../pages/admin/EditEmployee';
-import Concesionarios from '../pages/admin/Concesionarios';
-import CreateConcesionario from '../pages/admin/CreateConcesionario';
-import EditConcesionario from '../pages/admin/EditConcesionario';
-import Servicios from '../pages/admin/Servicios';
-// import CreateServicio from '../pages/admin/CreateServicio';
-import UpdateServiceStatus from '../pages/admin/UpdateServiceStatus';
-import ViewServicio from '../pages/admin/ViewServicio';
-import Eliminados from '../pages/admin/Eliminados';
-import LiveTracking from '../pages/admin/LiveTracking';
-import MessengerDetails from '../pages/admin/MessengerDetails';
-import Configuracion from '../pages/admin/Configuracion';
-import MessengerDashboard from '../pages/messenger/Dashboard';
-import MessengerCreateServicio from '../pages/messenger/CreateServicio';
-import MessengerServiceDetails from '../pages/messenger/ServiceDetails';
-import MessengerUpdateStatus from '../pages/messenger/UpdateStatus';
-import MessengerStatsHistoryPage from '../pages/messenger/StatsHistoryPage';
-import MessengerRouteHistoryPage from '../pages/messenger/RouteHistoryPage';
-import MessengerStatsPage from '../pages/messenger/StatsPage';
-import MessengerServiciosPage from '../pages/messenger/ServiciosPage';
-import MessengerConfiguracionPage from '../pages/messenger/ConfiguracionPage';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MobileOnlyGuard } from '@/components/MobileOnlyGuard';
-import { DesktopOnlyGuard } from '@/components/DesktopOnlyGuard';
+
+function PageLoader() {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-background">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Cargando...</p>
+            </div>
+        </div>
+    );
+}
+
+import Login from '../pages/Login';
+
+const AdminLayout = React.lazy(() => import('../layouts/AdminLayout'));
+const MessengerLayout = React.lazy(() => import('../layouts/MessengerLayout'));
+
+const AdminDashboard = React.lazy(() => import('../pages/admin/Dashboard'));
+const Empleados = React.lazy(() => import('../pages/admin/Empleados'));
+const CreateEmployee = React.lazy(() => import('../pages/admin/CreateEmployee'));
+const EditEmployee = React.lazy(() => import('../pages/admin/EditEmployee'));
+const Concesionarios = React.lazy(() => import('../pages/admin/Concesionarios'));
+const CreateConcesionario = React.lazy(() => import('../pages/admin/CreateConcesionario'));
+const EditConcesionario = React.lazy(() => import('../pages/admin/EditConcesionario'));
+const Servicios = React.lazy(() => import('../pages/admin/Servicios'));
+const UpdateServiceStatus = React.lazy(() => import('../pages/admin/UpdateServiceStatus'));
+const ViewServicio = React.lazy(() => import('../pages/admin/ViewServicio'));
+const Eliminados = React.lazy(() => import('../pages/admin/Eliminados'));
+const LiveTracking = React.lazy(() => import('../pages/admin/LiveTracking'));
+const MessengerDetails = React.lazy(() => import('../pages/admin/MessengerDetails'));
+const Configuracion = React.lazy(() => import('../pages/admin/Configuracion'));
+
+const MessengerDashboard = React.lazy(() => import('../pages/messenger/Dashboard'));
+const MessengerCreateServicio = React.lazy(() => import('../pages/messenger/CreateServicio'));
+const MessengerServiceDetails = React.lazy(() => import('../pages/messenger/ServiceDetails'));
+const MessengerUpdateStatus = React.lazy(() => import('../pages/messenger/UpdateStatus'));
+const MessengerStatsHistoryPage = React.lazy(() => import('../pages/messenger/StatsHistoryPage'));
+const MessengerRouteHistoryPage = React.lazy(() => import('../pages/messenger/RouteHistoryPage'));
+const MessengerStatsPage = React.lazy(() => import('../pages/messenger/StatsPage'));
+const MessengerServiciosPage = React.lazy(() => import('../pages/messenger/ServiciosPage'));
+const MessengerConfiguracionPage = React.lazy(() => import('../pages/messenger/ConfiguracionPage'));
+
+const MobileOnlyGuard = React.lazy(() => import('@/components/MobileOnlyGuard').then(m => ({ default: m.MobileOnlyGuard })));
+const DesktopOnlyGuard = React.lazy(() => import('@/components/DesktopOnlyGuard').then(m => ({ default: m.DesktopOnlyGuard })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
@@ -56,118 +71,103 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function RoleBasedRedirect() {
     const { user } = useAuth();
 
-    // Check for admin roles
     const isAdmin = user?.role?.toUpperCase().includes('ADMIN');
 
     if (isAdmin) {
         return <Navigate to="/admin" replace />;
     }
 
-    // Default to messenger for any other role
     return <Navigate to="/messenger" replace />;
 }
 
 export function AppRoutes() {
     const isMobile = useIsMobile()
 
-    // Helper to render device-appropriate layout or loading state
     const renderAdminRoute = () => {
         if (isMobile === undefined) {
-            return (
-                <div className="flex items-center justify-center min-h-screen bg-background">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">Cargando...</p>
-                    </div>
-                </div>
-            );
+            return <PageLoader />;
         }
         return isMobile ? <DesktopOnlyGuard /> : <AdminLayout />;
     };
 
     const renderMessengerRoute = () => {
         if (isMobile === undefined) {
-            return (
-                <div className="flex items-center justify-center min-h-screen bg-background">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">Cargando...</p>
-                    </div>
-                </div>
-            );
+            return <PageLoader />;
         }
         return !isMobile ? <MobileOnlyGuard /> : <MessengerLayout />;
     };
 
     return (
-        <Routes>
-            {/* Public Routes - Login is universal */}
-            <Route path="/login" element={<Login />} />
+        <Suspense fallback={<PageLoader />}>
+            <Routes>
+                {/* Public Routes - Login is universal */}
+                <Route path="/login" element={<Login />} />
 
-            {/* Role-based redirect */}
-            <Route
-                path="/"
-                element={
-                    <ProtectedRoute>
-                        <RoleBasedRedirect />
-                    </ProtectedRoute>
-                }
-            />
+                {/* Role-based redirect */}
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <RoleBasedRedirect />
+                        </ProtectedRoute>
+                    }
+                />
 
-            {/* Admin Routes - Desktop Only */}
-            <Route
-                path="/admin"
-                element={
-                    <ProtectedRoute>
-                        {renderAdminRoute()}
-                    </ProtectedRoute>
-                }
-            >
-                <Route index element={<AdminDashboard />} />
-                {/* Employee routes */}
-                <Route path="empleados" element={<Empleados />} />
-                <Route path="empleados/crear" element={<CreateEmployee />} />
-                <Route path="empleados/editar/:id" element={<EditEmployee />} />
-                {/* Other admin routes */}
-                {/* Dealership routes */}
-                <Route path="concesionarios" element={<Concesionarios />} />
-                <Route path="concesionarios/crear" element={<CreateConcesionario />} />
-                <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
-                {/* Services routes */}
-                <Route path="servicios" element={<Servicios />} />
-                {/* <Route path="servicios/crear" element={<CreateServicio />} /> */}
-                <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
-                <Route path="servicios/:id" element={<ViewServicio />} />
-                {/* Other routes */}
-                <Route path="eliminados" element={<Eliminados />} />
-                <Route path="tracking" element={<LiveTracking />} />
-                <Route path="tracking/mensajero/:id" element={<MessengerDetails />} />
-                <Route path="configuracion" element={<Configuracion />} />
-            </Route>
+                {/* Admin Routes - Desktop Only */}
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            {renderAdminRoute()}
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<AdminDashboard />} />
+                    {/* Employee routes */}
+                    <Route path="empleados" element={<Empleados />} />
+                    <Route path="empleados/crear" element={<CreateEmployee />} />
+                    <Route path="empleados/editar/:id" element={<EditEmployee />} />
+                    {/* Other admin routes */}
+                    {/* Dealership routes */}
+                    <Route path="concesionarios" element={<Concesionarios />} />
+                    <Route path="concesionarios/crear" element={<CreateConcesionario />} />
+                    <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
+                    {/* Services routes */}
+                    <Route path="servicios" element={<Servicios />} />
+                    {/* <Route path="servicios/crear" element={<CreateServicio />} /> */}
+                    <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
+                    <Route path="servicios/:id" element={<ViewServicio />} />
+                    {/* Other routes */}
+                    <Route path="eliminados" element={<Eliminados />} />
+                    <Route path="tracking" element={<LiveTracking />} />
+                    <Route path="tracking/mensajero/:id" element={<MessengerDetails />} />
+                    <Route path="configuracion" element={<Configuracion />} />
+                </Route>
 
-            {/* Messenger Routes - Mobile Only */}
-            <Route
-                path="/messenger"
-                element={
-                    <ProtectedRoute>
-                        {renderMessengerRoute()}
-                    </ProtectedRoute>
-                }
-            >
-                <Route index element={<MessengerDashboard />} />
-                <Route path="crear" element={<MessengerCreateServicio />} />
-                <Route path="servicio/:id" element={<MessengerServiceDetails />} />
-                <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
-                <Route path="historial-estadisticas" element={<MessengerStatsHistoryPage />} />
-                <Route path="historial-recorrido" element={<MessengerRouteHistoryPage />} />
-                <Route path="estadisticas" element={<MessengerStatsPage />} />
-                <Route path="servicios" element={<MessengerServiciosPage />} />
-                <Route path="configuracion" element={<MessengerConfiguracionPage />} />
-            </Route>
+                {/* Messenger Routes - Mobile Only */}
+                <Route
+                    path="/messenger"
+                    element={
+                        <ProtectedRoute>
+                            {renderMessengerRoute()}
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<MessengerDashboard />} />
+                    <Route path="crear" element={<MessengerCreateServicio />} />
+                    <Route path="servicio/:id" element={<MessengerServiceDetails />} />
+                    <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
+                    <Route path="historial-estadisticas" element={<MessengerStatsHistoryPage />} />
+                    <Route path="historial-recorrido" element={<MessengerRouteHistoryPage />} />
+                    <Route path="estadisticas" element={<MessengerStatsPage />} />
+                    <Route path="servicios" element={<MessengerServiciosPage />} />
+                    <Route path="configuracion" element={<MessengerConfiguracionPage />} />
+                </Route>
 
-            {/* Catch all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+                {/* Catch all */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </Suspense>
     );
 }
 
