@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -24,7 +25,7 @@ interface ServiceCardProps {
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
 
-    const Icon = getPlateTypeIcon(service.plate.plateType)
+    const Icon = useMemo(() => getPlateTypeIcon(service.plate.plateType), [service.plate.plateType])
 
     return (
         <motion.div exit="exit" layout>
