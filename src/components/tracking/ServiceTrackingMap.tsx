@@ -28,7 +28,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
     label?: string
 }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return
@@ -54,7 +54,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
                 markerRef.current.map = null
             }
         }
-    }, [map, color, label])
+    }, [map, color, label, position, title])
 
     useEffect(() => {
         if (markerRef.current) {

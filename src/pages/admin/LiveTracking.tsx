@@ -21,7 +21,7 @@ import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 // Componente para manejar AdvancedMarkerElement
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string, color?: string }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return

@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from "react"
 
 export type SortDirection = "asc" | "desc"
 
+// Type for values that can be compared during sorting
+type ComparableValue = string | number | boolean | Date | null | undefined
+
 export interface UseDataListOptions<T> {
     data: T[]
     searchQuery: string
@@ -20,7 +23,7 @@ export interface UseDataListOptions<T> {
      * Use this for nested properties or custom sort logic.
      * Example: { 'plateNumber': (item) => item.plate.plateNumber }
      */
-    sortValueResolvers?: Record<string, (item: T) => any>
+    sortValueResolvers?: Record<string, (item: T) => ComparableValue>
     initialItemsPerPage?: number
     defaultSortField?: string | null
     defaultSortDirection?: SortDirection
@@ -96,6 +99,11 @@ export function useDataList<T>({
             result = [...result].sort((a, b) => {
                 const valA = resolver(a)
                 const valB = resolver(b)
+
+                // Handle null/undefined values - push them to the end
+                if (valA == null && valB == null) return 0
+                if (valA == null) return 1
+                if (valB == null) return -1
 
                 let comparison = 0
 

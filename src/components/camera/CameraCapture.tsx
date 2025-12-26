@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, Upload, X } from "lucide-react"
 import { toast } from "sonner"
@@ -30,14 +30,7 @@ export function CameraCapture({
     const [cameraReady, setCameraReady] = useState(false)
     const [cameraError, setCameraError] = useState<string | null>(null)
 
-    // Cleanup camera on unmount
-    useEffect(() => {
-        return () => {
-            stopCamera()
-        }
-    }, [])
-
-    const stopCamera = () => {
+    const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop())
             streamRef.current = null
@@ -47,7 +40,14 @@ export function CameraCapture({
         }
         setCameraActive(false)
         setCameraReady(false)
-    }
+    }, [])
+
+    // Cleanup camera on unmount
+    useEffect(() => {
+        return () => {
+            stopCamera()
+        }
+    }, [stopCamera])
 
     const startCamera = async () => {
         try {
