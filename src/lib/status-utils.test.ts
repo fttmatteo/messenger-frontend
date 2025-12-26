@@ -19,7 +19,7 @@ describe('status-utils', () => {
         });
 
         it('should return default for unknown status', () => {
-            // @ts-ignore
+            // Testing invalid status input
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
             expect(result.className).toContain('bg-gray-500');

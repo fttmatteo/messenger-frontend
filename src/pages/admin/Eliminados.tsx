@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
@@ -43,7 +43,7 @@ export default function Eliminados() {
     const [restoring, setRestoring] = useState<number | null>(null)
     const [emptying, setEmptying] = useState(false)
 
-    const fetchDeletedServices = async () => {
+    const fetchDeletedServices = useCallback(async () => {
         try {
             setLoading(true)
             const data = await serviceDeliveryService.getTrash()
@@ -53,11 +53,11 @@ export default function Eliminados() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [setError])
 
     useEffect(() => {
         fetchDeletedServices()
-    }, [])
+    }, [fetchDeletedServices])
 
     const handleRestore = async (id: number) => {
         try {

@@ -75,7 +75,7 @@ export default function UpdateServiceStatus() {
         }
 
         fetchService()
-    }, [id, navigate])
+    }, [id, navigate, setError, user?.role])
 
 
 
