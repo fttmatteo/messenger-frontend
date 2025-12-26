@@ -27,7 +27,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         return null;
     });
-    const [isLoading, setIsLoading] = useState(false);
+    // Initial loading is handled synchronously by lazy initialization of user
+    const [isLoading] = useState(false);
 
     const login = async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);

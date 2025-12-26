@@ -50,7 +50,7 @@ function capitalizeWords(str: string): string {
 // Marker component for the dealership location
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
     const map = useGoogleMap()
-    const markerRef = useRef<any>(null)
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return

@@ -48,9 +48,9 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     }, [onUnmount])
 
     // Get color scheme based on theme
-    const getColorScheme = (): ColorScheme => {
+    const getColorScheme = useCallback((): ColorScheme => {
         return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
-    }
+    }, [resolvedTheme])
 
     // Update map options when theme changes or map instance is ready
     useEffect(() => {
@@ -59,7 +59,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                 colorScheme: getColorScheme()
             })
         }
-    }, [map, resolvedTheme])
+    }, [map, getColorScheme])
 
     if (!isLoaded) {
         return <div className={`w-full h-full bg-muted animate-pulse rounded-lg ${className || ''}`} />

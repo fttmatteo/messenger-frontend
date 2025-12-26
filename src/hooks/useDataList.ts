@@ -135,6 +135,7 @@ export function useDataList<T>({
 
     // Reset to page 1 when filters or sort change
     useEffect(() => {
+        // eslint-disable-next-line
         setCurrentPage(1)
     }, [searchQuery, sortField, sortDirection, itemsPerPage]) // Omitted customFilter to avoid loops if unstable fn passed
 

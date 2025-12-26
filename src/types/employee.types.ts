@@ -16,4 +16,4 @@ export interface CreateEmployeeRequest {
     role: EmployeeRole
 }
 
-export interface UpdateEmployeeRequest extends CreateEmployeeRequest { }
+export type UpdateEmployeeRequest = CreateEmployeeRequest

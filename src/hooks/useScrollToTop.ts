@@ -26,6 +26,7 @@ export function useScrollToTop({
 
     useEffect(() => {
         if (!enabled) {
+            // eslint-disable-next-line
             setShowScrollTop(false)
             return
         }

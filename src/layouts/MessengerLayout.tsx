@@ -157,7 +157,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
         }
-    }, [isOnline, user?.id])
+    }, [isOnline, user?.id, logout, navigate, updateUser])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)

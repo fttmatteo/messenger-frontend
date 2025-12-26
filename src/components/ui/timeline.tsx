@@ -1,7 +1,7 @@
 import React from "react"
 import { cn } from "@/lib/utils"
 
-interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> { }
+type TimelineProps = React.HTMLAttributes<HTMLDivElement>
 
 export function Timeline({ className, children, ...props }: TimelineProps) {
     return (
@@ -55,7 +55,7 @@ export function TimelineHeader({ className, children, icon, statusColor, ...prop
     )
 }
 
-interface TimelineContentProps extends React.HTMLAttributes<HTMLDivElement> { }
+type TimelineContentProps = React.HTMLAttributes<HTMLDivElement>
 
 export function TimelineContent({ className, children, ...props }: TimelineContentProps) {
     return (

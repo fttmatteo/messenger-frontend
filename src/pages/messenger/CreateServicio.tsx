@@ -250,7 +250,7 @@ export default function MessengerCreateServicio() {
     }
 
     const clearImage = () => {
-        form.setValue("image", undefined as any)
+        form.setValue("image", undefined as unknown as File)
         setImagePreview(null)
         stopCamera()
         const fileInput = document.getElementById('file-upload') as HTMLInputElement

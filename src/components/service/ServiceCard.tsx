@@ -24,7 +24,7 @@ interface ServiceCardProps {
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
 
-    const PlateIcon = getPlateTypeIcon(service.plate.plateType)
+    const Icon = getPlateTypeIcon(service.plate.plateType)
 
     return (
         <motion.div exit="exit" layout>
@@ -46,7 +46,7 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                                             plateType={service.plate.plateType}
                                             size="md"
                                         />
-                                        <PlateIcon className="h-5 w-5 text-muted-foreground" />
+                                        <Icon className="h-5 w-5 text-muted-foreground" />
                                     </div>
                                 </div>
                             </div>
