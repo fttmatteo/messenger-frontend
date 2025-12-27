@@ -37,6 +37,14 @@ import { employeeService } from "@/services/employee.service"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
 
+interface TrackingHistoryItem {
+    latitude: number
+    longitude: number
+    timestamp?: string
+    lastUpdate?: string
+    speed?: number
+}
+
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
     isOpen: boolean
@@ -140,7 +148,7 @@ export function MessengerSidePanel({
     isFollowing
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
-    const [history, setHistory] = useState<any[]>([])
+    const [history, setHistory] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -205,7 +213,7 @@ export function MessengerSidePanel({
         .slice(0, 20)
         .map((item, index) => {
             const speed = (item.speed || 0) * 3.6
-            const timestamp = item.timestamp || item.lastUpdate
+            const timestamp = (item.timestamp || item.lastUpdate) as string
             const date = new Date(timestamp)
             const isValidDate = !isNaN(date.getTime())
             return {
