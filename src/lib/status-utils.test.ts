@@ -16,6 +16,8 @@ describe('status-utils', () => {
             expect(getStatusBadge('PENDING').className).toContain('bg-indigo-500');
             expect(getStatusBadge('CANCELED').label).toBe('Cancelado');
             expect(getStatusBadge('CANCELED').className).toContain('bg-red-500');
+            expect(getStatusBadge('DELETED').label).toBe('Eliminado');
+            expect(getStatusBadge('DELETED').className).toContain('bg-slate-500');
         });
 
         it('should return default for unknown status', () => {
@@ -32,6 +34,11 @@ describe('status-utils', () => {
             expect(result.label).toBe('Entregado');
             expect(result.dotColor).toContain('bg-green-500');
             expect(result.textColor).toContain('text-green-500');
+
+            const deletedResult = getStatusIconConfig('DELETED');
+            expect(deletedResult.label).toBe('Eliminado');
+            expect(deletedResult.dotColor).toContain('bg-slate-500');
+            expect(deletedResult.textColor).toContain('text-slate-500');
         });
     });
 
