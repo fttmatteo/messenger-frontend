@@ -183,8 +183,8 @@ export default function ViewServicio() {
                 <div>
                     <div className="flex flex-wrap items-center gap-4">
                         <div className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-3xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            <div className={`w-5 h-5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-xl md:text-2xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
                                 {getStatusIconConfig(service.currentStatus).label}
                             </span>
                         </div>
@@ -247,7 +247,7 @@ export default function ViewServicio() {
                 {/* General Information - Vertical Layout */}
                 <Card className="h-[600px] flex flex-col">
                     <CardHeader className="p-3 pb-2">
-                        <CardTitle>Información general</CardTitle>
+                        <CardTitle className="text-base text-muted-foreground font-normal">Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 flex-1 overflow-y-auto">
                         <div className="flex items-start gap-3">
@@ -308,7 +308,7 @@ export default function ViewServicio() {
                         <div className="flex items-start gap-3">
                             <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Fecha de Creación</p>
+                                <p className="text-sm font-medium">Fecha de creación</p>
                                 <p className="text-sm text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
@@ -327,7 +327,7 @@ export default function ViewServicio() {
                 {/* History Timeline - Vertical & Scrollable */}
                 <Card className="h-[600px] flex flex-col">
                     <CardHeader className="p-3 pb-2">
-                        <CardTitle>Historial de estados</CardTitle>
+                        <CardTitle className="text-base text-muted-foreground font-normal">Historial de estados</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
                         {service.history && service.history.length > 0 ? (

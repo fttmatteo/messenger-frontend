@@ -227,8 +227,8 @@ export default function MessengerDetails() {
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold">{employee?.fullName || `Mensajero #${messengerId}`}</h1>
-                        <p className="text-muted-foreground text-sm">{employee?.document}</p>
+                        <h1 className="text-xl md:text-2xl font-bold">{employee?.fullName || `Mensajero #${messengerId}`}</h1>
+                        <p className="text-muted-foreground text-xs">{employee?.document}</p>
                     </div>
                 </div>
                 <Badge variant={isActive ? "default" : "secondary"} className={isActive ? "bg-green-500 hover:bg-green-600" : ""}>

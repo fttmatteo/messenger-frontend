@@ -126,7 +126,7 @@ export default function EditEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-muted-foreground font-normal">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">

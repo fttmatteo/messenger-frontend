@@ -69,12 +69,12 @@ export default function CreateEmployee() {
         <div className="flex flex-col h-full">
             {/* Header */}
             <div className="mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold">Nuevo empleado</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Nuevo empleado</h1>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-lg">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-muted-foreground font-normal">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">

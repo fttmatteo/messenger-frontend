@@ -248,7 +248,7 @@ export default function UpdateServiceStatus() {
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-bold">Actualizar estado</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Actualizar estado</h1>
             </div>
 
             <Card className="gap-1 py-1">

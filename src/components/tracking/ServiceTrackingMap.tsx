@@ -183,12 +183,12 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className}>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Route className="h-5 w-5" />
+            <CardHeader className="p-3 pb-2">
+                <CardTitle className="flex items-center gap-2 text-base text-muted-foreground font-normal">
+                    <Route className="h-4 w-4" />
                     Recorrido del servicio
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs">
                     {trackingData.length > 0
                         ? `${trackingData.length} puntos registrados`
                         : "Ubicación del concesionario"
