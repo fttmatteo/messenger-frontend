@@ -100,6 +100,14 @@ class ServiceDeliveryService {
     }
 
     /**
+     * Permanently delete a single service from trash - Admin only
+     */
+    async permanentDelete(id: number): Promise<{ message: string }> {
+        const response = await apiClient.delete(`/services/trash/${id}`)
+        return response.data
+    }
+
+    /**
      * Reassign a service to another messenger - Admin only
      * Only allowed when service is in CANCELED status
      */
