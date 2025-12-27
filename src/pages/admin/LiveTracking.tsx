@@ -356,7 +356,7 @@ export default function LiveTracking() {
             {/* Floating Header */}
             <div className="absolute top-4 left-4 z-10 pointer-events-auto">
                 <div className="flex items-center gap-3 bg-background/90 backdrop-blur-md rounded-lg px-3 shadow-lg border h-10">
-                    <h1 className="text-sm font-medium">Monitoreo en vivo</h1>
+                    <h1 className="text-sm font-medium">Monitoreo</h1>
                     <div className="h-4 w-px bg-border" />
                     <Badge
                         variant="outline"

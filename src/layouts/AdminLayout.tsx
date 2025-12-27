@@ -18,7 +18,7 @@ const menuItems = [
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
-    { title: "Mapa", icon: Map, url: "/admin/tracking" },
+    { title: "Monitoreo", icon: Map, url: "/admin/tracking" },
     { title: "Eliminados", icon: Trash2, url: "/admin/eliminados" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
