@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { dealershipService } from "@/services/dealership.service"
@@ -39,7 +39,7 @@ export default function CreateConcesionario() {
         register,
         handleSubmit,
         setValue,
-        watch,
+        control,
         formState: { errors, isSubmitting },
     } = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
@@ -51,7 +51,10 @@ export default function CreateConcesionario() {
         },
     })
 
-    const selectedZone = watch("zone")
+    const selectedZone = useWatch({
+        control,
+        name: "zone",
+    })
 
     const onSubmit = async (data: DealershipFormValues) => {
         try {
