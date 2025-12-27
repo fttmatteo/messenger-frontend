@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
+import { MessengerSidePanel } from "./MessengerSidePanel"
 
 // Componente para manejar AdvancedMarkerElement con efecto de pulso
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive = false }: {
@@ -110,6 +111,7 @@ export default function LiveTracking() {
     const [connected, setConnected] = useState(false)
     const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
     const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
+    const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
@@ -247,6 +249,7 @@ export default function LiveTracking() {
 
     const selectMessenger = (messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
+        setShowMessengerDetails(true)
         if (messenger.latitude && messenger.longitude) {
             setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
         }
@@ -472,6 +475,15 @@ export default function LiveTracking() {
                     )}
                 </div>
             </div>
+
+            {/* Messenger Detail Panel (Proposal 1) */}
+            <MessengerSidePanel
+                messenger={selectedMessenger}
+                isOpen={showMessengerDetails}
+                onClose={() => setShowMessengerDetails(false)}
+                onFollow={toggleFollow}
+                isFollowing={followingMessengerId === selectedMessenger?.messengerId}
+            />
 
             {/* Following indicator */}
             {followingMessengerId && (
