@@ -202,12 +202,12 @@ export default function Servicios() {
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
                                                             <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                            <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                                            <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
                                                                 {getStatusIconConfig(service.currentStatus).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="whitespace-nowrap text-base">
+                                                    <TableCell className="whitespace-nowrap text-sm">
                                                         {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                     </TableCell>
                                                     <TableCell className="text-center">

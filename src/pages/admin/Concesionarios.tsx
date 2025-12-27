@@ -194,8 +194,8 @@ export default function Concesionarios() {
                                                 className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                 onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                             >
-                                                <TableCell className="font-medium text-base">{dealership.name}</TableCell>
-                                                <TableCell className="max-w-xs text-base">
+                                                <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
+                                                <TableCell className="max-w-xs text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <span className="cursor-default">
@@ -213,7 +213,7 @@ export default function Concesionarios() {
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TableCell>
-                                                <TableCell className="text-base">
+                                                <TableCell className="text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -224,7 +224,7 @@ export default function Concesionarios() {
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className="text-base px-2 py-0.5">{dealership.zone}</Badge>
+                                                    <Badge variant="outline" className="text-xs px-2 py-0.5">{dealership.zone}</Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (

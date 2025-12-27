@@ -308,8 +308,8 @@ export default function Eliminados() {
                                                         <TableCell>
                                                             <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
                                                         </TableCell>
-                                                        <TableCell className="text-base">{service.dealership.name}</TableCell>
-                                                        <TableCell className="text-base">
+                                                        <TableCell className="text-sm">{service.dealership.name}</TableCell>
+                                                        <TableCell className="text-sm">
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
                                                                     <span className="cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
@@ -319,7 +319,7 @@ export default function Eliminados() {
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </TableCell>
-                                                        <TableCell className="text-base">
+                                                        <TableCell className="text-sm">
                                                             <div className="flex items-center gap-2">
                                                                 <Calendar className="h-4 w-4 text-muted-foreground" />
                                                                 {format(new Date(service.createdAt), "dd/MM/yyyy", { locale: es })}

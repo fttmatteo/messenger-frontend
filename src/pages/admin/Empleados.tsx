@@ -155,7 +155,7 @@ export default function Empleados() {
                                                 className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                 onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
                                             >
-                                                <TableCell className="font-medium text-base">
+                                                <TableCell className="font-medium text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
@@ -164,12 +164,12 @@ export default function Empleados() {
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-sm">
+                                                    <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-xs">
                                                         {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="font-mono text-base">{employee.document}</TableCell>
-                                                <TableCell className="text-base">
+                                                <TableCell className="font-mono text-sm">{employee.document}</TableCell>
+                                                <TableCell className="text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
