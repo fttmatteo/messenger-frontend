@@ -382,10 +382,11 @@ export default function LiveTracking() {
                                 </div>
                             </OverlayView>
                         )}
-                        {showMessengerDetails && selectedMessenger && historyPath.length > 1 && (
+                        {/* SIEMPRE renderizar Polyline (si google está listo) para asegurar limpieza vía React */}
+                        {window.google?.maps && (
                             <Polyline
-                                key={`route-${selectedMessenger.messengerId}-${historyPath.length}`}
-                                path={historyPath}
+                                key="route-current"
+                                path={(showMessengerDetails && selectedMessenger && historyPath.length > 1) ? historyPath : []}
                                 options={{
                                     strokeColor: '#6366f1',
                                     strokeOpacity: 0.8,

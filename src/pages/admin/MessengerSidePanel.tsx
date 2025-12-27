@@ -9,8 +9,7 @@ import {
     MapPin,
     AlertCircle,
     Calendar as CalendarIcon,
-    ChevronDown,
-    UserCircle
+    ChevronDown
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -58,6 +57,7 @@ interface MessengerSidePanelProps {
 interface TimelineEvent {
     id: string
     time: string
+    endTime?: string
     title: string
     description: string
     lat: number
@@ -211,28 +211,89 @@ export function MessengerSidePanel({
 
     if (!isOpen) return null
 
-    // Process history into timeline events - Reverse to show most recent first
-    const timelineEvents: TimelineEvent[] = [...history]
-        .filter(item => item && (item.recordedAt || item.timestamp || item.lastUpdate))
-        .reverse()
-        .slice(0, 20)
-        .map((item, index) => {
-            const speed = (item.speed || 0) * 3.6
+    // Process history into timeline events - Simplified grouping by same location
+    const timelineEvents: TimelineEvent[] = (() => {
+        const sorted = [...history]
+            .filter(item => item && (item.recordedAt || item.timestamp || item.lastUpdate))
+            .sort((a, b) => {
+                const timeA = new Date((a.recordedAt || a.timestamp || a.lastUpdate) as string).getTime()
+                const timeB = new Date((b.recordedAt || b.timestamp || b.lastUpdate) as string).getTime()
+                return timeA - timeB
+            })
+
+        if (sorted.length === 0) return []
+
+        const grouped: TimelineEvent[] = []
+        let currentGroup: {
+            items: TrackingHistoryItem[]
+            lat: number
+            lng: number
+            startTime: Date
+            endTime: Date
+        } | null = null
+
+        sorted.forEach((item) => {
             const timestamp = (item.recordedAt || item.timestamp || item.lastUpdate) as string
             const date = new Date(timestamp)
-            const isValidDate = !isNaN(date.getTime())
-            return {
-                id: `point-${index}-${timestamp}`,
-                time: isValidDate ? format(date, 'HH:mm') : '--:--',
-                title: speed > 5 ? 'En movimiento' : speed > 0 ? 'Movimiento lento' : 'Detenido',
-                description: `Velocidad: ${speed.toFixed(1)} km/h`,
-                lat: item.latitude,
-                lng: item.longitude,
-                type: 'point',
-                icon: speed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
-                statusColor: speed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'
+            const lat = Number(Number(item.latitude).toFixed(5))
+            const lng = Number(Number(item.longitude).toFixed(5))
+
+            if (!currentGroup) {
+                currentGroup = {
+                    items: [item],
+                    lat,
+                    lng,
+                    startTime: date,
+                    endTime: date
+                }
+            } else if (lat === currentGroup.lat && lng === currentGroup.lng) {
+                currentGroup.items.push(item)
+                currentGroup.endTime = date
+            } else {
+                // Push previous group and start new one
+                const avgSpeed = currentGroup.items.reduce((acc: number, curr: TrackingHistoryItem) => acc + (curr.speed || 0), 0) / currentGroup.items.length * 3.6
+                grouped.push({
+                    id: `group-${currentGroup.startTime.getTime()}`,
+                    time: format(currentGroup.startTime, 'HH:mm'),
+                    endTime: currentGroup.startTime.getTime() !== currentGroup.endTime.getTime() ? format(currentGroup.endTime, 'HH:mm') : undefined,
+                    title: avgSpeed > 5 ? 'En movimiento' : avgSpeed > 0 ? 'Movimiento lento' : 'Detenido',
+                    description: avgSpeed > 0.5 ? `Velocidad prom: ${avgSpeed.toFixed(1)} km/h` : '',
+                    lat: currentGroup.lat,
+                    lng: currentGroup.lng,
+                    type: 'point',
+                    icon: avgSpeed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
+                    statusColor: avgSpeed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'
+                })
+
+                currentGroup = {
+                    items: [item],
+                    lat,
+                    lng,
+                    startTime: date,
+                    endTime: date
+                }
             }
         })
+
+        // Final group
+        if (currentGroup) {
+            const avgSpeed = (currentGroup as any).items.reduce((acc: number, curr: any) => acc + (curr.speed || 0), 0) / (currentGroup as any).items.length * 3.6
+            grouped.push({
+                id: `group-${(currentGroup as any).startTime.getTime()}`,
+                time: format((currentGroup as any).startTime, 'HH:mm'),
+                endTime: (currentGroup as any).startTime.getTime() !== (currentGroup as any).endTime.getTime() ? format((currentGroup as any).endTime, 'HH:mm') : undefined,
+                title: avgSpeed > 5 ? 'En movimiento' : avgSpeed > 0 ? 'Movimiento lento' : 'Detenido',
+                description: avgSpeed > 0.5 ? `Velocidad prom: ${avgSpeed.toFixed(1)} km/h` : '',
+                lat: (currentGroup as any).lat,
+                lng: (currentGroup as any).lng,
+                type: 'point',
+                icon: avgSpeed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
+                statusColor: avgSpeed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'
+            })
+        }
+
+        return grouped.reverse().slice(0, 30)
+    })()
 
     const safeFormatDistanceToNow = (dateString: string | undefined) => {
         if (!dateString) return 'N/A'
@@ -250,9 +311,19 @@ export function MessengerSidePanel({
             {/* Header */}
             <div className="p-4 border-b bg-background/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                        <UserCircle className="h-6 w-6 text-primary" />
-                    </div>
+                    <a
+                        href={`tel:${employee?.phone}`}
+                        className={cn(
+                            "h-10 w-10 rounded-full flex items-center justify-center border shrink-0 transition-colors",
+                            employee?.phone
+                                ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                                : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
+                        )}
+                        title={employee?.phone ? `Llamar a ${employee.phone}` : "Sin número"}
+                        onClick={(e) => !employee?.phone && e.preventDefault()}
+                    >
+                        <Phone className="h-5 w-5" />
+                    </a>
                     <div className="min-w-0">
                         <h3 className="text-sm font-bold truncate">
                             {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : 'Cargando...'}
@@ -291,17 +362,6 @@ export function MessengerSidePanel({
 
                     {/* Quick Info */}
                     <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-sm group">
-                            <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                                <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                            </div>
-                            <div className="flex-1 truncate">
-                                <p className="text-[10px] text-muted-foreground uppercase leading-none mb-1">Celular</p>
-                                <a href={`tel:${employee?.phone}`} className="font-medium hover:text-primary transition-colors">
-                                    {employee?.phone || '...'}
-                                </a>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Timeline */}
@@ -363,14 +423,18 @@ export function MessengerSidePanel({
                                         >
                                             <div className="flex items-center justify-between w-full">
                                                 <span className="text-xs font-bold">{event.title}</span>
-                                                <span className="text-[10px] text-muted-foreground">{event.time}</span>
+                                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                                    {event.time} {event.endTime && ` - ${event.endTime}`}
+                                                </span>
                                             </div>
                                         </TimelineHeader>
                                         <TimelineContent>
                                             <div className="flex flex-col gap-1">
-                                                <p className="text-[10px] text-muted-foreground/60 leading-relaxed italic">
-                                                    {event.description}
-                                                </p>
+                                                {event.description && (
+                                                    <p className="text-[10px] text-muted-foreground/60 leading-relaxed italic">
+                                                        {event.description}
+                                                    </p>
+                                                )}
                                                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
                                                     <MapPin className="h-3 w-3 shrink-0 opacity-50" />
                                                     <AddressDisplay lat={event.lat} lng={event.lng} />
