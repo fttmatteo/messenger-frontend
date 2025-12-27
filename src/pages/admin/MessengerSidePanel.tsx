@@ -33,15 +33,7 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
-
-interface TrackingHistoryItem {
-    latitude: number
-    longitude: number
-    recordedAt?: string
-    timestamp?: string
-    lastUpdate?: string
-    speed?: number
-}
+import type { TrackingHistoryItem } from "@/types/location.types"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -186,7 +178,7 @@ export function MessengerSidePanel({
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerId, selectedDate])
+    }, [messengerId, selectedDate, onHistoryChange])
 
     useEffect(() => {
         if (isOpen && messengerId) {
@@ -276,15 +268,16 @@ export function MessengerSidePanel({
 
         // Final group
         if (currentGroup) {
-            const avgSpeed = (currentGroup as any).items.reduce((acc: number, curr: any) => acc + (curr.speed || 0), 0) / (currentGroup as any).items.length * 3.6
+            const group: { items: TrackingHistoryItem[]; lat: number; lng: number; startTime: Date; endTime: Date } = currentGroup
+            const avgSpeed = group.items.reduce((acc: number, curr: TrackingHistoryItem) => acc + (curr.speed || 0), 0) / group.items.length * 3.6
             grouped.push({
-                id: `group-${(currentGroup as any).startTime.getTime()}`,
-                time: format((currentGroup as any).startTime, 'HH:mm'),
-                endTime: (currentGroup as any).startTime.getTime() !== (currentGroup as any).endTime.getTime() ? format((currentGroup as any).endTime, 'HH:mm') : undefined,
+                id: `group-${group.startTime.getTime()}`,
+                time: format(group.startTime, 'HH:mm'),
+                endTime: group.startTime.getTime() !== group.endTime.getTime() ? format(group.endTime, 'HH:mm') : undefined,
                 title: avgSpeed > 5 ? 'En movimiento' : avgSpeed > 0 ? 'Movimiento lento' : 'Detenido',
                 description: avgSpeed > 0.5 ? `Velocidad prom: ${avgSpeed.toFixed(1)} km/h` : '',
-                lat: (currentGroup as any).lat,
-                lng: (currentGroup as any).lng,
+                lat: group.lat,
+                lng: group.lng,
                 type: 'point',
                 icon: avgSpeed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
                 statusColor: avgSpeed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'

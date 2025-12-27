@@ -41,6 +41,8 @@ export interface TrackingHistoryItem {
     latitude: number
     longitude: number
     timestamp: string
+    recordedAt?: string
+    lastUpdate?: string
     speed?: number
     heading?: number
     accuracy?: number

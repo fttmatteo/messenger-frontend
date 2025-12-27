@@ -17,6 +17,7 @@ import { formatDisplayName } from "@/lib/format-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
+import type { TrackingHistoryItem } from "@/types/location.types"
 
 // Componente para manejar AdvancedMarkerElement con efecto de pulso
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive = false }: {
@@ -201,7 +202,7 @@ export default function LiveTracking() {
     }, [setSuccess, setError])
 
     // Handle history updates from side panel
-    const handleHistoryChange = useCallback((id: number, history: any[]) => {
+    const handleHistoryChange = useCallback((id: number, history: TrackingHistoryItem[]) => {
         // Solo actualizar si el ID coincide con el mensajero seleccionado actualmente
         if (selectedMessenger?.messengerId === id) {
             const path = history
