@@ -110,30 +110,26 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="space-y-2">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Eliminados</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                    Servicios eliminados
-                </h1>
-                {services.length > 0 && (
+        <div className="flex flex-col h-full gap-2">
+            {/* Header: Breadcrumb left, Title center, Button right */}
+            <div className="flex items-center justify-between gap-2">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to="/admin">
+                                    <Home className="h-4 w-4" />
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Eliminados</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+                <h1 className="text-xl md:text-2xl font-bold">Servicios eliminados</h1>
+                {services.length > 0 ? (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button
@@ -167,6 +163,8 @@ export default function Eliminados() {
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
+                ) : (
+                    <div className="w-[140px]" />
                 )}
             </div>
 

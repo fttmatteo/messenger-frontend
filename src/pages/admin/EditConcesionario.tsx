@@ -283,7 +283,7 @@ export default function EditConcesionario() {
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate("/admin/concesionarios")}
+                                    onClick={() => navigate(-1)}
                                 >
                                     Cancelar
                                 </Button>

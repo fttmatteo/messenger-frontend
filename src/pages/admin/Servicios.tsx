@@ -10,7 +10,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { TableRowSkeleton } from "@/components/service/ServiceSkeletons"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
@@ -36,7 +36,6 @@ export default function Servicios() {
 
     // Use custom hooks
     const {
-        services,
         loading,
         filteredAndSortedServices,
         paginatedServices,
@@ -62,49 +61,39 @@ export default function Servicios() {
 
     return (
         <div className="flex flex-col h-full gap-2">
-            <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
-
-            {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
+            {/* Header: Breadcrumb left, Title+Filters center */}
+            <div className="flex items-center justify-between gap-2">
+                <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
+                <div className="flex items-center gap-3">
                     <h1 className="text-xl md:text-2xl font-bold">Servicios</h1>
-
-                    <div className="flex items-center gap-2">
-                        <Select
-                            value={statusFilter.length === 1 ? statusFilter[0] : "all"}
-                            onValueChange={(value) => {
-                                if (value === "all") setStatusFilter([])
-                                else setStatusFilter([value as ServiceStatus])
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[160px] text-xs">
-                                <SelectValue placeholder="Estado" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
-                                {AVAILABLE_STATUSES.map(status => (
-                                    <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
-                        {statusFilter.length > 0 && (
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
-                                <X className="h-3 w-3 mr-1" />Limpiar
-                            </Button>
-                        )}
-                    </div>
+                    <Select
+                        value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                        onValueChange={(value) => {
+                            if (value === "all") setStatusFilter([])
+                            else setStatusFilter([value as ServiceStatus])
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[160px] text-xs">
+                            <SelectValue placeholder="Estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
+                            {AVAILABLE_STATUSES.map(status => (
+                                <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {statusFilter.length > 0 && (
+                        <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
+                            <X className="h-3 w-3 mr-1" />Limpiar
+                        </Button>
+                    )}
                 </div>
+                {/* Empty spacer for alignment */}
+                <div className="w-[140px]" />
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                <CardHeader className="p-2 pb-0">
-                    <CardDescription>
-                        {filteredAndSortedServices.length} de {services.length} servicio(s)
-                        {searchQuery && ` - Buscando "${searchQuery}"`}
-                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                    </CardDescription>
-                </CardHeader>
                 <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
@@ -135,7 +124,7 @@ export default function Servicios() {
                         </div>
                     ) : (
                         <>
-                            <div>
+                            <div className="flex-1 overflow-auto min-h-0">
                                 <Table>
                                     <TableHeader>
                                         <TableRow>

@@ -227,7 +227,7 @@ export default function EditEmployee() {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => navigate("/admin/empleados")}
+                                onClick={() => navigate(-1)}
                             >
                                 Cancelar
                             </Button>
