@@ -22,6 +22,7 @@ import {
     Phone,
     Loader2
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { trackingApiService } from "@/services/tracking-api.service"
@@ -35,6 +36,86 @@ interface TrackingHistoryItem {
     longitude: number
     timestamp: string
     speed?: number
+}
+
+// Address cache to avoid repeated API calls
+const addressCache = new Map<string, string>()
+
+// Request queue for rate limiting
+const requestQueue: Array<() => Promise<void>> = []
+let isProcessingQueue = false
+
+const processQueue = async () => {
+    if (isProcessingQueue || requestQueue.length === 0) return
+    isProcessingQueue = true
+
+    while (requestQueue.length > 0) {
+        const request = requestQueue.shift()
+        if (request) {
+            await request()
+            // Wait 300ms between requests to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 300))
+        }
+    }
+
+    isProcessingQueue = false
+}
+
+const addToQueue = (request: () => Promise<void>) => {
+    requestQueue.push(request)
+    processQueue()
+}
+
+// Component to display address from coordinates using Google Maps JS API
+function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
+    const [address, setAddress] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
+    const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`
+
+    useEffect(() => {
+        // Check cache first
+        if (addressCache.has(cacheKey)) {
+            setAddress(addressCache.get(cacheKey)!)
+            setLoading(false)
+            return
+        }
+
+        const fetchAddress = async () => {
+            try {
+                // Check if Google Maps API is loaded
+                if (!window.google?.maps?.Geocoder) {
+                    setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
+                    setLoading(false)
+                    return
+                }
+
+                const geocoder = new google.maps.Geocoder()
+                const response = await geocoder.geocode({ location: { lat, lng } })
+
+                if (response.results && response.results.length > 0) {
+                    const addr = response.results[0].formatted_address
+                    addressCache.set(cacheKey, addr)
+                    setAddress(addr)
+                } else {
+                    setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
+                }
+            } catch (err) {
+                console.error('Reverse geocode error:', err)
+                setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        // Add to queue instead of calling immediately
+        addToQueue(fetchAddress)
+    }, [lat, lng, cacheKey])
+
+    if (loading) {
+        return <Skeleton className="h-4 w-32" />
+    }
+
+    return <span className="truncate max-w-[180px]" title={address || ''}>{address}</span>
 }
 
 // Marker component
@@ -213,27 +294,35 @@ export default function MessengerDetails() {
 
     return (
         <div className="space-y-4 animate-in fade-in duration-500">
-            <AdminBreadcrumb
-                segments={[
-                    { label: "Monitoreo", href: "/admin/tracking" },
-                    { label: employee?.fullName || `Mensajero #${messengerId}` }
-                ]}
-            />
-
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate("/admin/tracking")}>
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <div>
-                        <h1 className="text-xl md:text-2xl font-bold">{employee?.fullName || `Mensajero #${messengerId}`}</h1>
-                        <p className="text-muted-foreground text-xs">{employee?.document}</p>
-                    </div>
+            {/* Header: Nav left, Title center, Status right */}
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3">
+                <div className="justify-self-start">
+                    <AdminBreadcrumb
+                        segments={[
+                            { label: "Monitoreo", href: "/admin/tracking" },
+                            { label: employee?.fullName || `Mensajero #${messengerId}` }
+                        ]}
+                    />
                 </div>
-                <Badge variant={isActive ? "default" : "secondary"} className={isActive ? "bg-green-500 hover:bg-green-600" : ""}>
-                    {isActive ? "Activo ahora" : "Desconectado"}
-                </Badge>
+
+                <h1 className="text-xl md:text-2xl font-bold text-center">
+                    {employee?.fullName || `Mensajero #${messengerId}`}
+                </h1>
+
+                <div className="justify-self-end">
+                    <Badge
+                        variant="outline"
+                        className={cn(
+                            "gap-1.5 h-7 justify-center text-[11px] font-medium border shadow-sm px-2.5",
+                            isActive
+                                ? "bg-green-500/10 text-green-600 border-green-500/30"
+                                : "bg-red-500/10 text-red-600 border-red-500/30"
+                        )}
+                    >
+                        <MapPin className="h-3 w-3" />
+                        {isActive ? "Activo ahora" : "Desconectado"}
+                    </Badge>
+                </div>
             </div>
 
             {/* Main Content */}
@@ -346,24 +435,68 @@ export default function MessengerDetails() {
                                 <div className="space-y-3">
                                     <ScrollArea className="h-72 rounded-lg border bg-muted/10">
                                         <div className="p-4 space-y-3">
-                                            {historyData.slice().reverse().map((item, i) => (
-                                                <div key={item.id || i} className="p-3 rounded-lg border bg-card text-xs shadow-sm hover:border-primary/30 transition-colors">
-                                                    <div className="flex justify-between items-center mb-2">
-                                                        <span className="font-bold text-primary">
-                                                            {safeFormat(item.timestamp, "HH:mm:ss")}
-                                                        </span>
-                                                        {item.speed !== undefined && item.speed > 0 && (
-                                                            <Badge variant="secondary" className="text-[10px] px-1.5 h-4.5 font-mono">
-                                                                {(item.speed * 3.6).toFixed(0)} km/h
-                                                            </Badge>
-                                                        )}
+                                            {(() => {
+                                                const grouped: Array<{
+                                                    startTime: string;
+                                                    endTime: string;
+                                                    lat: number;
+                                                    lng: number;
+                                                    count: number;
+                                                    maxSpeed: number;
+                                                }> = [];
+
+                                                // Sort by time ascending for grouping
+                                                const sorted = [...historyData].sort((a, b) =>
+                                                    new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+                                                );
+
+                                                sorted.forEach((item) => {
+                                                    const key = `${item.latitude.toFixed(4)},${item.longitude.toFixed(4)}`;
+                                                    const last = grouped[grouped.length - 1];
+                                                    const lastKey = last ? `${last.lat.toFixed(4)},${last.lng.toFixed(4)}` : null;
+
+                                                    if (last && key === lastKey) {
+                                                        last.endTime = item.timestamp;
+                                                        last.count++;
+                                                        last.maxSpeed = Math.max(last.maxSpeed, (item.speed || 0) * 3.6);
+                                                    } else {
+                                                        grouped.push({
+                                                            startTime: item.timestamp,
+                                                            endTime: item.timestamp,
+                                                            lat: item.latitude,
+                                                            lng: item.longitude,
+                                                            count: 1,
+                                                            maxSpeed: (item.speed || 0) * 3.6
+                                                        });
+                                                    }
+                                                });
+
+                                                // Return reversed for UI (newest first)
+                                                return grouped.reverse().map((group, i) => (
+                                                    <div key={i} className="p-3 rounded-lg border bg-card text-xs shadow-sm hover:border-primary/30 transition-colors">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <div className="flex items-center gap-1.5 font-bold text-primary">
+                                                                <span>{safeFormat(group.startTime, "HH:mm")}</span>
+                                                                {group.startTime !== group.endTime && (
+                                                                    <>
+                                                                        <span className="text-muted-foreground font-normal">→</span>
+                                                                        <span>{safeFormat(group.endTime, "HH:mm")}</span>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                            {group.maxSpeed > 2 && (
+                                                                <Badge variant="secondary" className="text-[10px] px-1.5 h-4.5 font-mono">
+                                                                    {group.maxSpeed.toFixed(0)} km/h
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <MapPin className="h-3 w-3 opacity-70 shrink-0" />
+                                                            <AddressDisplay lat={group.lat} lng={group.lng} />
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-muted-foreground font-mono">
-                                                        <MapPin className="h-3 w-3 opacity-70" />
-                                                        <span>{item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                ));
+                                            })()}
                                         </div>
                                     </ScrollArea>
                                     <p className="text-[10px] text-center text-muted-foreground uppercase tracking-wider">

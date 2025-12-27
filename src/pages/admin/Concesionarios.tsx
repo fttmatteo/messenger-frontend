@@ -9,7 +9,7 @@ import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -59,7 +59,6 @@ export default function Concesionarios() {
 
     // Use custom hooks
     const {
-        dealerships,
         loading,
         filteredAndSortedDealerships,
         paginatedDealerships,
@@ -80,50 +79,35 @@ export default function Concesionarios() {
 
     return (
         <div className="flex flex-col h-full gap-2">
-            <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
-
-            {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
+            {/* Header: Breadcrumb left, Title+Filters center, Button right */}
+            <div className="flex items-center justify-between gap-2">
+                <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
+                <div className="flex items-center gap-3">
                     <h1 className="text-xl md:text-2xl font-bold">Concesionarios</h1>
-
-                    <div className="flex items-center gap-2">
-                        <ToggleGroup
-                            type="single"
-                            value={zoneFilter}
-                            onValueChange={(value) => setZoneFilter(value || "all")}
-                            className="justify-start"
-                        >
-                            <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
-                            {uniqueZones.map((zone) => (
-                                <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
-                            ))}
-                        </ToggleGroup>
-
-                        {zoneFilter !== "all" && (
-                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs">
-                                <X className="h-3 w-3 mr-1" />Limpiar
-                            </Button>
-                        )}
-                    </div>
+                    <ToggleGroup
+                        type="single"
+                        value={zoneFilter}
+                        onValueChange={(value) => setZoneFilter(value || "all")}
+                        className="justify-start"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
+                        {uniqueZones.map((zone) => (
+                            <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
+                    {zoneFilter !== "all" && (
+                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs">
+                            <X className="h-3 w-3 mr-1" />Limpiar
+                        </Button>
+                    )}
                 </div>
-
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
-                        <Plus className="h-3 w-3 mr-1" />
-                        Nuevo concesionario
-                    </Button>
-                </div>
+                <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                    <Plus className="h-3 w-3 mr-1" />
+                    Nuevo concesionario
+                </Button>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                <CardHeader className="p-2 pb-0">
-                    <CardDescription>
-                        {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
-                        {searchQuery && ` - Buscando "${searchQuery}"`}
-                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                    </CardDescription>
-                </CardHeader>
                 <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>

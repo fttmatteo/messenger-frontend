@@ -41,6 +41,7 @@ export default function Eliminados() {
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
     const [restoring, setRestoring] = useState<number | null>(null)
+    const [deleting, setDeleting] = useState<number | null>(null)
     const [emptying, setEmptying] = useState(false)
 
     const fetchDeletedServices = useCallback(async () => {
@@ -85,6 +86,19 @@ export default function Eliminados() {
         }
     }
 
+    const handlePermanentDelete = async (id: number) => {
+        try {
+            setDeleting(id)
+            await serviceDeliveryService.permanentDelete(id)
+            setSuccess("Servicio eliminado permanentemente")
+            setServices(prev => prev.filter(s => s.idServiceDelivery !== id))
+        } catch (error) {
+            setError(getErrorMessage(error))
+        } finally {
+            setDeleting(null)
+        }
+    }
+
     // Calculate days remaining until permanent deletion (60 days from deletion)
     const getDaysRemaining = (createdAt: string) => {
         const deletedDate = new Date(createdAt)
@@ -110,30 +124,26 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="space-y-2">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Eliminados</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                    Servicios eliminados
-                </h1>
-                {services.length > 0 && (
+        <div className="flex flex-col h-full gap-2">
+            {/* Header: Breadcrumb left, Title center, Button right */}
+            <div className="flex items-center justify-between gap-2">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to="/admin">
+                                    <Home className="h-4 w-4" />
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Eliminados</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+                <h1 className="text-xl md:text-2xl font-bold">Servicios eliminados</h1>
+                {services.length > 0 ? (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button
@@ -167,6 +177,8 @@ export default function Eliminados() {
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
+                ) : (
+                    <div className="w-[140px]" />
                 )}
             </div>
 
@@ -263,7 +275,7 @@ export default function Eliminados() {
                 ) : (
                     // Desktop View
                     <Card className="flex flex-col flex-1 h-full overflow-hidden">
-                        <CardHeader>
+                        <CardHeader className="p-2 pb-0">
                             <CardDescription>
                                 {services.length} elemento(s) en papelera. Los elementos se eliminarán permanentemente después de 60 días.
                             </CardDescription>
@@ -285,7 +297,7 @@ export default function Eliminados() {
                                             <TableHead>Mensajero</TableHead>
                                             <TableHead>Eliminado</TableHead>
                                             <TableHead>Tiempo restante</TableHead>
-                                            <TableHead className="text-right">Acción</TableHead>
+                                            <TableHead className="text-center">Acción</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -329,41 +341,82 @@ export default function Eliminados() {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className="text-right">
-                                                            <AlertDialog>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <AlertDialogTrigger asChild>
-                                                                            <Button
-                                                                                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                                                                                size="sm"
-                                                                                disabled={restoring === service.idServiceDelivery}
-                                                                            >
-                                                                                {restoring === service.idServiceDelivery ? (
-                                                                                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                                                                                ) : (
-                                                                                    <RotateCcw className="h-4 w-4 mr-1" />
-                                                                                )}
+                                                            <div className="flex gap-2 justify-end">
+                                                                {/* Restore button */}
+                                                                <AlertDialog>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button
+                                                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                                                    size="sm"
+                                                                                    disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
+                                                                                >
+                                                                                    {restoring === service.idServiceDelivery ? (
+                                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                                    ) : (
+                                                                                        <RotateCcw className="h-4 w-4" />
+                                                                                    )}
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Restaurar servicio</TooltipContent>
+                                                                    </Tooltip>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>¿Restaurar servicio?</AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                El servicio con placa <strong>{service.plate.plateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                            <AlertDialogAction onClick={() => handleRestore(service.idServiceDelivery)}>
                                                                                 Restaurar
-                                                                            </Button>
-                                                                        </AlertDialogTrigger>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Restaurar servicio</TooltipContent>
-                                                                </Tooltip>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>¿Restaurar servicio?</AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            El servicio con placa <strong>{service.plate.plateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                        <AlertDialogAction onClick={() => handleRestore(service.idServiceDelivery)}>
-                                                                            Restaurar
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
+                                                                            </AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                                {/* Delete permanently button */}
+                                                                <AlertDialog>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button
+                                                                                    variant="destructive"
+                                                                                    size="sm"
+                                                                                    disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
+                                                                                >
+                                                                                    {deleting === service.idServiceDelivery ? (
+                                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                                    ) : (
+                                                                                        <Trash2 className="h-4 w-4" />
+                                                                                    )}
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Eliminar permanentemente</TooltipContent>
+                                                                    </Tooltip>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>¿Eliminar permanentemente?</AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                El servicio con placa <strong>{service.plate.plateNumber}</strong> será eliminado permanentemente. Esta acción no se puede deshacer.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                            <AlertDialogAction
+                                                                                onClick={() => handlePermanentDelete(service.idServiceDelivery)}
+                                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                            >
+                                                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                                                Eliminar
+                                                                            </AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </div>
                                                         </TableCell>
                                                     </motion.tr>
                                                 )

@@ -257,7 +257,7 @@ export default function UpdateServiceStatus() {
                         <PlacaBadge
                             plateNumber={service.plate.plateNumber}
                             plateType={service.plate.plateType}
-                            size="xl"
+                            size="lg"
                         />
                         {/* Status Selector */}
                         {(() => {
@@ -354,7 +354,7 @@ export default function UpdateServiceStatus() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate("/admin/servicios")}
+                            onClick={() => navigate(-1)}
                             disabled={updating}
                             type="button"
                         >
