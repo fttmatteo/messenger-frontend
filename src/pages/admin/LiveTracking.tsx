@@ -286,19 +286,25 @@ export default function LiveTracking() {
                         {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
                             <OverlayView
                                 position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
-                                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                                mapPaneName={OverlayView.FLOAT_PANE}
                             >
-                                <div className="relative -translate-x-1/2 -translate-y-full pb-4">
-                                    <div className="bg-background/95 backdrop-blur-md rounded-lg shadow-lg border p-3 space-y-2 min-w-[200px]">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <p className="font-semibold text-sm">
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        transform: 'translate(-50%, -100%)',
+                                        marginTop: '-50px'
+                                    }}
+                                >
+                                    <div className="bg-background/80 backdrop-blur-md rounded-lg shadow-lg border px-4 py-2 space-y-2" style={{ minWidth: '180px' }}>
+                                        <div className="flex items-center justify-between gap-3">
+                                            <p className="font-semibold text-sm whitespace-nowrap">
                                                 {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
                                             </p>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => setSelectedMessenger(null)}
-                                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground shrink-0"
                                             >
                                                 ✕
                                             </Button>
@@ -333,8 +339,6 @@ export default function LiveTracking() {
                                             </Button>
                                         </div>
                                     </div>
-                                    {/* Arrow pointing down */}
-                                    <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-background/95" />
                                 </div>
                             </OverlayView>
                         )}
