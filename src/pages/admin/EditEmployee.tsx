@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff, Trash2 } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -239,10 +239,11 @@ export default function EditEmployee() {
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="destructive"
                                         size="sm"
-                                        className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                        className="ml-auto"
                                     >
+                                        <Trash2 className="h-4 w-4 mr-2" />
                                         Eliminar
                                     </Button>
                                 </AlertDialogTrigger>

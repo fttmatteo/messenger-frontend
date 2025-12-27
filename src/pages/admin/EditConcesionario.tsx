@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
-import { Loader2, MapPin } from "lucide-react"
+import { Loader2, MapPin, Trash2 } from "lucide-react"
 import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -295,10 +295,11 @@ export default function EditConcesionario() {
                                     <AlertDialogTrigger asChild>
                                         <Button
                                             type="button"
-                                            variant="outline"
+                                            variant="destructive"
                                             size="sm"
-                                            className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                            className="ml-auto"
                                         >
+                                            <Trash2 className="h-4 w-4 mr-2" />
                                             Eliminar
                                         </Button>
                                     </AlertDialogTrigger>

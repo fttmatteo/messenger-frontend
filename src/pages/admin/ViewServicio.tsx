@@ -230,11 +230,11 @@ export default function ViewServicio() {
                     {/* Delete Button - Admin only, not for DELIVERED/RESOLVED outside 72h window */}
                     {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
                         <Button
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="flex-1 md:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                            className="flex-1 md:flex-none"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
@@ -317,12 +317,13 @@ export default function ViewServicio() {
                             </div>
                         </div>
 
-                        {service.observation && (
-                            <div className="pt-4 border-t">
-                                <p className="text-sm font-medium mb-1">Observaciones</p>
-                                <p className="text-sm text-muted-foreground">{service.observation}</p>
-                            </div>
-                        )}
+
+                        <div className="pt-4 border-t">
+                            <p className="text-sm font-medium mb-1">Observaciones</p>
+                            <p className="text-sm text-muted-foreground">
+                                {service.observation || "No hay observaciones"}
+                            </p>
+                        </div>
                     </CardContent>
                 </Card>
 
