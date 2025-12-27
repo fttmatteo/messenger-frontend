@@ -390,7 +390,7 @@ export default function EditConcesionario() {
                                     >
                                         {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                         <MapPin className="mr-2 h-4 w-4" />
-                                        Geocodificar
+                                        Obtener ubicación
                                     </Button>
                                 )}
                             </>

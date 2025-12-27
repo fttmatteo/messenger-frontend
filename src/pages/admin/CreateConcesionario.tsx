@@ -93,7 +93,7 @@ export default function CreateConcesionario() {
                                 <Label htmlFor="name">Nombre del concesionario</Label>
                                 <Input
                                     id="name"
-                                    placeholder="Mundo Yamaha"
+                                    placeholder="Nombre concesionario"
                                     {...register("name")}
                                 />
                                 {errors.name && (
