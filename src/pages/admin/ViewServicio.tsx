@@ -17,7 +17,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock } from "lucide-react"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -399,7 +399,12 @@ export default function ViewServicio() {
                             disabled={deleting}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                            {deleting ? "Eliminando..." : "Eliminar servicio"}
+                            {deleting ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="mr-2 h-4 w-4" />
+                            )}
+                            Eliminar servicio
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

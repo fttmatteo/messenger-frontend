@@ -45,7 +45,7 @@ export default function Empleados() {
         : undefined
 
     return (
-        <div className="space-y-2">
+        <div className="flex flex-col h-full gap-2">
             <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
 
             {/* Header with inline filters */}
@@ -81,7 +81,7 @@ export default function Empleados() {
                 </div>
             </div>
 
-            <Card className="gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardDescription>
                         {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
@@ -89,7 +89,7 @@ export default function Empleados() {
                         {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -105,14 +105,17 @@ export default function Empleados() {
                             </TableBody>
                         </Table>
                     ) : filteredAndSortedEmployees.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<Users />}
-                            emptyTitle="Sin empleados"
-                            emptyDescription="Aún no hay empleados registrados en el sistema"
-                            actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
-                        />
+                        <div className="flex-1 flex items-center justify-center">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Users />}
+                                emptyTitle="Sin empleados"
+                                emptyDescription="Aún no hay empleados registrados en el sistema"
+                                actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
                             <Table>
