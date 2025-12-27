@@ -7,7 +7,7 @@ import type { ServiceDelivery } from "@/types/service.types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -110,7 +110,7 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="flex flex-col h-full space-y-4 md:space-y-6">
+        <div className="space-y-2">
             {/* Breadcrumbs */}
             <Breadcrumb>
                 <BreadcrumbList>
@@ -129,9 +129,9 @@ export default function Eliminados() {
             </Breadcrumb>
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                    <Trash2 className="h-7 w-7" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <Trash2 className="h-6 w-6" />
                     Servicios eliminados
                 </h1>
                 {services.length > 0 && (
@@ -265,7 +265,6 @@ export default function Eliminados() {
                     // Desktop View
                     <Card className="flex flex-col flex-1 h-full overflow-hidden">
                         <CardHeader>
-                            <CardTitle>Elementos eliminados</CardTitle>
                             <CardDescription>
                                 {services.length} elemento(s) en papelera. Los elementos se eliminarán permanentemente después de 60 días.
                             </CardDescription>
