@@ -132,7 +132,6 @@ export default function Concesionarios() {
                                 emptyIcon={<Store />}
                                 emptyTitle="Sin concesionarios"
                                 emptyDescription="Aún no hay concesionarios registrados en el sistema"
-                                actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
                                 className="py-0"
                             />
                         </div>

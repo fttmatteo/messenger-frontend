@@ -59,13 +59,13 @@ export default function LoginMobile() {
             <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                 {/* Help Button - Top Left */}
                 <div className="absolute top-2 left-2 z-10">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" type="button">
+                    <Button variant="ghost" size="icon" className="rounded-lg" type="button">
                         <HelpCircle className="h-4 w-4" />
                     </Button>
                 </div>
                 {/* Mode Toggle Button - Consistent Position */}
                 <div className="absolute top-2 right-2 z-10">
-                    <ModeToggle className="h-7 w-7" />
+                    <ModeToggle showLabel={false} />
                 </div>
                 <CardHeader className="space-y-0.5 pb-2 pt-8">
                     <div className="flex flex-col items-center justify-center mb-1">
