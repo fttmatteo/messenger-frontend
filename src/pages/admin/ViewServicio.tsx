@@ -217,6 +217,7 @@ export default function ViewServicio() {
                             return (
                                 <Button
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                                    size="sm"
                                     className="flex-1 md:flex-none"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
@@ -230,6 +231,7 @@ export default function ViewServicio() {
                     {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
                         <Button
                             variant="outline"
+                            size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
                             className="flex-1 md:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
@@ -246,8 +248,8 @@ export default function ViewServicio() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* General Information - Vertical Layout */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader className="p-3 pb-2">
-                        <CardTitle className="text-base text-muted-foreground font-normal">Información general</CardTitle>
+                    <CardHeader className="p-2 pb-0">
+                        <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 flex-1 overflow-y-auto">
                         <div className="flex items-start gap-3">
@@ -326,8 +328,8 @@ export default function ViewServicio() {
 
                 {/* History Timeline - Vertical & Scrollable */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader className="p-3 pb-2">
-                        <CardTitle className="text-base text-muted-foreground font-normal">Historial de estados</CardTitle>
+                    <CardHeader className="p-2 pb-0">
+                        <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
                         {service.history && service.history.length > 0 ? (

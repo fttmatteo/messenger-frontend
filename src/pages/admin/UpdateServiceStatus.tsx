@@ -353,6 +353,7 @@ export default function UpdateServiceStatus() {
                     <div className="flex gap-4 pt-4 border-t mt-6">
                         <Button
                             variant="outline"
+                            size="sm"
                             onClick={() => navigate("/admin/servicios")}
                             disabled={updating}
                             type="button"
@@ -362,6 +363,7 @@ export default function UpdateServiceStatus() {
                         <Button
                             onClick={handleUpdateStatus}
                             disabled={updating}
+                            size="sm"
                             className="flex-1 sm:flex-none"
                         >
                             {updating ? (

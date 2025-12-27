@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { Map } from "@/components/Map"
 import { useGoogleMap, Polyline } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -183,17 +183,11 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className}>
-            <CardHeader className="p-3 pb-2">
-                <CardTitle className="flex items-center gap-2 text-base text-muted-foreground font-normal">
+            <CardHeader className="p-2 pb-0">
+                <CardTitle className="flex items-center gap-2 text-base text-foreground font-semibold">
                     <Route className="h-4 w-4" />
                     Recorrido del servicio
                 </CardTitle>
-                <CardDescription className="text-xs">
-                    {trackingData.length > 0
-                        ? `${trackingData.length} puntos registrados`
-                        : "Ubicación del concesionario"
-                    }
-                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Map */}

@@ -74,7 +74,7 @@ export default function CreateEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-muted-foreground font-normal">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -174,11 +174,12 @@ export default function CreateEmployee() {
                             <Button
                                 type="button"
                                 variant="outline"
+                                size="sm"
                                 onClick={() => navigate("/admin/empleados")}
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Crear empleado
                             </Button>
