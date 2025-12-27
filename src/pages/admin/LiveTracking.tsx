@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
-import { useGoogleMap } from "@react-google-maps/api"
+import { useGoogleMap, OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -281,78 +281,66 @@ export default function LiveTracking() {
                                 />
                             )
                         ))}
+
+                        {/* Custom popup overlay at marker position */}
+                        {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
+                            <OverlayView
+                                position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
+                                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                            >
+                                <div className="relative -translate-x-1/2 -translate-y-full pb-4">
+                                    <div className="bg-background/95 backdrop-blur-md rounded-lg shadow-lg border p-3 space-y-2 min-w-[200px]">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="font-semibold text-sm">
+                                                {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setSelectedMessenger(null)}
+                                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                                            >
+                                                ✕
+                                            </Button>
+                                        </div>
+
+                                        {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
+                                            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                <Navigation className="h-3 w-3" />
+                                                {(selectedMessenger.speed * 3.6).toFixed(1)} km/h
+                                            </p>
+                                        )}
+
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => goToMessengerDetails(selectedMessenger.messengerId)}
+                                                className="flex-1 h-7 text-xs"
+                                            >
+                                                Ver detalles
+                                                <ExternalLink className="h-3 w-3 ml-1" />
+                                            </Button>
+                                            <Button
+                                                variant={followingMessengerId === selectedMessenger.messengerId ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => toggleFollow(selectedMessenger.messengerId)}
+                                                className={cn(
+                                                    "h-7 w-7 p-0",
+                                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600"
+                                                )}
+                                            >
+                                                <Locate className="h-3 w-3" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    {/* Arrow pointing down */}
+                                    <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-background/95" />
+                                </div>
+                            </OverlayView>
+                        )}
                     </MapComponent>
                 )}
             </div>
-
-            {/* Custom Floating Info Card (replaces InfoWindow) */}
-            {selectedMessenger && selectedMessenger.latitude && selectedMessenger.longitude && (
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-72">
-                    <div className="bg-background/90 backdrop-blur-md rounded-lg shadow-lg border p-4 space-y-3">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="font-semibold text-sm">
-                                    {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
-                                </p>
-                                <Badge
-                                    variant={selectedMessenger.status === 'ACTIVE' ? 'default' : 'secondary'}
-                                    className={cn(
-                                        "mt-1 text-xs",
-                                        selectedMessenger.status === 'ACTIVE' && "bg-green-500 hover:bg-green-600"
-                                    )}
-                                >
-                                    {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                </Badge>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedMessenger(null)}
-                                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                            >
-                                ✕
-                            </Button>
-                        </div>
-
-                        <div className="space-y-1 text-xs text-muted-foreground">
-                            {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
-                                <p className="flex items-center gap-1">
-                                    <Navigation className="h-3 w-3" />
-                                    {(selectedMessenger.speed * 3.6).toFixed(1)} km/h
-                                </p>
-                            )}
-                            {selectedMessenger.lastUpdate && (
-                                <p className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    {formatDistanceToNow(new Date(selectedMessenger.lastUpdate), { addSuffix: true, locale: es })}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="flex gap-2 pt-1">
-                            <Button
-                                size="sm"
-                                onClick={() => goToMessengerDetails(selectedMessenger.messengerId)}
-                                className="flex-1 h-8 text-xs"
-                            >
-                                Ver detalles
-                                <ExternalLink className="h-3 w-3 ml-1" />
-                            </Button>
-                            <Button
-                                variant={followingMessengerId === selectedMessenger.messengerId ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => toggleFollow(selectedMessenger.messengerId)}
-                                className={cn(
-                                    "h-8 w-8 p-0",
-                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600"
-                                )}
-                            >
-                                <Locate className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Floating Header */}
             <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
