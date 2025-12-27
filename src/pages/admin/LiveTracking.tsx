@@ -113,6 +113,13 @@ export default function LiveTracking() {
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
+    // Force re-render periodically to update relative times
+    const [, setTick] = useState(0)
+    useEffect(() => {
+        const timer = setInterval(() => setTick(t => t + 1), 60000)
+        return () => clearInterval(timer)
+    }, [])
+
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
         try {
@@ -347,13 +354,14 @@ export default function LiveTracking() {
             </div>
 
             {/* Floating Header */}
-            <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
-                <div className="pointer-events-auto flex items-center gap-3 bg-background/80 backdrop-blur-md rounded-lg px-4 py-2 shadow-lg border">
-                    <h1 className="text-lg font-bold tracking-tight">Monitoreo en vivo</h1>
+            <div className="absolute top-4 left-4 z-10 pointer-events-auto">
+                <div className="flex items-center gap-3 bg-background/90 backdrop-blur-md rounded-lg px-3 shadow-lg border h-10">
+                    <h1 className="text-sm font-medium">Monitoreo en vivo</h1>
+                    <div className="h-4 w-px bg-border" />
                     <Badge
                         variant="outline"
                         className={cn(
-                            "gap-1 h-6 justify-center",
+                            "gap-1 h-6 justify-center text-xs font-normal",
                             connected
                                 ? "bg-green-500/10 text-green-600 border-green-500/30"
                                 : "bg-red-500/10 text-red-600 border-red-500/30"
@@ -367,26 +375,31 @@ export default function LiveTracking() {
                         size="sm"
                         onClick={() => fetchMessengers(true)}
                         disabled={loading}
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 hover:bg-muted"
+                        title="Actualizar datos"
                     >
                         <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
             </div>
 
-            {/* Collapsible Side Panel */}
+            {/* Collapsible Side Panel - Right Side */}
             <div className={cn(
-                "absolute top-20 bottom-4 right-4 z-10 transition-all duration-300 ease-in-out",
-                isPanelCollapsed ? "w-12" : "w-72"
+                "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
+                isPanelCollapsed ? "w-9" : "w-72"
             )}>
                 <div className="h-full bg-background/90 backdrop-blur-md rounded-lg shadow-lg border flex flex-col overflow-hidden">
-                    {/* Panel Header */}
-                    <div className="flex items-center justify-between p-3 border-b shrink-0">
+                    {/* ... header ... */}
+                    <div className={cn(
+                        "flex items-center border-b shrink-0 h-10",
+                        isPanelCollapsed ? "justify-center p-0" : "justify-between px-3"
+                    )}>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-                            className="p-1 h-8 w-8"
+                            className="h-6 w-6 p-0"
+                            title={isPanelCollapsed ? "Expandir" : "Colapsar"}
                         >
                             {isPanelCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </Button>
@@ -413,39 +426,46 @@ export default function LiveTracking() {
                                 </div>
                             ) : (
                                 <div className="divide-y">
-                                    {messengers.map((messenger) => (
-                                        <button
-                                            key={messenger.messengerId}
-                                            className={cn(
-                                                "w-full p-3 text-left hover:bg-muted/50 transition-colors",
-                                                selectedMessenger?.messengerId === messenger.messengerId && "bg-muted",
-                                                followingMessengerId === messenger.messengerId && "ring-2 ring-inset ring-green-500"
-                                            )}
-                                            onClick={() => selectMessenger(messenger)}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span className="font-medium text-sm truncate">
-                                                    {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
-                                                </span>
-                                                <div className={cn(
-                                                    "w-2 h-2 rounded-full shrink-0",
-                                                    messenger.status === 'ACTIVE' ? "bg-green-500" : "bg-gray-400"
-                                                )} />
-                                            </div>
-                                            {messenger.speed !== undefined && messenger.speed > 0 && (
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    <Navigation className="h-3 w-3 inline mr-1" />
-                                                    {(messenger.speed * 3.6).toFixed(1)} km/h
-                                                </p>
-                                            )}
-                                            {messenger.lastUpdate && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    <Clock className="h-3 w-3 inline mr-1" />
-                                                    {formatDistanceToNow(new Date(messenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                </p>
-                                            )}
-                                        </button>
-                                    ))}
+                                    {messengers.map((messenger) => {
+                                        const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
+                                        const isRecent = lastUpdateDate && (Date.now() - lastUpdateDate.getTime() < 60000)
+
+                                        return (
+                                            <button
+                                                key={messenger.messengerId}
+                                                className={cn(
+                                                    "w-full p-3 text-left hover:bg-muted/50 transition-colors",
+                                                    selectedMessenger?.messengerId === messenger.messengerId && "bg-muted",
+                                                    followingMessengerId === messenger.messengerId && "ring-2 ring-inset ring-green-500"
+                                                )}
+                                                onClick={() => selectMessenger(messenger)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium text-sm truncate">
+                                                        {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
+                                                    </span>
+                                                    <div className={cn(
+                                                        "w-2 h-2 rounded-full shrink-0",
+                                                        messenger.status === 'ACTIVE' ? "bg-green-500" : "bg-gray-400"
+                                                    )} />
+                                                </div>
+                                                {messenger.speed !== undefined && messenger.speed > 0 && (
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        <Navigation className="h-3 w-3 inline mr-1" />
+                                                        {(messenger.speed * 3.6).toFixed(1)} km/h
+                                                    </p>
+                                                )}
+                                                {lastUpdateDate && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        <Clock className="h-3 w-3 inline mr-1" />
+                                                        {isRecent
+                                                            ? "Actualizado ahora"
+                                                            : formatDistanceToNow(lastUpdateDate, { addSuffix: true, locale: es })}
+                                                    </p>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
                                 </div>
                             )}
                         </ScrollArea>
