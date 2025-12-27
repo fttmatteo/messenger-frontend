@@ -79,7 +79,7 @@ export default function Concesionarios() {
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
-        <div className="space-y-2">
+        <div className="flex flex-col h-full gap-2">
             <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
 
             {/* Header with inline filters */}
@@ -116,7 +116,7 @@ export default function Concesionarios() {
                 </div>
             </div>
 
-            <Card className="gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardDescription>
                         {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
@@ -124,7 +124,7 @@ export default function Concesionarios() {
                         {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -141,14 +141,17 @@ export default function Concesionarios() {
                             </TableBody>
                         </Table>
                     ) : filteredAndSortedDealerships.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<Store />}
-                            emptyTitle="Sin concesionarios"
-                            emptyDescription="Aún no hay concesionarios registrados en el sistema"
-                            actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
-                        />
+                        <div className="flex-1 flex items-center justify-center">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Store />}
+                                emptyTitle="Sin concesionarios"
+                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
                             <Table>
@@ -194,8 +197,8 @@ export default function Concesionarios() {
                                                 className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                 onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                             >
-                                                <TableCell className="font-medium text-base">{dealership.name}</TableCell>
-                                                <TableCell className="max-w-xs text-base">
+                                                <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
+                                                <TableCell className="max-w-xs text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <span className="cursor-default">
@@ -213,7 +216,7 @@ export default function Concesionarios() {
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TableCell>
-                                                <TableCell className="text-base">
+                                                <TableCell className="text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -224,7 +227,7 @@ export default function Concesionarios() {
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className="text-base px-2 py-0.5">{dealership.zone}</Badge>
+                                                    <Badge variant="outline" className="text-xs px-2 py-0.5">{dealership.zone}</Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (

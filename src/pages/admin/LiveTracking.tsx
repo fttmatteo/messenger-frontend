@@ -1,15 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
-import { InfoWindow, useGoogleMap } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useGoogleMap, OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
-import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation } from "lucide-react"
+import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation, ChevronRight, ChevronLeft, ExternalLink, Locate } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
@@ -18,23 +17,67 @@ import { formatDisplayName } from "@/lib/format-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 
-// Componente para manejar AdvancedMarkerElement
-function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { position: google.maps.LatLngLiteral, onClick?: () => void, title?: string, color?: string }) {
+// Componente para manejar AdvancedMarkerElement con efecto de pulso
+function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive = false }: {
+    position: google.maps.LatLngLiteral,
+    onClick?: () => void,
+    title?: string,
+    color?: string,
+    isActive?: boolean
+}) {
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return
 
+        // Crear contenedor con efecto de pulso para marcadores activos
+        const container = document.createElement('div')
+        container.style.position = 'relative'
+
+        if (isActive) {
+            // Efecto de pulso
+            const pulse = document.createElement('div')
+            pulse.style.cssText = `
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                background: ${color}40;
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse 2s infinite;
+            `
+            container.appendChild(pulse)
+
+            // Añadir keyframes si no existen
+            if (!document.getElementById('pulse-keyframes')) {
+                const style = document.createElement('style')
+                style.id = 'pulse-keyframes'
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                        100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+                    }
+                `
+                document.head.appendChild(style)
+            }
+        }
+
+        const pinElement = new google.maps.marker.PinElement({
+            background: color,
+            borderColor: 'white',
+            glyphColor: 'white',
+            scale: isActive ? 1.2 : 1,
+        })
+        container.appendChild(pinElement.element)
+
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
             title,
-            content: new google.maps.marker.PinElement({
-                background: color,
-                borderColor: 'white',
-                glyphColor: 'white',
-            }).element
+            content: container
         })
 
         marker.addListener('click', () => {
@@ -48,7 +91,7 @@ function AdvancedMarker({ position, onClick, title, color = '#4f46e5' }: { posit
                 markerRef.current.map = null
             }
         }
-    }, [map, color, onClick, position, title])
+    }, [map, color, onClick, position, title, isActive])
 
     useEffect(() => {
         if (markerRef.current) {
@@ -66,7 +109,16 @@ export default function LiveTracking() {
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
     const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
+    const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
+    const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
+
+    // Force re-render periodically to update relative times
+    const [, setTick] = useState(0)
+    useEffect(() => {
+        const timer = setInterval(() => setTick(t => t + 1), 60000)
+        return () => clearInterval(timer)
+    }, [])
 
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
@@ -83,16 +135,18 @@ export default function LiveTracking() {
 
             // 3. Merge data
             const combinedRequests = messengerEmployees.map(async (emp) => {
+                const formattedName = formatDisplayName(emp.fullName)
+
                 // If active, use active data
                 if (activeMap.has(emp.idEmployee)) {
-                    return activeMap.get(emp.idEmployee)!
+                    return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName }
                 }
 
                 // If offline, try to get last location
                 try {
                     const lastLoc = await trackingApiService.getLastLocation(emp.idEmployee)
                     if (lastLoc) {
-                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: emp.fullName }
+                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName }
                     }
                 } catch (e) {
                     // Ignore 404 errors (mensajero sin ubicación previa), but log other errors
@@ -104,7 +158,7 @@ export default function LiveTracking() {
                 // Default offline structure without location
                 return {
                     messengerId: emp.idEmployee,
-                    messengerName: emp.fullName,
+                    messengerName: formattedName,
                     latitude: 0,
                     longitude: 0,
                     lastUpdate: new Date().toISOString(),
@@ -154,7 +208,7 @@ export default function LiveTracking() {
                 const updatedList = [...prev]
                 // Preserve name if update doesn't have it (though update usually has it)
                 const existing = prev[existingIndex]
-                updatedList[existingIndex] = { ...existing, ...update, messengerName: update.messengerName || existing.messengerName }
+                updatedList[existingIndex] = { ...existing, ...update, messengerName: existing.messengerName || update.messengerName }
                 return updatedList
             }
 
@@ -163,11 +217,16 @@ export default function LiveTracking() {
 
         setSelectedMessenger(prev => {
             if (prev?.messengerId === update.messengerId) {
-                return { ...prev, ...update }
+                return { ...prev, ...update, messengerName: prev.messengerName || update.messengerName }
             }
             return prev
         })
-    }, [])
+
+        // Follow mode: update map center when following a messenger
+        if (followingMessengerId === update.messengerId && update.latitude && update.longitude) {
+            setMapCenter({ lat: update.latitude, lng: update.longitude })
+        }
+    }, [followingMessengerId])
 
     // Connect to WebSocket on mount
     useEffect(() => {
@@ -191,43 +250,172 @@ export default function LiveTracking() {
         if (messenger.latitude && messenger.longitude) {
             setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
         }
-        // Navigate to messenger details page
-        navigate(`/admin/tracking/mensajero/${messenger.messengerId}`)
+    }
+
+    const goToMessengerDetails = (messengerId: number) => {
+        navigate(`/admin/tracking/mensajero/${messengerId}`)
+    }
+
+    const toggleFollow = (messengerId: number) => {
+        if (followingMessengerId === messengerId) {
+            setFollowingMessengerId(null)
+        } else {
+            setFollowingMessengerId(messengerId)
+            const messenger = messengers.find(m => m.messengerId === messengerId)
+            if (messenger?.latitude && messenger?.longitude) {
+                setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+            }
+        }
     }
 
     return (
-        <div className="h-full flex flex-col gap-4 overflow-hidden">
-            {/* Header */}
-            <div className="flex justify-between items-center flex-wrap gap-2 shrink-0">
-                <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold tracking-tight">Monitoreo en vivo</h1>
-                    <Badge className={`gap-1 min-w-[110px] h-7 justify-center border-transparent shadow-sm ${connected ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
+        <div className="h-full w-full relative overflow-hidden">
+            {/* Fullscreen Map */}
+            <div className="absolute inset-0">
+                {loading && messengers.length === 0 ? (
+                    <Skeleton className="w-full h-full" />
+                ) : (
+                    <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
+                        {messengers.map((messenger) => (
+                            messenger.latitude && messenger.longitude && messenger.latitude !== 0 && (
+                                <AdvancedMarker
+                                    key={messenger.messengerId}
+                                    position={{ lat: messenger.latitude, lng: messenger.longitude }}
+                                    onClick={() => selectMessenger(messenger)}
+                                    title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
+                                    color={messenger.status === 'ACTIVE' ? '#10b981' : '#6b7280'}
+                                />
+                            )
+                        ))}
+
+                        {/* Custom popup overlay at marker position */}
+                        {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
+                            <OverlayView
+                                position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
+                                mapPaneName={OverlayView.FLOAT_PANE}
+                            >
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        transform: 'translate(-50%, -100%)',
+                                        marginTop: '-50px'
+                                    }}
+                                >
+                                    <div className="bg-background/80 backdrop-blur-md rounded-lg shadow-lg border px-4 py-2 space-y-2" style={{ minWidth: '180px' }}>
+                                        <div className="flex items-center justify-between gap-3">
+                                            <p className="font-semibold text-sm whitespace-nowrap">
+                                                {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setSelectedMessenger(null)}
+                                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground shrink-0"
+                                            >
+                                                ✕
+                                            </Button>
+                                        </div>
+
+                                        {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
+                                            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                <Navigation className="h-3 w-3" />
+                                                {(selectedMessenger.speed * 3.6).toFixed(1)} km/h
+                                            </p>
+                                        )}
+
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => goToMessengerDetails(selectedMessenger.messengerId)}
+                                                className="flex-1 h-7 text-xs bg-secondary/50 hover:bg-secondary"
+                                            >
+                                                Ver detalles
+                                                <ExternalLink className="h-3 w-3 ml-1" />
+                                            </Button>
+                                            <Button
+                                                variant={followingMessengerId === selectedMessenger.messengerId ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => toggleFollow(selectedMessenger.messengerId)}
+                                                className={cn(
+                                                    "h-7 w-7 p-0",
+                                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600"
+                                                )}
+                                            >
+                                                <Locate className="h-3 w-3" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </OverlayView>
+                        )}
+                    </MapComponent>
+                )}
+            </div>
+
+            {/* Floating Header */}
+            <div className="absolute top-4 left-4 z-10 pointer-events-auto">
+                <div className="flex items-center gap-3 bg-background/90 backdrop-blur-md rounded-lg px-3 shadow-lg border h-10">
+                    <h1 className="text-sm font-medium">Monitoreo</h1>
+                    <div className="h-4 w-px bg-border" />
+                    <Badge
+                        variant="outline"
+                        className={cn(
+                            "gap-1 h-6 justify-center text-xs font-normal",
+                            connected
+                                ? "bg-green-500/10 text-green-600 border-green-500/30"
+                                : "bg-red-500/10 text-red-600 border-red-500/30"
+                        )}
+                    >
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
                     </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => fetchMessengers(true)} disabled={loading}>
-                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                        Actualizar
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => fetchMessengers(true)}
+                        disabled={loading}
+                        className="h-6 w-6 p-0 hover:bg-muted"
+                        title="Actualizar datos"
+                    >
+                        <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 flex gap-4 overflow-hidden">
-                {/* Messenger List (Desktop) */}
-                <Card className="hidden lg:flex lg:flex-col w-72 shrink-0 overflow-hidden gap-0 py-0">
-                    <CardHeader className="py-3 shrink-0">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            Mensajeros
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0 flex-1 overflow-hidden">
-                        <ScrollArea className="h-full">
+            {/* Collapsible Side Panel - Right Side */}
+            <div className={cn(
+                "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
+                isPanelCollapsed ? "w-9" : "w-72"
+            )}>
+                <div className="h-full bg-background/90 backdrop-blur-md rounded-lg shadow-lg border flex flex-col overflow-hidden">
+                    {/* ... header ... */}
+                    <div className={cn(
+                        "flex items-center border-b shrink-0 h-10",
+                        isPanelCollapsed ? "justify-center p-0" : "justify-between px-3"
+                    )}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+                            className="h-6 w-6 p-0"
+                            title={isPanelCollapsed ? "Expandir" : "Colapsar"}
+                        >
+                            {isPanelCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </Button>
+                        {!isPanelCollapsed && (
+                            <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">Mensajeros</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Panel Content */}
+                    {!isPanelCollapsed && (
+                        <ScrollArea className="flex-1">
                             {loading && messengers.length === 0 ? (
-                                <div className="space-y-2 p-4">
+                                <div className="space-y-2 p-3">
                                     {[1, 2, 3].map(i => (
                                         <Skeleton key={i} className="h-16 w-full" />
                                     ))}
@@ -238,92 +426,70 @@ export default function LiveTracking() {
                                 </div>
                             ) : (
                                 <div className="divide-y">
-                                    {messengers.map((messenger) => (
-                                        <button
-                                            key={messenger.messengerId}
-                                            className={cn(
-                                                "w-full p-4 text-left hover:bg-muted/50 transition-colors",
-                                                selectedMessenger?.messengerId === messenger.messengerId && "bg-muted"
-                                            )}
-                                            onClick={() => selectMessenger(messenger)}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span className="font-medium">
-                                                    {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
-                                                </span>
-                                                <Badge variant={messenger.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
-                                                    {messenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                                </Badge>
-                                            </div>
-                                            {messenger.speed !== undefined && messenger.speed > 0 && (
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    <Navigation className="h-3 w-3 inline mr-1" />
-                                                    {(messenger.speed * 3.6).toFixed(1)} km/h
-                                                </p>
-                                            )}
-                                            {messenger.lastUpdate && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    <Clock className="h-3 w-3 inline mr-1" />
-                                                    {formatDistanceToNow(new Date(messenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                </p>
-                                            )}
-                                        </button>
-                                    ))}
+                                    {messengers.map((messenger) => {
+                                        const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
+                                        const isRecent = lastUpdateDate && (Date.now() - lastUpdateDate.getTime() < 60000)
+
+                                        return (
+                                            <button
+                                                key={messenger.messengerId}
+                                                className={cn(
+                                                    "w-full p-3 text-left hover:bg-muted/50 transition-colors",
+                                                    selectedMessenger?.messengerId === messenger.messengerId && "bg-muted",
+                                                    followingMessengerId === messenger.messengerId && "ring-2 ring-inset ring-green-500"
+                                                )}
+                                                onClick={() => selectMessenger(messenger)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium text-sm truncate">
+                                                        {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
+                                                    </span>
+                                                    <div className={cn(
+                                                        "w-2 h-2 rounded-full shrink-0",
+                                                        messenger.status === 'ACTIVE' ? "bg-green-500" : "bg-gray-400"
+                                                    )} />
+                                                </div>
+                                                {messenger.speed !== undefined && messenger.speed > 0 && (
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        <Navigation className="h-3 w-3 inline mr-1" />
+                                                        {(messenger.speed * 3.6).toFixed(1)} km/h
+                                                    </p>
+                                                )}
+                                                {lastUpdateDate && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        <Clock className="h-3 w-3 inline mr-1" />
+                                                        {isRecent
+                                                            ? "Actualizado ahora"
+                                                            : formatDistanceToNow(lastUpdateDate, { addSuffix: true, locale: es })}
+                                                    </p>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
                                 </div>
                             )}
                         </ScrollArea>
-                    </CardContent>
-                </Card>
-
-                {/* Map Container */}
-                <Card className="flex-1 overflow-hidden">
-                    <CardContent className="p-0 h-full w-full relative">
-                        {loading && messengers.length === 0 ? (
-                            <Skeleton className="w-full h-full rounded-md" />
-                        ) : (
-                            <MapComponent className="w-full h-full rounded-md" center={mapCenter} zoom={13}>
-                                {messengers.map((messenger) => (
-                                    messenger.latitude && messenger.longitude && messenger.latitude !== 0 && (
-                                        <AdvancedMarker
-                                            key={messenger.messengerId}
-                                            position={{ lat: messenger.latitude, lng: messenger.longitude }}
-                                            onClick={() => selectMessenger(messenger)}
-                                            title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
-                                            color={messenger.status === 'ACTIVE' ? '#10b981' : '#6b7280'}
-                                        />
-                                    )
-                                ))}
-
-                                {selectedMessenger && selectedMessenger.latitude && selectedMessenger.longitude && (
-                                    <InfoWindow
-                                        position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
-                                        onCloseClick={() => setSelectedMessenger(null)}
-                                    >
-                                        <div className="p-2 min-w-[150px]">
-                                            <p className="font-semibold text-sm">
-                                                {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
-                                            </p>
-                                            <p className="text-xs text-gray-600">
-                                                {selectedMessenger.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
-                                            </p>
-                                            {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
-                                                <p className="text-xs text-gray-600">
-                                                    Velocidad: {(selectedMessenger.speed * 3.6).toFixed(1)} km/h
-                                                </p>
-                                            )}
-                                            {selectedMessenger.lastUpdate && (
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    Actualizado {formatDistanceToNow(new Date(selectedMessenger.lastUpdate), { addSuffix: true, locale: es })}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </InfoWindow>
-                                )}
-                            </MapComponent>
-                        )}
-                    </CardContent>
-                </Card>
+                    )}
+                </div>
             </div>
+
+            {/* Following indicator */}
+            {followingMessengerId && (
+                <div className="absolute bottom-4 left-4 z-10">
+                    <div className="bg-green-500 text-white px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
+                        <Locate className="h-4 w-4 animate-pulse" />
+                        <span>Siguiendo mensajero</span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setFollowingMessengerId(null)}
+                            className="h-6 px-2 text-white hover:bg-green-600"
+                        >
+                            ✕
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

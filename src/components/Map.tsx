@@ -76,10 +76,24 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                 onUnmount={handleUnmount}
                 options={{
                     mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
+                    // Disable ALL default controls first
+                    disableDefaultUI: true,
+                    // Then enable only the ones we want
                     zoomControl: true,
-                    streetViewControl: false,
-                    mapTypeControl: false,
+                    zoomControlOptions: {
+                        position: google.maps.ControlPosition.LEFT_BOTTOM
+                    },
                     fullscreenControl: true,
+                    fullscreenControlOptions: {
+                        position: google.maps.ControlPosition.LEFT_BOTTOM
+                    },
+                    // Explicitly disable orientation controls
+                    rotateControl: false,
+                    tilt: 0,
+                    heading: 0,
+                    // Other settings
+                    clickableIcons: false,
+                    keyboardShortcuts: true,
                     colorScheme: getColorScheme(),
                 }}
             >

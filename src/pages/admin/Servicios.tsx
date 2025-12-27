@@ -61,7 +61,7 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="space-y-2">
+        <div className="flex flex-col h-full gap-2">
             <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
 
             {/* Header with inline filters */}
@@ -97,7 +97,7 @@ export default function Servicios() {
                 </div>
             </div>
 
-            <Card className="gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardDescription>
                         {filteredAndSortedServices.length} de {services.length} servicio(s)
@@ -105,7 +105,7 @@ export default function Servicios() {
                         {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -123,13 +123,16 @@ export default function Servicios() {
                             </TableBody>
                         </Table>
                     ) : filteredAndSortedServices.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<PackageCheck />}
-                            emptyTitle="Sin servicios"
-                            emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
-                        />
+                        <div className="flex-1 flex items-center justify-center h-full">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<PackageCheck />}
+                                emptyTitle="Sin servicios"
+                                emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
                             <div>
@@ -202,12 +205,12 @@ export default function Servicios() {
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
                                                             <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                            <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                                                            <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
                                                                 {getStatusIconConfig(service.currentStatus).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="whitespace-nowrap text-base">
+                                                    <TableCell className="whitespace-nowrap text-sm">
                                                         {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                     </TableCell>
                                                     <TableCell className="text-center">

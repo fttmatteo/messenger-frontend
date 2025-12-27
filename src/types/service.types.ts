@@ -6,6 +6,7 @@ export type ServiceStatus =
     | 'RETURNED'
     | 'CANCELED'
     | 'RESOLVED'
+    | 'DELETED'
 
 // Plate Type
 export type PlateType =

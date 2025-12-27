@@ -18,26 +18,27 @@ export function ModeToggle({ className }: ModeToggleProps) {
 
     return (
         <Button
-            variant="outline"
-            size="icon"
+            variant="ghost"
+            size="sm"
             onClick={toggleTheme}
-            className={cn("rounded-full relative", className)}
+            className={cn("h-9 px-3 flex items-center gap-2 hover:bg-muted transition-colors rounded-lg", className)}
             title={`Tema actual: ${theme === 'system' ? 'Sistema' : theme === 'dark' ? 'Oscuro' : 'Claro'}`}
         >
-            <Sun className={cn(
-                "h-[1.2rem] w-[1.2rem] transition-all",
-                theme === 'system' ? "scale-0 opacity-0" : "rotate-0 scale-100 dark:-rotate-90 dark:scale-0"
-            )} />
-            <Moon className={cn(
-                "absolute h-[1.2rem] w-[1.2rem] transition-all",
-                theme === 'system' ? "scale-0 opacity-0" : "rotate-90 scale-0 dark:rotate-0 dark:scale-100"
-            )} />
-
-            {/* System Mode Icon - Only visible when theme is 'system' */}
-            <Laptop className={cn(
-                "absolute h-[1.2rem] w-[1.2rem] transition-all",
-                theme === 'system' ? "scale-100 rotate-0" : "scale-0 rotate-90"
-            )} />
+            <div className="relative h-4 w-4 flex items-center justify-center">
+                <Sun className={cn(
+                    "h-4 w-4 transition-all",
+                    theme === 'system' ? "scale-0 opacity-0" : "rotate-0 scale-100 dark:-rotate-90 dark:scale-0"
+                )} />
+                <Moon className={cn(
+                    "absolute h-4 w-4 transition-all",
+                    theme === 'system' ? "scale-0 opacity-0" : "rotate-90 scale-0 dark:rotate-0 dark:scale-100"
+                )} />
+                <Laptop className={cn(
+                    "absolute h-4 w-4 transition-all",
+                    theme === 'system' ? "scale-100 rotate-0" : "scale-0 rotate-90"
+                )} />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground">Tema</span>
         </Button>
     )
 }

@@ -18,7 +18,9 @@ api.interceptors.request.use((config) => {
 
 export const trackingApiService = {
     getActiveMessengers: async (): Promise<LiveTrackingUpdate[]> => {
-        const response = await api.get<LiveTrackingUpdate[]>('/tracking/active');
+        const response = await api.get<LiveTrackingUpdate[]>('/tracking/active', {
+            params: { t: Date.now() }
+        });
         return response.data;
     },
 

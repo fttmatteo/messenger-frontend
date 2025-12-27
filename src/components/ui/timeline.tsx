@@ -41,11 +41,11 @@ export function TimelineHeader({ className, children, icon, statusColor, ...prop
             {/* Status Icon/Dot */}
             <div
                 className={cn(
-                    "absolute left-0 top-0.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background shadow-sm",
-                    statusColor // Optional: pass specific generic color classes if needed
+                    "absolute left-0 top-0.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-border bg-background",
+                    statusColor
                 )}
             >
-                {icon || <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
+                {icon}
             </div>
             {/* Header Content (Status Badge, etc) */}
             <div className="flex items-center">

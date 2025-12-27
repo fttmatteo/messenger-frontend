@@ -1,11 +1,12 @@
 import { Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef, useEffect } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -17,7 +18,7 @@ const menuItems = [
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
-    { title: "Mapa", icon: Map, url: "/admin/tracking" },
+    { title: "Monitoreo", icon: Map, url: "/admin/tracking" },
     { title: "Eliminados", icon: Trash2, url: "/admin/eliminados" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
@@ -38,6 +39,9 @@ function AdminLayoutContent() {
         location.pathname.includes('/detalles') ||
         location.pathname.includes('/actualizar') ||
         /\/servicios\/\d+$/.test(location.pathname)
+
+    // Detect if we're on the tracking page (fullscreen map)
+    const isTrackingPage = location.pathname === '/admin/tracking'
 
     const handleSearchChange = (value: string) => {
         if (value) {
@@ -96,7 +100,6 @@ function AdminLayoutContent() {
                             <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
                             <span className="font-semibold">PLAK</span>
                         </div>
-                        <ModeToggle />
                     </div>
                 </SidebarHeader>
                 <SidebarContent>
@@ -121,87 +124,86 @@ function AdminLayoutContent() {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </SidebarContent>
+                <SidebarFooter className="pb-4">
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                onClick={handleLogout}
+                                tooltip="Cerrar sesión"
+                                className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span className="text-xs font-medium">Cerrar sesión</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarFooter>
             </Sidebar>
             <SidebarInset className="overflow-hidden flex flex-col h-screen">
-                <header className="flex-shrink-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    {isMobile && isNestedPage && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleBack}
-                            aria-label="Volver"
-                        >
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
-                    )}
-                    {isMobile ? (
-                        // Mobile header layout
-                        <>
-                            {showSearchInput ? (
-                                <div className="relative flex-1">
+                {!isTrackingPage && (
+                    <header className="flex-shrink-0 z-40 flex h-12 items-center gap-4 border-b bg-background px-4 shadow-sm">
+                        {isMobile && isNestedPage && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleBack}
+                                aria-label="Volver"
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                        )}
+                        {isMobile ? (
+                            // Mobile header layout
+                            <>
+                                {showSearchInput ? (
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Buscar..."
+                                            className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
+                                            value={searchQuery}
+                                            onChange={(e) => handleSearchChange(e.target.value)}
+                                            autoFocus
+                                            onBlur={() => !searchQuery && setShowSearchInput(false)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex-1 text-center">
+                                            {/* Mobile Error Display could go here if needed, keeping simple for now */}
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => setShowSearchInput(true)}
+                                            aria-label="Abrir búsqueda"
+                                        >
+                                            <Search className="h-4 w-4" />
+                                        </Button>
+                                        <ModeToggle />
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            // Desktop header layout
+                            <>
+                                <div className="relative w-full max-w-md">
                                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Buscar..."
-                                        className="pl-9 h-9"
+                                        className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
                                         value={searchQuery}
                                         onChange={(e) => handleSearchChange(e.target.value)}
-                                        autoFocus
-                                        onBlur={() => !searchQuery && setShowSearchInput(false)}
                                     />
                                 </div>
-                            ) : (
-                                <>
-                                    <div className="flex-1 text-center">
-                                        {/* Mobile Error Display could go here if needed, keeping simple for now */}
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => setShowSearchInput(true)}
-                                        aria-label="Abrir búsqueda"
-                                    >
-                                        <Search className="h-4 w-4" />
-                                    </Button>
-                                </>
-                            )}
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={handleLogout}
-                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                aria-label="Cerrar sesión"
-                            >
-                                <LogOut className="h-4 w-4" />
-                            </Button>
-                        </>
-                    ) : (
-                        // Desktop header layout
-                        <>
-                            <div className="relative w-full max-w-md">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    placeholder="Buscar..."
-                                    className="pl-9 h-9"
-                                    value={searchQuery}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                />
-                            </div>
 
-                            <div className="flex-1" />
-
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={handleLogout}
-                                className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex-shrink-0"
-                                aria-label="Cerrar sesión"
-                            >
-                                <LogOut className="h-4 w-4" />
-                            </Button>
-                        </>
-                    )}
-                </header>
-                <main id="main-content" ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto p-6" role="main">
+                                <div className="flex-1" />
+                                <ModeToggle />
+                            </>
+                        )}
+                    </header>
+                )}
+                <main id="main-content" ref={mainRef} className={cn("flex-1 overflow-x-hidden overflow-y-auto", isTrackingPage ? "p-0" : "p-6")} role="main">
                     <Outlet context={{ searchQuery }} />
                 </main>
 

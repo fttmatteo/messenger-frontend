@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
-import { Loader2, MapPin } from "lucide-react"
+import { Loader2, MapPin, Trash2 } from "lucide-react"
 import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -199,13 +199,13 @@ export default function EditConcesionario() {
         <div className="flex flex-col h-full">
             {/* Header */}
             <div className="mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold">Editar concesionario</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Editar concesionario</h1>
             </div>
 
             <div className="flex-1 grid gap-4 lg:grid-cols-3">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="text-lg">Información del concesionario</CardTitle>
+                        <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -282,11 +282,12 @@ export default function EditConcesionario() {
                                 <Button
                                     type="button"
                                     variant="outline"
+                                    size="sm"
                                     onClick={() => navigate("/admin/concesionarios")}
                                 >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" disabled={isSubmitting}>
+                                <Button type="submit" size="sm" disabled={isSubmitting}>
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Guardar cambios
                                 </Button>
@@ -294,9 +295,11 @@ export default function EditConcesionario() {
                                     <AlertDialogTrigger asChild>
                                         <Button
                                             type="button"
-                                            variant="outline"
-                                            className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                            variant="destructive"
+                                            size="sm"
+                                            className="ml-auto"
                                         >
+                                            <Trash2 className="h-4 w-4 mr-2" />
                                             Eliminar
                                         </Button>
                                     </AlertDialogTrigger>
@@ -316,7 +319,11 @@ export default function EditConcesionario() {
                                                 disabled={deleting}
                                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                             >
-                                                {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                {deleting ? (
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                )}
                                                 Eliminar
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
@@ -330,8 +337,8 @@ export default function EditConcesionario() {
                 {/* Geolocation Card */}
                 <Card className="flex flex-col gap-1 py-1">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <MapPin className="h-5 w-5" />
+                        <CardTitle className="flex items-center gap-2 text-base text-foreground font-semibold">
+                            <MapPin className="h-4 w-4" />
                             Ubicación
                         </CardTitle>
                     </CardHeader>

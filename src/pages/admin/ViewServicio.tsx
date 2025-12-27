@@ -17,7 +17,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock } from "lucide-react"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -183,8 +183,8 @@ export default function ViewServicio() {
                 <div>
                     <div className="flex flex-wrap items-center gap-4">
                         <div className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-3xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            <div className={`w-5 h-5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                            <span className={`text-xl md:text-2xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
                                 {getStatusIconConfig(service.currentStatus).label}
                             </span>
                         </div>
@@ -217,6 +217,7 @@ export default function ViewServicio() {
                             return (
                                 <Button
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                                    size="sm"
                                     className="flex-1 md:flex-none"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
@@ -229,10 +230,11 @@ export default function ViewServicio() {
                     {/* Delete Button - Admin only, not for DELIVERED/RESOLVED outside 72h window */}
                     {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
                         <Button
-                            variant="outline"
+                            variant="destructive"
+                            size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="flex-1 md:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                            className="flex-1 md:flex-none"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
@@ -246,8 +248,8 @@ export default function ViewServicio() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* General Information - Vertical Layout */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader className="p-3 pb-2">
-                        <CardTitle>Información general</CardTitle>
+                    <CardHeader className="p-2 pb-0">
+                        <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 flex-1 overflow-y-auto">
                         <div className="flex items-start gap-3">
@@ -308,26 +310,27 @@ export default function ViewServicio() {
                         <div className="flex items-start gap-3">
                             <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Fecha de Creación</p>
+                                <p className="text-sm font-medium">Fecha de creación</p>
                                 <p className="text-sm text-muted-foreground">
                                     {format(new Date(service.createdAt), "PPPp", { locale: es })}
                                 </p>
                             </div>
                         </div>
 
-                        {service.observation && (
-                            <div className="pt-4 border-t">
-                                <p className="text-sm font-medium mb-1">Observaciones</p>
-                                <p className="text-sm text-muted-foreground">{service.observation}</p>
-                            </div>
-                        )}
+
+                        <div className="pt-4 border-t">
+                            <p className="text-sm font-medium mb-1">Observaciones</p>
+                            <p className="text-sm text-muted-foreground">
+                                {service.observation || "No hay observaciones"}
+                            </p>
+                        </div>
                     </CardContent>
                 </Card>
 
                 {/* History Timeline - Vertical & Scrollable */}
                 <Card className="h-[600px] flex flex-col">
-                    <CardHeader className="p-3 pb-2">
-                        <CardTitle>Historial de estados</CardTitle>
+                    <CardHeader className="p-2 pb-0">
+                        <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto pr-2">
                         {service.history && service.history.length > 0 ? (
@@ -396,7 +399,12 @@ export default function ViewServicio() {
                             disabled={deleting}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                            {deleting ? "Eliminando..." : "Eliminar servicio"}
+                            {deleting ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="mr-2 h-4 w-4" />
+                            )}
+                            Eliminar servicio
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
