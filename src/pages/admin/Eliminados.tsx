@@ -131,7 +131,6 @@ export default function Eliminados() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                 <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                    <Trash2 className="h-6 w-6" />
                     Servicios eliminados
                 </h1>
                 {services.length > 0 && (

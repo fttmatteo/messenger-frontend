@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📱 Messenger Frontend - Messenger Management System
+# 📱 Messenger Frontend
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)

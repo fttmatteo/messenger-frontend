@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
 import { useGoogleMap, Polyline } from "@react-google-maps/api"
+import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -70,6 +71,7 @@ function MessengerMarker({ position, color = '#10b981' }: { position: google.map
 export default function MessengerDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { resolvedTheme } = useTheme()
     const messengerId = Number(id)
 
     // State
@@ -89,7 +91,10 @@ export default function MessengerDetails() {
 
     // Fetch employee and tracking data
     const fetchData = useCallback(async () => {
-        if (!messengerId) return
+        if (!messengerId || isNaN(messengerId)) {
+            setLoading(false)
+            return
+        }
 
         try {
             setLoading(true)
@@ -104,15 +109,21 @@ export default function MessengerDetails() {
 
             if (activeData) {
                 setCurrentLocation({ lat: activeData.latitude, lng: activeData.longitude })
-                setLastUpdate(activeData.lastUpdate ? new Date(activeData.lastUpdate) : null)
+                const date = activeData.lastUpdate ? new Date(activeData.lastUpdate) : null
+                setLastUpdate(date && isFinite(date.getTime()) ? date : null)
                 setSpeed(activeData.speed || null)
                 setIsActive(activeData.status === 'ACTIVE')
             } else {
                 // Try to get last known location
-                const lastLocation = await trackingApiService.getLastLocation(messengerId)
-                if (lastLocation) {
-                    setCurrentLocation({ lat: lastLocation.latitude, lng: lastLocation.longitude })
-                    setLastUpdate(lastLocation.lastUpdate ? new Date(lastLocation.lastUpdate) : null)
+                try {
+                    const lastLocation = await trackingApiService.getLastLocation(messengerId)
+                    if (lastLocation) {
+                        setCurrentLocation({ lat: lastLocation.latitude, lng: lastLocation.longitude })
+                        const date = lastLocation.lastUpdate ? new Date(lastLocation.lastUpdate) : null
+                        setLastUpdate(date && isFinite(date.getTime()) ? date : null)
+                    }
+                } catch (e) {
+                    console.debug("No previous location found for messenger", messengerId)
                 }
                 setIsActive(false)
             }
@@ -125,13 +136,20 @@ export default function MessengerDetails() {
 
     // Fetch history data
     const fetchHistory = useCallback(async () => {
-        if (!messengerId) return
+        if (!messengerId || isNaN(messengerId)) return
 
         try {
             setLoadingHistory(true)
-            const data = await trackingApiService.getHistory(messengerId, format(historyDate, 'yyyy-MM-dd'))
-            setHistoryData(data)
-            setShowHistoryRoute(data.length > 0)
+            const dateStr = format(historyDate, 'yyyy-MM-dd')
+            const data = await trackingApiService.getHistory(messengerId, dateStr)
+
+            if (Array.isArray(data)) {
+                setHistoryData(data)
+                setShowHistoryRoute(data.length > 0)
+            } else {
+                setHistoryData([])
+                setShowHistoryRoute(false)
+            }
         } catch (error) {
             console.error("Error fetching history:", error)
             setHistoryData([])
@@ -148,30 +166,56 @@ export default function MessengerDetails() {
         fetchHistory()
     }, [fetchHistory])
 
+    // Helper for safe date formatting
+    const safeFormat = (dateInput: string | Date | undefined, formatStr: string) => {
+        if (!dateInput) return ""
+        const date = new Date(dateInput)
+        if (!isFinite(date.getTime())) return "Fecha inválida"
+        return format(date, formatStr, { locale: es })
+    }
+
     // History path for polyline
     const historyPath = historyData
-        .filter(h => h.latitude && h.longitude)
+        .filter(h => h.latitude && h.longitude && h.latitude !== 0)
         .map(h => ({ lat: h.latitude, lng: h.longitude }))
 
     const mapCenter = currentLocation || { lat: 6.2442, lng: -75.5812 } // Medellín default
 
     if (loading) {
         return (
-            <div className="space-y-4">
+            <div className="space-y-4 p-6">
                 <Skeleton className="h-8 w-48" />
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <Skeleton className="h-64 lg:col-span-1" />
-                    <Skeleton className="h-64 lg:col-span-2" />
+                    <Skeleton className="h-[400px] lg:col-span-1" />
+                    <Skeleton className="h-[400px] lg:col-span-2" />
                 </div>
             </div>
         )
     }
 
+    if (!employee && !loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+                <div className="p-4 rounded-full bg-muted">
+                    <User className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <div className="text-center">
+                    <h2 className="text-xl font-semibold">Mensajero no encontrado</h2>
+                    <p className="text-muted-foreground">No pudimos cargar la información de este empleado.</p>
+                </div>
+                <Button onClick={() => navigate("/admin/tracking")}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Volver al monitoreo
+                </Button>
+            </div>
+        )
+    }
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-in fade-in duration-500">
             <AdminBreadcrumb
                 segments={[
-                    { label: "Mapa", href: "/admin/tracking" },
+                    { label: "Monitoreo", href: "/admin/tracking" },
                     { label: employee?.fullName || `Mensajero #${messengerId}` }
                 ]}
             />
@@ -187,47 +231,51 @@ export default function MessengerDetails() {
                         <p className="text-muted-foreground text-sm">{employee?.document}</p>
                     </div>
                 </div>
-                <Badge variant={isActive ? "default" : "secondary"} className={isActive ? "bg-green-500" : ""}>
-                    {isActive ? "Activo" : "Inactivo"}
+                <Badge variant={isActive ? "default" : "secondary"} className={isActive ? "bg-green-500 hover:bg-green-600" : ""}>
+                    {isActive ? "Activo ahora" : "Desconectado"}
                 </Badge>
             </div>
 
             {/* Main Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Info + History */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                     {/* Current Status Card */}
                     <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <User className="h-4 w-4" />
-                                Información
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <User className="h-4 w-4 text-primary" />
+                                Información General
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
+                        <CardContent className="space-y-4">
                             {employee?.phone && (
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-3 text-sm">
                                     <Phone className="h-4 w-4 text-muted-foreground" />
-                                    <a href={`tel:${employee.phone}`} className="hover:underline">{employee.phone}</a>
+                                    <a href={`tel:${employee.phone}`} className="hover:underline font-medium text-primary">
+                                        {employee.phone}
+                                    </a>
                                 </div>
                             )}
                             {speed !== null && speed > 0 && (
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-3 text-sm">
                                     <Navigation className="h-4 w-4 text-muted-foreground" />
-                                    <span>{(speed * 3.6).toFixed(1)} km/h</span>
+                                    <span className="font-medium">{(speed * 3.6).toFixed(1)} km/h</span>
                                 </div>
                             )}
                             {lastUpdate && (
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-3 text-sm">
                                     <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <span>{formatDistanceToNow(lastUpdate, { addSuffix: true, locale: es })}</span>
+                                    <span className="text-muted-foreground">
+                                        Última señal: {formatDistanceToNow(lastUpdate, { addSuffix: true, locale: es })}
+                                    </span>
                                 </div>
                             )}
                             {currentLocation && (
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-3 text-sm">
                                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-mono text-xs">
-                                        {currentLocation.lat.toFixed(5)}, {currentLocation.lng.toFixed(5)}
+                                    <span className="font-mono text-[10px] bg-muted px-2 py-1 rounded select-all">
+                                        {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
                                     </span>
                                 </div>
                             )}
@@ -236,18 +284,18 @@ export default function MessengerDetails() {
 
                     {/* History Card */}
                     <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <Route className="h-4 w-4" />
-                                Historial de recorrido
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <Route className="h-4 w-4 text-primary" />
+                                Historial del Día
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
+                        <CardContent className="space-y-4">
                             {/* Date Picker */}
                             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start text-left">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                    <Button variant="outline" className="w-full justify-start text-left font-normal h-10 border-dashed">
+                                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                                         {format(historyDate, "PPP", { locale: es })}
                                     </Button>
                                 </PopoverTrigger>
@@ -272,56 +320,64 @@ export default function MessengerDetails() {
                                 <Button
                                     variant={showHistoryRoute ? "default" : "outline"}
                                     size="sm"
-                                    className="w-full"
+                                    className="w-full h-9"
                                     onClick={() => setShowHistoryRoute(!showHistoryRoute)}
                                 >
                                     <Route className="h-4 w-4 mr-2" />
-                                    {showHistoryRoute ? "Ocultar ruta" : "Mostrar ruta"}
+                                    {showHistoryRoute ? "Ocultar ruta" : "Ver ruta en mapa"}
                                 </Button>
                             )}
 
                             {/* History List */}
                             {loadingHistory ? (
-                                <div className="flex items-center justify-center py-4">
-                                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                <div className="flex items-center justify-center py-10">
+                                    <Loader2 className="h-7 w-7 animate-spin text-primary/40" />
                                 </div>
                             ) : historyData.length === 0 ? (
-                                <p className="text-sm text-muted-foreground text-center py-4">
-                                    Sin registros para esta fecha
-                                </p>
+                                <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/30">
+                                    <p className="text-sm text-muted-foreground font-medium">
+                                        Sin movimientos
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-1">
+                                        {format(historyDate, "dd MMM yyyy", { locale: es })}
+                                    </p>
+                                </div>
                             ) : (
-                                <ScrollArea className="h-64">
-                                    <div className="space-y-2 pr-4">
-                                        {historyData.map((item, i) => (
-                                            <div key={item.id || i} className="p-2 rounded-lg bg-muted/50 text-sm">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="font-medium">
-                                                        {format(new Date(item.timestamp), "HH:mm:ss")}
-                                                    </span>
-                                                    {item.speed !== undefined && item.speed > 0 && (
-                                                        <Badge variant="outline" className="text-xs">
-                                                            {(item.speed * 3.6).toFixed(1)} km/h
-                                                        </Badge>
-                                                    )}
+                                <div className="space-y-3">
+                                    <ScrollArea className="h-72 rounded-lg border bg-muted/10">
+                                        <div className="p-4 space-y-3">
+                                            {historyData.slice().reverse().map((item, i) => (
+                                                <div key={item.id || i} className="p-3 rounded-lg border bg-card text-xs shadow-sm hover:border-primary/30 transition-colors">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="font-bold text-primary">
+                                                            {safeFormat(item.timestamp, "HH:mm:ss")}
+                                                        </span>
+                                                        {item.speed !== undefined && item.speed > 0 && (
+                                                            <Badge variant="secondary" className="text-[10px] px-1.5 h-4.5 font-mono">
+                                                                {(item.speed * 3.6).toFixed(0)} km/h
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-muted-foreground font-mono">
+                                                        <MapPin className="h-3 w-3 opacity-70" />
+                                                        <span>{item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}</span>
+                                                    </div>
                                                 </div>
-                                                <p className="text-xs text-muted-foreground mt-1 font-mono">
-                                                    {item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}
-                                                </p>
-                                            </div>
-                                        ))}
-                                        <div className="pt-2 border-t text-sm text-muted-foreground text-center">
-                                            {historyData.length} puntos registrados
+                                            ))}
                                         </div>
-                                    </div>
-                                </ScrollArea>
+                                    </ScrollArea>
+                                    <p className="text-[10px] text-center text-muted-foreground uppercase tracking-wider">
+                                        {historyData.length} puntos registrados
+                                    </p>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Right Column - Map */}
-                <Card className="lg:col-span-2 overflow-hidden">
-                    <CardContent className="p-0 h-[500px]">
+                <Card className="lg:col-span-2 overflow-hidden border-2 shadow-inner">
+                    <CardContent className="p-0 h-[600px] bg-muted/20 relative">
                         <MapComponent className="w-full h-full" center={mapCenter} zoom={15}>
                             {currentLocation && (
                                 <MessengerMarker
@@ -334,9 +390,14 @@ export default function MessengerDetails() {
                                 <Polyline
                                     path={historyPath}
                                     options={{
-                                        strokeColor: '#4f46e5',
+                                        strokeColor: resolvedTheme === 'dark' ? '#818cf8' : '#4f46e5',
                                         strokeOpacity: 0.8,
                                         strokeWeight: 4,
+                                        icons: [{
+                                            icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
+                                            offset: '100%',
+                                            repeat: '100px'
+                                        }]
                                     }}
                                 />
                             )}
