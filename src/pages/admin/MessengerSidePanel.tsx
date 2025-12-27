@@ -4,7 +4,6 @@ import {
     Navigation,
     Clock,
     Phone,
-    MoreVertical,
     Locate,
     MapPin,
     AlertCircle,
@@ -304,17 +303,17 @@ export function MessengerSidePanel({
 
     return (
         <div className={cn(
-            "absolute right-4 top-4 bottom-4 w-80 z-20 transition-all duration-300 flex flex-col",
+            "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
             "bg-background/80 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full",
             !messenger && "hidden"
         )}>
             {/* Header */}
-            <div className="p-4 border-b bg-background/40 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+            <div className="p-3 border-b bg-background/40 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                     <a
                         href={`tel:${employee?.phone}`}
                         className={cn(
-                            "h-10 w-10 rounded-full flex items-center justify-center border shrink-0 transition-colors",
+                            "h-8 w-8 rounded-full flex items-center justify-center border shrink-0 transition-colors",
                             employee?.phone
                                 ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
                                 : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
@@ -322,23 +321,39 @@ export function MessengerSidePanel({
                         title={employee?.phone ? `Llamar a ${employee.phone}` : "Sin número"}
                         onClick={(e) => !employee?.phone && e.preventDefault()}
                     >
-                        <Phone className="h-5 w-5" />
+                        <Phone className="h-4 w-4" />
                     </a>
-                    <div className="min-w-0">
-                        <h3 className="text-sm font-bold truncate">
+                    <div className="min-w-0 flex-1">
+                        <h3 className="text-xs font-bold truncate">
                             {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : 'Cargando...'}
                         </h3>
                         <Badge variant="outline" className={cn(
-                            "text-[10px] h-4 px-1 leading-none uppercase tracking-tighter",
+                            "text-[9px] h-3.5 px-1 leading-none uppercase tracking-tighter",
                             messenger?.status === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
                         )}>
-                            {messenger?.status === 'ACTIVE' ? 'En línea' : 'Desconectado'}
+                            {messenger?.status === 'ACTIVE' ? 'En línea' : 'Offline'}
                         </Badge>
                     </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 rounded-full">
-                    <X className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                        variant={isFollowing ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => messenger && onFollow(messenger.messengerId)}
+                        className={cn(
+                            "h-7 w-7 rounded-full transition-all duration-300",
+                            isFollowing
+                                ? "bg-green-500 hover:bg-green-600 border-none text-black"
+                                : "bg-background/50 border-dashed hover:border-solid hover:bg-background"
+                        )}
+                        title={isFollowing ? "Dejar de seguir" : "Seguir mensajero"}
+                    >
+                        <Locate className={cn("h-3.5 w-3.5", isFollowing && "animate-pulse")} />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 rounded-full">
+                        <X className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -452,24 +467,6 @@ export function MessengerSidePanel({
                         )}
                     </div>
                 </div>
-            </div>
-
-            {/* Actions */}
-            <div className="p-4 bg-background/40 border-t flex gap-2">
-                <Button
-                    variant={isFollowing ? "default" : "outline"}
-                    className={cn(
-                        "flex-1 h-10 gap-2 text-xs",
-                        isFollowing && "bg-emerald-500 hover:bg-emerald-600 border-none"
-                    )}
-                    onClick={() => messenger && onFollow(messenger.messengerId)}
-                >
-                    <Locate className={cn("h-4 w-4", isFollowing && "animate-pulse")} />
-                    {isFollowing ? 'Siguiendo' : 'Seguir'}
-                </Button>
-                <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
-                    <MoreVertical className="h-4 w-4" />
-                </Button>
             </div>
         </div>
     )

@@ -372,7 +372,7 @@ export default function LiveTracking() {
                                                 onClick={() => toggleFollow(selectedMessenger.messengerId)}
                                                 className={cn(
                                                     "h-7 w-7 p-0",
-                                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600"
+                                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600 text-black"
                                                 )}
                                             >
                                                 <Locate className="h-3 w-3" />
@@ -534,23 +534,6 @@ export default function LiveTracking() {
                 onHistoryChange={handleHistoryChange}
             />
 
-            {/* Following indicator */}
-            {followingMessengerId && (
-                <div className="absolute bottom-4 left-4 z-10">
-                    <div className="bg-green-500 text-white px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
-                        <Locate className="h-4 w-4 animate-pulse" />
-                        <span>Siguiendo mensajero</span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setFollowingMessengerId(null)}
-                            className="h-6 px-2 text-white hover:bg-green-600"
-                        >
-                            ✕
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     )
 }
