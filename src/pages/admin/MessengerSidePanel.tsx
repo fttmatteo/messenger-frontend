@@ -14,7 +14,6 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Calendar } from "@/components/ui/calendar"
 import {
     Popover,
@@ -40,6 +39,7 @@ import type { Employee } from "@/types/employee.types"
 interface TrackingHistoryItem {
     latitude: number
     longitude: number
+    recordedAt?: string
     timestamp?: string
     lastUpdate?: string
     speed?: number
@@ -47,10 +47,12 @@ interface TrackingHistoryItem {
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
+    messengerId: number | null
     isOpen: boolean
     onClose: () => void
     onFollow: (id: number) => void
     isFollowing: boolean
+    onHistoryChange?: (messengerId: number, history: TrackingHistoryItem[]) => void
 }
 
 interface TimelineEvent {
@@ -142,18 +144,18 @@ function AddressDisplay({ lat, lng }: { lat?: number, lng?: number }) {
 
 export function MessengerSidePanel({
     messenger,
+    messengerId,
     isOpen,
     onClose,
     onFollow,
-    isFollowing
+    isFollowing,
+    onHistoryChange
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
     const [history, setHistory] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-
-    const messengerId = messenger?.messengerId
 
     const fetchDetails = useCallback(async () => {
         if (!messengerId) return
@@ -175,6 +177,9 @@ export function MessengerSidePanel({
             const dateStr = format(selectedDate, 'yyyy-MM-dd')
             const data = await trackingApiService.getHistory(messengerId, dateStr)
             setHistory(Array.isArray(data) ? data : [])
+            if (onHistoryChange && messengerId) {
+                onHistoryChange(messengerId, Array.isArray(data) ? data : [])
+            }
         } catch (error) {
             console.error("Error fetching history:", error)
             setHistoryError("No se pudo cargar el historial")
@@ -208,12 +213,12 @@ export function MessengerSidePanel({
 
     // Process history into timeline events - Reverse to show most recent first
     const timelineEvents: TimelineEvent[] = [...history]
-        .filter(item => item && (item.timestamp || item.lastUpdate))
+        .filter(item => item && (item.recordedAt || item.timestamp || item.lastUpdate))
         .reverse()
         .slice(0, 20)
         .map((item, index) => {
             const speed = (item.speed || 0) * 3.6
-            const timestamp = (item.timestamp || item.lastUpdate) as string
+            const timestamp = (item.recordedAt || item.timestamp || item.lastUpdate) as string
             const date = new Date(timestamp)
             const isValidDate = !isNaN(date.getTime())
             return {
@@ -265,7 +270,7 @@ export function MessengerSidePanel({
                 </Button>
             </div>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <div className="p-4 space-y-6">
                     {/* Real-time Stats */}
                     <div className="grid grid-cols-2 gap-3">
@@ -383,7 +388,7 @@ export function MessengerSidePanel({
                         )}
                     </div>
                 </div>
-            </ScrollArea>
+            </div>
 
             {/* Actions */}
             <div className="p-4 bg-background/40 border-t flex gap-2">
