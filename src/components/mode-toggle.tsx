@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils"
 
 interface ModeToggleProps {
     className?: string
+    showLabel?: boolean
 }
 
-export function ModeToggle({ className }: ModeToggleProps) {
+export function ModeToggle({ className, showLabel = true }: ModeToggleProps) {
     const { theme, setTheme } = useTheme()
 
     const toggleTheme = () => {
@@ -19,9 +20,13 @@ export function ModeToggle({ className }: ModeToggleProps) {
     return (
         <Button
             variant="ghost"
-            size="sm"
+            size={showLabel ? "sm" : "icon"}
             onClick={toggleTheme}
-            className={cn("h-9 px-3 flex items-center gap-2 hover:bg-muted transition-colors rounded-lg", className)}
+            className={cn(
+                "flex items-center hover:bg-muted transition-colors rounded-lg",
+                showLabel ? "h-9 px-3 gap-2" : "",
+                className
+            )}
             title={`Tema actual: ${theme === 'system' ? 'Sistema' : theme === 'dark' ? 'Oscuro' : 'Claro'}`}
         >
             <div className="relative h-4 w-4 flex items-center justify-center">
@@ -38,7 +43,7 @@ export function ModeToggle({ className }: ModeToggleProps) {
                     theme === 'system' ? "scale-100 rotate-0" : "scale-0 rotate-90"
                 )} />
             </div>
-            <span className="text-xs font-medium text-muted-foreground">Tema</span>
+            {showLabel && <span className="text-xs font-medium text-muted-foreground">Tema</span>}
         </Button>
     )
 }

@@ -96,7 +96,6 @@ export default function Empleados() {
                                 emptyIcon={<Users />}
                                 emptyTitle="Sin empleados"
                                 emptyDescription="Aún no hay empleados registrados en el sistema"
-                                actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
                                 className="py-0"
                             />
                         </div>

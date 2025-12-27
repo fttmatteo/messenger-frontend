@@ -67,7 +67,7 @@ export function TablePagination({
                             value={itemsPerPage.toString()}
                             onValueChange={(value) => onItemsPerPageChange(Number(value))}
                         >
-                            <SelectTrigger className="w-[60px] h-7 text-xs">
+                            <SelectTrigger className="w-[80px] h-7 text-xs">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

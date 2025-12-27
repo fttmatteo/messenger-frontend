@@ -353,6 +353,22 @@ textarea {
   /* Icon sizing in tables and lists - use CSS variables for consistency */
   [data-slot="table"] svg:not([class*="h-"]) {
     width: 1.125rem;
-    height: 1.125rem;
   }
+}
+
+/* Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
 }

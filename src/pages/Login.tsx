@@ -93,13 +93,13 @@ export default function Login() {
             <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
                 {/* Help Button - Top Left */}
                 <div className="absolute top-3 left-3 z-10">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" type="button" aria-label="Ayuda">
+                    <Button variant="ghost" size="icon" className="rounded-lg" type="button" aria-label="Ayuda">
                         <HelpCircle className="h-5 w-5" />
                     </Button>
                 </div>
                 {/* Mode Toggle Button - Consistent Position */}
                 <div className="absolute top-3 right-3 z-10">
-                    <ModeToggle className="h-8 w-8" />
+                    <ModeToggle showLabel={false} />
                 </div>
                 <CardHeader className="space-y-1 pb-2 pt-10 sm:pt-6">
                     <div className="flex flex-col items-center justify-center mb-1 sm:mb-2">
