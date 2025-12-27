@@ -6,10 +6,14 @@ export function formatDisplayName(fullName: string): string {
     if (!fullName) return ""
     const parts = fullName.trim().split(' ')
     if (parts.length === 1) return parts[0]
-    // Get first name and initial of last name
+    // Get first name and initial of first last name (second word)
     const firstName = parts[0]
-    const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase()
-    return `${firstName} ${lastInitial}.`
+    // If there are multiple parts, take the second one for the initial
+    if (parts.length >= 2) {
+        const lastInitial = parts[1].charAt(0).toUpperCase()
+        return `${firstName} ${lastInitial}.`
+    }
+    return firstName
 }
 
 /**

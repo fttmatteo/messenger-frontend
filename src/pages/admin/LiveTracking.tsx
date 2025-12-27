@@ -126,18 +126,9 @@ export default function LiveTracking() {
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
 
-            // Helper to format name: "Juan Perez" -> "Juan P."
-            const formatMessengerName = (fullName: string) => {
-                const parts = fullName.trim().split(/\s+/)
-                if (parts.length >= 2) {
-                    return `${parts[0]} ${parts[1][0]}.`
-                }
-                return fullName
-            }
-
             // 3. Merge data
             const combinedRequests = messengerEmployees.map(async (emp) => {
-                const formattedName = formatMessengerName(emp.fullName)
+                const formattedName = formatDisplayName(emp.fullName)
 
                 // If active, use active data
                 if (activeMap.has(emp.idEmployee)) {
