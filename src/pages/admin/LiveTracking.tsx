@@ -126,18 +126,29 @@ export default function LiveTracking() {
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
 
+            // Helper to format name: "Juan Perez" -> "Juan P."
+            const formatMessengerName = (fullName: string) => {
+                const parts = fullName.trim().split(/\s+/)
+                if (parts.length >= 2) {
+                    return `${parts[0]} ${parts[1][0]}.`
+                }
+                return fullName
+            }
+
             // 3. Merge data
             const combinedRequests = messengerEmployees.map(async (emp) => {
+                const formattedName = formatMessengerName(emp.fullName)
+
                 // If active, use active data
                 if (activeMap.has(emp.idEmployee)) {
-                    return activeMap.get(emp.idEmployee)!
+                    return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName }
                 }
 
                 // If offline, try to get last location
                 try {
                     const lastLoc = await trackingApiService.getLastLocation(emp.idEmployee)
                     if (lastLoc) {
-                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: emp.fullName }
+                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName }
                     }
                 } catch (e) {
                     // Ignore 404 errors (mensajero sin ubicación previa), but log other errors
@@ -149,7 +160,7 @@ export default function LiveTracking() {
                 // Default offline structure without location
                 return {
                     messengerId: emp.idEmployee,
-                    messengerName: emp.fullName,
+                    messengerName: formattedName,
                     latitude: 0,
                     longitude: 0,
                     lastUpdate: new Date().toISOString(),
@@ -199,7 +210,7 @@ export default function LiveTracking() {
                 const updatedList = [...prev]
                 // Preserve name if update doesn't have it (though update usually has it)
                 const existing = prev[existingIndex]
-                updatedList[existingIndex] = { ...existing, ...update, messengerName: update.messengerName || existing.messengerName }
+                updatedList[existingIndex] = { ...existing, ...update, messengerName: existing.messengerName || update.messengerName }
                 return updatedList
             }
 
@@ -208,7 +219,7 @@ export default function LiveTracking() {
 
         setSelectedMessenger(prev => {
             if (prev?.messengerId === update.messengerId) {
-                return { ...prev, ...update }
+                return { ...prev, ...update, messengerName: prev.messengerName || update.messengerName }
             }
             return prev
         })
@@ -259,9 +270,6 @@ export default function LiveTracking() {
         }
     }
 
-    const activeCount = messengers.filter(m => m.status === 'ACTIVE').length
-    const inactiveCount = messengers.filter(m => m.status !== 'ACTIVE').length
-
     return (
         <div className="h-full w-full relative overflow-hidden">
             {/* Fullscreen Map */}
@@ -298,7 +306,7 @@ export default function LiveTracking() {
                                     <div className="bg-background/80 backdrop-blur-md rounded-lg shadow-lg border px-4 py-2 space-y-2" style={{ minWidth: '180px' }}>
                                         <div className="flex items-center justify-between gap-3">
                                             <p className="font-semibold text-sm whitespace-nowrap">
-                                                {selectedMessenger.messengerName || `Mensajero #${selectedMessenger.messengerId}`}
+                                                {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
                                             </p>
                                             <Button
                                                 variant="ghost"
@@ -319,9 +327,10 @@ export default function LiveTracking() {
 
                                         <div className="flex gap-2">
                                             <Button
+                                                variant="outline"
                                                 size="sm"
                                                 onClick={() => goToMessengerDetails(selectedMessenger.messengerId)}
-                                                className="flex-1 h-7 text-xs"
+                                                className="flex-1 h-7 text-xs bg-secondary/50 hover:bg-secondary"
                                             >
                                                 Ver detalles
                                                 <ExternalLink className="h-3 w-3 ml-1" />
@@ -362,27 +371,14 @@ export default function LiveTracking() {
                         {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
                         {connected ? "Conectado" : "Desconectado"}
                     </Badge>
-                </div>
-
-                <div className="pointer-events-auto flex items-center gap-2">
-                    {/* Stats badges */}
-                    <div className="hidden sm:flex items-center gap-2 bg-background/80 backdrop-blur-md rounded-lg px-3 py-2 shadow-lg border">
-                        <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
-                            {activeCount} activos
-                        </Badge>
-                        <Badge variant="outline" className="bg-gray-500/10 text-gray-600 border-gray-500/30">
-                            {inactiveCount} inactivos
-                        </Badge>
-                    </div>
-
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => fetchMessengers(true)}
                         disabled={loading}
-                        className="bg-background/80 backdrop-blur-md shadow-lg"
+                        className="h-6 w-6 p-0"
                     >
-                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
             </div>
