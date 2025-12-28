@@ -133,7 +133,7 @@ export default function ViewServicio() {
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
             {/* Header Layout: Navigation (Left) - Status (Center) - Actions (Right) */}
             <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
                 {/* Left: Navigation */}
@@ -248,7 +248,7 @@ export default function ViewServicio() {
                             <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Concesionario</p>
-                                <p className="text-sm text-foreground">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
                                 <p className="text-xs text-muted-foreground">
                                     {service.dealership.address} • {service.dealership.zone}
                                 </p>
@@ -272,7 +272,7 @@ export default function ViewServicio() {
                             <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                             <div className="flex-1">
                                 <p className="text-sm font-medium">Mensajero</p>
-                                <p className="text-sm text-foreground">{service.messenger.fullName}</p>
+                                <p className="text-sm text-muted-foreground">{service.messenger.fullName}</p>
                                 <p className="text-xs text-muted-foreground">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -355,16 +355,16 @@ export default function ViewServicio() {
                         )}
                     </CardContent>
                 </Card>
+                {/* Service Tracking Map - Bottom Section spanning full width */}
+                <ServiceTrackingMap
+                    serviceId={service.idServiceDelivery}
+                    dealershipLat={service.dealership.latitude}
+                    dealershipLng={service.dealership.longitude}
+                    dealershipName={service.dealership.name}
+                    serviceStatus={service.currentStatus}
+                    className="md:col-span-2"
+                />
             </div>
-
-            {/* Service Tracking Map - Bottom Section */}
-            <ServiceTrackingMap
-                serviceId={service.idServiceDelivery}
-                dealershipLat={service.dealership.latitude}
-                dealershipLng={service.dealership.longitude}
-                dealershipName={service.dealership.name}
-                serviceStatus={service.currentStatus}
-            />
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
