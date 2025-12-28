@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { Eye, EyeOff, HelpCircle } from "lucide-react"
+import { Eye, EyeOff, HelpCircle, Package } from "lucide-react"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import logo from "@/assets/logo.png"
@@ -27,6 +27,8 @@ export default function LoginMobile() {
     const { login } = useAuth()
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
+    const [logoLoaded, setLogoLoaded] = useState(false)
+    const [logoError, setLogoError] = useState(false)
 
     const {
         register,
@@ -69,7 +71,20 @@ export default function LoginMobile() {
                 </div>
                 <CardHeader className="space-y-0.5 pb-2 pt-8">
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <img src={logo} alt="PLAK Logo" className="h-10 w-10 object-contain" />
+                        {/* Fallback icon shown while loading or on error */}
+                        {(!logoLoaded || logoError) && (
+                            <div className="h-10 w-10 flex items-center justify-center bg-primary/10 rounded-lg">
+                                <Package className="h-6 w-6 text-primary" />
+                            </div>
+                        )}
+                        {/* Actual logo image */}
+                        <img
+                            src={logo}
+                            alt="PLAK Logo"
+                            className={`h-10 w-10 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
+                            onLoad={() => setLogoLoaded(true)}
+                            onError={() => setLogoError(true)}
+                        />
                     </div>
                     <div className="flex items-center justify-center">
                         <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
