@@ -46,6 +46,19 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         aria-label={`Seleccionar color para ${getStatusLabel(status)}`}
                     />
+
+                    {/* Reset Button (only shown if modified) */}
+                    {isModified && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute inset-0 m-auto h-10 w-10 rounded-full z-10 opacity-0 group-hover:opacity-30 hover:!opacity-100 transition-all text-white bg-black/20 backdrop-blur-[1px] hover:bg-black/40 border-none"
+                            onClick={handleReset}
+                            title="Restaurar color por defecto"
+                        >
+                            <RotateCcw className="h-6 w-6" />
+                        </Button>
+                    )}
                 </div>
 
                 {/* Status Info */}
@@ -57,19 +70,6 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                         {color}
                     </p>
                 </div>
-
-                {/* Reset Button (only shown if modified) */}
-                {isModified && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={handleReset}
-                        title="Restaurar color por defecto"
-                    >
-                        <RotateCcw className="h-4 w-4" />
-                    </Button>
-                )}
             </CardContent>
         </Card>
     )
