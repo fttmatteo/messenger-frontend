@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { serviceDeliveryService } from "@/services/service.service"
+import { trackingService } from "@/services/tracking.service"
 import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { Button } from "@/components/ui/button"
@@ -177,10 +178,66 @@ export default function MessengerCreateServicio() {
         try {
             setLoading(true)
 
+            // Try to get location with timeout
+            let latitude: number | undefined
+            let longitude: number | undefined
+
+            // OPTIMIZATION: Check last known location from tracking service first
+            const lastKnown = trackingService.getLastKnownLocation()
+            const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000) // 5 minutes validity
+
+            if (isRecent && lastKnown) {
+                console.log("Using cached location for service creation")
+                latitude = lastKnown.latitude
+                longitude = lastKnown.longitude
+            } else {
+                try {
+                    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                        if (!navigator.geolocation) {
+                            reject(new Error("La geolocalización no es soportada por este navegador."))
+                            return
+                        }
+
+                        const timeoutId = setTimeout(() => {
+                            reject(new Error("Tiempo de espera agotado (Timeout)"))
+                        }, 10000)
+
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                clearTimeout(timeoutId)
+                                resolve(pos)
+                            },
+                            (err) => {
+                                clearTimeout(timeoutId)
+                                let msg = err.message
+                                if (err.code === 1) msg = "Permiso de ubicación denegado"
+                                else if (err.code === 2) msg = "Ubicación no disponible"
+                                else if (err.code === 3) msg = "Tiempo de espera agotado"
+                                reject(new Error(msg))
+                            },
+                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                        )
+                    })
+
+                    latitude = position.coords.latitude
+                    longitude = position.coords.longitude
+                } catch (error) {
+                    console.warn("Could not get location:", error)
+                    // Proceed without location but warn user with specific reason
+                    const msg = error instanceof Error ? error.message : "Error desconocido"
+                    toast.warning("Ubicación no capturada", {
+                        description: `${msg}. El servicio se creará sin ubicación inicial.`,
+                        duration: 4000
+                    })
+                }
+            }
+
             await serviceDeliveryService.create({
                 image: values.image,
                 dealershipId: values.dealershipId,
-                manualPlateNumber: values.manualPlateNumber || undefined
+                manualPlateNumber: values.manualPlateNumber || undefined,
+                latitude,
+                longitude
             })
 
             // Success notification removed per request - Only show errors

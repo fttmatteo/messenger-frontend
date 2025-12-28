@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
+import { trackingService } from "@/services/tracking.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -112,11 +113,49 @@ export default function UpdateStatus() {
                 if (sig) signatureFile = sig
             }
 
+            // Capture Location
+            let latitude: number | undefined
+            let longitude: number | undefined
+
+            // OPTIMIZATION: Check last known location from tracking service first
+            const lastKnown = trackingService.getLastKnownLocation()
+            const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000) // 5 minutes validity
+
+            if (isRecent && lastKnown) {
+                console.log("Using cached location for status update")
+                latitude = lastKnown.latitude
+                longitude = lastKnown.longitude
+            } else {
+                try {
+                    const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+                        if (!navigator.geolocation) {
+                            reject(new Error("Geolocalización no soportada"))
+                            return
+                        }
+                        const timeoutId = setTimeout(() => reject(new Error("Timeout")), 5000)
+                        navigator.geolocation.getCurrentPosition(
+                            (p) => { clearTimeout(timeoutId); resolve(p) },
+                            (e) => { clearTimeout(timeoutId); reject(e) },
+                            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                        )
+                    })
+                    latitude = pos.coords.latitude
+                    longitude = pos.coords.longitude
+                } catch (e) {
+                    console.warn("Could not get location for status update", e)
+                    toast.warning("No se pudo obtener la ubicación (GPS)", {
+                        description: "El cambio se registrará sin geolocalización."
+                    })
+                }
+            }
+
             await serviceDeliveryService.updateStatus(Number(id), {
                 status: selectedStatus as ServiceStatus,
                 observation: observation.trim() || undefined,
                 signature: signatureFile,
-                photos: photos.length > 0 ? photos : undefined
+                photos: photos.length > 0 ? photos : undefined,
+                latitude,
+                longitude
             })
 
             toast.success('Estado actualizado', {

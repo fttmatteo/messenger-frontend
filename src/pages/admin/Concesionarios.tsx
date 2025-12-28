@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { TableRowSkeleton } from "@/components/dealership/DealershipSkeletons"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { Map } from "@/components/Map"
@@ -49,6 +50,59 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     }, [map, position])
 
     return null
+}
+
+// Address Display Component for Reverse Geocoding
+function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
+    const [address, setAddress] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let isMounted = true
+        const fetchAddress = async () => {
+            setLoading(true)
+            try {
+                if (!window.google?.maps?.Geocoder) {
+                    if (isMounted) {
+                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`) // Fallback
+                        setLoading(false)
+                    }
+                    return
+                }
+
+                const geocoder = new google.maps.Geocoder()
+                const response = await geocoder.geocode({ location: { lat, lng } })
+
+                if (isMounted) {
+                    if (response.results?.[0]) {
+                        setAddress(response.results[0].formatted_address)
+                    } else {
+                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+                    }
+                    setLoading(false)
+                }
+            } catch (err) {
+                console.error('Reverse geocode error:', err)
+                if (isMounted) {
+                    setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+                    setLoading(false)
+                }
+            }
+        }
+
+        fetchAddress()
+
+        return () => { isMounted = false }
+    }, [lat, lng])
+
+    if (loading) return <Skeleton className="h-4 w-48" />
+
+    return (
+        <span className="text-sm text-muted-foreground font-medium flex items-center gap-1">
+            <MapPinned className="h-3 w-3" />
+            {address}
+        </span>
+    )
 }
 
 export default function Concesionarios() {
@@ -263,9 +317,9 @@ export default function Concesionarios() {
                             )}
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground font-mono">
-                                {locationPopup?.lat.toFixed(6)}, {locationPopup?.lng.toFixed(6)}
-                            </span>
+                            {locationPopup && (
+                                <AddressDisplay lat={locationPopup.lat} lng={locationPopup.lng} />
+                            )}
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"

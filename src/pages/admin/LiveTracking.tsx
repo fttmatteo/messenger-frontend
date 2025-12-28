@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react"
-import { useNavigate } from "react-router-dom"
+
 import { Map as MapComponent } from "@/components/Map"
 import { useGoogleMap, OverlayView, Polyline } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
-import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation, ChevronRight, ChevronLeft, ExternalLink, Locate } from "lucide-react"
+import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation, ChevronRight, ChevronLeft } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
@@ -105,7 +105,6 @@ function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive 
 }
 
 export default function LiveTracking() {
-    const navigate = useNavigate()
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
@@ -165,7 +164,7 @@ export default function LiveTracking() {
                     messengerName: formattedName,
                     latitude: 0,
                     longitude: 0,
-                    lastUpdate: new Date().toISOString(),
+                    lastUpdate: "",
                     status: 'OFFLINE' as const,
                     speed: 0,
                     heading: 0
@@ -286,9 +285,7 @@ export default function LiveTracking() {
         setHistoryPath([])
     }, [])
 
-    const goToMessengerDetails = (messengerId: number) => {
-        navigate(`/admin/tracking/mensajero/${messengerId}`)
-    }
+
 
     const toggleFollow = (messengerId: number) => {
         if (followingMessengerId === messengerId) {
@@ -335,48 +332,18 @@ export default function LiveTracking() {
                                         marginTop: '-50px'
                                     }}
                                 >
-                                    <div className="bg-background/80 backdrop-blur-md rounded-lg shadow-lg border px-4 py-2 space-y-2" style={{ minWidth: '180px' }}>
-                                        <div className="flex items-center justify-between gap-3">
-                                            <p className="font-semibold text-sm whitespace-nowrap">
+                                    <div className="bg-background/60 backdrop-blur-xl rounded-md shadow-md border px-2 py-1">
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-semibold text-xs whitespace-nowrap">
                                                 {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
                                             </p>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={deselectMessenger}
-                                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground shrink-0"
+                                                className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground shrink-0"
                                             >
                                                 ✕
-                                            </Button>
-                                        </div>
-
-                                        {selectedMessenger.speed !== undefined && selectedMessenger.speed > 0 && (
-                                            <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                <Navigation className="h-3 w-3" />
-                                                {(selectedMessenger.speed * 3.6).toFixed(1)} km/h
-                                            </p>
-                                        )}
-
-                                        <div className="flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => goToMessengerDetails(selectedMessenger.messengerId)}
-                                                className="flex-1 h-7 text-xs bg-secondary/50 hover:bg-secondary"
-                                            >
-                                                Ver detalles
-                                                <ExternalLink className="h-3 w-3 ml-1" />
-                                            </Button>
-                                            <Button
-                                                variant={followingMessengerId === selectedMessenger.messengerId ? "default" : "outline"}
-                                                size="sm"
-                                                onClick={() => toggleFollow(selectedMessenger.messengerId)}
-                                                className={cn(
-                                                    "h-7 w-7 p-0",
-                                                    followingMessengerId === selectedMessenger.messengerId && "bg-green-500 hover:bg-green-600 text-black"
-                                                )}
-                                            >
-                                                <Locate className="h-3 w-3" />
                                             </Button>
                                         </div>
                                     </div>
@@ -406,7 +373,7 @@ export default function LiveTracking() {
 
             {/* Floating Header */}
             <div className="absolute top-4 left-4 z-10 pointer-events-auto">
-                <div className="flex items-center gap-3 bg-background/90 backdrop-blur-md rounded-lg px-3 shadow-lg border h-10">
+                <div className="flex items-center gap-3 bg-background/60 backdrop-blur-xl rounded-lg px-3 shadow-lg border h-10">
                     <h1 className="text-sm font-medium">Monitoreo</h1>
                     <div className="h-4 w-px bg-border" />
                     <Badge
@@ -437,9 +404,10 @@ export default function LiveTracking() {
             {/* Collapsible Side Panel - Right Side */}
             <div className={cn(
                 "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
-                isPanelCollapsed ? "w-9" : "w-72"
+                isPanelCollapsed ? "w-9" : "w-72",
+                showMessengerDetails && "opacity-0 pointer-events-none translate-x-full"
             )}>
-                <div className="h-full bg-background/90 backdrop-blur-md rounded-lg shadow-lg border flex flex-col overflow-hidden">
+                <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
                     {/* ... header ... */}
                     <div className={cn(
                         "flex items-center border-b shrink-0 h-10",

@@ -83,35 +83,35 @@
 }
 
 .dark {
-  /* Matte finish background - Lighter than pure black, softer on eyes */
-  --background: hsl(0 0% 10%);
+  /* Matte finish background - Darker for more premium feel */
+  --background: hsl(0 0% 8%);
   --foreground: hsl(0 0% 98%);
 
-  /* Slightly lighter card for depth */
-  --card: hsl(0 0% 12%);
+  /* Subtly lighter card for depth */
+  --card: hsl(0 0% 10%);
   --card-foreground: hsl(0 0% 98%);
 
   /* Popover matches card */
-  --popover: hsl(0 0% 12%);
+  --popover: hsl(0 0% 10%);
   --popover-foreground: hsl(0 0% 98%);
 
   --primary: hsl(0 0% 98%);
   --primary-foreground: hsl(0 0% 9%);
 
-  --secondary: hsl(0 0% 16%);
+  --secondary: hsl(0 0% 14%);
   --secondary-foreground: hsl(0 0% 98%);
 
-  --muted: hsl(0 0% 16%);
+  --muted: hsl(0 0% 14%);
   --muted-foreground: hsl(0 0% 65%);
 
-  --accent: hsl(0 0% 16%);
+  --accent: hsl(0 0% 14%);
   --accent-foreground: hsl(0 0% 98%);
 
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  /* Lighter border for contrast against matte background */
-  --border: hsl(0 0% 20%);
+  /* Much softer border for better integration */
+  --border: hsl(0 0% 14%);
   --input: hsl(0 0% 20%);
   --ring: hsl(0 0% 83.1%);
 
@@ -121,14 +121,14 @@
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
 
-  /* Sidebar - matte finish matching main background or slightly distinct */
-  --sidebar: hsl(0 0% 11%);
+  /* Sidebar - integrated with premium dark theme */
+  --sidebar: hsl(0 0% 9%);
   --sidebar-foreground: hsl(0 0% 98%);
   --sidebar-primary: hsl(0 0% 98%);
   --sidebar-primary-foreground: hsl(0 0% 9%);
-  --sidebar-accent: hsl(0 0% 16%);
+  --sidebar-accent: hsl(0 0% 14%);
   --sidebar-accent-foreground: hsl(0 0% 98%);
-  --sidebar-border: hsl(0 0% 20%);
+  --sidebar-border: hsl(0 0% 14%);
   --sidebar-ring: hsl(0 0% 83.1%);
 }
 

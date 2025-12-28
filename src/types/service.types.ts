@@ -79,6 +79,8 @@ export interface CreateServiceRequest {
     dealershipId: string
     messengerDocument?: string
     manualPlateNumber?: string
+    latitude?: number
+    longitude?: number
 }
 
 export interface UpdateServiceStatusRequest {
@@ -86,6 +88,8 @@ export interface UpdateServiceStatusRequest {
     observation?: string
     signature?: File
     photos?: File[]
+    latitude?: number
+    longitude?: number
 }
 
 export interface DailyStats {

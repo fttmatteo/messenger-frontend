@@ -38,6 +38,14 @@ class ServiceDeliveryService {
             formData.append('manualPlateNumber', request.manualPlateNumber)
         }
 
+        if (request.latitude) {
+            formData.append('latitude', request.latitude.toString())
+        }
+
+        if (request.longitude) {
+            formData.append('longitude', request.longitude.toString())
+        }
+
         const response = await apiClient.post('/services/createService', formData)
         return response.data
     }
@@ -62,6 +70,14 @@ class ServiceDeliveryService {
             request.photos.forEach(photo => {
                 formData.append('photos', photo)
             })
+        }
+
+        if (request.latitude) {
+            formData.append('latitude', request.latitude.toString())
+        }
+
+        if (request.longitude) {
+            formData.append('longitude', request.longitude.toString())
         }
 
         const response = await apiClient.put(`/services/updateService/${id}`, formData)

@@ -27,7 +27,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'DELIVERED', label: 'Entregado' },
     { value: 'RETURNED', label: 'Devuelto' },
     { value: 'CANCELED', label: 'Cancelado' },
-    { value: 'RESOLVED', label: 'Resuelto' },
+    { value: 'RESOLVED', label: 'Revisado' },
 ]
 
 export default function Servicios() {

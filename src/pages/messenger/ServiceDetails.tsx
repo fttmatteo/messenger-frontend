@@ -11,6 +11,7 @@ import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
+
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -286,6 +287,8 @@ export default function ServiceDetails() {
                         </div>
                     </>
                 )}
+
+
             </div>
         </div>
     )

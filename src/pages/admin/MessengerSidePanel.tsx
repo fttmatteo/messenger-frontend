@@ -4,7 +4,6 @@ import {
     Navigation,
     Clock,
     Phone,
-    Locate,
     MapPin,
     AlertCircle,
     Calendar as CalendarIcon,
@@ -138,8 +137,6 @@ export function MessengerSidePanel({
     messengerId,
     isOpen,
     onClose,
-    onFollow,
-    isFollowing,
     onHistoryChange
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
@@ -288,7 +285,7 @@ export function MessengerSidePanel({
     })()
 
     const safeFormatDistanceToNow = (dateString: string | undefined) => {
-        if (!dateString) return 'N/A'
+        if (!dateString) return 'Sin registro'
         const date = new Date(dateString)
         if (isNaN(date.getTime())) return 'Fecha inválida'
         return formatDistanceToNow(date, { addSuffix: true, locale: es })
@@ -297,7 +294,7 @@ export function MessengerSidePanel({
     return (
         <div className={cn(
             "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
-            "bg-background/80 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full",
+            "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full",
             !messenger && "hidden"
         )}>
             {/* Header */}
@@ -329,20 +326,7 @@ export function MessengerSidePanel({
                     </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                    <Button
-                        variant={isFollowing ? "default" : "outline"}
-                        size="icon"
-                        onClick={() => messenger && onFollow(messenger.messengerId)}
-                        className={cn(
-                            "h-7 w-7 rounded-full transition-all duration-300",
-                            isFollowing
-                                ? "bg-green-500 hover:bg-green-600 border-none text-black"
-                                : "bg-background/50 border-dashed hover:border-solid hover:bg-background"
-                        )}
-                        title={isFollowing ? "Dejar de seguir" : "Seguir mensajero"}
-                    >
-                        <Locate className={cn("h-3.5 w-3.5", isFollowing && "animate-pulse")} />
-                    </Button>
+
                     <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 rounded-full">
                         <X className="h-3.5 w-3.5" />
                     </Button>
@@ -350,18 +334,11 @@ export function MessengerSidePanel({
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <div className="p-4 space-y-6">
+                <div className="p-3 space-y-4">
                     {/* Real-time Stats */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
-                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Velocidad</p>
-                            <div className="flex items-end gap-1">
-                                <span className="text-xl font-bold">{((messenger?.speed || 0) * 3.6).toFixed(0)}</span>
-                                <span className="text-[10px] text-muted-foreground pb-1">km/h</span>
-                            </div>
-                        </div>
-                        <div className="bg-secondary/5 rounded-xl p-3 border border-secondary/10">
-                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Última señal</p>
+                    <div className="bg-secondary/5 rounded-xl px-3 py-2 border border-secondary/10">
+                        <div className="flex justify-between items-center">
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Última señal</p>
                             <p className="text-xs font-semibold">
                                 {safeFormatDistanceToNow(messenger?.lastUpdate)}
                             </p>
