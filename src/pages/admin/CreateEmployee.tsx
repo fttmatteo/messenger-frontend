@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Eye, EyeOff } from "lucide-react"
-import { toast } from "sonner"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -30,6 +30,8 @@ type EmployeeFormValues = z.infer<typeof employeeSchema>
 export default function CreateEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
+
+    const { setSuccess, setError } = useAdminUI()
 
     const {
         register,
@@ -55,13 +57,10 @@ export default function CreateEmployee() {
                 password: data.password,
                 role: data.role as EmployeeRole,
             })
-            toast.success("Empleado creado exitosamente")
+            setSuccess("El nuevo empleado ha sido registrado correctamente")
             navigate("/admin/empleados")
         } catch (error) {
-            toast.error("Error al crear empleado", {
-                description: getErrorMessage(error),
-                id: "error-crear-empleado"
-            })
+            setError(getErrorMessage(error))
         }
     }
 

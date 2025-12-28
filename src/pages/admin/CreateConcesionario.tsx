@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, MapPin } from "lucide-react"
-import { toast } from "sonner"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useState, useRef, useEffect } from "react"
@@ -67,6 +67,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
 
 export default function CreateConcesionario() {
     const navigate = useNavigate()
+    const { setSuccess, setError } = useAdminUI()
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
     const [geocoding, setGeocoding] = useState(false)
     const [previewDone, setPreviewDone] = useState(false)
@@ -100,7 +101,7 @@ export default function CreateConcesionario() {
         setGeocoding(true)
         try {
             if (!window.google?.maps?.Geocoder) {
-                toast.error("Servicio de geocodificación no disponible")
+                setError("Servicio de geocodificación no disponible")
                 setGeocoding(false)
                 return
             }
@@ -121,11 +122,11 @@ export default function CreateConcesionario() {
                 })
                 setPreviewDone(true)
             } else {
-                toast.error("No se encontraron coordenadas para esta dirección")
+                setError("No se encontraron coordenadas para esta dirección")
             }
         } catch (error) {
             console.error("Geocoding error", error)
-            toast.error("Error obteniendo ubicación")
+            setError("Error obteniendo ubicación")
         } finally {
             setGeocoding(false)
         }
@@ -145,18 +146,15 @@ export default function CreateConcesionario() {
             // Even if we previewed locally, we ask backend to canonicalize/store it
             try {
                 await dealershipService.geocode(created.idDealership)
-                toast.success("Concesionario creado y ubicado exitosamente")
+                setSuccess("Concesionario creado y ubicado exitosamente")
             } catch (geocodeError) {
                 console.error(geocodeError)
-                toast.warning("Concesionario creado, pero falló la geocodificación automática")
+                setSuccess("Concesionario creado, pero falló la geocodificación automática")
             }
 
             navigate("/admin/concesionarios")
         } catch (error) {
-            toast.error("Error al crear concesionario", {
-                description: getErrorMessage(error),
-                id: "error-crear-concesionario"
-            })
+            setError(getErrorMessage(error))
         }
     }
 
