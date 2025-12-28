@@ -122,7 +122,7 @@ export default function Configuracion() {
                             {STATUS_ORDER.map(status => (
                                 <div key={status} className="flex items-center gap-1.5">
                                     <div
-                                        className="w-3 h-3 rounded-full border border-black dark:border-white"
+                                        className="w-4 h-4 rounded-full"
                                         style={{ backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status] }}
                                     />
                                     <span className="text-sm font-medium">

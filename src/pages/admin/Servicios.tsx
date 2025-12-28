@@ -195,7 +195,7 @@ export default function Servicios() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-3 h-3 rounded-full border border-black dark:border-white" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                                            <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                                                             <span className="text-sm font-medium">
                                                                 {getStatusIconConfig(service.currentStatus, colors).label}
                                                             </span>

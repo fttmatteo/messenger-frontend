@@ -185,7 +185,7 @@ export default function ServiceDetails() {
             <div className="flex-1 overflow-auto p-4">
                 {/* Status Section - Minimalist */}
                 <div className="mb-8 flex items-center gap-4 px-1">
-                    <div className="h-3 w-3 rounded-full border border-black dark:border-white" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                    <div className="h-4 w-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                     <div className="flex flex-col">
                         <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
                             Estado del servicio

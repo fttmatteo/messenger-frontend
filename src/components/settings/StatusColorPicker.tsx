@@ -34,7 +34,7 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                 {/* Color Preview Circle - contains the hidden input */}
                 <div className="relative">
                     <div
-                        className="w-10 h-10 rounded-full border-2 border-black dark:border-white shadow-md shrink-0 transition-transform group-hover:scale-110"
+                        className="w-12 h-12 rounded-full shadow-md shrink-0 transition-transform group-hover:scale-110"
                         style={{ backgroundColor: color }}
                     />
                     {/* Color Input positioned over the circle */}

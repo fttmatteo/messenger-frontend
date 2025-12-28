@@ -166,7 +166,7 @@ export default function ViewServicio() {
                 {/* Center: Status */}
                 <div className="flex flex-row items-center justify-center gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full border border-black dark:border-white" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                         <span className="text-xl font-bold">
                             {getStatusIconConfig(service.currentStatus, colors).label}
                         </span>

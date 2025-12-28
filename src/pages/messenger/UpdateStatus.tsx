@@ -216,7 +216,7 @@ export default function UpdateStatus() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full border border-black dark:border-white" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                    <div className="w-3.5 h-3.5 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                     <span className="text-sm font-medium">
                         {getStatusIconConfig(service.currentStatus, colors).label}
                     </span>
