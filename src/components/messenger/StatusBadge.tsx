@@ -33,7 +33,7 @@ const statusConfig: Partial<Record<ServiceStatus, { label: string; className: st
         Icon: XCircle
     },
     RESOLVED: {
-        label: 'Resuelto',
+        label: 'Revisado',
         className: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200',
         Icon: CheckCheck
     },

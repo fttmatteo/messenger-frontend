@@ -4,10 +4,8 @@ import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -17,10 +15,10 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Clock, Lock, Loader2 } from "lucide-react"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
+import { getStatusIconConfig, getPlateTypeIcon, canUserEditService } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -171,23 +169,6 @@ export default function ViewServicio() {
                             {getStatusIconConfig(service.currentStatus).label}
                         </span>
                     </div>
-                    {/* 72h Window Indicator */}
-                    {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
-                        const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
-                        if (timeRemaining) {
-                            return (
-                                <div className="flex items-center gap-2 px-3 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 text-xs">
-                                    <Clock className="h-3 w-3" />
-                                    <span className="font-medium">{timeRemaining.hours}h {timeRemaining.minutes}m</span>
-                                </div>
-                            )
-                        }
-                        return (
-                            <Badge variant="secondary" className="px-2 py-0.5 text-xs font-medium gap-1">
-                                <Lock className="h-3 w-3" /> Inmutable
-                            </Badge>
-                        )
-                    })()}
                 </div>
 
                 {/* Right: Actions */}
@@ -195,7 +176,7 @@ export default function ViewServicio() {
                     {/* Update Status Button - uses role-based logic */}
                     {(() => {
                         const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
-                        const canEdit = role ? canUserEditService(role, service.currentStatus, service.createdAt) : false
+                        const canEdit = role ? canUserEditService(role) : false
 
                         if (canEdit) {
                             return (
@@ -211,8 +192,8 @@ export default function ViewServicio() {
                         }
                         return null
                     })()}
-                    {/* Delete Button - Admin only, not for DELIVERED/RESOLVED outside 72h window */}
-                    {isAdmin && !['DELIVERED', 'RESOLVED'].includes(service.currentStatus) && (
+                    {/* Delete Button - Admin only */}
+                    {isAdmin && (
                         <Button
                             variant="destructive"
                             size="sm"
