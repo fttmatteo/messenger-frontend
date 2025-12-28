@@ -1,17 +1,29 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/context/StatusColorContext"
 import { DEFAULT_STATUS_COLORS, getStatusLabel } from "@/lib/status-colors"
-import { Settings, Palette, RotateCcw, CheckCircle2, Eye } from "lucide-react"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
+import { Palette, RotateCcw, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 
 // Status order for display
 const STATUS_ORDER = ['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED', 'DELETED']
 
+// Settings sections - add more here in the future
+const SETTINGS_SECTIONS = [
+    {
+        id: 'colors',
+        title: 'Colores de Estados',
+        description: 'Personaliza los colores de cada estado de servicio',
+        icon: Palette
+    },
+]
+
 export default function Configuracion() {
+    const [activeSection, setActiveSection] = useState<string | null>(null)
     const { colors, updateColor, resetToDefaults, isModified } = useStatusColors()
 
     const handleResetAll = () => {
@@ -20,114 +32,110 @@ export default function Configuracion() {
     }
 
     return (
-        <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-            {/* Page Header */}
-            <div className="flex flex-col gap-2">
+        <div className="flex flex-col h-full gap-2">
+            {/* Header - Same pattern as other pages */}
+            <div className="flex items-center justify-between gap-2">
+                {/* Left: Breadcrumb/Back navigation */}
+                {activeSection === null ? (
+                    <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
+                ) : (
+                    <AdminBreadcrumb
+                        segments={[
+                            { label: "Configuración", onClick: () => setActiveSection(null) },
+                            { label: "Colores de Estados" }
+                        ]}
+                    />
+                )}
+
+                {/* Center: Title */}
                 <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-primary/10 p-2">
-                        <Settings className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
-                        <p className="text-muted-foreground text-sm">
-                            Personaliza el sistema según tus preferencias
-                        </p>
-                    </div>
+                    <h1 className="text-xl md:text-2xl font-bold">
+                        {activeSection === 'colors' ? 'Colores de Estados' : 'Configuración'}
+                    </h1>
+                </div>
+
+                {/* Right: Actions (empty spacer or button) */}
+                <div className="w-[140px] flex justify-end">
+                    {activeSection === 'colors' && isModified && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResetAll}
+                            className="gap-2 h-8 text-xs"
+                        >
+                            <RotateCcw className="h-3 w-3" />
+                            Restaurar
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            <Separator />
-
-            {/* Status Colors Section */}
-            <Card>
-                <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Palette className="h-5 w-5 text-primary" />
-                            <div>
-                                <CardTitle className="text-lg">Colores de Estados</CardTitle>
-                                <CardDescription>
-                                    Personaliza los colores que identifican cada estado de servicio en todo el sistema
-                                </CardDescription>
-                            </div>
-                        </div>
-                        {isModified && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleResetAll}
-                                className="gap-2"
-                            >
-                                <RotateCcw className="h-4 w-4" />
-                                Restaurar todo
-                            </Button>
-                        )}
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {/* Color Pickers Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {STATUS_ORDER.map(status => (
-                            <StatusColorPicker
-                                key={status}
-                                status={status}
-                                color={colors[status] || DEFAULT_STATUS_COLORS[status]}
-                                onColorChange={updateColor}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Live Preview */}
-                    <Separator />
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                            <Eye className="h-4 w-4" />
-                            Vista previa en tiempo real
-                        </div>
-                        <div className="p-4 border rounded-lg bg-muted/30">
-                            <div className="flex flex-wrap gap-2">
-                                {STATUS_ORDER.map(status => (
-                                    <Badge
-                                        key={status}
-                                        style={{
-                                            backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status],
-                                            color: 'white'
-                                        }}
-                                    >
-                                        {getStatusLabel(status)}
-                                    </Badge>
-                                ))}
-                            </div>
-                            <div className="flex flex-wrap gap-4 mt-4">
-                                {STATUS_ORDER.map(status => (
-                                    <div key={status} className="flex items-center gap-2">
-                                        <div
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status] }}
-                                        />
-                                        <span
-                                            className="text-sm font-medium"
-                                            style={{ color: colors[status] || DEFAULT_STATUS_COLORS[status] }}
-                                        >
-                                            {getStatusLabel(status)}
-                                        </span>
+            {/* Content */}
+            {activeSection === null ? (
+                /* Settings Menu */
+                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                    <CardContent className="p-4 space-y-2">
+                        {SETTINGS_SECTIONS.map((section) => {
+                            const IconComponent = section.icon
+                            return (
+                                <div
+                                    key={section.id}
+                                    className="flex items-center gap-4 p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => setActiveSection(section.id)}
+                                >
+                                    <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                                        <IconComponent className="h-5 w-5" />
                                     </div>
-                                ))}
-                            </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold">{section.title}</p>
+                                        <p className="text-sm text-muted-foreground">{section.description}</p>
+                                    </div>
+                                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                            )
+                        })}
+                    </CardContent>
+                </Card>
+            ) : activeSection === 'colors' ? (
+                /* Status Colors Section */
+                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                    <CardHeader className="py-2 px-4">
+                        <CardDescription>
+                            Click en un estado para cambiar su color
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4">
+                        {/* Color Pickers Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                            {STATUS_ORDER.map(status => (
+                                <StatusColorPicker
+                                    key={status}
+                                    status={status}
+                                    color={colors[status] || DEFAULT_STATUS_COLORS[status]}
+                                    onColorChange={updateColor}
+                                />
+                            ))}
                         </div>
-                    </div>
 
-                    {/* Info Note */}
-                    {isModified && (
-                        <div className="flex items-start gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                            <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                            <p className="text-sm text-green-700 dark:text-green-400">
-                                Los cambios se guardan automáticamente y se aplican en todo el sistema
-                            </p>
+                        {/* Compact Preview - inline at bottom */}
+                        <div className="mt-auto pt-3 border-t flex items-center gap-2 flex-wrap">
+                            <span className="text-xs text-muted-foreground">Vista previa:</span>
+                            {STATUS_ORDER.map(status => (
+                                <Badge
+                                    key={status}
+                                    className="text-xs"
+                                    style={{
+                                        backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status],
+                                        color: 'white'
+                                    }}
+                                >
+                                    {getStatusLabel(status)}
+                                </Badge>
+                            ))}
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            ) : null}
         </div>
     )
 }
