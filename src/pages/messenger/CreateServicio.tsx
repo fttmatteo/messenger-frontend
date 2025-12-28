@@ -93,6 +93,15 @@ export default function MessengerCreateServicio() {
             setCameraReady(false)
             setCameraActive(true)
 
+            // Safety timeout - if camera doesn't initialize in 15 seconds, show error
+            const timeoutId = setTimeout(() => {
+                if (!cameraReady) {
+                    console.warn('Camera initialization timeout')
+                    setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
+                    stopCamera()
+                }
+            }, 15000)
+
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: { ideal: 'environment' },
@@ -111,25 +120,54 @@ export default function MessengerCreateServicio() {
                     if (videoRef.current) {
                         videoRef.current.play()
                             .then(() => {
+                                clearTimeout(timeoutId)
                                 setCameraReady(true)
                             })
                             .catch(err => {
+                                clearTimeout(timeoutId)
                                 console.error('Video play error:', err)
-                                setCameraError('Error al reproducir video')
+                                setCameraError('Error al reproducir video. Intenta de nuevo.')
+                                stopCamera()
                             })
                     }
                 }
+
+                // Additional timeout for video element not responding
+                videoRef.current.onerror = () => {
+                    clearTimeout(timeoutId)
+                    setCameraError('Error en el elemento de video.')
+                    stopCamera()
+                }
+            } else {
+                clearTimeout(timeoutId)
+                setCameraError('Componente de video no disponible')
+                setCameraActive(false)
             }
         } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
-            setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
+
+            // More specific error messages
+            let errorMessage = 'No se pudo acceder a la cámara.'
+            if (error instanceof Error) {
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = 'Permiso de cámara denegado. Habilítalo en configuración.'
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = 'No se encontró una cámara en el dispositivo.'
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = 'La cámara está siendo usada por otra app.'
+                } else if (error.name === 'OverconstrainedError') {
+                    errorMessage = 'La cámara no soporta la configuración solicitada.'
+                }
+            }
+
+            setCameraError(errorMessage)
             toast.error("Error de cámara", {
-                description: getErrorMessage(error),
+                description: errorMessage,
                 id: "error-camara"
             })
         }
-    }, [])
+    }, [cameraReady, stopCamera])
     useEffect(() => {
         startCamera()
     }, [startCamera])
