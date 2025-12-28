@@ -93,10 +93,19 @@ export function ServiceTrackingMap({
     const [loading, setLoading] = useState(true)
     const [distance, setDistance] = useState<{ meters: number | null, seconds: number | null } | null>(null)
     const [loadingDistance, setLoadingDistance] = useState(false)
+    const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
 
     const mapCenter = dealershipLat && dealershipLng
         ? { lat: dealershipLat, lng: dealershipLng }
         : { lat: 6.2442, lng: -75.5812 }
+
+    // Pan to a specific position on the map
+    const panTo = (position: google.maps.LatLngLiteral) => {
+        if (mapInstance) {
+            mapInstance.panTo(position)
+            mapInstance.setZoom(16)
+        }
+    }
 
     // ... useEffect for data fetching ...
     useEffect(() => {
@@ -218,49 +227,61 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className}>
-            <CardHeader className="p-2 pb-0">
-                <CardTitle className="flex items-center justify-between text-base text-foreground font-semibold">
+            <CardHeader className="px-2 py-1">
+                <CardTitle className="flex items-center justify-between text-sm text-foreground font-medium">
                     {/* Left: Title */}
                     <div className="flex items-center gap-2">
                         <Route className="h-4 w-4" />
                         Recorrido del servicio
                     </div>
-                    {/* Center: Legend */}
-                    <div className="flex items-center gap-3 text-xs">
+                    {/* Center: Legend - Clickable */}
+                    <div className="flex items-center gap-4 text-sm font-normal">
                         {firstPosition && (
-                            <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: startColor }} />
+                            <button
+                                onClick={() => panTo(firstPosition)}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a inicio"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: startColor }} />
                                 <span className="text-muted-foreground">Inicio</span>
-                            </div>
+                            </button>
                         )}
-                        {trackingPath.length > 1 && (
-                            <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: endColor }} />
+                        {trackingPath.length > 1 && lastPosition && (
+                            <button
+                                onClick={() => panTo(lastPosition)}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a posición actual"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: endColor }} />
                                 <span className="text-muted-foreground">Actual</span>
-                            </div>
+                            </button>
                         )}
                         {dealershipLat && dealershipLng && (
-                            <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                            <button
+                                onClick={() => panTo({ lat: dealershipLat, lng: dealershipLng })}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a destino"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
                                 <span className="text-muted-foreground">Destino</span>
-                            </div>
+                            </button>
                         )}
                     </div>
                     {/* Right: Distance info */}
                     {lastPosition && dealershipLat && dealershipLng && (
                         <div className="flex items-center gap-2">
                             {loadingDistance ? (
-                                <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                                <div className="flex items-center gap-1 text-muted-foreground text-sm">
                                     <Loader2 className="h-3 w-3 animate-spin" />
                                 </div>
                             ) : distance && distance.meters !== null ? (
                                 <>
-                                    <Badge variant="secondary" className="text-xs">
+                                    <Badge variant="secondary" className="text-xs font-normal">
                                         <MapPin className="h-3 w-3 mr-1" />
                                         {formatDistance(distance.meters)}
                                     </Badge>
                                     {distance.seconds !== null && (
-                                        <Badge variant="outline" className="text-xs">
+                                        <Badge variant="outline" className="text-xs font-normal">
                                             ~{formatDuration(distance.seconds)}
                                         </Badge>
                                     )}
@@ -270,13 +291,14 @@ export function ServiceTrackingMap({
                     )}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="p-2 pt-1">
                 {/* Map */}
                 <div className="w-full h-[300px] rounded-md overflow-hidden border">
                     <Map
                         className="w-full h-full"
                         center={lastPosition || mapCenter}
                         zoom={14}
+                        onLoad={setMapInstance}
                     >
                         {/* Tracking route polyline */}
                         {trackingPath.length > 1 && (

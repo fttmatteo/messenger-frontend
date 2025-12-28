@@ -17,11 +17,11 @@ interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function TimelineItem({ className, children, isLast, ...props }: TimelineItemProps) {
     return (
-        <div className={cn("relative pl-8 pb-8 last:pb-0", className)} {...props}>
+        <div className={cn("relative pl-6 pb-4 last:pb-0", className)} {...props}>
             {/* Connecting Line */}
             {!isLast && (
                 <div
-                    className="absolute left-[11px] top-[28px] bottom-[-4px] w-[2px] bg-black dark:bg-white"
+                    className="absolute left-[5px] top-[24px] bottom-[-4px] w-[2px] bg-black dark:bg-white"
                     aria-hidden="true"
                 />
             )}
@@ -37,11 +37,11 @@ interface TimelineHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function TimelineHeader({ className, children, icon, statusColor, ...props }: TimelineHeaderProps) {
     return (
-        <div className={cn("flex flex-col gap-2 mb-2", className)} {...props}>
-            {/* Status Icon/Dot */}
+        <div className={cn("flex flex-col gap-1 mb-1", className)} {...props}>
+            {/* Status Icon/Dot - Matched to header size (w-3 h-3) */}
             <div
                 className={cn(
-                    "absolute left-0 top-0.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-border bg-background",
+                    "absolute left-0 top-1.5 flex h-3 w-3 items-center justify-center rounded-full",
                     statusColor
                 )}
             >

@@ -20,7 +20,7 @@ import { ImageViewer } from "@/components/ui/image-viewer"
 import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Clock, Lock, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
+import { getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
 import { getImageUrl } from "@/lib/image-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -319,7 +319,6 @@ export default function ViewServicio() {
                             <div className="py-2 pl-2">
                                 <Timeline className="w-full">
                                     {[...(service.history || [])].reverse().map((entry, index) => {
-                                        const newStatusConfig = getStatusBadge(entry.newStatus)
                                         const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
 
                                         return (
@@ -327,10 +326,10 @@ export default function ViewServicio() {
                                                 key={entry.idStatusHistory}
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
-                                                <TimelineHeader statusColor={newStatusConfig.className}>
-                                                    <Badge className={`${newStatusConfig.className} text-sm px-3 py-1 font-medium hover:opacity-90 border-0`}>
-                                                        {newStatusConfig.label}
-                                                    </Badge>
+                                                <TimelineHeader statusColor={getStatusIconConfig(entry.newStatus).dotColor}>
+                                                    <span className={`text-xl font-bold ${getStatusIconConfig(entry.newStatus).textColor}`}>
+                                                        {getStatusIconConfig(entry.newStatus).label}
+                                                    </span>
                                                 </TimelineHeader>
                                                 <TimelineContent>
                                                     <HistoryEntryCard
