@@ -11,33 +11,40 @@ import {
 describe('status-utils', () => {
     describe('getStatusBadge', () => {
         it('should return correct badge config for known statuses', () => {
+            // PENDING - indigo-500
             expect(getStatusBadge('PENDING').label).toBe('Pendiente');
-            expect(getStatusBadge('PENDING').className).toContain('bg-indigo-500');
+            expect(getStatusBadge('PENDING').style?.backgroundColor).toBe('#6366f1');
+
+            // CANCELED - red-500
             expect(getStatusBadge('CANCELED').label).toBe('Cancelado');
-            expect(getStatusBadge('CANCELED').className).toContain('bg-red-500');
+            expect(getStatusBadge('CANCELED').style?.backgroundColor).toBe('#ef4444');
+
+            // DELETED - slate-500
             expect(getStatusBadge('DELETED').label).toBe('Eliminado');
-            expect(getStatusBadge('DELETED').className).toContain('bg-slate-500');
+            expect(getStatusBadge('DELETED').style?.backgroundColor).toBe('#64748b');
         });
 
         it('should return default for unknown status', () => {
-            // Testing invalid status input
+            // Testing invalid status input - falls back to gray-500
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
-            expect(result.className).toContain('bg-gray-500');
+            expect(result.style?.backgroundColor).toBe('#6b7280');
         });
     });
 
     describe('getStatusIconConfig', () => {
         it('should return correct icon config', () => {
+            // DELIVERED - green-500
             const result = getStatusIconConfig('DELIVERED');
             expect(result.label).toBe('Entregado');
-            expect(result.dotColor).toContain('bg-green-500');
-            expect(result.textColor).toContain('text-green-500');
+            expect(result.dotStyle.backgroundColor).toBe('#22c55e');
+            expect(result.textStyle.color).toBe('#22c55e');
 
+            // DELETED - slate-500
             const deletedResult = getStatusIconConfig('DELETED');
             expect(deletedResult.label).toBe('Eliminado');
-            expect(deletedResult.dotColor).toContain('bg-slate-500');
-            expect(deletedResult.textColor).toContain('text-slate-500');
+            expect(deletedResult.dotStyle.backgroundColor).toBe('#64748b');
+            expect(deletedResult.textStyle.color).toBe('#64748b');
         });
     });
 

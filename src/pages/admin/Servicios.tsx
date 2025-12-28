@@ -19,7 +19,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { useStatusColors } from "@/context/StatusColorContext"
+import { useStatusColors } from "@/hooks/useStatusColors"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [

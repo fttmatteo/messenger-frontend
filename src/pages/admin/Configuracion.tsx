@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
-import { useStatusColors } from "@/context/StatusColorContext"
+import { useStatusColors } from "@/hooks/useStatusColors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Palette, RotateCcw, ChevronRight } from "lucide-react"

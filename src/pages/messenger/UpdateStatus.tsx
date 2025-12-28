@@ -10,7 +10,7 @@ import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
-import { useStatusColors } from "@/context/StatusColorContext"
+import { useStatusColors } from "@/hooks/useStatusColors"
 import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"

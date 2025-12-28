@@ -1,19 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useState, useMemo, useCallback, type ReactNode } from 'react'
+import { StatusColorContext } from '@/context/StatusColorContextDef'
 import {
     DEFAULT_STATUS_COLORS,
     loadCustomColors,
     saveCustomColors,
     clearCustomColors,
 } from '@/lib/status-colors'
-
-interface StatusColorContextType {
-    colors: Record<string, string>
-    updateColor: (status: string, color: string) => void
-    resetToDefaults: () => void
-    isModified: boolean
-}
-
-const StatusColorContext = createContext<StatusColorContextType | undefined>(undefined)
 
 export function StatusColorProvider({ children }: { children: ReactNode }) {
     const [colors, setColors] = useState<Record<string, string>>(() => {
@@ -22,14 +14,11 @@ export function StatusColorProvider({ children }: { children: ReactNode }) {
         return { ...DEFAULT_STATUS_COLORS, ...customColors }
     })
 
-    const [isModified, setIsModified] = useState(false)
-
-    // Check if colors are modified from defaults
-    useEffect(() => {
-        const hasModifications = Object.keys(DEFAULT_STATUS_COLORS).some(
+    // Calculate isModified using useMemo instead of useEffect + setState
+    const isModified = useMemo(() => {
+        return Object.keys(DEFAULT_STATUS_COLORS).some(
             status => colors[status] !== DEFAULT_STATUS_COLORS[status]
         )
-        setIsModified(hasModifications)
     }, [colors])
 
     const updateColor = useCallback((status: string, color: string) => {
@@ -59,12 +48,4 @@ export function StatusColorProvider({ children }: { children: ReactNode }) {
             {children}
         </StatusColorContext.Provider>
     )
-}
-
-export function useStatusColors() {
-    const context = useContext(StatusColorContext)
-    if (context === undefined) {
-        throw new Error('useStatusColors must be used within a StatusColorProvider')
-    }
-    return context
 }

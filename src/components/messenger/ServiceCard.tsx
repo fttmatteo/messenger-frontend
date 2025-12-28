@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import { useStatusColors } from "@/context/StatusColorContext"
+import { useStatusColors } from "@/hooks/useStatusColors"
 
 interface ServiceCardProps {
     service: ServiceDelivery

@@ -15,7 +15,8 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
     const defaultColor = DEFAULT_STATUS_COLORS[status]
     const isModified = color !== defaultColor
 
-    const handleClick = () => {
+    const handleCardClick = () => {
+        // Directly open the native color picker
         inputRef.current?.click()
     }
 
@@ -26,15 +27,26 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
 
     return (
         <Card
-            className="cursor-pointer hover:bg-muted/50 transition-colors group"
-            onClick={handleClick}
+            className="cursor-pointer hover:bg-muted/50 transition-colors group relative"
+            onClick={handleCardClick}
         >
             <CardContent className="p-4 flex items-center gap-4">
-                {/* Color Preview Circle */}
-                <div
-                    className="w-10 h-10 rounded-full border-2 border-white shadow-md shrink-0 transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: color }}
-                />
+                {/* Color Preview Circle - contains the hidden input */}
+                <div className="relative">
+                    <div
+                        className="w-10 h-10 rounded-full border-2 border-white shadow-md shrink-0 transition-transform group-hover:scale-110"
+                        style={{ backgroundColor: color }}
+                    />
+                    {/* Color Input positioned over the circle */}
+                    <input
+                        ref={inputRef}
+                        type="color"
+                        value={color}
+                        onChange={(e) => onColorChange(status, e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        aria-label={`Seleccionar color para ${getStatusLabel(status)}`}
+                    />
+                </div>
 
                 {/* Status Info */}
                 <div className="flex-1 min-w-0">
@@ -58,16 +70,6 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                         <RotateCcw className="h-4 w-4" />
                     </Button>
                 )}
-
-                {/* Hidden Color Input */}
-                <input
-                    ref={inputRef}
-                    type="color"
-                    value={color}
-                    onChange={(e) => onColorChange(status, e.target.value)}
-                    className="sr-only"
-                    aria-label={`Seleccionar color para ${getStatusLabel(status)}`}
-                />
             </CardContent>
         </Card>
     )
