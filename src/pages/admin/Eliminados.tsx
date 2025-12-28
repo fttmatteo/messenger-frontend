@@ -117,7 +117,7 @@ export default function Eliminados() {
                 </EmptyMedia>
                 <EmptyTitle>Papelera vacía</EmptyTitle>
                 <EmptyDescription>
-                    No hay elementos eliminados. Los elementos eliminados aparecerán aquí y serán borrados permanentemente después de 60 días.
+                    No hay elementos eliminados. Los elementos eliminados aparecerán aquí y serán archivados permanentemente después de 60 días.
                 </EmptyDescription>
             </EmptyHeader>
         </Empty>
@@ -163,7 +163,7 @@ export default function Eliminados() {
                             <AlertDialogHeader>
                                 <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    Esta acción eliminará permanentemente <strong>{services.length} servicio(s)</strong> de la papelera. Esta acción no se puede deshacer.
+                                    Esta acción archivará permanentemente <strong>{services.length} servicio(s)</strong> de la papelera. Los datos se preservarán en el archivo para consulta futura.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -277,7 +277,7 @@ export default function Eliminados() {
                     <Card className="flex flex-col flex-1 h-full overflow-hidden">
                         <CardHeader className="p-2 pb-0">
                             <CardDescription>
-                                {services.length} elemento(s) en papelera. Los elementos se eliminarán permanentemente después de 60 días.
+                                {services.length} elemento(s) en papelera. Los elementos se archivarán permanentemente después de 60 días.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1 overflow-auto">
@@ -395,13 +395,13 @@ export default function Eliminados() {
                                                                                 </Button>
                                                                             </AlertDialogTrigger>
                                                                         </TooltipTrigger>
-                                                                        <TooltipContent>Eliminar permanentemente</TooltipContent>
+                                                                        <TooltipContent>Archivar permanentemente</TooltipContent>
                                                                     </Tooltip>
                                                                     <AlertDialogContent>
                                                                         <AlertDialogHeader>
-                                                                            <AlertDialogTitle>¿Eliminar permanentemente?</AlertDialogTitle>
+                                                                            <AlertDialogTitle>¿Archivar permanentemente?</AlertDialogTitle>
                                                                             <AlertDialogDescription>
-                                                                                El servicio con placa <strong>{service.plate.plateNumber}</strong> será eliminado permanentemente. Esta acción no se puede deshacer.
+                                                                                El servicio con placa <strong>{service.plate.plateNumber}</strong> será archivado permanentemente. Los datos se preservarán para consulta futura.
                                                                             </AlertDialogDescription>
                                                                         </AlertDialogHeader>
                                                                         <AlertDialogFooter>

@@ -38,12 +38,15 @@ El sistema destaca por su capacidad de **tracking en tiempo real** utilizando We
 -   **Marcadores Avanzados**: Uso de `AdvancedMarkerElement` para íconos personalizados y mejor rendimiento.
 -   **Rutas y Distancias**: Cálculo automático de trayectos optimizados.
 
+
 ### ⚙️ Funcionalidades Operativas
 -   **Gestión de Ciclo de Vida**: Flujo completo de servicio (Asignado → En Progreso → Entregado/Devuelto).
+-   **Papelera y Archivo**: Sistema de eliminación suave con archivo permanente de datos históricos después de 60 días.
 -   **Captura de Evidencias**:
     -   📸 Carga de fotografías como prueba de entrega.
     -   ✍️ Firma digital en pantalla táctil (`canvas`).
 -   **Seguridad y Roles**: Autenticación JWT con rotación de tokens y protección de rutas por rol (`ADMIN`, `MESSENGER`).
+
 
 ### ⚡ Rendimiento y DX
 -   **Lazy Loading**: Carga diferida de rutas y componentes pesados.
