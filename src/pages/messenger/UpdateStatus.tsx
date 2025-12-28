@@ -215,8 +215,11 @@ export default function UpdateStatus() {
                         {service.plate.plateNumber} · {service.dealership.name}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3.5 h-3.5 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                <div
+                    className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full"
+                    style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                >
+                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                     <span className="text-sm font-medium">
                         {getStatusIconConfig(service.currentStatus, colors).label}
                     </span>

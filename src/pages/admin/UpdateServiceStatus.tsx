@@ -246,8 +246,11 @@ export default function UpdateServiceStatus() {
 
                                 if (availableStatuses.length === 0) {
                                     return (
-                                        <div className="flex items-center gap-2 px-3 py-1.5 border rounded-md bg-muted/30">
-                                            <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                        <div
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                        >
+                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
                                             <span className="font-medium text-sm">
                                                 {getStatusIconConfig(service.currentStatus, colors).label}
                                             </span>
@@ -260,7 +263,7 @@ export default function UpdateServiceStatus() {
                                         <SelectTrigger className="w-[200px]">
                                             <SelectValue placeholder="Selecciona un nuevo estado">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(newStatus, colors).dotStyle} />
+                                                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus, colors).dotStyle} />
                                                     <span>{getStatusIconConfig(newStatus, colors).label}</span>
                                                 </div>
                                             </SelectValue>
@@ -271,7 +274,7 @@ export default function UpdateServiceStatus() {
                                                 {availableStatuses.map((status) => (
                                                     <SelectItem key={status.value} value={status.value}>
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(status.value, colors).dotStyle} />
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(status.value, colors).dotStyle} />
                                                             <span>{status.label}</span>
                                                         </div>
                                                     </SelectItem>

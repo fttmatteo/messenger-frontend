@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Button } from "@/components/ui/button"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/hooks/useStatusColors"
-import { DEFAULT_STATUS_COLORS, getStatusLabel } from "@/lib/status-colors"
+import { DEFAULT_STATUS_COLORS, getStatusLabel, getStatusPillBackground } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Palette, RotateCcw, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
@@ -120,9 +120,13 @@ export default function Configuracion() {
                         <div className="mt-auto pt-3 border-t flex items-center gap-4 flex-wrap">
                             <span className="text-xs text-muted-foreground">Vista previa:</span>
                             {STATUS_ORDER.map(status => (
-                                <div key={status} className="flex items-center gap-1.5">
+                                <div
+                                    key={status}
+                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                                    style={{ backgroundColor: getStatusPillBackground(status, colors, 0.15) }}
+                                >
                                     <div
-                                        className="w-4 h-4 rounded-full"
+                                        className="w-3 h-3 rounded-full"
                                         style={{ backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status] }}
                                     />
                                     <span className="text-sm font-medium">

@@ -108,8 +108,11 @@ export function ServiceCard({ service }: ServiceCardProps) {
                             className="shadow-sm"
                         />
                         {/* Status */}
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded-full" style={statusConfig.dotStyle} />
+                        <div
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: statusConfig.pillBackground }}
+                        >
+                            <div className="w-2.5 h-2.5 rounded-full" style={statusConfig.dotStyle} />
                             <span className="text-xs font-medium">
                                 {statusConfig.label}
                             </span>

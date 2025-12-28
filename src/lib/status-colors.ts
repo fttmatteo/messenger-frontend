@@ -99,6 +99,33 @@ export function getStatusTextStyle(status: ServiceStatus | string, customColors?
 }
 
 /**
+ * Convert a hex color (with or without alpha) to rgba with specified opacity
+ * Handles both 6-char (#RRGGBB) and 8-char (#RRGGBBAA) hex colors
+ */
+export function hexToRgba(hex: string, opacity: number): string {
+    // Remove the hash if present
+    const cleanHex = hex.replace('#', '')
+
+    // Handle both 6 and 8 character hex (with alpha)
+    const r = parseInt(cleanHex.substring(0, 2), 16)
+    const g = parseInt(cleanHex.substring(2, 4), 16)
+    const b = parseInt(cleanHex.substring(4, 6), 16)
+
+    // Clamp opacity between 0 and 1
+    const clampedOpacity = Math.min(1, Math.max(0, opacity))
+
+    return `rgba(${r}, ${g}, ${b}, ${clampedOpacity})`
+}
+
+/**
+ * Get the pill background color (status color with low opacity)
+ */
+export function getStatusPillBackground(status: ServiceStatus | string, customColors?: Record<string, string>, opacity: number = 0.15): string {
+    const hexColor = getStatusHexColor(status, customColors)
+    return hexToRgba(hexColor, opacity)
+}
+
+/**
  * Get inline style for status badge (background + white text)
  */
 export function getStatusBadgeStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {

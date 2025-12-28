@@ -1,6 +1,6 @@
 import type { ServiceStatus } from "@/types/service.types"
 import { Car, Bike, Truck } from "lucide-react"
-import { getStatusHexColor, getStatusLabel, getMergedColors } from "@/lib/status-colors"
+import { getStatusHexColor, getStatusLabel, getMergedColors, getStatusPillBackground } from "@/lib/status-colors"
 
 interface StatusBadgeConfig {
     label: string
@@ -27,6 +27,7 @@ interface StatusIconConfig {
     textColor: string // Kept for legacy support but prefer textStyle
     dotStyle: React.CSSProperties
     textStyle: React.CSSProperties
+    pillBackground: string // Background color for pill container (low opacity)
 }
 
 /**
@@ -42,7 +43,9 @@ export function getStatusIconConfig(status: ServiceStatus | string, customColors
         textColor: '',
         // New inline styles with dynamic colors
         dotStyle: { backgroundColor: hexColor },
-        textStyle: { color: hexColor }
+        textStyle: { color: hexColor },
+        // Pill background with 15% opacity
+        pillBackground: getStatusPillBackground(status, customColors, 0.15)
     }
 }
 

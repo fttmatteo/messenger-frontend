@@ -185,14 +185,19 @@ export default function ServiceDetails() {
             <div className="flex-1 overflow-auto p-4">
                 {/* Status Section - Minimalist */}
                 <div className="mb-8 flex items-center gap-4 px-1">
-                    <div className="h-4 w-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                    <div className="flex flex-col">
-                        <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
-                            Estado del servicio
-                        </span>
-                        <span className="text-xl font-bold tracking-tight">
-                            {getStatusIconConfig(service.currentStatus, colors).label}
-                        </span>
+                    <div
+                        className="inline-flex items-center gap-3 px-4 py-2 rounded-full"
+                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                    >
+                        <div className="h-4 w-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <div className="flex flex-col">
+                            <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
+                                Estado del servicio
+                            </span>
+                            <span className="text-xl font-bold tracking-tight">
+                                {getStatusIconConfig(service.currentStatus, colors).label}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

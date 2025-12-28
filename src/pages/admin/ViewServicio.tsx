@@ -165,9 +165,12 @@ export default function ViewServicio() {
 
                 {/* Center: Status */}
                 <div className="flex flex-row items-center justify-center gap-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                        <span className="text-xl font-bold">
+                    <div
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                    >
+                        <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <span className="text-lg font-bold">
                             {getStatusIconConfig(service.currentStatus, colors).label}
                         </span>
                     </div>
@@ -310,9 +313,14 @@ export default function ViewServicio() {
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
                                                 <TimelineHeader statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
-                                                    <span className="text-xl font-bold">
-                                                        {getStatusIconConfig(entry.newStatus, colors).label}
-                                                    </span>
+                                                    <div
+                                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full ml-1"
+                                                        style={{ backgroundColor: getStatusIconConfig(entry.newStatus, colors).pillBackground }}
+                                                    >
+                                                        <span className="text-lg font-bold">
+                                                            {getStatusIconConfig(entry.newStatus, colors).label}
+                                                        </span>
+                                                    </div>
                                                 </TimelineHeader>
                                                 <TimelineContent>
                                                     <HistoryEntryCard
