@@ -7,10 +7,15 @@ import {
     clearCustomColors,
 } from '@/lib/status-colors'
 
-export function StatusColorProvider({ children }: { children: ReactNode }) {
+interface StatusColorProviderProps {
+    children: ReactNode
+    userId?: number | string
+}
+
+export function StatusColorProvider({ children, userId }: StatusColorProviderProps) {
     const [colors, setColors] = useState<Record<string, string>>(() => {
-        // Initialize with merged colors (defaults + custom)
-        const customColors = loadCustomColors()
+        // Initialize with merged colors (defaults + custom for this user)
+        const customColors = loadCustomColors(userId)
         return { ...DEFAULT_STATUS_COLORS, ...customColors }
     })
 
@@ -32,16 +37,16 @@ export function StatusColorProvider({ children }: { children: ReactNode }) {
                     customColors[key] = newColors[key]
                 }
             })
-            saveCustomColors(customColors)
+            saveCustomColors(customColors, userId)
 
             return newColors
         })
-    }, [])
+    }, [userId])
 
     const resetToDefaults = useCallback(() => {
-        clearCustomColors()
+        clearCustomColors(userId)
         setColors({ ...DEFAULT_STATUS_COLORS })
-    }, [])
+    }, [userId])
 
     return (
         <StatusColorContext.Provider value={{ colors, updateColor, resetToDefaults, isModified }}>

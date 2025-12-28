@@ -14,15 +14,25 @@ export const DEFAULT_STATUS_COLORS: Record<string, string> = {
 // Default fallback color
 const DEFAULT_FALLBACK_COLOR = '#6b7280' // gray-500
 
-// LocalStorage key
-const STORAGE_KEY = 'status-colors'
+// LocalStorage key prefix - userId will be appended
+const STORAGE_KEY_PREFIX = 'status-colors-'
 
 /**
- * Load custom colors from localStorage
+ * Get the storage key for a specific user
  */
-export function loadCustomColors(): Record<string, string> {
+function getStorageKey(userId?: number | string): string {
+    if (!userId) {
+        return 'status-colors-default'
+    }
+    return `${STORAGE_KEY_PREFIX}${userId}`
+}
+
+/**
+ * Load custom colors from localStorage for a specific user
+ */
+export function loadCustomColors(userId?: number | string): Record<string, string> {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY)
+        const stored = localStorage.getItem(getStorageKey(userId))
         if (stored) {
             return JSON.parse(stored)
         }
@@ -33,32 +43,32 @@ export function loadCustomColors(): Record<string, string> {
 }
 
 /**
- * Save custom colors to localStorage
+ * Save custom colors to localStorage for a specific user
  */
-export function saveCustomColors(colors: Record<string, string>): void {
+export function saveCustomColors(colors: Record<string, string>, userId?: number | string): void {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(colors))
+        localStorage.setItem(getStorageKey(userId), JSON.stringify(colors))
     } catch (error) {
         console.error('Error saving custom colors:', error)
     }
 }
 
 /**
- * Clear custom colors from localStorage (restore defaults)
+ * Clear custom colors from localStorage for a specific user (restore defaults)
  */
-export function clearCustomColors(): void {
+export function clearCustomColors(userId?: number | string): void {
     try {
-        localStorage.removeItem(STORAGE_KEY)
+        localStorage.removeItem(getStorageKey(userId))
     } catch (error) {
         console.error('Error clearing custom colors:', error)
     }
 }
 
 /**
- * Get merged colors (defaults + custom overrides)
+ * Get merged colors (defaults + custom overrides) for a specific user
  */
-export function getMergedColors(): Record<string, string> {
-    const customColors = loadCustomColors()
+export function getMergedColors(userId?: number | string): Record<string, string> {
+    const customColors = loadCustomColors(userId)
     return { ...DEFAULT_STATUS_COLORS, ...customColors }
 }
 
