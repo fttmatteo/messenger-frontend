@@ -17,7 +17,7 @@ export interface SignatureCanvasRef {
 export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasProps>(
     ({ onSignatureChange, width = 300, height = 150 }, ref) => {
         const canvasRef = useRef<HTMLCanvasElement>(null)
-        const [isDrawing, setIsDrawing] = useState(false)
+        const isDrawingRef = useRef(false)
         const [hasDrawn, setHasDrawn] = useState(false)
 
         // Setup canvas context
@@ -47,42 +47,54 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             ctx.fillRect(0, 0, width, height)
         }, [width, height])
 
-        const getCoordinates = (e: React.TouchEvent | React.MouseEvent): { x: number; y: number } | null => {
+        // Helper to get coordinates from both Touch and Mouse events
+        const getCoordinates = (e: TouchEvent | MouseEvent | React.TouchEvent | React.MouseEvent): { x: number; y: number } | null => {
             const canvas = canvasRef.current
             if (!canvas) return null
 
             const rect = canvas.getBoundingClientRect()
 
-            if ('touches' in e) {
-                if (e.touches.length === 0) return null
+            // Check for touch events (native or React)
+            const touches = (e as any).touches
+            if (touches && touches.length > 0) {
                 return {
-                    x: e.touches[0].clientX - rect.left,
-                    y: e.touches[0].clientY - rect.top
+                    x: touches[0].clientX - rect.left,
+                    y: touches[0].clientY - rect.top
+                }
+            } else if ((e as any).clientX !== undefined) {
+                // Mouse event
+                return {
+                    x: (e as any).clientX - rect.left,
+                    y: (e as any).clientY - rect.top
                 }
             }
-
-            return {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
-            }
+            return null
         }
 
-        const startDrawing = (e: React.TouchEvent | React.MouseEvent) => {
-            e.preventDefault()
+        const startDrawing = (e: TouchEvent | MouseEvent | React.TouchEvent | React.MouseEvent) => {
+            // Only prevent default for touch to avoid scrolling
+            if ((e as any).touches) {
+                e.preventDefault()
+            }
+
             const coords = getCoordinates(e)
             if (!coords) return
 
             const ctx = canvasRef.current?.getContext('2d')
             if (!ctx) return
 
-            setIsDrawing(true)
+            isDrawingRef.current = true
             ctx.beginPath()
             ctx.moveTo(coords.x, coords.y)
         }
 
-        const draw = (e: React.TouchEvent | React.MouseEvent) => {
-            if (!isDrawing) return
-            e.preventDefault()
+        const draw = (e: TouchEvent | MouseEvent | React.TouchEvent | React.MouseEvent) => {
+            if (!isDrawingRef.current) return
+
+            // Only prevent default for touch to avoid scrolling
+            if ((e as any).touches) {
+                e.preventDefault()
+            }
 
             const coords = getCoordinates(e)
             if (!coords) return
@@ -100,7 +112,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         }
 
         const stopDrawing = () => {
-            setIsDrawing(false)
+            isDrawingRef.current = false
         }
 
         const clear = () => {
@@ -113,6 +125,26 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             setHasDrawn(false)
             onSignatureChange?.(false)
         }
+
+        // Attach native touch listeners with non-passive flag
+        useEffect(() => {
+            const canvas = canvasRef.current
+            if (!canvas) return
+
+            const handleTouchStart = (e: TouchEvent) => startDrawing(e)
+            const handleTouchMove = (e: TouchEvent) => draw(e)
+            const handleTouchEnd = () => stopDrawing()
+
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
+            canvas.addEventListener('touchend', handleTouchEnd)
+
+            return () => {
+                canvas.removeEventListener('touchstart', handleTouchStart)
+                canvas.removeEventListener('touchmove', handleTouchMove)
+                canvas.removeEventListener('touchend', handleTouchEnd)
+            }
+        }) // No deps: re-bind on every render to capture latest scope (safe for this simpler refactor)
 
         const getSignature = async (): Promise<File | null> => {
             const canvas = canvasRef.current
@@ -147,9 +179,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                         onMouseMove={draw}
                         onMouseUp={stopDrawing}
                         onMouseLeave={stopDrawing}
-                        onTouchStart={startDrawing}
-                        onTouchMove={draw}
-                        onTouchEnd={stopDrawing}
+                    // Touch events handled by effect
                     />
 
                     {/* Signature line */}
