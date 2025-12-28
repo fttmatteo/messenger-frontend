@@ -64,5 +64,9 @@ export const authService = {
 
     getToken() {
         return localStorage.getItem('token') || sessionStorage.getItem('token');
+    },
+
+    getRole() {
+        return localStorage.getItem('role') || sessionStorage.getItem('role');
     }
 };

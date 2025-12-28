@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, type ReactNode } from 'react'
+import { useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
 import { StatusColorContext } from '@/context/StatusColorContextDef'
 import {
     DEFAULT_STATUS_COLORS,
@@ -6,6 +6,8 @@ import {
     saveCustomColors,
     clearCustomColors,
 } from '@/lib/status-colors'
+import { configService } from '@/services/config.service'
+import { authService } from '@/services/auth.service'
 
 interface StatusColorProviderProps {
     children: ReactNode
@@ -19,6 +21,31 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         return { ...DEFAULT_STATUS_COLORS, ...customColors }
     })
 
+    // Fetch colors from backend on mount
+    useEffect(() => {
+        const fetchColors = async () => {
+            try {
+                const backendColors = await configService.getStatusColors()
+                if (backendColors && Object.keys(backendColors).length > 0) {
+                    const merged = { ...DEFAULT_STATUS_COLORS, ...backendColors }
+                    setColors(merged)
+                    // Update cache
+                    const differences: Record<string, string> = {}
+                    Object.keys(merged).forEach(key => {
+                        if (merged[key] !== DEFAULT_STATUS_COLORS[key]) {
+                            differences[key] = merged[key]
+                        }
+                    })
+                    saveCustomColors(differences, userId)
+                }
+            } catch (error) {
+                console.error('Error fetching status colors from backend:', error)
+            }
+        }
+
+        fetchColors()
+    }, [userId])
+
     // Calculate isModified using useMemo instead of useEffect + setState
     const isModified = useMemo(() => {
         return Object.keys(DEFAULT_STATUS_COLORS).some(
@@ -26,7 +53,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         )
     }, [colors])
 
-    const updateColor = useCallback((status: string, color: string) => {
+    const updateColor = useCallback(async (status: string, color: string) => {
         setColors(prev => {
             const newColors = { ...prev, [status]: color }
 
@@ -39,13 +66,29 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
             })
             saveCustomColors(customColors, userId)
 
+            // If user is admin, sync to backend
+            const role = authService.getRole()
+            if (role === 'ADMIN') {
+                configService.updateStatusColors(newColors).catch(err => {
+                    console.error('Error syncing colors to backend:', err)
+                })
+            }
+
             return newColors
         })
     }, [userId])
 
-    const resetToDefaults = useCallback(() => {
+    const resetToDefaults = useCallback(async () => {
         clearCustomColors(userId)
         setColors({ ...DEFAULT_STATUS_COLORS })
+
+        // If user is admin, sync to backend
+        const role = authService.getRole()
+        if (role === 'ADMIN') {
+            configService.updateStatusColors(DEFAULT_STATUS_COLORS).catch(err => {
+                console.error('Error resetting colors on backend:', err)
+            })
+        }
     }, [userId])
 
     return (
