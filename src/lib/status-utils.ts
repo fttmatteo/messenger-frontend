@@ -1,49 +1,49 @@
 import type { ServiceStatus } from "@/types/service.types"
 import { Car, Bike, Truck } from "lucide-react"
+import { getStatusHexColor, getStatusLabel, getMergedColors } from "@/lib/status-colors"
 
 interface StatusBadgeConfig {
     label: string
     className: string
+    style?: React.CSSProperties
 }
 
 /**
  * Get the badge configuration for a service status.
- * Used to display consistent status badges across the application.
+ * Uses dynamic colors from the centralized color system.
  */
-export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfig {
-    const config: Record<string, StatusBadgeConfig> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
-        PENDING: { label: 'Pendiente', className: 'bg-indigo-500 text-white' },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
-        CANCELED: { label: 'Cancelado', className: 'bg-red-500 text-white' },
-        RESOLVED: { label: 'Revisado', className: 'bg-purple-500 text-white' },
-        DELETED: { label: 'Eliminado', className: 'bg-slate-500 text-white' },
+export function getStatusBadge(status: ServiceStatus | string, customColors?: Record<string, string>): StatusBadgeConfig {
+    const colors = customColors || getMergedColors()
+    return {
+        label: getStatusLabel(status),
+        className: 'text-white', // className only for text color
+        style: { backgroundColor: colors[status] || getStatusHexColor(status, colors), color: 'white' }
     }
-    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
 interface StatusIconConfig {
     label: string
-    dotColor: string // Color for the circular dot indicator
-    textColor: string // Color for the status text
+    dotColor: string // Kept for legacy support but prefer dotStyle
+    textColor: string // Kept for legacy support but prefer textStyle
+    dotStyle: React.CSSProperties
+    textStyle: React.CSSProperties
 }
 
 /**
  * Get the icon configuration for a service status (circular dot + text).
- * Used in timeline-style displays like the services list.
+ * Uses dynamic colors from the centralized color system.
  */
-export function getStatusIconConfig(status: ServiceStatus | string): StatusIconConfig {
-    const config: Record<string, StatusIconConfig> = {
-        ASSIGNED: { label: 'Asignado', dotColor: 'bg-blue-500', textColor: 'text-blue-500' },
-        PENDING: { label: 'Pendiente', dotColor: 'bg-indigo-500', textColor: 'text-indigo-500' },
-        DELIVERED: { label: 'Entregado', dotColor: 'bg-green-500', textColor: 'text-green-500' },
-        RETURNED: { label: 'Devuelto', dotColor: 'bg-orange-500', textColor: 'text-orange-500' },
-        CANCELED: { label: 'Cancelado', dotColor: 'bg-red-500', textColor: 'text-red-500' },
-        RESOLVED: { label: 'Revisado', dotColor: 'bg-purple-500', textColor: 'text-purple-500' },
-        DELETED: { label: 'Eliminado', dotColor: 'bg-slate-500', textColor: 'text-slate-500' },
+export function getStatusIconConfig(status: ServiceStatus | string, customColors?: Record<string, string>): StatusIconConfig {
+    const hexColor = getStatusHexColor(status, customColors)
+    return {
+        label: getStatusLabel(status),
+        // Legacy class names - kept empty for backward compatibility with components that don't use styles
+        dotColor: '',
+        textColor: '',
+        // New inline styles with dynamic colors
+        dotStyle: { backgroundColor: hexColor },
+        textStyle: { color: hexColor }
     }
-    return config[status] || { label: status, dotColor: 'bg-gray-500', textColor: 'text-gray-500' }
 }
 
 /**

@@ -19,6 +19,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { useStatusColors } from "@/context/StatusColorContext"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -33,6 +34,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 export default function Servicios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    const { colors } = useStatusColors()
 
     // Use custom hooks
     const {
@@ -193,9 +195,9 @@ export default function Servicios() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
-                                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                            <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                                {getStatusIconConfig(service.currentStatus).label}
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                                            <span className="text-sm font-medium" style={getStatusIconConfig(service.currentStatus, colors).textStyle}>
+                                                                {getStatusIconConfig(service.currentStatus, colors).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>

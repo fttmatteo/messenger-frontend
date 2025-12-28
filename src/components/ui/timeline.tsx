@@ -33,9 +33,10 @@ export function TimelineItem({ className, children, isLast, ...props }: Timeline
 interface TimelineHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
     icon?: React.ReactNode
     statusColor?: string
+    statusStyle?: React.CSSProperties
 }
 
-export function TimelineHeader({ className, children, icon, statusColor, ...props }: TimelineHeaderProps) {
+export function TimelineHeader({ className, children, icon, statusColor, statusStyle, ...props }: TimelineHeaderProps) {
     return (
         <div className={cn("flex flex-col gap-1 mb-1", className)} {...props}>
             {/* Status Icon/Dot - Matched to header size (w-3 h-3) */}
@@ -44,6 +45,7 @@ export function TimelineHeader({ className, children, icon, statusColor, ...prop
                     "absolute left-0 top-1.5 flex h-3 w-3 items-center justify-center rounded-full",
                     statusColor
                 )}
+                style={statusStyle}
             >
                 {icon}
             </div>

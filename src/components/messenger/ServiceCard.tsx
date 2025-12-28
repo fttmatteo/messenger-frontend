@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card"
-// import { StatusBadge } from "./StatusBadge"
 import { MapPin, Navigation, Edit } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useNavigate } from "react-router-dom"
@@ -7,8 +6,8 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-// import { TooltipProvider } from "@/components/ui/tooltip"
 import { getStatusIconConfig } from "@/lib/status-utils"
+import { useStatusColors } from "@/context/StatusColorContext"
 
 interface ServiceCardProps {
     service: ServiceDelivery
@@ -16,23 +15,15 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service }: ServiceCardProps) {
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
 
     const handleClick = () => {
         navigate(`/messenger/servicio/${service.idServiceDelivery}`)
     }
 
-    // Get status color for border and button
-    const getStatusColor = (status: string) => {
-        const colors: Record<string, string> = {
-            ASSIGNED: '#3b82f6', // blue-500
-            PENDING: '#6366f1', // indigo-500
-            DELIVERED: '#22c55e', // green-500
-            RETURNED: '#f97316', // orange-500
-            CANCELED: '#ef4444', // red-500
-            RESOLVED: '#a855f7', // purple-500
-        }
-        return colors[status] || '#6b7280' // gray-500
-    }
+    // Get status color from centralized system
+    const statusColor = colors[service.currentStatus] || '#6b7280'
+    const statusConfig = getStatusIconConfig(service.currentStatus, colors)
 
     const handleNavigate = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -101,7 +92,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <Card
             className="active:bg-muted/50 transition-all cursor-pointer touch-manipulation border-l-4 overflow-hidden relative"
             style={{
-                borderLeftColor: getStatusColor(service.currentStatus)
+                borderLeftColor: statusColor
             }}
             onClick={handleClick}
         >
@@ -118,9 +109,9 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         />
                         {/* Status */}
                         <div className="flex items-center gap-1.5">
-                            <div className={`w-2 h-2 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-xs font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                {getStatusIconConfig(service.currentStatus).label}
+                            <div className="w-2 h-2 rounded-full" style={statusConfig.dotStyle} />
+                            <span className="text-xs font-medium" style={statusConfig.textStyle}>
+                                {statusConfig.label}
                             </span>
                         </div>
                     </div>
@@ -146,7 +137,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         variant="default"
                         size="icon"
                         className="h-9 w-9 rounded-full shadow-sm text-white border-0"
-                        style={{ backgroundColor: getStatusColor(service.currentStatus) }}
+                        style={{ backgroundColor: statusColor }}
                         onClick={handleNavigate}
                         title="Navegar"
                     >

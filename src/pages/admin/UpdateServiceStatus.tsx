@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { Home, Loader2, Save, UserPlus } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { useStatusColors } from "@/context/StatusColorContext"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 
@@ -24,6 +25,7 @@ export default function UpdateServiceStatus() {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -245,9 +247,9 @@ export default function UpdateServiceStatus() {
                                 if (availableStatuses.length === 0) {
                                     return (
                                         <div className="flex items-center gap-2 px-3 py-1.5 border rounded-md bg-muted/30">
-                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                            <span className={`font-medium text-sm ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                {getStatusIconConfig(service.currentStatus).label}
+                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                            <span className="font-medium text-sm" style={getStatusIconConfig(service.currentStatus, colors).textStyle}>
+                                                {getStatusIconConfig(service.currentStatus, colors).label}
                                             </span>
                                         </div>
                                     )
@@ -258,8 +260,8 @@ export default function UpdateServiceStatus() {
                                         <SelectTrigger className="w-[200px]">
                                             <SelectValue placeholder="Selecciona un nuevo estado">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(newStatus).dotColor}`} />
-                                                    <span>{getStatusIconConfig(newStatus).label}</span>
+                                                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus, colors).dotStyle} />
+                                                    <span>{getStatusIconConfig(newStatus, colors).label}</span>
                                                 </div>
                                             </SelectValue>
                                         </SelectTrigger>
@@ -269,7 +271,7 @@ export default function UpdateServiceStatus() {
                                                 {availableStatuses.map((status) => (
                                                     <SelectItem key={status.value} value={status.value}>
                                                         <div className="flex items-center gap-2">
-                                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(status.value).dotColor}`} />
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(status.value, colors).dotStyle} />
                                                             <span>{status.label}</span>
                                                         </div>
                                                     </SelectItem>

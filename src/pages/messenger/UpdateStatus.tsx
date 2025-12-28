@@ -10,6 +10,7 @@ import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useStatusColors } from "@/context/StatusColorContext"
 import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -47,6 +48,7 @@ const statusOptions: StatusOption[] = [
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -214,9 +216,9 @@ export default function UpdateStatus() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                    <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                        {getStatusIconConfig(service.currentStatus).label}
+                    <div className="w-2.5 h-2.5 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                    <span className="text-sm font-medium" style={getStatusIconConfig(service.currentStatus, colors).textStyle}>
+                        {getStatusIconConfig(service.currentStatus, colors).label}
                     </span>
                 </div>
             </header>

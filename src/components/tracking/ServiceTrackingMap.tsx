@@ -11,6 +11,7 @@ import { MapPin, Route, Loader2 } from "lucide-react"
 
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
+import { useStatusColors } from "@/context/StatusColorContext"
 
 interface ServiceTrackingMapProps {
     serviceId: number
@@ -19,20 +20,6 @@ interface ServiceTrackingMapProps {
     dealershipName?: string
     serviceStatus?: ServiceStatus
     className?: string
-}
-
-// Maps service status to HEX colors for Google Maps markers
-const getStatusHexColor = (status?: ServiceStatus | string): string => {
-    switch (status) {
-        case 'ASSIGNED': return '#3b82f6' // blue-500
-        case 'PENDING': return '#6366f1' // indigo-500
-        case 'DELIVERED': return '#22c55e' // green-500
-        case 'RETURNED': return '#f97316' // orange-500
-        case 'CANCELED': return '#ef4444' // red-500
-        case 'RESOLVED': return '#a855f7' // purple-500
-        case 'DELETED': return '#64748b' // slate-500
-        default: return '#6b7280' // gray-500
-    }
 }
 
 // Componente para manejar AdvancedMarkerElement
@@ -88,6 +75,14 @@ export function ServiceTrackingMap({
     serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
+    // Get colors from context
+    const { colors } = useStatusColors()
+
+    // Helper to get HEX color from status
+    const getStatusHexColor = (status?: ServiceStatus | string): string => {
+        return colors[status || ''] || '#6b7280'
+    }
+
     // ... state hooks ...
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
     const [loading, setLoading] = useState(true)
@@ -169,7 +164,7 @@ export function ServiceTrackingMap({
     // Determine colors and labels based on status
     const startColor = getStatusHexColor('ASSIGNED')
     const endColor = serviceStatus ? getStatusHexColor(serviceStatus) : getStatusHexColor('PENDING')
-    const endLabel = serviceStatus ? getStatusBadge(serviceStatus).label : 'Última ubicación'
+    const endLabel = serviceStatus ? getStatusBadge(serviceStatus, colors).label : 'Última ubicación'
 
 
 

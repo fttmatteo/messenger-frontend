@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { useStatusColors } from "@/context/StatusColorContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ export default function ViewServicio() {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError: setGlobalError } = useAdminUI()
+    const { colors } = useStatusColors()
 
 
     // Service Data State
@@ -164,9 +166,9 @@ export default function ViewServicio() {
                 {/* Center: Status */}
                 <div className="flex flex-row items-center justify-center gap-3">
                     <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                        <span className={`text-xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                            {getStatusIconConfig(service.currentStatus).label}
+                        <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <span className="text-xl font-bold" style={getStatusIconConfig(service.currentStatus, colors).textStyle}>
+                            {getStatusIconConfig(service.currentStatus, colors).label}
                         </span>
                     </div>
                 </div>
@@ -307,9 +309,9 @@ export default function ViewServicio() {
                                                 key={entry.idStatusHistory}
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
-                                                <TimelineHeader statusColor={getStatusIconConfig(entry.newStatus).dotColor}>
-                                                    <span className={`text-xl font-bold ${getStatusIconConfig(entry.newStatus).textColor}`}>
-                                                        {getStatusIconConfig(entry.newStatus).label}
+                                                <TimelineHeader statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
+                                                    <span className="text-xl font-bold" style={getStatusIconConfig(entry.newStatus, colors).textStyle}>
+                                                        {getStatusIconConfig(entry.newStatus, colors).label}
                                                     </span>
                                                 </TimelineHeader>
                                                 <TimelineContent>
