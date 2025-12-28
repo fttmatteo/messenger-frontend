@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 // import { Card, CardContent } from "@/components/ui/card"
-import { Upload, X, Loader2, Camera, CameraOff, Bike } from "lucide-react"
+import { Upload, X, Loader2, Camera, CameraOff, Bike, ChevronLeft } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -368,8 +368,23 @@ export default function MessengerCreateServicio() {
             {/* Hidden canvas for capturing */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-            {/* Header with back button */}
-            <header className="flex items-center gap-3">
+            {/* Header with back button centered title */}
+            <header className="flex items-center justify-between p-3 border-b bg-background sticky top-0 z-10">
+                <div className="flex-1">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleBack}
+                        className="h-9 w-9 -ml-1 text-muted-foreground"
+                    >
+                        <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                </div>
+
+                <h1 className="flex-[2] text-center font-bold text-sm sm:text-base truncate">Crear Servicio</h1>
+
+                <div className="flex-1"></div>
             </header>
 
             {/* Main Form Area */}

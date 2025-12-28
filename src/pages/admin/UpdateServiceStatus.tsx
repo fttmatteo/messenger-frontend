@@ -136,43 +136,52 @@ export default function UpdateServiceStatus() {
     if (!service) return null
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1">
             {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin/servicios">
-                                Servicios
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to={`/admin/servicios/${id}`}>
-                                {service.plate.plateNumber}
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Actualizar estado</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+            {/* Header with Navigation and Centered Title */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-4">
+                <div className="flex-1">
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to="/admin">
+                                        <Home className="h-4 w-4" />
+                                    </Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to="/admin/servicios">
+                                        Servicios
+                                    </Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to={`/admin/servicios/${id}`}>
+                                        {service.plate.plateNumber}
+                                    </Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Actualizar</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+
+                <h1 className="md:flex-1 md:text-center text-xl md:text-2xl font-bold whitespace-nowrap">Actualizar estado</h1>
+
+                <div className="hidden md:flex md:flex-1"></div>
+            </div>
 
             {/* Reassign Alert - Integrated at top for CANCELED services */}
             {showReassign && messengers.length > 0 && (
-                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-4">
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-4 mb-2">
                     <div className="flex items-start gap-3">
                         <UserPlus className="h-6 w-6 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                         <div className="flex-1">
@@ -221,11 +230,6 @@ export default function UpdateServiceStatus() {
                     </div>
                 </div>
             )}
-
-            {/* Header */}
-            <div>
-                <h1 className="text-xl md:text-2xl font-bold">Actualizar estado</h1>
-            </div>
 
             <Card className="gap-1 py-1">
                 <CardHeader className="p-2 pb-0">

@@ -177,7 +177,7 @@ export default function ViewServicio() {
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-3">
                     {/* Update Status Button - uses role-based logic */}
                     {(() => {
                         const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
@@ -186,9 +186,10 @@ export default function ViewServicio() {
                         if (canEdit) {
                             return (
                                 <Button
+                                    variant="outline"
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
                                     size="sm"
-                                    className="flex-1 md:flex-none"
+                                    className="h-9 px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
                                     Actualizar
@@ -200,11 +201,11 @@ export default function ViewServicio() {
                     {/* Delete Button - Admin only */}
                     {isAdmin && (
                         <Button
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="flex-1 md:flex-none"
+                            className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors flex-1 md:flex-none"
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>
