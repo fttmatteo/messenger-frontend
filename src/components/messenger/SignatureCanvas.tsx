@@ -55,17 +55,19 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             const rect = canvas.getBoundingClientRect()
 
             // Check for touch events (native or React)
-            const touches = (e as any).touches
-            if (touches && touches.length > 0) {
-                return {
-                    x: touches[0].clientX - rect.left,
-                    y: touches[0].clientY - rect.top
+            if ('touches' in e) {
+                const touches = e.touches
+                if (touches && touches.length > 0) {
+                    return {
+                        x: touches[0].clientX - rect.left,
+                        y: touches[0].clientY - rect.top
+                    }
                 }
-            } else if ((e as any).clientX !== undefined) {
+            } else if ('clientX' in e) {
                 // Mouse event
                 return {
-                    x: (e as any).clientX - rect.left,
-                    y: (e as any).clientY - rect.top
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
                 }
             }
             return null
@@ -73,7 +75,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
         const startDrawing = (e: TouchEvent | MouseEvent | React.TouchEvent | React.MouseEvent) => {
             // Only prevent default for touch to avoid scrolling
-            if ((e as any).touches) {
+            if ('touches' in e && e.cancelable) {
                 e.preventDefault()
             }
 
@@ -92,7 +94,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             if (!isDrawingRef.current) return
 
             // Only prevent default for touch to avoid scrolling
-            if ((e as any).touches) {
+            if ('touches' in e && e.cancelable) {
                 e.preventDefault()
             }
 
