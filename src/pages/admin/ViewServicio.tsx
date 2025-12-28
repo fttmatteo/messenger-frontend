@@ -186,7 +186,7 @@ export default function ViewServicio() {
                             size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors flex-1 md:flex-none"
+                            className="h-9 w-9 p-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-1 md:flex-none"
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>

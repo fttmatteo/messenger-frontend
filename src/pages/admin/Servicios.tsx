@@ -211,12 +211,12 @@ export default function Servicios() {
                                                         {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                     </TableCell>
                                                     <TableCell className="text-center">
-                                                        <div className="flex items-center justify-center gap-2">
+                                                        <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
                                                             <Button
-                                                                variant="default"
+                                                                variant="outline"
                                                                 size="icon"
-                                                                onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }}
-                                                                className="h-8 w-8 bg-primary hover:bg-primary/90"
+                                                                onClick={() => handleUpdateStatus(service)}
+                                                                className="h-8 w-8 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors"
                                                                 title="Actualizar estado"
                                                             >
                                                                 <Edit className="h-4 w-4" />

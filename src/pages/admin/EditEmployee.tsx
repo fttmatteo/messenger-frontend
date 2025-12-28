@@ -251,9 +251,9 @@ export default function EditEmployee() {
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         type="button"
-                                        variant="destructive"
+                                        variant="ghost"
                                         size="sm"
-                                        className="ml-auto"
+                                        className="ml-auto text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                     >
                                         <Trash2 className="h-4 w-4 mr-2" />
                                         Eliminar

@@ -137,10 +137,10 @@ export default function Eliminados() {
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button
-                                    variant="destructive"
+                                    variant="ghost"
                                     size="sm"
                                     disabled={emptying}
-                                    className="h-8 text-xs"
+                                    className="h-8 text-xs text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                 >
                                     {emptying ? (
                                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
