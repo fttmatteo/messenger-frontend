@@ -2,13 +2,13 @@ import type { ServiceStatus } from "@/types/service.types"
 
 // Default status colors (HEX format)
 export const DEFAULT_STATUS_COLORS: Record<string, string> = {
-    ASSIGNED: '#3b82f6',   // blue-500
-    PENDING: '#6366f1',    // indigo-500
-    DELIVERED: '#22c55e',  // green-500
-    RETURNED: '#f97316',   // orange-500
-    CANCELED: '#ef4444',   // red-500
-    RESOLVED: '#a855f7',   // purple-500
-    DELETED: '#64748b',    // slate-500
+    ASSIGNED: '#00eeffe1',   // blue-500
+    PENDING: '#ff6f00e8',    // indigo-500
+    DELIVERED: '#04ff60dd',  // green-500
+    RETURNED: '#fbff00d1',   // orange-500
+    CANCELED: '#ff00b7d6',   // red-500
+    RESOLVED: '#1900ffdb',   // purple-500
+    DELETED: '#ff0000dd',    // slate-500
 }
 
 // Default fallback color

@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/hooks/useStatusColors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel } from "@/lib/status-colors"
@@ -117,20 +116,22 @@ export default function Configuracion() {
                             ))}
                         </div>
 
-                        {/* Compact Preview - inline at bottom */}
-                        <div className="mt-auto pt-3 border-t flex items-center gap-2 flex-wrap">
+                        {/* Compact Preview - inline at bottom - same style as content headers */}
+                        <div className="mt-auto pt-3 border-t flex items-center gap-4 flex-wrap">
                             <span className="text-xs text-muted-foreground">Vista previa:</span>
                             {STATUS_ORDER.map(status => (
-                                <Badge
-                                    key={status}
-                                    className="text-xs"
-                                    style={{
-                                        backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status],
-                                        color: 'white'
-                                    }}
-                                >
-                                    {getStatusLabel(status)}
-                                </Badge>
+                                <div key={status} className="flex items-center gap-1.5">
+                                    <div
+                                        className="w-3 h-3 rounded-full"
+                                        style={{ backgroundColor: colors[status] || DEFAULT_STATUS_COLORS[status] }}
+                                    />
+                                    <span
+                                        className="text-sm font-bold"
+                                        style={{ color: colors[status] || DEFAULT_STATUS_COLORS[status] }}
+                                    >
+                                        {getStatusLabel(status)}
+                                    </span>
+                                </div>
                             ))}
                         </div>
                     </CardContent>
