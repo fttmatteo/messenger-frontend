@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Loader2, Eye, EyeOff, Trash2 } from "lucide-react"
+import { Loader2, Eye, EyeOff, Trash2, Save } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -244,7 +244,11 @@ export default function EditEmployee() {
                                 Cancelar
                             </Button>
                             <Button type="submit" size="sm" disabled={isSubmitting}>
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isSubmitting ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="mr-2 h-4 w-4" />
+                                )}
                                 Guardar cambios
                             </Button>
                             <AlertDialog>
@@ -273,7 +277,7 @@ export default function EditEmployee() {
                                         <AlertDialogAction
                                             onClick={handleDelete}
                                             disabled={deleting}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            className="bg-red-500 text-white hover:bg-red-600"
                                         >
                                             {deleting ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

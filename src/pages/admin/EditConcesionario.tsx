@@ -16,7 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
-import { Loader2, MapPin, Trash2 } from "lucide-react"
+import { Loader2, MapPin, Trash2, Save } from "lucide-react"
 import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -300,7 +300,11 @@ export default function EditConcesionario() {
                                     Cancelar
                                 </Button>
                                 <Button type="submit" size="sm" disabled={isSubmitting}>
-                                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isSubmitting ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Save className="mr-2 h-4 w-4" />
+                                    )}
                                     Guardar cambios
                                 </Button>
                                 <AlertDialog>
@@ -329,7 +333,7 @@ export default function EditConcesionario() {
                                             <AlertDialogAction
                                                 onClick={handleDelete}
                                                 disabled={deleting}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                className="bg-red-500 text-white hover:bg-red-600"
                                             >
                                                 {deleting ? (
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

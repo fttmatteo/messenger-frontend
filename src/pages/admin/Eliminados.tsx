@@ -161,7 +161,7 @@ export default function Eliminados() {
                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={handleEmptyTrash}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        className="bg-red-500 text-white hover:bg-red-600"
                                     >
                                         Vaciar papelera
                                     </AlertDialogAction>
@@ -340,8 +340,9 @@ export default function Eliminados() {
                                                                         <TooltipTrigger asChild>
                                                                             <AlertDialogTrigger asChild>
                                                                                 <Button
-                                                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                                                                                    size="sm"
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    className="h-8 w-8 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
                                                                                     disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
                                                                                 >
                                                                                     {restoring === service.idServiceDelivery ? (
@@ -363,7 +364,10 @@ export default function Eliminados() {
                                                                         </AlertDialogHeader>
                                                                         <AlertDialogFooter>
                                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                            <AlertDialogAction onClick={() => handleRestore(service.idServiceDelivery)}>
+                                                                            <AlertDialogAction
+                                                                                onClick={() => handleRestore(service.idServiceDelivery)}
+                                                                                className="bg-emerald-500 text-white hover:bg-emerald-600"
+                                                                            >
                                                                                 Restaurar
                                                                             </AlertDialogAction>
                                                                         </AlertDialogFooter>
@@ -375,8 +379,9 @@ export default function Eliminados() {
                                                                         <TooltipTrigger asChild>
                                                                             <AlertDialogTrigger asChild>
                                                                                 <Button
-                                                                                    variant="destructive"
-                                                                                    size="sm"
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                                                                     disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
                                                                                 >
                                                                                     {deleting === service.idServiceDelivery ? (
@@ -400,7 +405,7 @@ export default function Eliminados() {
                                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                                                             <AlertDialogAction
                                                                                 onClick={() => handlePermanentDelete(service.idServiceDelivery)}
-                                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                                className="bg-red-500 text-white hover:bg-red-600"
                                                                             >
                                                                                 <Trash2 className="h-4 w-4 mr-2" />
                                                                                 Eliminar
