@@ -166,8 +166,8 @@ export default function ViewServicio() {
                 {/* Center: Status */}
                 <div className="flex flex-row items-center justify-center gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                        <span className="text-xl font-bold" style={getStatusIconConfig(service.currentStatus, colors).textStyle}>
+                        <div className="w-3 h-3 rounded-full border border-black dark:border-white" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <span className="text-xl font-bold">
                             {getStatusIconConfig(service.currentStatus, colors).label}
                         </span>
                     </div>
@@ -310,7 +310,7 @@ export default function ViewServicio() {
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
                                                 <TimelineHeader statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
-                                                    <span className="text-xl font-bold" style={getStatusIconConfig(entry.newStatus, colors).textStyle}>
+                                                    <span className="text-xl font-bold">
                                                         {getStatusIconConfig(entry.newStatus, colors).label}
                                                     </span>
                                                 </TimelineHeader>

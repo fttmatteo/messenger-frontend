@@ -7,44 +7,48 @@ import {
     getServiceLockReason,
     canUserEditService
 } from './status-utils';
+import { DEFAULT_STATUS_COLORS } from './status-colors';
+
+// Default fallback color for unknown statuses
+const DEFAULT_FALLBACK_COLOR = '#6b7280';
 
 describe('status-utils', () => {
     describe('getStatusBadge', () => {
         it('should return correct badge config for known statuses', () => {
-            // PENDING - indigo-500
+            // PENDING
             expect(getStatusBadge('PENDING').label).toBe('Pendiente');
-            expect(getStatusBadge('PENDING').style?.backgroundColor).toBe('#6366f1');
+            expect(getStatusBadge('PENDING').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.PENDING);
 
-            // CANCELED - red-500
+            // CANCELED
             expect(getStatusBadge('CANCELED').label).toBe('Cancelado');
-            expect(getStatusBadge('CANCELED').style?.backgroundColor).toBe('#ef4444');
+            expect(getStatusBadge('CANCELED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.CANCELED);
 
-            // DELETED - slate-500
+            // DELETED
             expect(getStatusBadge('DELETED').label).toBe('Eliminado');
-            expect(getStatusBadge('DELETED').style?.backgroundColor).toBe('#64748b');
+            expect(getStatusBadge('DELETED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
         });
 
         it('should return default for unknown status', () => {
             // Testing invalid status input - falls back to gray-500
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
-            expect(result.style?.backgroundColor).toBe('#6b7280');
+            expect(result.style?.backgroundColor).toBe(DEFAULT_FALLBACK_COLOR);
         });
     });
 
     describe('getStatusIconConfig', () => {
         it('should return correct icon config', () => {
-            // DELIVERED - green-500
+            // DELIVERED
             const result = getStatusIconConfig('DELIVERED');
             expect(result.label).toBe('Entregado');
-            expect(result.dotStyle.backgroundColor).toBe('#22c55e');
-            expect(result.textStyle.color).toBe('#22c55e');
+            expect(result.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
+            expect(result.textStyle.color).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
 
-            // DELETED - slate-500
+            // DELETED
             const deletedResult = getStatusIconConfig('DELETED');
             expect(deletedResult.label).toBe('Eliminado');
-            expect(deletedResult.dotStyle.backgroundColor).toBe('#64748b');
-            expect(deletedResult.textStyle.color).toBe('#64748b');
+            expect(deletedResult.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
+            expect(deletedResult.textStyle.color).toBe(DEFAULT_STATUS_COLORS.DELETED);
         });
     });
 

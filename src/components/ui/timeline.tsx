@@ -42,7 +42,7 @@ export function TimelineHeader({ className, children, icon, statusColor, statusS
             {/* Status Icon/Dot - Matched to header size (w-3 h-3) */}
             <div
                 className={cn(
-                    "absolute left-0 top-1.5 flex h-3 w-3 items-center justify-center rounded-full",
+                    "absolute left-0 top-1.5 flex h-3 w-3 items-center justify-center rounded-full border border-black dark:border-white",
                     statusColor
                 )}
                 style={statusStyle}
