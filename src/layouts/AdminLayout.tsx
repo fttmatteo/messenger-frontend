@@ -185,7 +185,7 @@ function AdminLayoutContent() {
                         )}
                     </header>
                 )}
-                <main id="main-content" ref={mainRef} className={cn("flex-1 overflow-x-hidden overflow-y-auto", isTrackingPage ? "p-0" : "p-6")} role="main">
+                <main id="main-content" ref={mainRef} className={cn("flex-1 overflow-x-hidden overflow-y-auto", isTrackingPage ? "p-0" : "p-2")} role="main">
                     <Outlet context={{ searchQuery }} />
                 </main>
             </SidebarInset>

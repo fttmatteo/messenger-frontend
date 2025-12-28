@@ -198,11 +198,11 @@ export default function EditConcesionario() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="mb-4">
+            <div className="mb-2">
                 <h1 className="text-xl md:text-2xl font-bold">Editar concesionario</h1>
             </div>
 
-            <div className="flex-1 grid gap-4 lg:grid-cols-3">
+            <div className="flex-1 grid gap-2 lg:grid-cols-3">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>

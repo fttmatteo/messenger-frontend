@@ -67,7 +67,7 @@ export default function CreateEmployee() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="mb-4">
+            <div className="mb-2">
                 <h1 className="text-xl md:text-2xl font-bold">Nuevo empleado</h1>
             </div>
 

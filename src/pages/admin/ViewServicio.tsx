@@ -135,7 +135,7 @@ export default function ViewServicio() {
     return (
         <div className="space-y-2">
             {/* Header Layout: Navigation (Left) - Status (Center) - Actions (Right) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
                 {/* Left: Navigation */}
                 <div className="flex justify-start">
                     <Breadcrumb>
@@ -226,9 +226,8 @@ export default function ViewServicio() {
                 </div>
             </div>
 
-            {/* General Information - Horizontal layout for desktop */}
-            {/* Split Layout: Info (Left) & History (Right) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Split Layout: Info (Left), History (Right) & Map (Full Width) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* General Information - Vertical Layout */}
                 <Card className="h-[600px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
