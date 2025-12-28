@@ -88,19 +88,25 @@ export default function MessengerCreateServicio() {
         }
     }, [stopCamera])
     const startCamera = useCallback(async () => {
+        // If camera is already active or starting, don't re-trigger
+        if (streamRef.current || (cameraActive && !cameraError)) {
+            console.log('Camera already active or starting, skipping startCamera')
+            return
+        }
+
         try {
             setCameraError(null)
             setCameraReady(false)
             setCameraActive(true)
 
-            // Safety timeout - if camera doesn't initialize in 15 seconds, show error
+            // Safety timeout - if camera doesn't initialize in 20 seconds, show error
             const timeoutId = setTimeout(() => {
-                if (!cameraReady) {
+                if (!videoRef.current?.paused === false) { // Extra check if video is playing
                     console.warn('Camera initialization timeout')
                     setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
                     stopCamera()
                 }
-            }, 15000)
+            }, 20000)
 
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
@@ -167,7 +173,7 @@ export default function MessengerCreateServicio() {
                 id: "error-camara"
             })
         }
-    }, [cameraReady, stopCamera])
+    }, [stopCamera])
     useEffect(() => {
         startCamera()
     }, [startCamera])
@@ -364,9 +370,6 @@ export default function MessengerCreateServicio() {
 
             {/* Header with back button */}
             <header className="flex items-center gap-3">
-                <div className="min-w-0">
-                    <h1 className="text-lg sm:text-xl font-bold truncate">Crear Servicio</h1>
-                </div>
             </header>
 
             {/* Main Form Area */}
