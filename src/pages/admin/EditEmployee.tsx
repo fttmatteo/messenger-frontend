@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff, Trash2 } from "lucide-react"
@@ -118,13 +119,24 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="mb-2">
-                <h1 className="text-xl md:text-2xl font-bold">Editar empleado</h1>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title center */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Empleados", href: "/admin/empleados" },
+                        { label: "Editar" }
+                    ]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar empleado</h1>
+                </div>
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
                 </CardHeader>

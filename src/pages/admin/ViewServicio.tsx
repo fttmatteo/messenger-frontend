@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, useNavigate, Link } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { useStatusColors } from "@/hooks/useStatusColors"
@@ -8,7 +8,7 @@ import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
@@ -16,7 +16,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Loader2 } from "lucide-react"
+import { ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig, getPlateTypeIcon, canUserEditService } from "@/lib/status-utils"
@@ -133,38 +133,19 @@ export default function ViewServicio() {
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header Layout: Navigation (Left) - Status (Center) - Actions (Right) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
                 {/* Left: Navigation */}
-                <div className="flex justify-start">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin">
-                                        <Home className="h-4 w-4" />
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin/servicios">
-                                        Servicios
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Servicios", href: "/admin/servicios" },
+                        { label: service.plate.plateNumber }
+                    ]} />
                 </div>
 
                 {/* Center: Status */}
-                <div className="flex flex-row items-center justify-center gap-3">
+                <div className="flex-1 flex flex-row items-center justify-center gap-3">
                     <div
                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
                         style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
@@ -177,7 +158,7 @@ export default function ViewServicio() {
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex justify-end gap-3">
+                <div className="flex-1 flex justify-end gap-3">
                     {/* Update Status Button - uses role-based logic */}
                     {(() => {
                         const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined

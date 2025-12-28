@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import { useParams, useNavigate, Link } from "react-router-dom"
-import { Home, Loader2, Save, UserPlus } from "lucide-react"
+import { useParams, useNavigate } from "react-router-dom"
+import { Loader2, Save, UserPlus } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { useStatusColors } from "@/hooks/useStatusColors"
 import { employeeService } from "@/services/employee.service"
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
@@ -136,45 +136,20 @@ export default function UpdateServiceStatus() {
     if (!service) return null
 
     return (
-        <div className="space-y-1">
-            {/* Breadcrumbs */}
+        <div className="flex flex-col h-full gap-1">
             {/* Header with Navigation and Centered Title */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-4">
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin">
-                                        <Home className="h-4 w-4" />
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin/servicios">
-                                        Servicios
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to={`/admin/servicios/${id}`}>
-                                        {service.plate.plateNumber}
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>Actualizar</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                    <AdminBreadcrumb segments={[
+                        { label: "Servicios", href: "/admin/servicios" },
+                        { label: service.plate.plateNumber, href: `/admin/servicios/${id}` },
+                        { label: "Actualizar" }
+                    ]} />
                 </div>
 
-                <h1 className="md:flex-1 md:text-center text-xl md:text-2xl font-bold whitespace-nowrap">Actualizar estado</h1>
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Actualizar estado</h1>
+                </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
@@ -231,7 +206,7 @@ export default function UpdateServiceStatus() {
                 </div>
             )}
 
-            <Card className="gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <PlacaBadge

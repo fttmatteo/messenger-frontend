@@ -31,36 +31,38 @@ export default function Configuracion() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-2">
-            {/* Header - Same pattern as other pages */}
-            <div className="flex items-center justify-between gap-2">
-                {/* Left: Breadcrumb/Back navigation */}
-                {activeSection === null ? (
-                    <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
-                ) : (
-                    <AdminBreadcrumb
-                        segments={[
-                            { label: "Configuración", onClick: () => setActiveSection(null) },
-                            { label: "Colores de Estados" }
-                        ]}
-                    />
-                )}
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title center, Actions right */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                {/* Left: Navigation */}
+                <div className="flex-1">
+                    {activeSection === null ? (
+                        <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
+                    ) : (
+                        <AdminBreadcrumb
+                            segments={[
+                                { label: "Configuración", onClick: () => setActiveSection(null) },
+                                { label: "Colores" }
+                            ]}
+                        />
+                    )}
+                </div>
 
                 {/* Center: Title */}
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold">
-                        {activeSection === 'colors' ? 'Colores de Estados' : 'Configuración'}
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">
+                        {activeSection === 'colors' ? 'Colores de estados' : 'Configuración'}
                     </h1>
                 </div>
 
-                {/* Right: Actions (empty spacer or button) */}
-                <div className="w-[140px] flex justify-end">
+                {/* Right: Actions */}
+                <div className="flex-1 flex justify-end">
                     {activeSection === 'colors' && isModified && (
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={handleResetAll}
-                            className="gap-2 h-8 text-xs"
+                            className="gap-2 h-8 text-xs shrink-0"
                         >
                             <RotateCcw className="h-3 w-3" />
                             Restaurar

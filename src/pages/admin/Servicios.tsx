@@ -62,12 +62,15 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header: Breadcrumb left, Title+Filters center */}
-            <div className="flex items-center justify-between gap-2">
-                <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold">Servicios</h1>
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
                     <Select
                         value={statusFilter.length === 1 ? statusFilter[0] : "all"}
                         onValueChange={(value) => {
@@ -91,8 +94,8 @@ export default function Servicios() {
                         </Button>
                     )}
                 </div>
-                {/* Empty spacer for alignment */}
-                <div className="w-[140px]" />
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">

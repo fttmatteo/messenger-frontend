@@ -132,17 +132,20 @@ export default function Concesionarios() {
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header: Breadcrumb left, Title+Filters center, Button right */}
-            <div className="flex items-center justify-between gap-2">
-                <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold">Concesionarios</h1>
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Concesionarios</h1>
                     <ToggleGroup
                         type="single"
                         value={zoneFilter}
                         onValueChange={(value) => setZoneFilter(value || "all")}
-                        className="justify-start"
+                        className="justify-start shrink-0"
                     >
                         <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
                         {uniqueZones.map((zone) => (
@@ -150,15 +153,18 @@ export default function Concesionarios() {
                         ))}
                     </ToggleGroup>
                     {zoneFilter !== "all" && (
-                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs">
+                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs shrink-0">
                             <X className="h-3 w-3 mr-1" />Limpiar
                         </Button>
                     )}
                 </div>
-                <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
-                    <Plus className="h-3 w-3 mr-1" />
-                    Nuevo concesionario
-                </Button>
+
+                <div className="flex-1 flex justify-end">
+                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                        <Plus className="h-3 w-3 mr-1" />
+                        Nuevo concesionario
+                    </Button>
+                </div>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
