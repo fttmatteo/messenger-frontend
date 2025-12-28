@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
-import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
+
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
@@ -288,17 +288,7 @@ export default function ServiceDetails() {
                     </>
                 )}
 
-                <Separator className="my-6" />
 
-                {/* Service Journey Map */}
-                <div className="mb-6">
-                    <ServiceTrackingMap
-                        serviceId={service.idServiceDelivery}
-                        dealershipLat={service.dealership.latitude}
-                        dealershipLng={service.dealership.longitude}
-                        dealershipName={service.dealership.name}
-                    />
-                </div>
             </div>
         </div>
     )

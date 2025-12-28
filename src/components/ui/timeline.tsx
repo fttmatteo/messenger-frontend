@@ -21,7 +21,7 @@ export function TimelineItem({ className, children, isLast, ...props }: Timeline
             {/* Connecting Line */}
             {!isLast && (
                 <div
-                    className="absolute left-[11px] top-[28px] bottom-[-4px] w-[2px] bg-border"
+                    className="absolute left-[11px] top-[28px] bottom-[-4px] w-[2px] bg-black dark:bg-white"
                     aria-hidden="true"
                 />
             )}
