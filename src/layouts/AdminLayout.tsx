@@ -3,14 +3,13 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, ChevronUp, Trash2 } from "lucide-react"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { motion, AnimatePresence } from "framer-motion"
 import { AdminUIProvider } from "@/context/AdminUIContext"
 
 const menuItems = [
@@ -66,23 +65,6 @@ function AdminLayoutContent() {
 
     // Scroll to top functionality
     const mainRef = useRef<HTMLElement>(null)
-    const [showScrollTop, setShowScrollTop] = useState(false)
-
-    useEffect(() => {
-        const mainElement = mainRef.current
-        if (!mainElement) return
-
-        const handleScroll = () => {
-            setShowScrollTop(mainElement.scrollTop > 300)
-        }
-
-        mainElement.addEventListener('scroll', handleScroll)
-        return () => mainElement.removeEventListener('scroll', handleScroll)
-    }, [])
-
-    const scrollToTop = () => {
-        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-    }
 
     return (
         <SidebarProvider>
@@ -206,26 +188,6 @@ function AdminLayoutContent() {
                 <main id="main-content" ref={mainRef} className={cn("flex-1 overflow-x-hidden overflow-y-auto", isTrackingPage ? "p-0" : "p-6")} role="main">
                     <Outlet context={{ searchQuery }} />
                 </main>
-
-                <AnimatePresence>
-                    {showScrollTop && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="fixed bottom-6 right-6 z-50"
-                        >
-                            <Button
-                                onClick={scrollToTop}
-                                size="icon"
-                                className="h-12 w-12 rounded-full shadow-lg"
-                                aria-label="Volver arriba"
-                            >
-                                <ChevronUp className="h-5 w-5" />
-                            </Button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </SidebarInset>
 
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>

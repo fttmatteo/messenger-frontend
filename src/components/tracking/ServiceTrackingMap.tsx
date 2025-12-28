@@ -12,12 +12,30 @@ import { MapPin, Navigation, Route, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 
+import type { ServiceStatus } from "@/types/service.types"
+import { getStatusBadge } from "@/lib/status-utils"
+
 interface ServiceTrackingMapProps {
     serviceId: number
     dealershipLat?: number
     dealershipLng?: number
     dealershipName?: string
+    serviceStatus?: ServiceStatus
     className?: string
+}
+
+// Maps service status to HEX colors for Google Maps markers
+const getStatusHexColor = (status?: ServiceStatus | string): string => {
+    switch (status) {
+        case 'ASSIGNED': return '#3b82f6' // blue-500
+        case 'PENDING': return '#6366f1' // indigo-500
+        case 'DELIVERED': return '#22c55e' // green-500
+        case 'RETURNED': return '#f97316' // orange-500
+        case 'CANCELED': return '#ef4444' // red-500
+        case 'RESOLVED': return '#a855f7' // purple-500
+        case 'DELETED': return '#64748b' // slate-500
+        default: return '#6b7280' // gray-500
+    }
 }
 
 // Componente para manejar AdvancedMarkerElement
@@ -70,8 +88,10 @@ export function ServiceTrackingMap({
     dealershipLat,
     dealershipLng,
     dealershipName,
+    serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
+    // ... state hooks ...
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
     const [loading, setLoading] = useState(true)
     const [distance, setDistance] = useState<{ meters: number | null, seconds: number | null } | null>(null)
@@ -81,6 +101,7 @@ export function ServiceTrackingMap({
         ? { lat: dealershipLat, lng: dealershipLng }
         : { lat: 6.2442, lng: -75.5812 }
 
+    // ... useEffect for data fetching ...
     useEffect(() => {
         const fetchTrackingData = async () => {
             try {
@@ -105,6 +126,12 @@ export function ServiceTrackingMap({
     const lastPosition = trackingPath.length > 0 ? trackingPath[trackingPath.length - 1] : null
     const firstPosition = trackingPath.length > 0 ? trackingPath[0] : null
 
+    // Determine colors and labels based on status
+    const startColor = getStatusHexColor('ASSIGNED')
+    const endColor = serviceStatus ? getStatusHexColor(serviceStatus) : getStatusHexColor('PENDING')
+    const endLabel = serviceStatus ? getStatusBadge(serviceStatus).label : 'Última ubicación'
+
+    // ... calculateDistance helper ...
     const calculateDistance = async () => {
         if (!lastPosition || !dealershipLat || !dealershipLng) return
 
@@ -147,6 +174,7 @@ export function ServiceTrackingMap({
         return `${mins} min`
     }
 
+    // ... loading and empty states ...
     if (loading) {
         return (
             <Card className={className}>
@@ -202,39 +230,40 @@ export function ServiceTrackingMap({
                             <Polyline
                                 path={trackingPath}
                                 options={{
-                                    strokeColor: '#4f46e5',
+                                    strokeColor: endColor, // Route matches current status color
                                     strokeOpacity: 0.8,
                                     strokeWeight: 4,
                                 }}
                             />
                         )}
 
-                        {/* Start marker */}
+                        {/* Start marker: Always "Asignado" (Blue) */}
                         {firstPosition && (
                             <AdvancedMarker
                                 position={firstPosition}
-                                title="Inicio del recorrido"
-                                color="#22c55e"
+                                title="Inicio - Asignado"
+                                color={startColor}
                                 label="A"
                             />
                         )}
 
-                        {/* Last/Current position marker */}
+                        {/* Last/Current position marker: Matches current Service Status */}
                         {lastPosition && lastPosition !== firstPosition && (
                             <AdvancedMarker
                                 position={lastPosition}
-                                title="Última ubicación del mensajero"
-                                color="#4f46e5"
+                                title={endLabel}
+                                color={endColor}
                                 label="B"
                             />
                         )}
 
-                        {/* Dealership marker */}
+                        {/* Dealership marker: Always Orange (matches Returned/Destination concept or Keep generic orange) */}
                         {dealershipLat && dealershipLng && (
                             <AdvancedMarker
                                 position={{ lat: dealershipLat, lng: dealershipLng }}
                                 title={dealershipName || "Concesionario"}
                                 color="#f97316"
+                            // Customize icon or label if needed
                             />
                         )}
                     </Map>
@@ -244,14 +273,14 @@ export function ServiceTrackingMap({
                 <div className="flex flex-wrap gap-4 text-xs">
                     {firstPosition && (
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-green-500" />
-                            <span className="text-muted-foreground">Inicio</span>
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: startColor }} />
+                            <span className="text-muted-foreground">Asignado (Inicio)</span>
                         </div>
                     )}
                     {trackingPath.length > 1 && (
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-indigo-500" />
-                            <span className="text-muted-foreground">Última ubicación</span>
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: endColor }} />
+                            <span className="text-muted-foreground">{endLabel} (Actual)</span>
                         </div>
                     )}
                     {dealershipLat && dealershipLng && (

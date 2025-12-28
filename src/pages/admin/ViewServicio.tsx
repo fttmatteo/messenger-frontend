@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
-import { useIsMobile } from "@/hooks/use-mobile"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,8 +17,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, ChevronUp, Edit, Clock, Lock, Loader2 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Clock, Lock, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusBadge, getStatusIconConfig, getPlateTypeIcon, canUserEditService, getTimeRemainingIn72hWindow } from "@/lib/status-utils"
@@ -31,7 +30,7 @@ export default function ViewServicio() {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError: setGlobalError } = useAdminUI()
-    const isMobile = useIsMobile()
+
 
     // Service Data State
     const [service, setService] = useState<ServiceDelivery | null>(null)
@@ -42,7 +41,6 @@ export default function ViewServicio() {
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
-    const [showScrollTop, setShowScrollTop] = useState(false)
 
     // Derived State
     const isAdmin = user?.role === 'ADMIN'
@@ -100,23 +98,6 @@ export default function ViewServicio() {
         }
     }
 
-    // Scroll to top functionality for mobile
-    useEffect(() => {
-        if (!isMobile) return
-
-        const handleScroll = () => {
-            const scrolled = window.scrollY > 300
-            setShowScrollTop(scrolled)
-        }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [isMobile])
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-
     if (loading) {
         return <ViewServicioSkeleton />
     }
@@ -153,61 +134,64 @@ export default function ViewServicio() {
 
     return (
         <div className="space-y-2">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin/servicios">
-                                Servicios
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            {/* Header */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                    <div className="flex flex-wrap items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-5 h-5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-xl md:text-2xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                {getStatusIconConfig(service.currentStatus).label}
-                            </span>
-                        </div>
-                        {/* 72h Window Indicator */}
-                        {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
-                            const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
-                            if (timeRemaining) {
-                                return (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800">
-                                        <Clock className="h-4 w-4" />
-                                        <span className="font-medium text-lg">{timeRemaining.hours}h {timeRemaining.minutes}m</span>
-                                    </div>
-                                )
-                            }
-                            return (
-                                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium gap-1">
-                                    <Lock className="h-3 w-3" /> Inmutable
-                                </Badge>
-                            )
-                        })()}
-                    </div>
+            {/* Header Layout: Navigation (Left) - Status (Center) - Actions (Right) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                {/* Left: Navigation */}
+                <div className="flex justify-start">
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to="/admin">
+                                        <Home className="h-4 w-4" />
+                                    </Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to="/admin/servicios">
+                                        Servicios
+                                    </Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                 </div>
-                <div className="flex w-full md:w-auto gap-2">
+
+                {/* Center: Status */}
+                <div className="flex flex-row items-center justify-center gap-3">
+                    <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
+                        <span className={`text-xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
+                            {getStatusIconConfig(service.currentStatus).label}
+                        </span>
+                    </div>
+                    {/* 72h Window Indicator */}
+                    {(service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED') && (() => {
+                        const timeRemaining = getTimeRemainingIn72hWindow(service.createdAt)
+                        if (timeRemaining) {
+                            return (
+                                <div className="flex items-center gap-2 px-3 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 text-xs">
+                                    <Clock className="h-3 w-3" />
+                                    <span className="font-medium">{timeRemaining.hours}h {timeRemaining.minutes}m</span>
+                                </div>
+                            )
+                        }
+                        return (
+                            <Badge variant="secondary" className="px-2 py-0.5 text-xs font-medium gap-1">
+                                <Lock className="h-3 w-3" /> Inmutable
+                            </Badge>
+                        )
+                    })()}
+                </div>
+
+                {/* Right: Actions */}
+                <div className="flex justify-end gap-2">
                     {/* Update Status Button - uses role-based logic */}
                     {(() => {
                         const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
@@ -221,7 +205,7 @@ export default function ViewServicio() {
                                     className="flex-1 md:flex-none"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
-                                    Actualizar estado
+                                    Actualizar
                                 </Button>
                             )
                         }
@@ -236,8 +220,7 @@ export default function ViewServicio() {
                             disabled={deleting}
                             className="flex-1 md:flex-none"
                         >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Eliminar
+                            <Trash2 className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
@@ -381,6 +364,7 @@ export default function ViewServicio() {
                 dealershipLat={service.dealership.latitude}
                 dealershipLng={service.dealership.longitude}
                 dealershipName={service.dealership.name}
+                serviceStatus={service.currentStatus}
             />
 
             {/* Delete Confirmation Dialog */}
@@ -415,25 +399,6 @@ export default function ViewServicio() {
                 src={selectedImage}
                 onClose={() => setSelectedImage(null)}
             />
-            {/* Scroll to top button (mobile only) */}
-            <AnimatePresence>
-                {isMobile && showScrollTop && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed bottom-20 right-4 z-50"
-                    >
-                        <Button
-                            onClick={scrollToTop}
-                            size="icon"
-                            className="h-12 w-12 rounded-full shadow-lg"
-                        >
-                            <ChevronUp className="h-5 w-5" />
-                        </Button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div >
     )
 }
