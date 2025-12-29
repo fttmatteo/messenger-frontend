@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react"
 import {
     X,
-    Navigation,
     Clock,
     Phone,
     MapPin,
     AlertCircle,
     Calendar as CalendarIcon,
-    ChevronDown
+    ChevronDown,
+    TrendingUp
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,13 +26,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { formatDistanceToNow, format } from "date-fns"
+import { formatDistanceToNow, format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
-import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
+import { serviceDeliveryService } from "@/services/service.service"
+import { Progress } from "@/components/ui/progress"
+import { useStatusColors } from "@/hooks/useStatusColors"
+import { getStatusIconConfig } from "@/lib/status-utils"
+import type { DailyStats, ServiceStatus } from "@/types/service.types"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
-import type { TrackingHistoryItem } from "@/types/location.types"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -41,7 +44,6 @@ interface MessengerSidePanelProps {
     onClose: () => void
     onFollow: (id: number) => void
     isFollowing: boolean
-    onHistoryChange?: (messengerId: number, history: TrackingHistoryItem[]) => void
 }
 
 interface TimelineEvent {
@@ -50,11 +52,15 @@ interface TimelineEvent {
     endTime?: string
     title: string
     description: string
-    lat: number
-    lng: number
-    type: 'pickup' | 'delivery' | 'status' | 'point'
-    statusColor?: string
+    lat?: number
+    lng?: number
+    type: 'pickup' | 'delivery' | 'status' | 'point' | 'service'
+    pillBackground?: string
+    dotStyle?: React.CSSProperties
+    statusLabel?: string
     icon: React.ReactNode
+    rawTimestamp: number
+    changedByName?: string
 }
 
 // Reverse Geocoding Logic from MessengerDetails.tsx
@@ -136,14 +142,15 @@ export function MessengerSidePanel({
     messenger,
     messengerId,
     isOpen,
-    onClose,
-    onHistoryChange
+    onClose
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
-    const [history, setHistory] = useState<TrackingHistoryItem[]>([])
+    const [history, setHistory] = useState<TimelineEvent[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+    const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
+    const { colors } = useStatusColors()
 
     const fetchDetails = useCallback(async () => {
         if (!messengerId) return
@@ -156,26 +163,78 @@ export function MessengerSidePanel({
         }
     }, [messengerId])
 
-    const fetchHistory = useCallback(async () => {
+    const fetchActivity = useCallback(async () => {
         if (!messengerId) return
 
         try {
             setLoadingHistory(true)
             setHistoryError(null)
-            const dateStr = format(selectedDate, 'yyyy-MM-dd')
-            const data = await trackingApiService.getHistory(messengerId, dateStr)
-            setHistory(Array.isArray(data) ? data : [])
-            if (onHistoryChange && messengerId) {
-                onHistoryChange(messengerId, Array.isArray(data) ? data : [])
+
+            // 1. Fetch Daily Stats
+            const stats = await serviceDeliveryService.getDailyStats(messengerId, selectedDate, selectedDate)
+            if (stats && stats.length > 0) {
+                setDailyStats(stats[0])
+            } else {
+                setDailyStats({
+                    date: format(selectedDate, 'yyyy-MM-dd'),
+                    assigned: 0,
+                    delivered: 0,
+                    returned: 0,
+                    canceled: 0,
+                    total: 0
+                })
             }
+
+            // 2. Fetch Services to build Milestones
+            const allServices = await serviceDeliveryService.getAll()
+            const messengerServices = allServices.filter(s => s.messenger?.idEmployee === messengerId)
+
+            const milestones: TimelineEvent[] = []
+
+            messengerServices.forEach(service => {
+                // Add History events if match date
+                service.history?.forEach(h => {
+                    const changeDate = new Date(h.changeDate)
+                    if (isSameDay(changeDate, selectedDate)) {
+                        const config = getStatusIconConfig(h.newStatus as ServiceStatus, colors)
+
+                        milestones.push({
+                            id: `history-${h.idStatusHistory}`,
+                            time: format(changeDate, 'HH:mm'),
+                            title: config.label,
+                            description: `${service.plate.plateNumber} - ${service.dealership.name}`,
+                            lat: h.deliveryLatitude,
+                            lng: h.deliveryLongitude,
+                            type: 'status',
+                            statusLabel: config.label,
+                            icon: null,
+                            pillBackground: config.pillBackground,
+                            dotStyle: config.dotStyle,
+                            rawTimestamp: changeDate.getTime(),
+                            changedByName: h.changedBy?.role === 'ADMIN' ? (() => {
+                                const names = h.changedBy.fullName.split(' ')
+                                if (names.length >= 2) {
+                                    return `${names[0]} ${names[1].charAt(0)}.`
+                                }
+                                return h.changedBy.fullName
+                            })() : undefined
+                        })
+                    }
+                })
+            })
+
+            // Sort by time descending (newest first)
+            milestones.sort((a, b) => b.rawTimestamp - a.rawTimestamp)
+
+            setHistory(milestones)
+
         } catch (error) {
-            console.error("Error fetching history:", error)
-            setHistoryError("No se pudo cargar el historial")
-            setHistory([])
+            console.error("Error fetching activity:", error)
+            setHistoryError("No se pudo cargar la actividad")
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerId, selectedDate, onHistoryChange])
+    }, [messengerId, selectedDate, colors])
 
     useEffect(() => {
         if (isOpen && messengerId) {
@@ -185,9 +244,9 @@ export function MessengerSidePanel({
 
     useEffect(() => {
         if (isOpen && messengerId) {
-            fetchHistory()
+            fetchActivity()
         }
-    }, [isOpen, messengerId, selectedDate, fetchHistory])
+    }, [isOpen, messengerId, selectedDate, fetchActivity])
 
     // Reset history when messenger changes
     useEffect(() => {
@@ -197,99 +256,14 @@ export function MessengerSidePanel({
         }
     }, [messengerId])
 
-    if (!isOpen) return null
-
-    // Process history into timeline events - Simplified grouping by same location
-    const timelineEvents: TimelineEvent[] = (() => {
-        const sorted = [...history]
-            .filter(item => item && (item.recordedAt || item.timestamp || item.lastUpdate))
-            .sort((a, b) => {
-                const timeA = new Date((a.recordedAt || a.timestamp || a.lastUpdate) as string).getTime()
-                const timeB = new Date((b.recordedAt || b.timestamp || b.lastUpdate) as string).getTime()
-                return timeA - timeB
-            })
-
-        if (sorted.length === 0) return []
-
-        const grouped: TimelineEvent[] = []
-        let currentGroup: {
-            items: TrackingHistoryItem[]
-            lat: number
-            lng: number
-            startTime: Date
-            endTime: Date
-        } | null = null
-
-        sorted.forEach((item) => {
-            const timestamp = (item.recordedAt || item.timestamp || item.lastUpdate) as string
-            const date = new Date(timestamp)
-            const lat = Number(Number(item.latitude).toFixed(5))
-            const lng = Number(Number(item.longitude).toFixed(5))
-
-            if (!currentGroup) {
-                currentGroup = {
-                    items: [item],
-                    lat,
-                    lng,
-                    startTime: date,
-                    endTime: date
-                }
-            } else if (lat === currentGroup.lat && lng === currentGroup.lng) {
-                currentGroup.items.push(item)
-                currentGroup.endTime = date
-            } else {
-                // Push previous group and start new one
-                const avgSpeed = currentGroup.items.reduce((acc: number, curr: TrackingHistoryItem) => acc + (curr.speed || 0), 0) / currentGroup.items.length * 3.6
-                grouped.push({
-                    id: `group-${currentGroup.startTime.getTime()}`,
-                    time: format(currentGroup.startTime, 'HH:mm'),
-                    endTime: currentGroup.startTime.getTime() !== currentGroup.endTime.getTime() ? format(currentGroup.endTime, 'HH:mm') : undefined,
-                    title: avgSpeed > 5 ? 'En movimiento' : avgSpeed > 0 ? 'Movimiento lento' : 'Detenido',
-                    description: avgSpeed > 0.5 ? `Velocidad prom: ${avgSpeed.toFixed(1)} km/h` : '',
-                    lat: currentGroup.lat,
-                    lng: currentGroup.lng,
-                    type: 'point',
-                    icon: avgSpeed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
-                    statusColor: avgSpeed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'
-                })
-
-                currentGroup = {
-                    items: [item],
-                    lat,
-                    lng,
-                    startTime: date,
-                    endTime: date
-                }
-            }
-        })
-
-        // Final group
-        if (currentGroup) {
-            const group: { items: TrackingHistoryItem[]; lat: number; lng: number; startTime: Date; endTime: Date } = currentGroup
-            const avgSpeed = group.items.reduce((acc: number, curr: TrackingHistoryItem) => acc + (curr.speed || 0), 0) / group.items.length * 3.6
-            grouped.push({
-                id: `group-${group.startTime.getTime()}`,
-                time: format(group.startTime, 'HH:mm'),
-                endTime: group.startTime.getTime() !== group.endTime.getTime() ? format(group.endTime, 'HH:mm') : undefined,
-                title: avgSpeed > 5 ? 'En movimiento' : avgSpeed > 0 ? 'Movimiento lento' : 'Detenido',
-                description: avgSpeed > 0.5 ? `Velocidad prom: ${avgSpeed.toFixed(1)} km/h` : '',
-                lat: group.lat,
-                lng: group.lng,
-                type: 'point',
-                icon: avgSpeed > 5 ? <Navigation className="h-3 w-3" /> : <MapPin className="h-3 w-3" />,
-                statusColor: avgSpeed > 5 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'
-            })
-        }
-
-        return grouped.reverse().slice(0, 30)
-    })()
-
     const safeFormatDistanceToNow = (dateString: string | undefined) => {
         if (!dateString) return 'Sin registro'
         const date = new Date(dateString)
         if (isNaN(date.getTime())) return 'Fecha inválida'
         return formatDistanceToNow(date, { addSuffix: true, locale: es })
     }
+
+    if (!isOpen) return null
 
     return (
         <div className={cn(
@@ -345,8 +319,39 @@ export function MessengerSidePanel({
                         </div>
                     </div>
 
-                    {/* Quick Info */}
+                    {/* Productivity Summary */}
                     <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                <TrendingUp className="h-3 w-3" />
+                                Resumen del Día
+                            </h4>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-1.5">
+                            <div className="bg-background/40 border p-2 rounded-lg text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Entregados</p>
+                                <p className="text-sm font-bold">{dailyStats?.delivered || 0}</p>
+                            </div>
+                            <div className="bg-background/40 border p-2 rounded-lg text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Devueltos</p>
+                                <p className="text-sm font-bold">{dailyStats?.returned || 0}</p>
+                            </div>
+                            <div className="bg-background/40 border p-2 rounded-lg text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Pendientes</p>
+                                <p className="text-sm font-bold">{dailyStats?.assigned ? dailyStats.assigned - (dailyStats.delivered + dailyStats.returned + dailyStats.canceled) : 0}</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 bg-background/40 border p-2.5 rounded-lg">
+                            <div className="flex justify-between items-end">
+                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Efectividad</p>
+                                <p className="text-xs font-bold text-primary">
+                                    {dailyStats?.total ? Math.round((dailyStats.delivered / dailyStats.total) * 100) : 0}%
+                                </p>
+                            </div>
+                            <Progress value={dailyStats?.total ? (dailyStats.delivered / dailyStats.total) * 100 : 0} className="h-1" />
+                        </div>
                     </div>
 
                     {/* Timeline */}
@@ -394,20 +399,24 @@ export function MessengerSidePanel({
                             <div className="flex flex-col items-center justify-center py-6 text-center">
                                 <AlertCircle className="h-8 w-8 text-red-500/50 mb-2" />
                                 <p className="text-xs text-muted-foreground">{historyError}</p>
-                                <Button variant="link" size="sm" onClick={() => fetchHistory()} className="text-[10px] h-auto p-0 mt-1">
+                                <button onClick={() => fetchActivity()} className="text-[10px] h-auto p-0 mt-1 text-primary hover:underline">
                                     Reintentar
-                                </Button>
+                                </button>
                             </div>
-                        ) : timelineEvents.length > 0 ? (
+                        ) : history.length > 0 ? (
                             <Timeline>
-                                {timelineEvents.map((event, index) => (
-                                    <TimelineItem key={event.id} isLast={index === timelineEvents.length - 1}>
-                                        <TimelineHeader
-                                            icon={event.icon}
-                                            statusColor={event.statusColor}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <span className="text-xs font-bold">{event.title}</span>
+                                {history.map((event, index) => (
+                                    <TimelineItem key={event.id} isLast={index === history.length - 1} data-small="true">
+                                        <TimelineHeader statusStyle={event.dotStyle} size="sm">
+                                            <div
+                                                className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full ml-1"
+                                                style={{ backgroundColor: event.pillBackground }}
+                                            >
+                                                <span className="text-[10px] font-bold">
+                                                    {event.title}
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 text-right">
                                                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                                                     {event.time} {event.endTime && ` - ${event.endTime}`}
                                                 </span>
@@ -420,10 +429,18 @@ export function MessengerSidePanel({
                                                         {event.description}
                                                     </p>
                                                 )}
-                                                <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
-                                                    <MapPin className="h-3 w-3 shrink-0 opacity-50" />
-                                                    <AddressDisplay lat={event.lat} lng={event.lng} />
-                                                </div>
+                                                {event.lat && event.lng ? (
+                                                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
+                                                        <MapPin className="h-3 w-3 shrink-0 opacity-50" />
+                                                        <AddressDisplay lat={event.lat} lng={event.lng} />
+                                                    </div>
+                                                ) : null}
+                                                {event.changedByName && (
+                                                    <div className="mt-0.5 flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-muted/50 w-fit border border-muted-foreground/10">
+                                                        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Admin:</span>
+                                                        <span className="text-[10px] font-medium text-foreground">{event.changedByName}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </TimelineContent>
                                     </TimelineItem>

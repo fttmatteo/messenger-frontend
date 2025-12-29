@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react"
-import { Link } from "react-router-dom"
 import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
 import { serviceDeliveryService } from "@/services/service.service"
@@ -11,10 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Empty, EmptyHeader, EmptyMedia, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
-import { Trash2, RotateCcw, Loader2, Home, Calendar, User, Building2, Clock } from "lucide-react"
+import { Trash2, RotateCcw, Loader2, Calendar, User, Building2, Clock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { formatDisplayName } from "@/lib/format-utils"
 import { useAdminUI } from "@/context/AdminUIContext"
@@ -124,62 +123,55 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header: Breadcrumb left, Title center, Button right */}
-            <div className="flex items-center justify-between gap-2">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                                <Link to="/admin">
-                                    <Home className="h-4 w-4" />
-                                </Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Eliminados</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <h1 className="text-xl md:text-2xl font-bold">Servicios eliminados</h1>
-                {services.length > 0 ? (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="destructive"
-                                size="sm"
-                                disabled={emptying}
-                            >
-                                {emptying ? (
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                ) : (
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                )}
-                                Vaciar papelera
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Esta acción archivará permanentemente <strong>{services.length} servicio(s)</strong> de la papelera. Los datos se preservarán en el archivo para consulta futura.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={handleEmptyTrash}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Eliminados" }]} />
+                </div>
+
+                <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Servicios eliminados</h1>
+
+                <div className="flex-1 flex justify-end">
+                    {services.length > 0 ? (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={emptying}
+                                    className="h-8 text-xs text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                 >
+                                    {emptying ? (
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    ) : (
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                    )}
                                     Vaciar papelera
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                ) : (
-                    <div className="w-[140px]" />
-                )}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Esta acción archivará permanentemente <strong>{services.length} servicio(s)</strong> de la papelera. Los datos se preservarán en el archivo para consulta futura.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleEmptyTrash}
+                                        className="bg-red-500 text-white hover:bg-red-600"
+                                    >
+                                        Vaciar papelera
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    ) : (
+                        <div className="w-[140px]" />
+                    )}
+                </div>
             </div>
 
             {/* Content */}
@@ -348,8 +340,9 @@ export default function Eliminados() {
                                                                         <TooltipTrigger asChild>
                                                                             <AlertDialogTrigger asChild>
                                                                                 <Button
-                                                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                                                                                    size="sm"
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    className="h-8 w-8 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
                                                                                     disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
                                                                                 >
                                                                                     {restoring === service.idServiceDelivery ? (
@@ -371,7 +364,10 @@ export default function Eliminados() {
                                                                         </AlertDialogHeader>
                                                                         <AlertDialogFooter>
                                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                            <AlertDialogAction onClick={() => handleRestore(service.idServiceDelivery)}>
+                                                                            <AlertDialogAction
+                                                                                onClick={() => handleRestore(service.idServiceDelivery)}
+                                                                                className="bg-emerald-500 text-white hover:bg-emerald-600"
+                                                                            >
                                                                                 Restaurar
                                                                             </AlertDialogAction>
                                                                         </AlertDialogFooter>
@@ -383,8 +379,9 @@ export default function Eliminados() {
                                                                         <TooltipTrigger asChild>
                                                                             <AlertDialogTrigger asChild>
                                                                                 <Button
-                                                                                    variant="destructive"
-                                                                                    size="sm"
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                                                                     disabled={restoring === service.idServiceDelivery || deleting === service.idServiceDelivery}
                                                                                 >
                                                                                     {deleting === service.idServiceDelivery ? (
@@ -408,7 +405,7 @@ export default function Eliminados() {
                                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                                                             <AlertDialogAction
                                                                                 onClick={() => handlePermanentDelete(service.idServiceDelivery)}
-                                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                                className="bg-red-500 text-white hover:bg-red-600"
                                                                             >
                                                                                 <Trash2 className="h-4 w-4 mr-2" />
                                                                                 Eliminar

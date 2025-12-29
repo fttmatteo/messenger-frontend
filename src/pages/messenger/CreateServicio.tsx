@@ -37,6 +37,7 @@ export default function MessengerCreateServicio() {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
+    const initialCameraStartRef = useRef(false)
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -88,10 +89,25 @@ export default function MessengerCreateServicio() {
         }
     }, [stopCamera])
     const startCamera = useCallback(async () => {
+        // If camera is already active or starting, don't re-trigger
+        if (streamRef.current) {
+            console.log('Camera already active, skipping startCamera')
+            return
+        }
+
         try {
             setCameraError(null)
             setCameraReady(false)
             setCameraActive(true)
+
+            // Safety timeout - if camera doesn't initialize in 20 seconds, show error
+            const timeoutId = setTimeout(() => {
+                if (videoRef.current?.paused !== false) { // Extra check if video is NOT playing
+                    console.warn('Camera initialization timeout')
+                    setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
+                    stopCamera()
+                }
+            }, 20000)
 
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
@@ -104,6 +120,13 @@ export default function MessengerCreateServicio() {
 
             streamRef.current = stream
 
+            // Wait up to 2 seconds for video element to be available in DOM
+            let attempts = 0
+            while (!videoRef.current && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+                attempts++
+            }
+
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
 
@@ -111,27 +134,66 @@ export default function MessengerCreateServicio() {
                     if (videoRef.current) {
                         videoRef.current.play()
                             .then(() => {
+                                clearTimeout(timeoutId)
                                 setCameraReady(true)
                             })
                             .catch(err => {
+                                clearTimeout(timeoutId)
                                 console.error('Video play error:', err)
-                                setCameraError('Error al reproducir video')
+                                setCameraError('Error al reproducir video. Intenta de nuevo.')
+                                stopCamera()
                             })
                     }
                 }
+
+                // Additional timeout for video element not responding
+                videoRef.current.onerror = () => {
+                    clearTimeout(timeoutId)
+                    setCameraError('Error en el elemento de video.')
+                    stopCamera()
+                }
+            } else {
+                clearTimeout(timeoutId)
+                setCameraError('Componente de video no disponible')
+                setCameraActive(false)
+                // Stop the stream if we couldn't attach it
+                stream.getTracks().forEach(track => track.stop())
+                streamRef.current = null
             }
         } catch (error) {
             console.error('Camera error:', error)
             setCameraActive(false)
-            setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
+
+            // More specific error messages
+            let errorMessage = 'No se pudo acceder a la cámara.'
+            if (error instanceof Error) {
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = 'Permiso de cámara denegado. Habilítalo en configuración.'
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = 'No se encontró una cámara en el dispositivo.'
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = 'La cámara está siendo usada por otra app.'
+                } else if (error.name === 'OverconstrainedError') {
+                    errorMessage = 'La cámara no soporta la configuración solicitada.'
+                }
+            }
+
+            setCameraError(errorMessage)
             toast.error("Error de cámara", {
-                description: getErrorMessage(error),
+                description: errorMessage,
                 id: "error-camara"
             })
         }
-    }, [])
+    }, [stopCamera])
     useEffect(() => {
-        startCamera()
+        // Run once on mount after a tiny delay to ensure everything is ready
+        const timer = setTimeout(() => {
+            if (!initialCameraStartRef.current) {
+                startCamera()
+                initialCameraStartRef.current = true
+            }
+        }, 300)
+        return () => clearTimeout(timer)
     }, [startCamera])
     const capturePhoto = () => {
         const video = videoRef.current
@@ -323,14 +385,6 @@ export default function MessengerCreateServicio() {
         <div className="flex flex-col gap-3 sm:gap-4 min-h-0">
             {/* Hidden canvas for capturing */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-
-            {/* Header with back button */}
-            <header className="flex items-center gap-3">
-                <div className="min-w-0">
-                    <h1 className="text-lg sm:text-xl font-bold truncate">Crear Servicio</h1>
-                </div>
-            </header>
-
             {/* Main Form Area */}
             <div className="px-1 pb-4 space-y-4">
                 <Form {...form}>

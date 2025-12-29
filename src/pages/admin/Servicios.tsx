@@ -19,6 +19,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { useStatusColors } from "@/hooks/useStatusColors"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -33,6 +34,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 export default function Servicios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    const { colors } = useStatusColors()
 
     // Use custom hooks
     const {
@@ -60,12 +62,15 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header: Breadcrumb left, Title+Filters center */}
-            <div className="flex items-center justify-between gap-2">
-                <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold">Servicios</h1>
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
                     <Select
                         value={statusFilter.length === 1 ? statusFilter[0] : "all"}
                         onValueChange={(value) => {
@@ -89,8 +94,8 @@ export default function Servicios() {
                         </Button>
                     )}
                 </div>
-                {/* Empty spacer for alignment */}
-                <div className="w-[140px]" />
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
@@ -192,10 +197,13 @@ export default function Servicios() {
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <div className="flex items-center gap-2">
-                                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                            <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                                {getStatusIconConfig(service.currentStatus).label}
+                                                        <div
+                                                            className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full"
+                                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                                        >
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                                            <span className="text-sm font-medium">
+                                                                {getStatusIconConfig(service.currentStatus, colors).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>
@@ -203,12 +211,12 @@ export default function Servicios() {
                                                         {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                     </TableCell>
                                                     <TableCell className="text-center">
-                                                        <div className="flex items-center justify-center gap-2">
+                                                        <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
                                                             <Button
-                                                                variant="default"
+                                                                variant="outline"
                                                                 size="icon"
-                                                                onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }}
-                                                                className="h-8 w-8 bg-primary hover:bg-primary/90"
+                                                                onClick={() => handleUpdateStatus(service)}
+                                                                className="h-8 w-8 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors"
                                                                 title="Actualizar estado"
                                                             >
                                                                 <Edit className="h-4 w-4" />

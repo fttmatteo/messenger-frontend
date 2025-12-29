@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 
 import { Map as MapComponent } from "@/components/Map"
-import { useGoogleMap, OverlayView, Polyline } from "@react-google-maps/api"
+import { useGoogleMap, OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -17,7 +17,6 @@ import { formatDisplayName } from "@/lib/format-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
-import type { TrackingHistoryItem } from "@/types/location.types"
 
 // Componente para manejar AdvancedMarkerElement con efecto de pulso
 function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive = false }: {
@@ -113,7 +112,6 @@ export default function LiveTracking() {
     const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
     const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
-    const [historyPath, setHistoryPath] = useState<google.maps.LatLngLiteral[]>([])
     const { setSuccess, setError } = useAdminUI()
 
     // Force re-render periodically to update relative times
@@ -200,26 +198,7 @@ export default function LiveTracking() {
         }
     }, [setSuccess, setError])
 
-    // Handle history updates from side panel
-    const handleHistoryChange = useCallback((id: number, history: TrackingHistoryItem[]) => {
-        // Solo actualizar si el ID coincide con el mensajero seleccionado actualmente
-        if (selectedMessenger?.messengerId === id) {
-            const path = history
-                .filter(item => item.latitude && item.longitude)
-                .map(item => ({
-                    lat: item.latitude,
-                    lng: item.longitude
-                }))
-            setHistoryPath(path)
-        }
-    }, [selectedMessenger?.messengerId])
 
-    // Clear history when closing or switching messenger
-    useEffect(() => {
-        if (!showMessengerDetails || !selectedMessenger) {
-            setHistoryPath([])
-        }
-    }, [showMessengerDetails, selectedMessenger])
 
 
 
@@ -270,7 +249,6 @@ export default function LiveTracking() {
 
 
     const selectMessenger = (messenger: LiveTrackingUpdate) => {
-        setHistoryPath([]) // Limpiar ruta anterior inmediatamente
         setSelectedMessenger(messenger)
         setShowMessengerDetails(true)
         if (messenger.latitude && messenger.longitude) {
@@ -282,7 +260,6 @@ export default function LiveTracking() {
         setSelectedMessenger(null)
         setShowMessengerDetails(false)
         setFollowingMessengerId(null)
-        setHistoryPath([])
     }, [])
 
 
@@ -349,23 +326,6 @@ export default function LiveTracking() {
                                     </div>
                                 </div>
                             </OverlayView>
-                        )}
-                        {/* SIEMPRE renderizar Polyline (si google está listo) para asegurar limpieza vía React */}
-                        {window.google?.maps && (
-                            <Polyline
-                                key="route-current"
-                                path={(showMessengerDetails && selectedMessenger && historyPath.length > 1) ? historyPath : []}
-                                options={{
-                                    strokeColor: '#6366f1',
-                                    strokeOpacity: 0.8,
-                                    strokeWeight: 4,
-                                    icons: [{
-                                        icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
-                                        offset: '100%',
-                                        repeat: '100px'
-                                    }]
-                                }}
-                            />
                         )}
                     </MapComponent>
                 )}
@@ -500,7 +460,6 @@ export default function LiveTracking() {
                 onClose={deselectMessenger}
                 onFollow={toggleFollow}
                 isFollowing={followingMessengerId === selectedMessenger?.messengerId}
-                onHistoryChange={handleHistoryChange}
             />
 
         </div>

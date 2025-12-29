@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { Eye, EyeOff, HelpCircle } from "lucide-react"
+import { Eye, EyeOff, HelpCircle, Package } from "lucide-react"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -32,6 +32,8 @@ export default function Login() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [showExitDialog, setShowExitDialog] = useState(false)
+    const [logoLoaded, setLogoLoaded] = useState(false)
+    const [logoError, setLogoError] = useState(false)
 
     const {
         register,
@@ -103,7 +105,20 @@ export default function Login() {
                 </div>
                 <CardHeader className="space-y-1 pb-2 pt-10 sm:pt-6">
                     <div className="flex flex-col items-center justify-center mb-1 sm:mb-2">
-                        <img src={logo} alt="PLAK Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 object-contain" />
+                        {/* Fallback icon shown while loading or on error */}
+                        {(!logoLoaded || logoError) && (
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center bg-primary/10 rounded-lg">
+                                <Package className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
+                            </div>
+                        )}
+                        {/* Actual logo image */}
+                        <img
+                            src={logo}
+                            alt="PLAK Logo"
+                            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
+                            onLoad={() => setLogoLoaded(true)}
+                            onError={() => setLogoError(true)}
+                        />
                     </div>
                     <div className="flex items-center justify-center">
                         <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>

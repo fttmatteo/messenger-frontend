@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
-import { useParams, useNavigate, Link } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { useStatusColors } from "@/hooks/useStatusColors"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { HistoryEntryCard } from "@/components/service/HistoryEntryCard"
@@ -15,7 +16,7 @@ import { ViewServicioSkeleton } from "@/components/service/ViewServicioSkeleton"
 import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/components/ui/timeline"
 import { ImageViewer } from "@/components/ui/image-viewer"
-import { Home, ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Loader2 } from "lucide-react"
+import { ArrowLeft, Building2, User, Calendar, Trash2, PhoneCall, Edit, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig, getPlateTypeIcon, canUserEditService } from "@/lib/status-utils"
@@ -28,6 +29,7 @@ export default function ViewServicio() {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError: setGlobalError } = useAdminUI()
+    const { colors } = useStatusColors()
 
 
     // Service Data State
@@ -131,48 +133,32 @@ export default function ViewServicio() {
     const PlateIcon = getPlateTypeIcon(service.plate.plateType)
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col h-full gap-1">
             {/* Header Layout: Navigation (Left) - Status (Center) - Actions (Right) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
                 {/* Left: Navigation */}
-                <div className="flex justify-start">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin">
-                                        <Home className="h-4 w-4" />
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link to="/admin/servicios">
-                                        Servicios
-                                    </Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>{service.plate.plateNumber}</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Servicios", href: "/admin/servicios" },
+                        { label: service.plate.plateNumber }
+                    ]} />
                 </div>
 
                 {/* Center: Status */}
-                <div className="flex flex-row items-center justify-center gap-3">
-                    <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                        <span className={`text-xl font-bold ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                            {getStatusIconConfig(service.currentStatus).label}
+                <div className="flex-1 flex flex-row items-center justify-center gap-3">
+                    <div
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                    >
+                        <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <span className="text-lg font-bold">
+                            {getStatusIconConfig(service.currentStatus, colors).label}
                         </span>
                     </div>
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex justify-end gap-2">
+                <div className="flex-1 flex justify-end gap-3">
                     {/* Update Status Button - uses role-based logic */}
                     {(() => {
                         const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
@@ -181,9 +167,10 @@ export default function ViewServicio() {
                         if (canEdit) {
                             return (
                                 <Button
+                                    variant="outline"
                                     onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
                                     size="sm"
-                                    className="flex-1 md:flex-none"
+                                    className="h-9 px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium"
                                 >
                                     <Edit className="mr-2 h-4 w-4" />
                                     Actualizar
@@ -195,11 +182,11 @@ export default function ViewServicio() {
                     {/* Delete Button - Admin only */}
                     {isAdmin && (
                         <Button
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={deleting}
-                            className="flex-1 md:flex-none"
+                            className="h-9 w-9 p-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-1 md:flex-none"
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>
@@ -307,10 +294,15 @@ export default function ViewServicio() {
                                                 key={entry.idStatusHistory}
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
-                                                <TimelineHeader statusColor={getStatusIconConfig(entry.newStatus).dotColor}>
-                                                    <span className={`text-xl font-bold ${getStatusIconConfig(entry.newStatus).textColor}`}>
-                                                        {getStatusIconConfig(entry.newStatus).label}
-                                                    </span>
+                                                <TimelineHeader statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
+                                                    <div
+                                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full ml-1"
+                                                        style={{ backgroundColor: getStatusIconConfig(entry.newStatus, colors).pillBackground }}
+                                                    >
+                                                        <span className="text-lg font-bold">
+                                                            {getStatusIconConfig(entry.newStatus, colors).label}
+                                                        </span>
+                                                    </div>
                                                 </TimelineHeader>
                                                 <TimelineContent>
                                                     <HistoryEntryCard
@@ -360,7 +352,7 @@ export default function ViewServicio() {
                         <AlertDialogAction
                             onClick={handleDelete}
                             disabled={deleting}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-red-500 text-white hover:bg-red-600"
                         >
                             {deleting ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -10,7 +10,8 @@ import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
-import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send } from "lucide-react"
+import { useStatusColors } from "@/hooks/useStatusColors"
+import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send, ChevronLeft } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
@@ -47,6 +48,7 @@ const statusOptions: StatusOption[] = [
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -206,18 +208,35 @@ export default function UpdateStatus() {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <header className="flex items-center gap-3 p-4 border-b bg-background sticky top-0 z-10">
-                <div className="flex-1 min-w-0">
-                    <h1 className="font-bold text-lg">Actualizar estado</h1>
-                    <p className="text-xs text-muted-foreground">
+            <header className="flex items-center justify-between gap-2 p-3 border-b bg-background sticky top-0 z-10">
+                <div className="flex-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => navigate(-1)}
+                        className="h-9 w-9 -ml-1 text-muted-foreground"
+                    >
+                        <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                </div>
+
+                <div className="flex-[2] text-center min-w-0">
+                    <h1 className="font-bold text-sm sm:text-base truncate leading-tight">Actualizar estado</h1>
+                    <p className="text-[10px] text-muted-foreground truncate">
                         {service.plate.plateNumber} · {service.dealership.name}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                    <span className={`text-sm font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                        {getStatusIconConfig(service.currentStatus).label}
-                    </span>
+
+                <div className="flex-1 flex justify-end">
+                    <div
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full whitespace-nowrap"
+                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                    >
+                        <div className="w-2 h-2 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <span className="text-[10px] font-medium lowercase first-letter:uppercase">
+                            {getStatusIconConfig(service.currentStatus, colors).label}
+                        </span>
+                    </div>
                 </div>
             </header>
 

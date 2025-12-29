@@ -91,19 +91,45 @@ export default function MessengerLayout() {
             requestWakeLock()
 
             trackingService.connect(() => {
-                // Connected silently
+                // Send immediate status update to appear online instantly
+                if (user?.id) {
+                    trackingService.sendUpdate({
+                        messengerId: user.id,
+                        status: 'ACTIVE'
+                    })
+                }
             })
 
             if ('geolocation' in navigator) {
-                watchIdRef.current = navigator.geolocation.watchPosition(
+                // Initial fast fix to populate map and status immediately
+                navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        const { latitude, longitude, speed, heading } = position.coords
+                        const { latitude, longitude, speed, heading, accuracy } = position.coords
                         trackingService.sendUpdate({
                             messengerId: user?.id,
                             latitude,
                             longitude,
                             speed: speed || 0,
                             heading: heading || 0,
+                            accuracy,
+                            status: 'ACTIVE'
+                        })
+                        trackingService.setLastLocation(latitude, longitude)
+                    },
+                    (error) => console.log("Initial quick fix failed:", error.message),
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                )
+
+                watchIdRef.current = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const { latitude, longitude, speed, heading, accuracy } = position.coords
+                        trackingService.sendUpdate({
+                            messengerId: user?.id,
+                            latitude,
+                            longitude,
+                            speed: speed || 0,
+                            heading: heading || 0,
+                            accuracy,
                             status: 'ACTIVE'
                         })
                         // Cache locally for instant navigation

@@ -10,11 +10,13 @@ import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useStatusColors } from "@/hooks/useStatusColors"
 
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -183,14 +185,19 @@ export default function ServiceDetails() {
             <div className="flex-1 overflow-auto p-4">
                 {/* Status Section - Minimalist */}
                 <div className="mb-8 flex items-center gap-4 px-1">
-                    <div className={`h-3 w-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                    <div className="flex flex-col">
-                        <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
-                            Estado del servicio
-                        </span>
-                        <span className={`text-xl font-bold tracking-tight ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                            {getStatusIconConfig(service.currentStatus).label}
-                        </span>
+                    <div
+                        className="inline-flex items-center gap-3 px-4 py-2 rounded-full"
+                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                    >
+                        <div className="h-4 w-4 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                        <div className="flex flex-col">
+                            <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
+                                Estado del servicio
+                            </span>
+                            <span className="text-xl font-bold tracking-tight">
+                                {getStatusIconConfig(service.currentStatus, colors).label}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
