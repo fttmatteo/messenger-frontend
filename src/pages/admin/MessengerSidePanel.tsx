@@ -61,6 +61,7 @@ interface TimelineEvent {
     statusLabel?: string
     icon: React.ReactNode
     rawTimestamp: number
+    changedByName?: string
 }
 
 // Reverse Geocoding Logic from MessengerDetails.tsx
@@ -210,7 +211,14 @@ export function MessengerSidePanel({
                             icon: null,
                             pillBackground: config.pillBackground,
                             dotStyle: config.dotStyle,
-                            rawTimestamp: changeDate.getTime()
+                            rawTimestamp: changeDate.getTime(),
+                            changedByName: h.changedBy?.role === 'ADMIN' ? (() => {
+                                const names = h.changedBy.fullName.split(' ')
+                                if (names.length >= 2) {
+                                    return `${names[0]} ${names[1].charAt(0)}.`
+                                }
+                                return h.changedBy.fullName
+                            })() : undefined
                         })
                     }
                 })
@@ -428,6 +436,12 @@ export function MessengerSidePanel({
                                                         <AddressDisplay lat={event.lat} lng={event.lng} />
                                                     </div>
                                                 ) : null}
+                                                {event.changedByName && (
+                                                    <div className="mt-0.5 flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-muted/50 w-fit border border-muted-foreground/10">
+                                                        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Admin:</span>
+                                                        <span className="text-[10px] font-medium text-foreground">{event.changedByName}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </TimelineContent>
                                     </TimelineItem>
