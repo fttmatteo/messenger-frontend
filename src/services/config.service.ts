@@ -6,7 +6,7 @@ export const configService = {
         // The backend might return a JSON string if we sent it as a raw string, 
         // or a Record if Jackson parsed it. Since we return a String from controller, 
         // it might be a JSON string.
-        let data = response.data
+        const data = response.data
         if (typeof data === 'string') {
             try {
                 return JSON.parse(data)

@@ -173,7 +173,7 @@ export default function MessengerCreateServicio() {
                 id: "error-camara"
             })
         }
-    }, [stopCamera])
+    }, [stopCamera, cameraActive, cameraError])
     useEffect(() => {
         startCamera()
     }, [startCamera])
