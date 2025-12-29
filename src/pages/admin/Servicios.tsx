@@ -38,11 +38,11 @@ export default function Servicios() {
 
     // Use custom hooks
     const {
+        services,
         loading,
-        filteredAndSortedServices,
-        paginatedServices,
         currentPage,
         totalPages,
+        totalElements,
         itemsPerPage,
         setCurrentPage,
         setItemsPerPage,
@@ -51,7 +51,7 @@ export default function Servicios() {
         handleSort,
         statusFilter,
         setStatusFilter,
-    } = useServices({ searchQuery })
+    } = useServices()
 
     const handleUpdateStatus = (service: ServiceDelivery) => {
         navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)
@@ -116,7 +116,7 @@ export default function Servicios() {
                                 {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                             </TableBody>
                         </Table>
-                    ) : filteredAndSortedServices.length === 0 ? (
+                    ) : services.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center h-full">
                             <ListEmptyState
                                 isSearchResult={!!searchQuery}
@@ -170,7 +170,7 @@ export default function Servicios() {
                                     </TableHeader>
                                     <TableBody>
                                         <AnimatePresence mode="popLayout">
-                                            {paginatedServices.map((service, index) => (
+                                            {services.map((service, index) => (
                                                 <motion.tr
                                                     key={service.idServiceDelivery}
                                                     variants={listItemVariants}
@@ -230,7 +230,7 @@ export default function Servicios() {
                                     </TableBody>
                                 </Table>
                             </div>
-                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedServices.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
+                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={totalElements} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                         </>
                     )}
                 </CardContent>

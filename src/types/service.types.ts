@@ -102,3 +102,14 @@ export interface DailyStats {
     canceled: number
     total: number
 }
+
+// Paginated Response (matches backend PageResponse)
+export interface PaginatedResponse<T> {
+    content: T[]
+    currentPage: number
+    pageSize: number
+    totalElements: number
+    totalPages: number
+    first: boolean
+    last: boolean
+}

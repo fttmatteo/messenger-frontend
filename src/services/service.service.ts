@@ -1,5 +1,5 @@
 import apiClient from './api-client'
-import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats } from '@/types/service.types'
+import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse } from '@/types/service.types'
 
 class ServiceDeliveryService {
     /**
@@ -9,6 +9,28 @@ class ServiceDeliveryService {
      */
     async getAll(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/allServices')
+        return response.data
+    }
+
+    /**
+     * Get all services with pagination
+     * ADMIN: gets all services
+     * MESSENGER: gets only assigned services
+     */
+    async getAllPaginated(params: {
+        page?: number
+        size?: number
+        sortBy?: string
+        sortDirection?: 'asc' | 'desc'
+    } = {}): Promise<PaginatedResponse<ServiceDelivery>> {
+        const response = await apiClient.get('/services/allServicesPageable', {
+            params: {
+                page: params.page ?? 0,
+                size: params.size ?? 10,
+                sortBy: params.sortBy ?? 'createdAt',
+                sortDirection: params.sortDirection ?? 'desc'
+            }
+        })
         return response.data
     }
 
