@@ -26,6 +26,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { isMessengerOnline } from "@/lib/messenger-utils"
 import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
 import { employeeService } from "@/services/employee.service"
@@ -248,6 +249,8 @@ export function MessengerSidePanel({
         return formatDistanceToNow(date, { addSuffix: true, locale: es })
     }
 
+
+
     if (!isOpen) return null
 
     return (
@@ -278,9 +281,9 @@ export function MessengerSidePanel({
                         </h3>
                         <Badge variant="outline" className={cn(
                             "text-[9px] h-3.5 px-1 leading-none uppercase tracking-tighter",
-                            messenger?.status === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
+                            isMessengerOnline(messenger?.status || '', messenger?.lastUpdate) ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
                         )}>
-                            {messenger?.status === 'ACTIVE' ? 'En línea' : 'Offline'}
+                            {isMessengerOnline(messenger?.status || '', messenger?.lastUpdate) ? 'En línea' : 'Offline'}
                         </Badge>
                     </div>
                 </div>
