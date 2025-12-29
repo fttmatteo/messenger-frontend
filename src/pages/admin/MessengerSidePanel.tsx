@@ -36,7 +36,6 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import type { DailyStats, ServiceStatus } from "@/types/service.types"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
-import type { TrackingHistoryItem } from "@/types/location.types"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -146,7 +145,7 @@ export function MessengerSidePanel({
     onClose
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
-    const [history, setHistory] = useState<TrackingHistoryItem[]>([])
+    const [history, setHistory] = useState<TimelineEvent[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -227,7 +226,7 @@ export function MessengerSidePanel({
             // Sort by time descending (newest first)
             milestones.sort((a, b) => b.rawTimestamp - a.rawTimestamp)
 
-            setHistory(milestones as any) // Typecast for now as we changed history meaning here
+            setHistory(milestones)
 
         } catch (error) {
             console.error("Error fetching activity:", error)
@@ -235,7 +234,7 @@ export function MessengerSidePanel({
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerId, selectedDate])
+    }, [messengerId, selectedDate, colors])
 
     useEffect(() => {
         if (isOpen && messengerId) {
@@ -406,7 +405,7 @@ export function MessengerSidePanel({
                             </div>
                         ) : history.length > 0 ? (
                             <Timeline>
-                                {(history as any as TimelineEvent[]).map((event, index) => (
+                                {history.map((event, index) => (
                                     <TimelineItem key={event.id} isLast={index === history.length - 1} data-small="true">
                                         <TimelineHeader statusStyle={event.dotStyle} size="sm">
                                             <div
