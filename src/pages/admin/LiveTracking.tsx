@@ -14,6 +14,7 @@ import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { isMessengerOnline } from "@/lib/messenger-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
@@ -291,7 +292,7 @@ export default function LiveTracking() {
                                     position={{ lat: messenger.latitude, lng: messenger.longitude }}
                                     onClick={() => selectMessenger(messenger)}
                                     title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
-                                    color={messenger.status === 'ACTIVE' ? '#10b981' : '#6b7280'}
+                                    color={isMessengerOnline(messenger.status, messenger.lastUpdate) ? '#10b981' : '#6b7280'}
                                 />
                             )
                         ))}
@@ -425,7 +426,7 @@ export default function LiveTracking() {
                                                     </span>
                                                     <div className={cn(
                                                         "w-2 h-2 rounded-full shrink-0",
-                                                        messenger.status === 'ACTIVE' ? "bg-green-500" : "bg-gray-400"
+                                                        isMessengerOnline(messenger.status, messenger.lastUpdate) ? "bg-green-500" : "bg-gray-400"
                                                     )} />
                                                 </div>
                                                 {messenger.speed !== undefined && messenger.speed > 0 && (
