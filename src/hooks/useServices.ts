@@ -7,6 +7,10 @@ import { getErrorMessage } from "@/lib/error-utils"
 // Type Definitions
 type SortDirection = "asc" | "desc"
 
+interface UseServicesOptions {
+    searchQuery?: string
+}
+
 interface UseServicesReturn {
     // Data
     services: ServiceDelivery[]
@@ -34,10 +38,10 @@ interface UseServicesReturn {
 }
 
 /**
- * Custom hook for managing services list with SERVER-SIDE pagination.
+ * Custom hook for managing services list with SERVER-SIDE pagination and search.
  * Fetches paginated data from backend instead of loading everything.
  */
-export function useServices(): UseServicesReturn {
+export function useServices({ searchQuery }: UseServicesOptions = {}): UseServicesReturn {
     // Core state
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
@@ -55,7 +59,7 @@ export function useServices(): UseServicesReturn {
     // Filtering state
     const [statusFilter, setStatusFilter] = useState<ServiceStatus[]>([])
 
-    // Fetch services with pagination
+    // Fetch services with pagination and search
     const fetchServices = useCallback(async () => {
         try {
             setLoading(true)
@@ -63,7 +67,8 @@ export function useServices(): UseServicesReturn {
                 page: currentPage,
                 size: itemsPerPage,
                 sortBy: sortField,
-                sortDirection: sortDirection
+                sortDirection: sortDirection,
+                search: searchQuery
             })
 
             setServices(response.content)
@@ -77,7 +82,7 @@ export function useServices(): UseServicesReturn {
         } finally {
             setLoading(false)
         }
-    }, [currentPage, itemsPerPage, sortField, sortDirection])
+    }, [currentPage, itemsPerPage, sortField, sortDirection, searchQuery])
 
     // Handle sorting
     const handleSort = useCallback((field: string) => {
@@ -95,7 +100,7 @@ export function useServices(): UseServicesReturn {
 
     // Custom setCurrentPage that validates the page number
     const handleSetCurrentPage = useCallback((page: number) => {
-        if (page >= 0 && page < totalPages) {
+        if (page >= 0 && (totalPages === 0 || page < totalPages)) {
             setCurrentPage(page)
         }
     }, [totalPages])
@@ -111,10 +116,10 @@ export function useServices(): UseServicesReturn {
         fetchServices()
     }, [fetchServices])
 
-    // Reset to first page when status filter changes
+    // Reset to first page when status filter or search query changes
     useEffect(() => {
         setCurrentPage(0)
-    }, [statusFilter])
+    }, [statusFilter, searchQuery])
 
     return {
         // Data

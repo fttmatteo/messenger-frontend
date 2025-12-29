@@ -51,7 +51,7 @@ export default function Servicios() {
         handleSort,
         statusFilter,
         setStatusFilter,
-    } = useServices()
+    } = useServices({ searchQuery })
 
     const handleUpdateStatus = (service: ServiceDelivery) => {
         navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)

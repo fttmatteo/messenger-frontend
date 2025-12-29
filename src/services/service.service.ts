@@ -22,13 +22,15 @@ class ServiceDeliveryService {
         size?: number
         sortBy?: string
         sortDirection?: 'asc' | 'desc'
+        search?: string
     } = {}): Promise<PaginatedResponse<ServiceDelivery>> {
         const response = await apiClient.get('/services/allServicesPageable', {
             params: {
                 page: params.page ?? 0,
                 size: params.size ?? 10,
                 sortBy: params.sortBy ?? 'createdAt',
-                sortDirection: params.sortDirection ?? 'desc'
+                sortDirection: params.sortDirection ?? 'desc',
+                search: params.search
             }
         })
         return response.data
