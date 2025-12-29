@@ -7,11 +7,6 @@ import {
     AlertCircle,
     Calendar as CalendarIcon,
     ChevronDown,
-    Plus,
-    CheckCircle2,
-    MessageSquare,
-    Ban,
-    RotateCcw,
     TrendingUp
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -36,7 +31,9 @@ import { es } from "date-fns/locale"
 import { employeeService } from "@/services/employee.service"
 import { serviceDeliveryService } from "@/services/service.service"
 import { Progress } from "@/components/ui/progress"
-import type { DailyStats } from "@/types/service.types"
+import { useStatusColors } from "@/hooks/useStatusColors"
+import { getStatusIconConfig } from "@/lib/status-utils"
+import type { DailyStats, ServiceStatus } from "@/types/service.types"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
 import type { TrackingHistoryItem } from "@/types/location.types"
@@ -56,12 +53,14 @@ interface TimelineEvent {
     endTime?: string
     title: string
     description: string
-    lat: number
-    lng: number
+    lat?: number
+    lng?: number
     type: 'pickup' | 'delivery' | 'status' | 'point' | 'service'
-    statusColor?: string
+    pillBackground?: string
+    dotStyle?: React.CSSProperties
     statusLabel?: string
     icon: React.ReactNode
+    rawTimestamp: number
 }
 
 // Reverse Geocoding Logic from MessengerDetails.tsx
@@ -151,6 +150,7 @@ export function MessengerSidePanel({
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
+    const { colors } = useStatusColors()
 
     const fetchDetails = useCallback(async () => {
         if (!messengerId) return
@@ -192,65 +192,32 @@ export function MessengerSidePanel({
             const milestones: TimelineEvent[] = []
 
             messengerServices.forEach(service => {
-                const serviceDate = new Date(service.createdAt)
-
-                // Add "Created" event if matches date
-                if (isSameDay(serviceDate, selectedDate)) {
-                    milestones.push({
-                        id: `create-${service.idServiceDelivery}`,
-                        time: format(serviceDate, 'HH:mm'),
-                        title: `Servicio #${service.idServiceDelivery}`,
-                        description: `Creado para ${service.dealership.name}`,
-                        lat: service.dealership.latitude || 0,
-                        lng: service.dealership.longitude || 0,
-                        type: 'service',
-                        statusLabel: 'Creado',
-                        icon: <Plus className="h-3 w-3" />,
-                        statusColor: 'bg-blue-500/10 text-blue-600 border-blue-500/20'
-                    })
-                }
-
                 // Add History events if match date
                 service.history?.forEach(h => {
                     const changeDate = new Date(h.changeDate)
                     if (isSameDay(changeDate, selectedDate)) {
-                        let icon = <MessageSquare className="h-3 w-3" />
-                        let color = 'bg-muted text-muted-foreground border-transparent'
-
-                        if (h.newStatus === 'DELIVERED') {
-                            icon = <CheckCircle2 className="h-3 w-3" />
-                            color = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                        } else if (h.newStatus === 'CANCELED') {
-                            icon = <Ban className="h-3 w-3" />
-                            color = 'bg-red-500/10 text-red-600 border-red-500/20'
-                        } else if (h.newStatus === 'RETURNED') {
-                            icon = <RotateCcw className="h-3 w-3" />
-                            color = 'bg-orange-500/10 text-orange-600 border-orange-500/20'
-                        } else if (h.newStatus === 'PENDING') {
-                            icon = <Clock className="h-3 w-3" />
-                            color = 'bg-blue-500/10 text-blue-600 border-blue-500/20'
-                        }
+                        const config = getStatusIconConfig(h.newStatus as ServiceStatus, colors)
 
                         milestones.push({
                             id: `history-${h.idStatusHistory}`,
                             time: format(changeDate, 'HH:mm'),
-                            title: h.newStatus,
-                            description: `Servicio #${service.idServiceDelivery} - ${service.dealership.name}`,
-                            lat: service.dealership.latitude || 0,
-                            lng: service.dealership.longitude || 0,
+                            title: config.label,
+                            description: `${service.plate.plateNumber} - ${service.dealership.name}`,
+                            lat: h.deliveryLatitude,
+                            lng: h.deliveryLongitude,
                             type: 'status',
-                            statusLabel: h.newStatus,
-                            icon: icon,
-                            statusColor: color
+                            statusLabel: config.label,
+                            icon: null,
+                            pillBackground: config.pillBackground,
+                            dotStyle: config.dotStyle,
+                            rawTimestamp: changeDate.getTime()
                         })
                     }
                 })
             })
 
-            // Sort by time descending
-            milestones.sort((a, b) => {
-                return b.time.localeCompare(a.time)
-            })
+            // Sort by time descending (newest first)
+            milestones.sort((a, b) => b.rawTimestamp - a.rawTimestamp)
 
             setHistory(milestones as any) // Typecast for now as we changed history meaning here
 
@@ -432,13 +399,17 @@ export function MessengerSidePanel({
                         ) : history.length > 0 ? (
                             <Timeline>
                                 {(history as any as TimelineEvent[]).map((event, index) => (
-                                    <TimelineItem key={event.id} isLast={index === history.length - 1}>
-                                        <TimelineHeader
-                                            icon={event.icon}
-                                            statusColor={event.statusColor}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <span className="text-xs font-bold">{event.title}</span>
+                                    <TimelineItem key={event.id} isLast={index === history.length - 1} data-small="true">
+                                        <TimelineHeader statusStyle={event.dotStyle} size="sm">
+                                            <div
+                                                className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full ml-1"
+                                                style={{ backgroundColor: event.pillBackground }}
+                                            >
+                                                <span className="text-[10px] font-bold">
+                                                    {event.title}
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 text-right">
                                                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                                                     {event.time} {event.endTime && ` - ${event.endTime}`}
                                                 </span>
@@ -451,10 +422,12 @@ export function MessengerSidePanel({
                                                         {event.description}
                                                     </p>
                                                 )}
-                                                <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
-                                                    <MapPin className="h-3 w-3 shrink-0 opacity-50" />
-                                                    <AddressDisplay lat={event.lat} lng={event.lng} />
-                                                </div>
+                                                {event.lat && event.lng ? (
+                                                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
+                                                        <MapPin className="h-3 w-3 shrink-0 opacity-50" />
+                                                        <AddressDisplay lat={event.lat} lng={event.lng} />
+                                                    </div>
+                                                ) : null}
                                             </div>
                                         </TimelineContent>
                                     </TimelineItem>

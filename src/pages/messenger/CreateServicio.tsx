@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 // import { Card, CardContent } from "@/components/ui/card"
-import { Upload, X, Loader2, Camera, CameraOff, Bike, ChevronLeft } from "lucide-react"
+import { Upload, X, Loader2, Camera, CameraOff, Bike } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -37,6 +37,7 @@ export default function MessengerCreateServicio() {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
+    const initialCameraStartRef = useRef(false)
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -89,8 +90,8 @@ export default function MessengerCreateServicio() {
     }, [stopCamera])
     const startCamera = useCallback(async () => {
         // If camera is already active or starting, don't re-trigger
-        if (streamRef.current || (cameraActive && !cameraError)) {
-            console.log('Camera already active or starting, skipping startCamera')
+        if (streamRef.current) {
+            console.log('Camera already active, skipping startCamera')
             return
         }
 
@@ -101,7 +102,7 @@ export default function MessengerCreateServicio() {
 
             // Safety timeout - if camera doesn't initialize in 20 seconds, show error
             const timeoutId = setTimeout(() => {
-                if (!videoRef.current?.paused === false) { // Extra check if video is playing
+                if (videoRef.current?.paused !== false) { // Extra check if video is NOT playing
                     console.warn('Camera initialization timeout')
                     setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
                     stopCamera()
@@ -118,6 +119,13 @@ export default function MessengerCreateServicio() {
             })
 
             streamRef.current = stream
+
+            // Wait up to 2 seconds for video element to be available in DOM
+            let attempts = 0
+            while (!videoRef.current && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+                attempts++
+            }
 
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
@@ -148,6 +156,9 @@ export default function MessengerCreateServicio() {
                 clearTimeout(timeoutId)
                 setCameraError('Componente de video no disponible')
                 setCameraActive(false)
+                // Stop the stream if we couldn't attach it
+                stream.getTracks().forEach(track => track.stop())
+                streamRef.current = null
             }
         } catch (error) {
             console.error('Camera error:', error)
@@ -173,9 +184,16 @@ export default function MessengerCreateServicio() {
                 id: "error-camara"
             })
         }
-    }, [stopCamera, cameraActive, cameraError])
+    }, [stopCamera])
     useEffect(() => {
-        startCamera()
+        // Run once on mount after a tiny delay to ensure everything is ready
+        const timer = setTimeout(() => {
+            if (!initialCameraStartRef.current) {
+                startCamera()
+                initialCameraStartRef.current = true
+            }
+        }, 300)
+        return () => clearTimeout(timer)
     }, [startCamera])
     const capturePhoto = () => {
         const video = videoRef.current
@@ -367,26 +385,6 @@ export default function MessengerCreateServicio() {
         <div className="flex flex-col gap-3 sm:gap-4 min-h-0">
             {/* Hidden canvas for capturing */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-
-            {/* Header with back button centered title */}
-            <header className="flex items-center justify-between p-3 border-b bg-background sticky top-0 z-10">
-                <div className="flex-1">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleBack}
-                        className="h-9 w-9 -ml-1 text-muted-foreground"
-                    >
-                        <ChevronLeft className="h-6 w-6" />
-                    </Button>
-                </div>
-
-                <h1 className="flex-[2] text-center font-bold text-sm sm:text-base truncate">Crear Servicio</h1>
-
-                <div className="flex-1"></div>
-            </header>
-
             {/* Main Form Area */}
             <div className="px-1 pb-4 space-y-4">
                 <Form {...form}>

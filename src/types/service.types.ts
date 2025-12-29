@@ -57,6 +57,8 @@ export interface StatusHistoryInfo {
     changeDate: string
     changedBy: EmployeeInfo
     photos: PhotoInfo[]
+    deliveryLatitude?: number
+    deliveryLongitude?: number
 }
 
 // Main Service Delivery interface
