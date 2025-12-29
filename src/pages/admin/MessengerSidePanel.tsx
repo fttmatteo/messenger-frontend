@@ -26,10 +26,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { formatDistanceToNow, format, isSameDay } from "date-fns"
+import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
 import { employeeService } from "@/services/employee.service"
-import { serviceDeliveryService } from "@/services/service.service"
 import { Progress } from "@/components/ui/progress"
 import { useStatusColors } from "@/hooks/useStatusColors"
 import { getStatusIconConfig } from "@/lib/status-utils"
@@ -170,61 +169,47 @@ export function MessengerSidePanel({
             setLoadingHistory(true)
             setHistoryError(null)
 
-            // 1. Fetch Daily Stats
-            const stats = await serviceDeliveryService.getDailyStats(messengerId, selectedDate, selectedDate)
-            if (stats && stats.length > 0) {
-                setDailyStats(stats[0])
-            } else {
-                setDailyStats({
-                    date: format(selectedDate, 'yyyy-MM-dd'),
-                    assigned: 0,
-                    delivered: 0,
-                    returned: 0,
-                    canceled: 0,
-                    total: 0
-                })
-            }
+            // Use dedicated monitoring endpoint
+            const { monitoringService } = await import('@/services/monitoring.service')
+            const response = await monitoringService.getMessengerActivity(messengerId, selectedDate)
 
-            // 2. Fetch Services to build Milestones
-            const allServices = await serviceDeliveryService.getAll()
-            const messengerServices = allServices.filter(s => s.messenger?.idEmployee === messengerId)
-
-            const milestones: TimelineEvent[] = []
-
-            messengerServices.forEach(service => {
-                // Add History events if match date
-                service.history?.forEach(h => {
-                    const changeDate = new Date(h.changeDate)
-                    if (isSameDay(changeDate, selectedDate)) {
-                        const config = getStatusIconConfig(h.newStatus as ServiceStatus, colors)
-
-                        milestones.push({
-                            id: `history-${h.idStatusHistory}`,
-                            time: format(changeDate, 'HH:mm'),
-                            title: config.label,
-                            description: `${service.plate.plateNumber} - ${service.dealership.name}`,
-                            lat: h.deliveryLatitude,
-                            lng: h.deliveryLongitude,
-                            type: 'status',
-                            statusLabel: config.label,
-                            icon: null,
-                            pillBackground: config.pillBackground,
-                            dotStyle: config.dotStyle,
-                            rawTimestamp: changeDate.getTime(),
-                            changedByName: h.changedBy?.role === 'ADMIN' ? (() => {
-                                const names = h.changedBy.fullName.split(' ')
-                                if (names.length >= 2) {
-                                    return `${names[0]} ${names[1].charAt(0)}.`
-                                }
-                                return h.changedBy.fullName
-                            })() : undefined
-                        })
-                    }
-                })
+            // Set daily stats
+            setDailyStats({
+                date: format(selectedDate, 'yyyy-MM-dd'),
+                assigned: response.dailyStats.assigned,
+                delivered: response.dailyStats.delivered,
+                returned: response.dailyStats.returned,
+                canceled: response.dailyStats.canceled,
+                total: response.dailyStats.total
             })
 
-            // Sort by time descending (newest first)
-            milestones.sort((a, b) => b.rawTimestamp - a.rawTimestamp)
+            // Build timeline from response
+            const milestones: TimelineEvent[] = response.timeline.map(event => {
+                const eventDate = new Date(event.timestamp)
+                const config = getStatusIconConfig(event.status as ServiceStatus, colors)
+
+                return {
+                    id: `history-${event.id}`,
+                    time: format(eventDate, 'HH:mm'),
+                    title: config.label,
+                    description: `${event.plateNumber} - ${event.dealershipName}`,
+                    lat: event.latitude,
+                    lng: event.longitude,
+                    type: 'status' as const,
+                    statusLabel: config.label,
+                    icon: null,
+                    pillBackground: config.pillBackground,
+                    dotStyle: config.dotStyle,
+                    rawTimestamp: eventDate.getTime(),
+                    changedByName: event.changedByRole === 'ADMIN' && event.changedByName ? (() => {
+                        const names = event.changedByName.split(' ')
+                        if (names.length >= 2) {
+                            return `${names[0]} ${names[1].charAt(0)}.`
+                        }
+                        return event.changedByName
+                    })() : undefined
+                }
+            })
 
             setHistory(milestones)
 
