@@ -67,13 +67,13 @@ export default function MessengerDashboard() {
                             </SelectTrigger>
                             <SelectContent align="start">
                                 <SelectItem value="all" className="font-medium">
-                                    Todos los concesionarios ({pendingServices.length})
+                                    Todos los concesionarios - {pendingServices.length}
                                 </SelectItem>
                                 {dealerships.map((d) => {
                                     const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
                                     return (
                                         <SelectItem key={d.id} value={String(d.id)}>
-                                            {d.name} <span className="text-muted-foreground ml-1">({count})</span>
+                                            {d.name}<span className="text-muted-foreground ml-1">- {count}</span>
                                         </SelectItem>
                                     );
                                 })}
