@@ -3,7 +3,7 @@ import { usePullToRefresh } from "@/hooks/use-pull-to-refresh"
 import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { PullIndicator } from "@/components/messenger/PullIndicator"
-import { RefreshCw, Database, Building2, Filter } from "lucide-react"
+import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useMemo } from "react"
@@ -30,8 +30,8 @@ export default function MessengerDashboard() {
     const dealerships = useMemo(() => {
         const map = new Map();
         pendingServices.forEach(s => {
-            if (s.dealership && !map.has(s.dealership.id)) {
-                map.set(s.dealership.id, s.dealership.name);
+            if (s.dealership && !map.has(s.dealership.idDealership)) {
+                map.set(s.dealership.idDealership, s.dealership.name);
             }
         });
         return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
@@ -40,7 +40,7 @@ export default function MessengerDashboard() {
     // Filter services
     const filteredServices = useMemo(() => {
         if (selectedDealership === "all") return pendingServices;
-        return pendingServices.filter(s => s.dealership.id === selectedDealership);
+        return pendingServices.filter(s => String(s.dealership.idDealership) === selectedDealership);
     }, [pendingServices, selectedDealership]);
 
     return (
@@ -70,7 +70,7 @@ export default function MessengerDashboard() {
                                     Todos los concesionarios ({pendingServices.length})
                                 </SelectItem>
                                 {dealerships.map((d) => {
-                                    const count = pendingServices.filter(s => s.dealership.id === Number(d.id)).length;
+                                    const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
                                     return (
                                         <SelectItem key={d.id} value={String(d.id)}>
                                             {d.name} <span className="text-muted-foreground ml-1">({count})</span>
