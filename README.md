@@ -11,7 +11,7 @@
 **Plataforma integral para la gestión de logística y mensajería en tiempo real.**
 Interfaz moderna, responsiva y accesible para administradores y mensajeros.
 
-[Características](#-características-principales) • [Tecnología](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
+[English version](README.en.md) • [Características](#-características-principales) • [Tecnología](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
 
 </div>
 
@@ -20,8 +20,8 @@ Interfaz moderna, responsiva y accesible para administradores y mensajeros.
 ## 📋 Descripción General
 
 **Messenger Frontend** es la interfaz de usuario del sistema PLAK, diseñada para orquestar operaciones de mensajería urbana. La aplicación ofrece dos experiencias distintas según el rol del usuario:
-1.  **Dashboard Administrativo**: Para el monitoreo global, gestión de empleados, concesionarios y creación de servicios.
-2.  **App de Mensajero (Mobile PWA)**: Optimizada para uso en campo, permite gestionar asignaciones, actualizar estados y capturar evidencias.
+1.  **Dashboard Administrativo**: Para el monitoreo global, gestión de empleados, concesionarios y visualización de servicios.
+2.  **App de Mensajero (Mobile PWA)**: Optimizada para uso en campo, permite gestionar asignaciones, actualizar estados, capturar evidencias y creación de servicios.
 
 El sistema destaca por su capacidad de **tracking en tiempo real** utilizando WebSockets y la API de Google Maps con Advanced Markers.
 
@@ -29,29 +29,26 @@ El sistema destaca por su capacidad de **tracking en tiempo real** utilizando We
 
 ### 📱 Experiencia de Usuario (UX)
 -   **Diseño Mobile-First**: Interfaz adaptativa optimizada para dispositivos táctiles (App Mensajero).
--   **Modo Oscuro**: Soporte nativo para temas claro y oscuro.
--   **PWA Ready**: Preparada para instalación en dispositivos móviles.
+-   **Modo Oscuro**: Soporte nativo para temas claro y oscuro con `next-themes`.
+-   **PWA Completo**: Instalable en dispositivos móviles con notificaciones de actualización y soporte offline.
 -   **Accesibilidad (A11y)**: Navegación por teclado, etiquetas ARIA y roles semánticos implementados.
 
-### 🗺️ Geolocalización y Mapas
--   **Tracking en Vivo**: Visualización en tiempo real de la flota de mensajeros sobre Google Maps.
--   **Marcadores Avanzados**: Uso de `AdvancedMarkerElement` para íconos personalizados y mejor rendimiento.
--   **Rutas y Distancias**: Cálculo automático de trayectos optimizados.
+### 📶 Capacidades Offline (PWA)
+-   **Sincronización en Segundo Plano**: Las acciones realizadas sin conexión se encolan y sincronizan automáticamente al recuperar internet.
+-   **Caché de Datos Críticos**: Uso de `IndexedDB` (vía `idb-keyval`) para persistir datos esenciales como concesionarios y estados de servicio.
+-   **Indicadores de Conectividad**: Notificaciones visuales en tiempo real sobre el estado de la red y sincronización pendiente.
 
+### 🗺️ Geolocalización y Mapas
+-   **Tracking en Vivo**: Visualización en tiempo real de la flota de mensajeros sobre Google Maps mediante WebSockets (STOMP).
+-   **Marcadores Avanzados**: Uso de `AdvancedMarkerElement` con efectos visuales (pulso) para mensajeros activos.
+-   **Geocodificación Inversa**: Sistema optimizado de caché y encolamiento para convertir coordenadas en direcciones legibles.
 
 ### ⚙️ Funcionalidades Operativas
 -   **Gestión de Ciclo de Vida**: Flujo completo de servicio (Asignado → En Progreso → Entregado/Devuelto).
--   **Papelera y Archivo**: Sistema de eliminación suave con archivo permanente de datos históricos después de 60 días.
+-   **Papelera y Archivo**: Sistema de eliminación suave con visor de elementos eliminados y restauración.
 -   **Captura de Evidencias**:
-    -   📸 Carga de fotografías como prueba de entrega.
-    -   ✍️ Firma digital en pantalla táctil (`canvas`).
--   **Seguridad y Roles**: Autenticación JWT con rotación de tokens y protección de rutas por rol (`ADMIN`, `MESSENGER`).
-
-
-### ⚡ Rendimiento y DX
--   **Lazy Loading**: Carga diferida de rutas y componentes pesados.
--   **Type Safety**: Código base 100% tipado estáticamente con TypeScript y Zod.
--   **Testing Robusto**: Suite de pruebas unitarias e integración con Vitest y React Testing Library.
+    -   📸 **Cámara Nativa**: Captura directa de placas con procesamiento local de imágenes.
+    -   ✍️ **Firma Digital**: Soporte para firmas en pantalla táctil (`canvas`).
 
 ---
 
@@ -61,39 +58,32 @@ El proyecto utiliza tecnologías de vanguardia para asegurar escalabilidad y man
 
 | Categoría | Tecnologías | Propósito |
 | :--- | :--- | :--- |
-| **Core** | `React 19`, `TypeScript` | Base del framework y seguridad de tipos. |
-| **Build & Tooling** | `Vite` | Entorno de desarrollo y bundler optimizado. |
-| **Estilos & UI** | `Tailwind CSS v4`, `Shadcn/UI`, `Class Variance Authority` | Sistema de diseño, componentes accesibles y estilos atómicos. |
-| **Estado & Lógica** | `Context API`, `React Hooks` | Gestión de estado global y lógica reutilizable. |
-| **Formularios** | `React Hook Form`, `Zod` | Manejo de formularios complejos y validación de esquemas. |
-| **Mapas** | `@react-google-maps/api` | Integración con Google Maps Javascript API. |
-| **Real-time** | `@stomp/stompjs`, `SockJS` | Comunicación WebSocket para actualizaciones en vivo. |
-| **Testing** | `Vitest`, `React Testing Library`, `JSDOM` | Pruebas unitarias y de integración. |
-| **Animaciones** | `Framer Motion` | Transiciones suaves y micro-interacciones. |
+| **Core** | `React 19`, `TypeScript` | Base del framework y seguridad de tipos total. |
+| **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline-first, caching y service workers. |
+| **Estilos & UI** | `Tailwind CSS v4`, `Shadcn/UI`, `Framer Motion` | Diseño premium, componentes accesibles y animaciones. |
+| **Estado** | `Context API`, `Custom Hooks` | Gestión de estado reactiva y desacoplada. |
+| **Mapas** | `@react-google-maps/api` | Integración avanzada con Google Maps. |
+| **Real-time** | `@stomp/stompjs`, `SockJS` | Actualizaciones instantáneas de ubicación. |
+| **Testing** | `Vitest`, `React Testing Library` | Cobertura de tests unitarios y de integración. |
 
 ---
 
-## 🏗 Arquitectura del Proyecto
+## 🏗 Arquitectura y Mantenimiento
 
-Estructura de directorios organizada por dominio y funcionalidad:
+El proyecto sigue un riguroso estándar de calidad tras una fase intensiva de refactorización:
+
+-   **Modularización**: Componentes grandes como la cámara, el mapa y la gestión de servicios se han extraído en módulos especializados (`camera`, `tracking`, `admin`).
+-   **Patrón de Contextos**: Separación de definiciones (`ContextDef.ts`) e implementaciones (`ContextProvider.tsx`) para evitar dependencia circular.
+-   **Clean Code**: Hooks personalizados renombrados a `kebab-case`, imports estandarizados con el alias `@/` y barrel exports para tipos y componentes.
 
 ```
 src/
-├── components/          # 🧩 Componentes UI reutilizables
-│   ├── ui/              # Componentes base (Shadcn - botones, inputs, etc.)
-│   ├── service/         # Componentes de dominio (ServiceCard, ServiceDetails)
-│   ├── tracking/        # Componentes de mapa y rastreo
-│   └── ...
-├── context/             # 🌐 Proveedores de estado global (Auth, AdminUI)
-├── hooks/               # 🎣 Custom Hooks (useService, useAuth, useMap)
-├── layouts/             # 📐 Estructuras de página (MessengerLayout, AdminLayout)
-├── lib/                 # 🛠 Utilidades puras, formateadores y configuración
-├── pages/               # 📄 Vistas de la aplicación
-│   ├── admin/           # Rutas protegidas de Administrador
-│   └── messenger/       # Rutas protegidas de Mensajero
-├── services/            # 📡 Capa de servicio API (Axios, WebSocket)
-├── test/                # 🧪 Utilidades de prueba y mocks globales
-└── types/               # 📝 Definiciones de tipos TypeScript compartidas
+├── components/          # 🧩 Componentes modulares (camera, tracking, admin)
+├── context/             # 🌐 Proveedores siguiendo el patrón Context/Def
+├── hooks/               # 🎣 Custom Hooks en kebab-case
+├── services/            # 📡 Capa API y sincronización offline
+├── types/               # 📝 Tipado centralizado
+└── ...
 ```
 
 ---
@@ -102,71 +92,43 @@ src/
 
 ### Prerrequisitos
 -   Node.js v18.0.0 o superior
--   npm o pnpm
--   API Key de Google Maps habilitada
+-   API Key de Google Maps habilitada (con Map ID para Advanced Markers)
 
-### Pasos de Instalación
+### Pasos Rápidos
+1. `git clone https://github.com/tu-usuario/plak-frontend.git`
+2. `npm install`
+3. Configura el `.env` con `VITE_API_URL` y las llaves de Maps.
+4. `npm run dev` para desarrollo o `npm run build` para producción.
 
-1.  **Clonar el repositorio:**
-    ```bash
-    git clone https://github.com/tu-usuario/plak-frontend.git
-    cd plak-frontend
-    ```
-
-2.  **Instalar dependencias:**
-    ```bash
-    npm install
-    # o si usas pnpm
-    pnpm install
-    ```
-
-3.  **Configurar Variables de Entorno:**
-    Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:
-
-    ```env
-    # URL del Backend API (Spring Boot)
-    VITE_API_URL=http://localhost:8080
-
-    # Configuración de Google Maps
-    VITE_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
-    VITE_GOOGLE_MAPS_MAP_ID=tu_map_id_aqui  # Requerido para Advanced Markers
-    ```
-
-4.  **Ejecutar en Desarrollo:**
-    ```bash
-    npm run dev
-    ```
-    La aplicación estará disponible en `http://localhost:5173`.
-
-### Scripts Disponibles
+### 📜 Scripts Disponibles
 
 | Script | Descripción |
 | :--- | :--- |
-| `npm run dev` | Inicia servidor de desarrollo con Hot Module Replacement (HMR). |
-| `npm run build` | Compila y optimiza la aplicación para producción en `/dist`. |
-| `npm run preview` | Sirve localmente la versión de producción compilada. |
-| `npm run lint` | Ejecuta ESLint para analizar calidad de código. |
-| `npm run test` | Ejecuta la suite de pruebas completa con Vitest. |
-| `npm run test:ui` | Abre interfaz gráfica para visualizar pruebas. |
+| `npm run dev` | Inicia el servidor de desarrollo con HMR. |
+| `npm run build` | Compila y optimiza la aplicación para producción. |
+| `npm run preview` | Previsualiza localmente el build de producción. |
+| `npm run lint` | Ejecuta el análisis estático de código (ESLint). |
+| `npm run test:run` | Ejecuta la suite de pruebas unitarias una sola vez. |
+| `npm run test:ui` | Abre la interfaz interactiva de Vitest para pruebas. |
 
 ---
 
 ## 🔒 Seguridad y Buenas Prácticas
 
--   **Autenticación**: El sistema utiliza `Access Tokens` de corta duración y `Refresh Tokens` seguros vía HTTP-only cookies (configuración backend dependiente).
--   **Manejo de Errores**: Sistema centralizado de manejo de errores con tipos `AppError` personalizados.
--   **CI/CD**: Pipeline de GitHub Actions configurado para Linting, Testing y Build automático en cada Push/PR.
+-   **Autenticación Robusta**: Gestión de sesiones mediante JWT con interceptores de Axios para renovación automática de tokens.
+-   **Seguridad de Tipos**: Validación de esquemas en tiempo de ejecución con `Zod` para respuestas de API y formularios.
+-   **CI/CD Ready**: Configuración preparada para despliegue continuo con validaciones automáticas de linting y tests.
+-   **Rendimiento**: División de código (Code Splitting) nativo mediante `React.lazy` y `Suspense`.
 
 ## 🤝 Contribución
 
-¡Las contribuciones son bienvenidas! Por favor sigue estos pasos:
-
-1.  Asegúrate de que todas las pruebas pasen: `npm run test:run`
-2.  Verifica que no haya errores de linting: `npm run lint`
-3.  Usa Conventional Commits para tus mensajes de commit.
+¡Las contribuciones son bienvenidas! Para mantener la calidad del proyecto:
+1.  Asegúrate de que `npm run lint` no devuelva errores.
+2.  Verifica que todos los tests pasen con `npm run test:run`.
+3.  Sigue las convenciones de nombres de archivos y estructura modular establecida.
 
 ---
 
 <div align="center">
-  <sub>Desarrollado para Messenger Delivery System © 2024</sub>
+  <sub>Messenger Delivery System © 2024-2025</sub>
 </div>
