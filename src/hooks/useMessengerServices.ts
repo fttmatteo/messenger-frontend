@@ -3,6 +3,7 @@ import { serviceDeliveryService } from '@/services/service.service'
 import type { ServiceDelivery } from '@/types/service.types'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/lib/error-utils'
+import { offlineCacheService } from '@/services/offline-cache.service'
 
 interface UseMessengerServicesReturn {
     services: ServiceDelivery[]
@@ -17,16 +18,36 @@ interface UseMessengerServicesReturn {
         delivered: number
         returned: number
     }
+    /** Whether the data is from cache (offline mode) */
+    isFromCache: boolean
 }
 
 /**
  * Hook para gestionar servicios del mensajero.
  * Filtra automáticamente por pendientes/completados y calcula estadísticas.
+ * Implementa offline-first: carga del cache primero, luego sincroniza con el servidor.
  */
 export function useMessengerServices(): UseMessengerServicesReturn {
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [isFromCache, setIsFromCache] = useState(false)
+
+    // Load cached data on mount (before network request)
+    useEffect(() => {
+        const loadCachedData = async () => {
+            try {
+                const cached = await offlineCacheService.getCachedServices()
+                if (cached.length > 0) {
+                    setServices(cached)
+                    setIsFromCache(true)
+                }
+            } catch (err) {
+                console.warn('Failed to load cached services:', err)
+            }
+        }
+        loadCachedData()
+    }, [])
 
     const fetchServices = useCallback(async () => {
         try {
@@ -38,8 +59,24 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                 new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             )
             setServices(sorted)
-        } catch (error) {
-            const message = getErrorMessage(error)
+            setIsFromCache(false)
+
+            // Cache the fresh data for offline use
+            await offlineCacheService.cacheServices(sorted)
+        } catch (err) {
+            const message = getErrorMessage(err)
+
+            // If offline and we have cached data, don't show error
+            if (!navigator.onLine) {
+                const cached = await offlineCacheService.getCachedServices()
+                if (cached.length > 0) {
+                    setServices(cached)
+                    setIsFromCache(true)
+                    setError(null)
+                    return
+                }
+            }
+
             setError(message)
             toast.error('Error al cargar servicios', {
                 description: message,
@@ -87,6 +124,8 @@ export function useMessengerServices(): UseMessengerServicesReturn {
         refetch: fetchServices,
         pendingServices,
         completedServices,
-        stats
+        stats,
+        isFromCache
     }
 }
+

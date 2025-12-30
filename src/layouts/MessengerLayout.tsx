@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, ChevronLeft } from "lucide-react"
+import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
@@ -11,22 +11,8 @@ import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
+import { useNetwork } from "@/hooks/useNetwork"
 
-// Type definitions for Wake Lock API
-// These provide type safety for the WakeLockSentinel returned by navigator.wakeLock.request()
-interface WakeLockSentinel extends EventTarget {
-    readonly released: boolean;
-    readonly type: 'screen';
-    release(): Promise<void>;
-}
-
-// Type-safe navigator check for Wake Lock support
-const getWakeLock = (): { request: (type: 'screen') => Promise<WakeLockSentinel> } | undefined => {
-    if ('wakeLock' in navigator) {
-        return navigator.wakeLock as { request: (type: 'screen') => Promise<WakeLockSentinel> };
-    }
-    return undefined;
-}
 
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
@@ -35,7 +21,8 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
-    const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+    const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
+
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
@@ -61,34 +48,10 @@ export default function MessengerLayout() {
 
     const pageTitle = getPageTitle()
 
-    const requestWakeLock = async () => {
-        try {
-            const wakeLock = getWakeLock()
-            if (wakeLock) {
-                wakeLockRef.current = await wakeLock.request('screen')
-                console.log('Wake Lock activo: la pantalla no se apagará')
 
-                wakeLockRef.current.addEventListener('release', () => {
-                    console.log('Wake Lock liberado')
-                })
-            }
-        } catch (err) {
-            // Wake Lock can fail for various reasons (e.g., low battery)
-            console.warn('No se pudo activar el Wake Lock:', err)
-        }
-    }
-
-    const releaseWakeLock = () => {
-        if (wakeLockRef.current) {
-            wakeLockRef.current.release().then(() => {
-                wakeLockRef.current = null
-            })
-        }
-    }
 
     useEffect(() => {
         if (isOnline) {
-            requestWakeLock()
 
             trackingService.connect(() => {
                 // Send immediate status update to appear online instantly
@@ -157,7 +120,6 @@ export default function MessengerLayout() {
                 updateUser({ isOnline: false })
             }
         } else {
-            releaseWakeLock()
 
             if (watchIdRef.current !== null) {
                 navigator.geolocation.clearWatch(watchIdRef.current)
@@ -189,19 +151,7 @@ export default function MessengerLayout() {
         setShowLogoutDialog(true)
     }
 
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && isOnline) {
-                requestWakeLock()
-            }
-        }
 
-        document.addEventListener('visibilitychange', handleVisibilityChange)
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange)
-            releaseWakeLock()
-        }
-    }, [isOnline])
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
@@ -263,17 +213,50 @@ export default function MessengerLayout() {
                 {/* Center: Page title or Status - Absolutely Centered */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                     {pageTitle ? (
-                        <span className="font-semibold text-sm block">{pageTitle}</span>
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="font-semibold text-sm">{pageTitle}</span>
+                            {/* Subtle network offline indicator */}
+                            {!isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse pointer-events-auto"
+                                >
+                                    <WifiOff className="h-2.5 w-2.5 mr-0.5" />
+                                    Sin red
+                                </Badge>
+                            )}
+                        </div>
                     ) : (
-                        <Badge
-                            variant="secondary"
-                            className={`text-xs px-3 py-0.5 pointer-events-auto font-medium border-0 ${isOnline
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                : "bg-muted text-muted-foreground"
-                                }`}
-                        >
-                            {isOnline ? 'ACTIVO' : 'OFFLINE'}
-                        </Badge>
+                        <div className="flex items-center justify-center gap-2 pointer-events-auto">
+                            <Badge
+                                variant="secondary"
+                                className={`text-xs px-3 py-0.5 font-medium border-0 ${isOnline
+                                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                    : "bg-muted text-muted-foreground"
+                                    }`}
+                            >
+                                {isOnline ? 'ACTIVO' : 'OFFLINE'}
+                            </Badge>
+                            {/* Subtle network offline indicator */}
+                            {!isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse"
+                                >
+                                    <WifiOff className="h-2.5 w-2.5" />
+                                </Badge>
+                            )}
+                            {/* Pending sync actions indicator */}
+                            {pendingActionsCount > 0 && isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-blue-400 text-blue-600 dark:text-blue-400"
+                                >
+                                    <CloudOff className="h-2.5 w-2.5 mr-0.5" />
+                                    {pendingActionsCount}
+                                </Badge>
+                            )}
+                        </div>
                     )}
                 </div>
 

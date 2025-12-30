@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, Trash2 } from "lucide-react"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, Trash2, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -11,6 +11,7 @@ import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AdminUIProvider } from "@/context/AdminUIContext"
+import { useNetwork } from "@/hooks/useNetwork"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -31,6 +32,7 @@ function AdminLayoutContent() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [showSearchInput, setShowSearchInput] = useState(false)
     const isMobile = useIsMobile()
+    const { isOnline: isNetworkOnline } = useNetwork()
 
     // Detect if we're on a nested page
     const isNestedPage = location.pathname.includes('/crear') ||
@@ -162,6 +164,13 @@ function AdminLayoutContent() {
                                         >
                                             <Search className="h-4 w-4" />
                                         </Button>
+                                        {/* Subtle network offline indicator */}
+                                        {!isNetworkOnline && (
+                                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                                                <WifiOff className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                                                <span className="text-xs text-amber-700 dark:text-amber-400">Offline</span>
+                                            </div>
+                                        )}
                                         <ModeToggle />
                                     </>
                                 )}
@@ -180,6 +189,13 @@ function AdminLayoutContent() {
                                 </div>
 
                                 <div className="flex-1" />
+                                {/* Subtle network offline indicator */}
+                                {!isNetworkOnline && (
+                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                                        <WifiOff className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                                        <span className="text-xs text-amber-700 dark:text-amber-400">Offline</span>
+                                    </div>
+                                )}
                                 <ModeToggle />
                             </>
                         )}
