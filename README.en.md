@@ -1,3 +1,5 @@
+> **Copyright (C) 2025 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
+
 <div align="center">
 
 # 📱 Messenger Frontend
@@ -129,6 +131,4 @@ Contributions are welcome! To maintain project quality:
 
 ---
 
-<div align="center">
-  <sub>Messenger Delivery System © 2024-2025</sub>
-</div>
+> **Copyright (C) 2025 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
