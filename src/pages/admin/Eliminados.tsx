@@ -10,6 +10,8 @@ import { Trash2, Loader2 } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { getErrorMessage } from "@/lib/error-utils"
 import { DeletedServiceList } from "@/components/admin/DeletedServiceList"
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DeletedServiceRowSkeleton, DeletedServiceCardSkeleton } from "@/components/admin/DeletedServiceSkeletons"
 import { DeletedServiceTable } from "@/components/admin/DeletedServiceTable"
 import { EmptyTrashDialog } from "@/components/admin/DeletedServiceDialogs"
 
@@ -149,8 +151,10 @@ export default function Eliminados() {
                             {services.length} elemento(s) en papelera
                         </p>
                         {loading ? (
-                            <div className="flex justify-center py-12">
-                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            <div className="space-y-3">
+                                {Array.from({ length: 3 }).map((_, i) => (
+                                    <DeletedServiceCardSkeleton key={i} />
+                                ))}
                             </div>
                         ) : services.length === 0 ? (
                             <EmptyState />
@@ -172,9 +176,23 @@ export default function Eliminados() {
                         </CardHeader>
                         <CardContent className="flex-1 overflow-auto">
                             {loading ? (
-                                <div className="flex justify-center py-12">
-                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                                </div>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Placa</TableHead>
+                                            <TableHead>Concesionario</TableHead>
+                                            <TableHead>Mensajero</TableHead>
+                                            <TableHead>Eliminado</TableHead>
+                                            <TableHead>Tiempo restante</TableHead>
+                                            <TableHead className="text-center">Acción</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <DeletedServiceRowSkeleton key={i} />
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             ) : services.length === 0 ? (
                                 <EmptyState />
                             ) : (

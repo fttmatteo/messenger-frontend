@@ -85,3 +85,44 @@ export function CardSkeleton() {
         </Card>
     )
 }
+
+/**
+ * Skeleton for Update Status page.
+ */
+export function UpdateServiceStatusSkeleton() {
+    return (
+        <div className="flex flex-col h-full animate-in fade-in duration-500">
+            {/* Header Skeleton */}
+            <div className="mb-4 space-y-2">
+                <Skeleton className="h-8 w-48" />
+            </div>
+
+            <Card className="flex flex-col gap-1 py-1">
+                <CardContent className="p-6">
+                    <div className="space-y-6">
+                        {/* Header: Placa & Status selector */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <Skeleton className="h-10 w-32 rounded-md" />
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-5 w-12" />
+                                <Skeleton className="h-10 w-[200px]" />
+                            </div>
+                        </div>
+
+                        {/* Observation Field */}
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-32 w-full" />
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4 pt-4 border-t mt-6">
+                            <Skeleton className="h-9 w-24" />
+                            <Skeleton className="h-9 w-36" />
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}

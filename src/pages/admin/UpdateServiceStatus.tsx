@@ -19,6 +19,7 @@ import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useAuth } from "@/context/AuthContext"
 import { getAvailableStatusesForUser, getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
+import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
 
 export default function UpdateServiceStatus() {
     const { id } = useParams()
@@ -126,11 +127,7 @@ export default function UpdateServiceStatus() {
     }
 
     if (loading) {
-        return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )
+        return <UpdateServiceStatusSkeleton />
     }
 
     if (!service) return null
