@@ -1,32 +1,20 @@
 import { useMessengerServices } from "@/hooks/useMessengerServices"
 import { usePullToRefresh } from "@/hooks/usePullToRefresh"
+import { useNetwork } from "@/hooks/useNetwork"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { PullIndicator } from "@/components/messenger/PullIndicator"
-import { RefreshCw, WifiOff } from "lucide-react"
+import { RefreshCw, Database } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 export default function MessengerDashboard() {
-    const { loading, pendingServices, refetch, error } = useMessengerServices()
-    const [isOnline, setIsOnline] = useState(navigator.onLine)
+    const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
+    const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const { containerRef, isRefreshing: isPulling, pullDistance } = usePullToRefresh({
         onRefresh: refetch,
         disabled: !isOnline
     })
-
-    useEffect(() => {
-        const handleOnline = () => setIsOnline(true)
-        const handleOffline = () => setIsOnline(false)
-
-        window.addEventListener('online', handleOnline)
-        window.addEventListener('offline', handleOffline)
-
-        return () => {
-            window.removeEventListener('online', handleOnline)
-            window.removeEventListener('offline', handleOffline)
-        }
-    }, [])
 
     const handleRefresh = async () => {
         if (!isOnline || isRefreshing) return
@@ -61,20 +49,19 @@ export default function MessengerDashboard() {
             />
 
             <div className="flex flex-col h-full p-3 gap-3 overflow-auto">
-                {/* Offline Banner */}
-                {!isOnline && (
-                    <div className="flex items-center gap-2 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-xs">
-                        <WifiOff className="h-3.5 w-3.5 flex-shrink-0" />
-                        <span>Sin conexión - Mostrando datos guardados</span>
-                    </div>
-                )}
-
                 {/* Compact Header with Greeting */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-muted-foreground">
                             {getGreeting()} · <span className="capitalize">{dateString}</span>
                         </span>
+                        {/* Subtle cache indicator */}
+                        {isFromCache && !loading && (
+                            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                                <Database className="h-2.5 w-2.5" />
+                                cache
+                            </span>
+                        )}
                     </div>
                     <Button
                         variant="ghost"
@@ -113,3 +100,4 @@ export default function MessengerDashboard() {
         </div>
     )
 }
+

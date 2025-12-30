@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, ChevronLeft } from "lucide-react"
+import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
@@ -11,6 +11,7 @@ import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
+import { useNetwork } from "@/hooks/useNetwork"
 
 
 export default function MessengerLayout() {
@@ -20,6 +21,7 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
+    const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -211,17 +213,50 @@ export default function MessengerLayout() {
                 {/* Center: Page title or Status - Absolutely Centered */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                     {pageTitle ? (
-                        <span className="font-semibold text-sm block">{pageTitle}</span>
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="font-semibold text-sm">{pageTitle}</span>
+                            {/* Subtle network offline indicator */}
+                            {!isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse pointer-events-auto"
+                                >
+                                    <WifiOff className="h-2.5 w-2.5 mr-0.5" />
+                                    Sin red
+                                </Badge>
+                            )}
+                        </div>
                     ) : (
-                        <Badge
-                            variant="secondary"
-                            className={`text-xs px-3 py-0.5 pointer-events-auto font-medium border-0 ${isOnline
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                : "bg-muted text-muted-foreground"
-                                }`}
-                        >
-                            {isOnline ? 'ACTIVO' : 'OFFLINE'}
-                        </Badge>
+                        <div className="flex items-center justify-center gap-2 pointer-events-auto">
+                            <Badge
+                                variant="secondary"
+                                className={`text-xs px-3 py-0.5 font-medium border-0 ${isOnline
+                                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                    : "bg-muted text-muted-foreground"
+                                    }`}
+                            >
+                                {isOnline ? 'ACTIVO' : 'OFFLINE'}
+                            </Badge>
+                            {/* Subtle network offline indicator */}
+                            {!isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse"
+                                >
+                                    <WifiOff className="h-2.5 w-2.5" />
+                                </Badge>
+                            )}
+                            {/* Pending sync actions indicator */}
+                            {pendingActionsCount > 0 && isNetworkOnline && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0 border-blue-400 text-blue-600 dark:text-blue-400"
+                                >
+                                    <CloudOff className="h-2.5 w-2.5 mr-0.5" />
+                                    {pendingActionsCount}
+                                </Badge>
+                            )}
+                        </div>
                     )}
                 </div>
 

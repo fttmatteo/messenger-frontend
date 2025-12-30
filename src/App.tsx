@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './components/theme-provider';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { StatusColorProvider } from './context/StatusColorContext';
+import { NetworkProvider } from './context/NetworkContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
 import { SessionExpiredDialog } from './components/SessionExpiredDialog';
@@ -22,13 +23,15 @@ export function App() {
   return (
     <BrowserRouter>
       <ThemeProvider defaultTheme="system" enableSystem attribute="class">
-        <AuthProvider>
-          <StatusColorWrapper>
-            <AppRoutes />
-            <Toaster />
-            <SessionExpiredDialog />
-          </StatusColorWrapper>
-        </AuthProvider>
+        <NetworkProvider>
+          <AuthProvider>
+            <StatusColorWrapper>
+              <AppRoutes />
+              <Toaster />
+              <SessionExpiredDialog />
+            </StatusColorWrapper>
+          </AuthProvider>
+        </NetworkProvider>
       </ThemeProvider>
     </BrowserRouter>
   )
