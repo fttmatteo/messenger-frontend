@@ -206,7 +206,7 @@ export default function UpdateServiceStatus() {
                 </div>
             )}
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+            <Card className="flex flex-col gap-1 py-1">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <PlacaBadge
