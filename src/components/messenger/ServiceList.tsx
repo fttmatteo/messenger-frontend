@@ -42,7 +42,7 @@ export function ServiceList({ services, loading, emptyMessage = "No hay servicio
 
     // Service list
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             {services.map((service) => (
                 <ServiceCard key={service.idServiceDelivery} service={service} />
             ))}

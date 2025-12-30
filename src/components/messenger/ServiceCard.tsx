@@ -90,74 +90,72 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
     return (
         <Card
-            className="active:bg-muted/50 transition-all cursor-pointer touch-manipulation border-l-4 overflow-hidden relative"
+            className="active:bg-muted/50 transition-all cursor-pointer touch-manipulation border-l-4 overflow-hidden relative shadow-sm"
             style={{
                 borderLeftColor: statusColor
             }}
             onClick={handleClick}
         >
-            <CardContent className="p-2.5 flex items-center gap-3">
-                {/* Left: Info */}
-                <div className="flex-1 flex flex-col gap-2 min-w-0">
-                    {/* Header: Plate + Status */}
-                    <div className="flex flex-col items-start gap-1">
+            <CardContent className="p-2 flex flex-col gap-1.5">
+                {/* Top Row: Plate + Status + Actions */}
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                         <PlacaBadge
                             plateNumber={service.plate.plateNumber}
                             plateType={service.plate.plateType}
                             size="sm"
-                            className="shadow-sm"
+                            className="shadow-sm shrink-0 scale-90 origin-left"
                         />
                         {/* Status */}
                         <div
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full shrink-0"
                             style={{ backgroundColor: statusConfig.pillBackground }}
                         >
-                            <div className="w-2.5 h-2.5 rounded-full" style={statusConfig.dotStyle} />
-                            <span className="text-xs font-medium">
+                            <div className="w-2 h-2 rounded-full" style={statusConfig.dotStyle} />
+                            <span className="text-[10px] font-bold uppercase tracking-tight">
                                 {statusConfig.label}
                             </span>
                         </div>
                     </div>
 
-                    {/* Dealership Info */}
-                    <div className="grid gap-0.5">
-                        <p className="text-sm font-medium text-foreground truncate leading-none">
-                            {service.dealership.name}
-                        </p>
+                    {/* Actions Row */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
+                            variant="secondary"
+                            size="icon"
+                            className="h-8 w-8 rounded-full shadow-sm"
+                            onClick={handleNavigate}
+                            title="Navegar"
+                        >
+                            <Navigation className="h-4 w-4" />
+                        </Button>
 
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground min-w-0">
-                            <MapPin className="h-3 w-3 flex-shrink-0" />
-                            <span className="truncate">
-                                {service.dealership.address || 'Sin dirección'}
-                            </span>
-                        </div>
+                        {service.currentStatus === 'ASSIGNED' && (
+                            <Button
+                                variant="default"
+                                size="icon"
+                                className="h-8 w-8 rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-sm"
+                                onClick={handleUpdate}
+                                title="Actualizar"
+                            >
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        )}
                     </div>
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex flex-col gap-2 shrink-0">
-                    <Button
-                        variant="default"
-                        size="icon"
-                        className="h-9 w-9 rounded-full shadow-sm text-white border-0"
-                        style={{ backgroundColor: statusColor }}
-                        onClick={handleNavigate}
-                        title="Navegar"
-                    >
-                        <Navigation className="h-4 w-4" />
-                    </Button>
+                {/* Bottom Section: Dealership + Address */}
+                <div className="flex flex-col px-0.5">
+                    <p className="text-xs font-bold text-foreground truncate leading-tight">
+                        {service.dealership.name}
+                    </p>
 
-                    {service.currentStatus === 'ASSIGNED' && (
-                        <Button
-                            variant="default"
-                            size="icon"
-                            className="h-9 w-9 rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-md border-0"
-                            onClick={handleUpdate}
-                            title="Actualizar"
-                        >
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground min-w-0 mt-0.5">
+                        <MapPin className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">
+                            {service.dealership.address || 'Sin dirección'}
+                        </span>
+                    </div>
                 </div>
             </CardContent>
         </Card>
