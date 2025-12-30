@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { useEmployees } from "@/hooks/useEmployees"
+import { useEmployees } from "@/hooks/use-employees"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
 import { ListEmptyState } from "@/components/ui/list-empty-state"

@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
-import { useStatusColors } from "@/hooks/useStatusColors"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 
 export default function ServiceDetails() {

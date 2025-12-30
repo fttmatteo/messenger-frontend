@@ -11,7 +11,7 @@ import { MapPin, Route, Loader2 } from "lucide-react"
 
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
-import { useStatusColors } from "@/hooks/useStatusColors"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 interface ServiceTrackingMapProps {
     serviceId: number

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Loader2, Save, UserPlus } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
-import { useStatusColors } from "@/hooks/useStatusColors"
+import { useStatusColors } from "@/hooks/use-status-colors"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 

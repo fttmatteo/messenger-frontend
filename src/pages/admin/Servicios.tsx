@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
-import { useServices } from "@/hooks/useServices"
+import { useServices } from "@/hooks/use-services"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
 import { ListEmptyState } from "@/components/ui/list-empty-state"
@@ -19,7 +19,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { useStatusColors } from "@/hooks/useStatusColors"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [

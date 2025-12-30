@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
-import { useDealerships } from "@/hooks/useDealerships"
+import { useDealerships } from "@/hooks/use-dealerships"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"

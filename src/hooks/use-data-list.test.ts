@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useMemo } from 'react'
-import { useDataList } from './useDataList'
+import { useDataList } from './use-data-list'
 
 interface TestItem {
     id: number

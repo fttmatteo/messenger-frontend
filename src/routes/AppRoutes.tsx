@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 function PageLoader() {
@@ -14,35 +14,35 @@ function PageLoader() {
     );
 }
 
-import Login from '../pages/Login';
+import Login from '@/pages/Login';
 
-const AdminLayout = React.lazy(() => import('../layouts/AdminLayout'));
-const MessengerLayout = React.lazy(() => import('../layouts/MessengerLayout'));
+const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
+const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
 
-const AdminDashboard = React.lazy(() => import('../pages/admin/Dashboard'));
-const Empleados = React.lazy(() => import('../pages/admin/Empleados'));
-const CreateEmployee = React.lazy(() => import('../pages/admin/CreateEmployee'));
-const EditEmployee = React.lazy(() => import('../pages/admin/EditEmployee'));
-const Concesionarios = React.lazy(() => import('../pages/admin/Concesionarios'));
-const CreateConcesionario = React.lazy(() => import('../pages/admin/CreateConcesionario'));
-const EditConcesionario = React.lazy(() => import('../pages/admin/EditConcesionario'));
-const Servicios = React.lazy(() => import('../pages/admin/Servicios'));
-const UpdateServiceStatus = React.lazy(() => import('../pages/admin/UpdateServiceStatus'));
-const ViewServicio = React.lazy(() => import('../pages/admin/ViewServicio'));
-const Eliminados = React.lazy(() => import('../pages/admin/Eliminados'));
-const LiveTracking = React.lazy(() => import('../pages/admin/LiveTracking'));
-const MessengerDetails = React.lazy(() => import('../pages/admin/MessengerDetails'));
-const Configuracion = React.lazy(() => import('../pages/admin/Configuracion'));
+const AdminDashboard = React.lazy(() => import('@/pages/admin/Dashboard'));
+const Empleados = React.lazy(() => import('@/pages/admin/Empleados'));
+const CreateEmployee = React.lazy(() => import('@/pages/admin/CreateEmployee'));
+const EditEmployee = React.lazy(() => import('@/pages/admin/EditEmployee'));
+const Concesionarios = React.lazy(() => import('@/pages/admin/Concesionarios'));
+const CreateConcesionario = React.lazy(() => import('@/pages/admin/CreateConcesionario'));
+const EditConcesionario = React.lazy(() => import('@/pages/admin/EditConcesionario'));
+const Servicios = React.lazy(() => import('@/pages/admin/Servicios'));
+const UpdateServiceStatus = React.lazy(() => import('@/pages/admin/UpdateServiceStatus'));
+const ViewServicio = React.lazy(() => import('@/pages/admin/ViewServicio'));
+const Eliminados = React.lazy(() => import('@/pages/admin/Eliminados'));
+const LiveTracking = React.lazy(() => import('@/pages/admin/LiveTracking'));
+const MessengerDetails = React.lazy(() => import('@/pages/admin/MessengerDetails'));
+const Configuracion = React.lazy(() => import('@/pages/admin/Configuracion'));
 
-const MessengerDashboard = React.lazy(() => import('../pages/messenger/Dashboard'));
-const MessengerCreateServicio = React.lazy(() => import('../pages/messenger/CreateServicio'));
-const MessengerServiceDetails = React.lazy(() => import('../pages/messenger/ServiceDetails'));
-const MessengerUpdateStatus = React.lazy(() => import('../pages/messenger/UpdateStatus'));
-const MessengerStatsHistoryPage = React.lazy(() => import('../pages/messenger/StatsHistoryPage'));
-const MessengerRouteHistoryPage = React.lazy(() => import('../pages/messenger/RouteHistoryPage'));
-const MessengerStatsPage = React.lazy(() => import('../pages/messenger/StatsPage'));
-const MessengerServiciosPage = React.lazy(() => import('../pages/messenger/ServiciosPage'));
-const MessengerConfiguracionPage = React.lazy(() => import('../pages/messenger/ConfiguracionPage'));
+const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
+const MessengerCreateServicio = React.lazy(() => import('@/pages/messenger/CreateServicio'));
+const MessengerServiceDetails = React.lazy(() => import('@/pages/messenger/ServiceDetails'));
+const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
+const MessengerStatsHistoryPage = React.lazy(() => import('@/pages/messenger/StatsHistoryPage'));
+const MessengerRouteHistoryPage = React.lazy(() => import('@/pages/messenger/RouteHistoryPage'));
+const MessengerStatsPage = React.lazy(() => import('@/pages/messenger/StatsPage'));
+const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
+const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
 
 const MobileOnlyGuard = React.lazy(() => import('@/components/MobileOnlyGuard').then(m => ({ default: m.MobileOnlyGuard })));
 const DesktopOnlyGuard = React.lazy(() => import('@/components/DesktopOnlyGuard').then(m => ({ default: m.DesktopOnlyGuard })));

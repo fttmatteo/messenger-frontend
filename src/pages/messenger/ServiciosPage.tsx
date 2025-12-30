@@ -1,4 +1,4 @@
-import { useMessengerServices } from "@/hooks/useMessengerServices"
+import { useMessengerServices } from "@/hooks/use-messenger-services"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
