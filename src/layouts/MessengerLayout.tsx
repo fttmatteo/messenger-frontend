@@ -12,21 +12,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 
-// Type definitions for Wake Lock API
-// These provide type safety for the WakeLockSentinel returned by navigator.wakeLock.request()
-interface WakeLockSentinel extends EventTarget {
-    readonly released: boolean;
-    readonly type: 'screen';
-    release(): Promise<void>;
-}
-
-// Type-safe navigator check for Wake Lock support
-const getWakeLock = (): { request: (type: 'screen') => Promise<WakeLockSentinel> } | undefined => {
-    if ('wakeLock' in navigator) {
-        return navigator.wakeLock as { request: (type: 'screen') => Promise<WakeLockSentinel> };
-    }
-    return undefined;
-}
 
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
@@ -35,7 +20,7 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
-    const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
@@ -61,34 +46,10 @@ export default function MessengerLayout() {
 
     const pageTitle = getPageTitle()
 
-    const requestWakeLock = async () => {
-        try {
-            const wakeLock = getWakeLock()
-            if (wakeLock) {
-                wakeLockRef.current = await wakeLock.request('screen')
-                console.log('Wake Lock activo: la pantalla no se apagará')
 
-                wakeLockRef.current.addEventListener('release', () => {
-                    console.log('Wake Lock liberado')
-                })
-            }
-        } catch (err) {
-            // Wake Lock can fail for various reasons (e.g., low battery)
-            console.warn('No se pudo activar el Wake Lock:', err)
-        }
-    }
-
-    const releaseWakeLock = () => {
-        if (wakeLockRef.current) {
-            wakeLockRef.current.release().then(() => {
-                wakeLockRef.current = null
-            })
-        }
-    }
 
     useEffect(() => {
         if (isOnline) {
-            requestWakeLock()
 
             trackingService.connect(() => {
                 // Send immediate status update to appear online instantly
@@ -157,7 +118,6 @@ export default function MessengerLayout() {
                 updateUser({ isOnline: false })
             }
         } else {
-            releaseWakeLock()
 
             if (watchIdRef.current !== null) {
                 navigator.geolocation.clearWatch(watchIdRef.current)
@@ -189,19 +149,7 @@ export default function MessengerLayout() {
         setShowLogoutDialog(true)
     }
 
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && isOnline) {
-                requestWakeLock()
-            }
-        }
 
-        document.addEventListener('visibilitychange', handleVisibilityChange)
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange)
-            releaseWakeLock()
-        }
-    }, [isOnline])
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
