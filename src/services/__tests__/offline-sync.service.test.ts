@@ -10,11 +10,10 @@ vi.mock('idb-keyval', () => ({
 }))
 
 // Mock crypto.randomUUID
-if (!globalThis.crypto) {
-    (globalThis as any).crypto = { randomUUID: () => '550e8400-e29b-41d4-a716-446655440000' }
-} else if (!globalThis.crypto.randomUUID) {
-    (globalThis.crypto as any).randomUUID = () => '550e8400-e29b-41d4-a716-446655440000'
-}
+vi.stubGlobal('crypto', {
+    randomUUID: () => '550e8400-e29b-41d4-a716-446655440000',
+    // We cast to unknown then Crypto to avoid lint/type errors while providing a simple mock
+} as unknown as Crypto)
 
 describe('OfflineSyncService', () => {
     beforeEach(async () => {
