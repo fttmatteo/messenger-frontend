@@ -1,4 +1,4 @@
-import { MapPin, Navigation, Edit } from "lucide-react"
+import { Navigation, Edit } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/components/PlacaBadge"
