@@ -3,6 +3,7 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { NetworkProvider } from '../NetworkContext'
 import { useNetwork } from '@/hooks/use-network'
 import { offlineSyncService } from '@/services/offline-sync.service'
+import type { OfflineAction } from '@/services/offline-sync.service'
 import { toast } from 'sonner'
 import type { ReactNode } from 'react'
 
@@ -66,7 +67,7 @@ describe('NetworkContext', () => {
         expect(result.current.wasOffline).toBe(true)
 
         // Mock a pending action so syncAll is actually called
-        vi.mocked(offlineSyncService.getPendingActions).mockResolvedValue([{ id: '1' } as any])
+        vi.mocked(offlineSyncService.getPendingActions).mockResolvedValue([{ id: '1' } as unknown as OfflineAction])
 
         // Back online
         await act(async () => {

@@ -11,11 +11,9 @@ vi.mock('idb-keyval', () => ({
 
 // Mock crypto.randomUUID
 if (!globalThis.crypto) {
-    // @ts-ignore
-    globalThis.crypto = { randomUUID: () => '550e8400-e29b-41d4-a716-446655440000' }
+    (globalThis as any).crypto = { randomUUID: () => '550e8400-e29b-41d4-a716-446655440000' }
 } else if (!globalThis.crypto.randomUUID) {
-    // @ts-ignore
-    globalThis.crypto.randomUUID = () => '550e8400-e29b-41d4-a716-446655440000'
+    (globalThis.crypto as any).randomUUID = () => '550e8400-e29b-41d4-a716-446655440000'
 }
 
 describe('OfflineSyncService', () => {
