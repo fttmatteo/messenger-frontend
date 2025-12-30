@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
-import { useGoogleMap, Polyline } from "@react-google-maps/api"
+import { Polyline } from "@react-google-maps/api"
 import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
+import { AddressDisplay, MessengerMarker } from "@/components/tracking"
 import {
     ArrowLeft,
     MapPin,
@@ -29,124 +30,12 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 
-
 interface TrackingHistoryItem {
     id?: number
     latitude: number
     longitude: number
     timestamp: string
     speed?: number
-}
-
-// Address cache to avoid repeated API calls
-const addressCache = new Map<string, string>()
-
-// Request queue for rate limiting
-const requestQueue: Array<() => Promise<void>> = []
-let isProcessingQueue = false
-
-const processQueue = async () => {
-    if (isProcessingQueue || requestQueue.length === 0) return
-    isProcessingQueue = true
-
-    while (requestQueue.length > 0) {
-        const request = requestQueue.shift()
-        if (request) {
-            await request()
-            // Wait 300ms between requests to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 300))
-        }
-    }
-
-    isProcessingQueue = false
-}
-
-const addToQueue = (request: () => Promise<void>) => {
-    requestQueue.push(request)
-    processQueue()
-}
-
-// Component to display address from coordinates using Google Maps JS API
-function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
-    const [address, setAddress] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
-    const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`
-
-    useEffect(() => {
-        // Check cache first
-        if (addressCache.has(cacheKey)) {
-            setAddress(addressCache.get(cacheKey)!)
-            setLoading(false)
-            return
-        }
-
-        const fetchAddress = async () => {
-            try {
-                // Check if Google Maps API is loaded
-                if (!window.google?.maps?.Geocoder) {
-                    setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
-                    setLoading(false)
-                    return
-                }
-
-                const geocoder = new google.maps.Geocoder()
-                const response = await geocoder.geocode({ location: { lat, lng } })
-
-                if (response.results && response.results.length > 0) {
-                    const addr = response.results[0].formatted_address
-                    addressCache.set(cacheKey, addr)
-                    setAddress(addr)
-                } else {
-                    setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
-                }
-            } catch (err) {
-                console.error('Reverse geocode error:', err)
-                setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        // Add to queue instead of calling immediately
-        addToQueue(fetchAddress)
-    }, [lat, lng, cacheKey])
-
-    if (loading) {
-        return <Skeleton className="h-4 w-32" />
-    }
-
-    return <span className="truncate max-w-[180px]" title={address || ''}>{address}</span>
-}
-
-// Marker component
-function MessengerMarker({ position, color = '#10b981' }: { position: google.maps.LatLngLiteral, color?: string }) {
-    const map = useGoogleMap()
-    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
-
-    useEffect(() => {
-        if (!map || !window.google?.maps?.marker) return
-
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-            map,
-            position,
-            title: "Ubicación actual",
-            content: new google.maps.marker.PinElement({
-                background: color,
-                borderColor: 'white',
-                glyphColor: 'white',
-            }).element
-        })
-
-        markerRef.current = marker
-
-        return () => {
-            if (markerRef.current) {
-                markerRef.current.map = null
-            }
-        }
-    }, [map, position, color])
-
-    return null
 }
 
 export default function MessengerDetails() {

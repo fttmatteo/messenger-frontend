@@ -11,7 +11,7 @@ import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AdminUIProvider } from "@/context/AdminUIContext"
-import { useNetwork } from "@/hooks/useNetwork"
+import { useNetwork } from "@/hooks/use-network"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },

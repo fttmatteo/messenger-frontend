@@ -11,7 +11,7 @@ import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
-import { useNetwork } from "@/hooks/useNetwork"
+import { useNetwork } from "@/hooks/use-network"
 
 
 export default function MessengerLayout() {

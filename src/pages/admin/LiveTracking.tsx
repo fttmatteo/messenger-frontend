@@ -1,108 +1,20 @@
-import { useEffect, useState, useCallback, useRef } from "react"
-
+import { useEffect, useState, useCallback } from "react"
 import { Map as MapComponent } from "@/components/Map"
-import { useGoogleMap, OverlayView } from "@react-google-maps/api"
+import { OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { PulsingMarker, MessengerListPanel } from "@/components/tracking"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
-import { RefreshCw, Users, Wifi, WifiOff, Clock, Navigation, ChevronRight, ChevronLeft } from "lucide-react"
+import { RefreshCw, Wifi, WifiOff } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
-import { formatDistanceToNow } from "date-fns"
-import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { isMessengerOnline } from "@/lib/messenger-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
-
-// Componente para manejar AdvancedMarkerElement con efecto de pulso
-function AdvancedMarker({ position, onClick, title, color = '#4f46e5', isActive = false }: {
-    position: google.maps.LatLngLiteral,
-    onClick?: () => void,
-    title?: string,
-    color?: string,
-    isActive?: boolean
-}) {
-    const map = useGoogleMap()
-    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
-
-    useEffect(() => {
-        if (!map || !window.google?.maps?.marker) return
-
-        // Crear contenedor con efecto de pulso para marcadores activos
-        const container = document.createElement('div')
-        container.style.position = 'relative'
-
-        if (isActive) {
-            // Efecto de pulso
-            const pulse = document.createElement('div')
-            pulse.style.cssText = `
-                position: absolute;
-                width: 40px;
-                height: 40px;
-                background: ${color}40;
-                border-radius: 50%;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                animation: pulse 2s infinite;
-            `
-            container.appendChild(pulse)
-
-            // Añadir keyframes si no existen
-            if (!document.getElementById('pulse-keyframes')) {
-                const style = document.createElement('style')
-                style.id = 'pulse-keyframes'
-                style.textContent = `
-                    @keyframes pulse {
-                        0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                        100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
-                    }
-                `
-                document.head.appendChild(style)
-            }
-        }
-
-        const pinElement = new google.maps.marker.PinElement({
-            background: color,
-            borderColor: 'white',
-            glyphColor: 'white',
-            scale: isActive ? 1.2 : 1,
-        })
-        container.appendChild(pinElement.element)
-
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-            map,
-            position,
-            title,
-            content: container
-        })
-
-        marker.addListener('click', () => {
-            if (onClick) onClick()
-        })
-
-        markerRef.current = marker
-
-        return () => {
-            if (markerRef.current) {
-                markerRef.current.map = null
-            }
-        }
-    }, [map, color, onClick, position, title, isActive])
-
-    useEffect(() => {
-        if (markerRef.current) {
-            markerRef.current.position = position
-        }
-    }, [position])
-
-    return null
-}
 
 export default function LiveTracking() {
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
@@ -116,9 +28,9 @@ export default function LiveTracking() {
     const { setSuccess, setError } = useAdminUI()
 
     // Force re-render periodically to update relative times
-    const [, setTick] = useState(0)
+    const [now, setNow] = useState(Date.now())
     useEffect(() => {
-        const timer = setInterval(() => setTick(t => t + 1), 60000)
+        const timer = setInterval(() => setNow(Date.now()), 60000)
         return () => clearInterval(timer)
     }, [])
 
@@ -151,7 +63,6 @@ export default function LiveTracking() {
                         return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName }
                     }
                 } catch (e) {
-                    // Ignore 404 errors (mensajero sin ubicación previa), but log other errors
                     if (isAxiosError(e) && e.response?.status !== 404) {
                         console.error(`Error fetching last location for messenger ${emp.idEmployee}:`, e)
                     }
@@ -184,7 +95,7 @@ export default function LiveTracking() {
                 setSuccess(`Monitoreo actualizado`)
             }
 
-            // Center map on first active messenger if available and no manual update
+            // Center map on first active messenger if available
             const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && m.latitude !== 0)
             if (!manual && firstActive) {
                 setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
@@ -199,10 +110,6 @@ export default function LiveTracking() {
         }
     }, [setSuccess, setError])
 
-
-
-
-
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
         setMessengers(prev => {
@@ -210,7 +117,6 @@ export default function LiveTracking() {
 
             if (existingIndex >= 0) {
                 const updatedList = [...prev]
-                // Preserve name if update doesn't have it (though update usually has it)
                 const existing = prev[existingIndex]
                 updatedList[existingIndex] = { ...existing, ...update, messengerName: existing.messengerName || update.messengerName }
                 return updatedList
@@ -247,15 +153,13 @@ export default function LiveTracking() {
         }
     }, [fetchMessengers, handleTrackingUpdate])
 
-
-
-    const selectMessenger = (messenger: LiveTrackingUpdate) => {
+    const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
         setShowMessengerDetails(true)
         if (messenger.latitude && messenger.longitude) {
             setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
         }
-    }
+    }, [])
 
     const deselectMessenger = useCallback(() => {
         setSelectedMessenger(null)
@@ -263,9 +167,7 @@ export default function LiveTracking() {
         setFollowingMessengerId(null)
     }, [])
 
-
-
-    const toggleFollow = (messengerId: number) => {
+    const toggleFollow = useCallback((messengerId: number) => {
         if (followingMessengerId === messengerId) {
             setFollowingMessengerId(null)
         } else {
@@ -275,7 +177,7 @@ export default function LiveTracking() {
                 setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
             }
         }
-    }
+    }, [followingMessengerId, messengers])
 
     return (
         <div className="h-full w-full relative overflow-hidden">
@@ -287,12 +189,13 @@ export default function LiveTracking() {
                     <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
                         {messengers.map((messenger) => (
                             messenger.latitude && messenger.longitude && messenger.latitude !== 0 && (
-                                <AdvancedMarker
+                                <PulsingMarker
                                     key={messenger.messengerId}
                                     position={{ lat: messenger.latitude, lng: messenger.longitude }}
                                     onClick={() => selectMessenger(messenger)}
                                     title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
                                     color={isMessengerOnline(messenger.status, messenger.lastUpdate) ? '#10b981' : '#6b7280'}
+                                    isActive={isMessengerOnline(messenger.status, messenger.lastUpdate)}
                                 />
                             )
                         ))}
@@ -368,92 +271,19 @@ export default function LiveTracking() {
                 isPanelCollapsed ? "w-9" : "w-72",
                 showMessengerDetails && "opacity-0 pointer-events-none translate-x-full"
             )}>
-                <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
-                    {/* ... header ... */}
-                    <div className={cn(
-                        "flex items-center border-b shrink-0 h-10",
-                        isPanelCollapsed ? "justify-center p-0" : "justify-between px-3"
-                    )}>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-                            className="h-6 w-6 p-0"
-                            title={isPanelCollapsed ? "Expandir" : "Colapsar"}
-                        >
-                            {isPanelCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </Button>
-                        {!isPanelCollapsed && (
-                            <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Mensajeros</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Panel Content */}
-                    {!isPanelCollapsed && (
-                        <ScrollArea className="flex-1">
-                            {loading && messengers.length === 0 ? (
-                                <div className="space-y-2 p-3">
-                                    {[1, 2, 3].map(i => (
-                                        <Skeleton key={i} className="h-16 w-full" />
-                                    ))}
-                                </div>
-                            ) : messengers.length === 0 ? (
-                                <div className="p-4 text-center text-muted-foreground text-sm">
-                                    No hay mensajeros disponibles
-                                </div>
-                            ) : (
-                                <div className="divide-y">
-                                    {messengers.map((messenger) => {
-                                        const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
-                                        const isRecent = lastUpdateDate && (Date.now() - lastUpdateDate.getTime() < 60000)
-
-                                        return (
-                                            <button
-                                                key={messenger.messengerId}
-                                                className={cn(
-                                                    "w-full p-3 text-left hover:bg-muted/50 transition-colors",
-                                                    selectedMessenger?.messengerId === messenger.messengerId && "bg-muted",
-                                                    followingMessengerId === messenger.messengerId && "ring-2 ring-inset ring-green-500"
-                                                )}
-                                                onClick={() => selectMessenger(messenger)}
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-medium text-sm truncate">
-                                                        {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
-                                                    </span>
-                                                    <div className={cn(
-                                                        "w-2 h-2 rounded-full shrink-0",
-                                                        isMessengerOnline(messenger.status, messenger.lastUpdate) ? "bg-green-500" : "bg-gray-400"
-                                                    )} />
-                                                </div>
-                                                {messenger.speed !== undefined && messenger.speed > 0 && (
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        <Navigation className="h-3 w-3 inline mr-1" />
-                                                        {(messenger.speed * 3.6).toFixed(1)} km/h
-                                                    </p>
-                                                )}
-                                                {lastUpdateDate && (
-                                                    <p className="text-xs text-muted-foreground">
-                                                        <Clock className="h-3 w-3 inline mr-1" />
-                                                        {isRecent
-                                                            ? "Actualizado ahora"
-                                                            : formatDistanceToNow(lastUpdateDate, { addSuffix: true, locale: es })}
-                                                    </p>
-                                                )}
-                                            </button>
-                                        )
-                                    })}
-                                </div>
-                            )}
-                        </ScrollArea>
-                    )}
-                </div>
+                <MessengerListPanel
+                    messengers={messengers}
+                    selectedMessengerId={selectedMessenger?.messengerId || null}
+                    followingMessengerId={followingMessengerId}
+                    loading={loading}
+                    isCollapsed={isPanelCollapsed}
+                    onToggleCollapse={() => setIsPanelCollapsed(!isPanelCollapsed)}
+                    now={now}
+                    onSelect={selectMessenger}
+                />
             </div>
 
-            {/* Messenger Detail Panel (Proposal 1) */}
+            {/* Messenger Detail Panel */}
             <MessengerSidePanel
                 messenger={selectedMessenger}
                 messengerId={selectedMessenger?.messengerId || null}
@@ -462,7 +292,6 @@ export default function LiveTracking() {
                 onFollow={toggleFollow}
                 isFollowing={followingMessengerId === selectedMessenger?.messengerId}
             />
-
         </div>
     )
 }

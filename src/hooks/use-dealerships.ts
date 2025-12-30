@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react"
 import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { toast } from "sonner"
-import { useDataList } from "@/hooks/useDataList"
+import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
 // Type Definitions
