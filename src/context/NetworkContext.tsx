@@ -20,6 +20,40 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         return localStorage.getItem('pwa_offline_ready_shown') === 'true'
     })
 
+    // Sync pending actions when coming back online
+    const syncPendingActions = useCallback(async () => {
+        const actions = await offlineSyncService.getPendingActions()
+
+        if (actions.length === 0) return
+
+        try {
+            const syncedCount = await offlineSyncService.syncAll()
+
+            if (syncedCount > 0) {
+                toast.success(`${syncedCount} acción${syncedCount > 1 ? 'es' : ''} sincronizada${syncedCount > 1 ? 's' : ''}`, {
+                    icon: <CloudOff className="h-4 w-4" />,
+                    duration: 3000,
+                })
+            }
+
+            setPendingActionsCount(0)
+        } catch (error) {
+            console.error('Error syncing pending actions:', error)
+            toast.error('Error al sincronizar algunas acciones', {
+                description: 'Se reintentará automáticamente',
+                duration: 4000,
+            })
+        }
+    }, [])
+
+    const updateServiceWorker = useCallback(() => {
+        // Call the global update function set by main.tsx
+        if (window.__updateSW) {
+            window.__updateSW(true)
+        }
+        setNeedRefresh(false)
+    }, [])
+
     // Handle online/offline events
     useEffect(() => {
         const handleOnline = () => {
@@ -58,7 +92,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
         }
-    }, [wasOffline])
+    }, [wasOffline, syncPendingActions])
 
     // Listen for Service Worker events
     useEffect(() => {
@@ -98,7 +132,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             window.removeEventListener('sw-offline-ready', handleOfflineReady)
             window.removeEventListener('sw-need-refresh', handleNeedRefresh)
         }
-    }, [hasShownOfflineReady])
+    }, [hasShownOfflineReady, updateServiceWorker])
 
     // Update pending actions count periodically
     useEffect(() => {
@@ -113,40 +147,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         const interval = setInterval(updateCount, 5000)
 
         return () => clearInterval(interval)
-    }, [])
-
-    // Sync pending actions when coming back online
-    const syncPendingActions = useCallback(async () => {
-        const actions = await offlineSyncService.getPendingActions()
-
-        if (actions.length === 0) return
-
-        try {
-            const syncedCount = await offlineSyncService.syncAll()
-
-            if (syncedCount > 0) {
-                toast.success(`${syncedCount} acción${syncedCount > 1 ? 'es' : ''} sincronizada${syncedCount > 1 ? 's' : ''}`, {
-                    icon: <CloudOff className="h-4 w-4" />,
-                    duration: 3000,
-                })
-            }
-
-            setPendingActionsCount(0)
-        } catch (error) {
-            console.error('Error syncing pending actions:', error)
-            toast.error('Error al sincronizar algunas acciones', {
-                description: 'Se reintentará automáticamente',
-                duration: 4000,
-            })
-        }
-    }, [])
-
-    const updateServiceWorker = useCallback(() => {
-        // Call the global update function set by main.tsx
-        if (window.__updateSW) {
-            window.__updateSW(true)
-        }
-        setNeedRefresh(false)
     }, [])
 
     const dismissUpdate = useCallback(() => {
