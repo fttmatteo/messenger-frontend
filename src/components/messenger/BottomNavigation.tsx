@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { Home, List, Plus, BarChart3, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 interface NavItem {
     icon: React.ComponentType<{ className?: string }>
@@ -20,6 +21,7 @@ const navItems: NavItem[] = [
 export function BottomNavigation() {
     const navigate = useNavigate()
     const location = useLocation()
+    const { isIOS } = useDeviceType()
 
     const isActive = (path: string) => {
         if (path === "/messenger") {
@@ -30,26 +32,31 @@ export function BottomNavigation() {
 
     return (
         <nav
-            className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 pb-safe"
+            className={cn(
+                "fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 transition-all duration-300",
+                isIOS ? "pb-6" : "pb-3"
+            )}
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-16 px-2">
+            <div className="flex items-center justify-around h-20 px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
 
                     if (item.isCenter) {
-                        // Center FAB-style button for "Crear"
+                        // Center button for "Crear" - Now inline, no text
                         return (
                             <button
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className="flex items-center justify-center -mt-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 active:scale-95 transition-all duration-200"
+                                className="flex flex-col items-center justify-center gap-1 rounded-full text-primary hover:bg-primary/10 transition-all duration-200"
                                 aria-label={item.label}
                                 aria-current={active ? "page" : undefined}
                             >
-                                <Icon className="h-6 w-6" />
+                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground">
+                                    <Icon className="h-6 w-6" />
+                                </div>
                             </button>
                         )
                     }
@@ -59,7 +66,7 @@ export function BottomNavigation() {
                             key={item.path}
                             onClick={() => navigate(item.path)}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-lg transition-all duration-200 min-w-[60px]",
+                                "flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 min-w-[60px] relative",
                                 active
                                     ? "text-primary"
                                     : "text-muted-foreground hover:text-foreground"

@@ -278,7 +278,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-20'}`}
+                className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-32'}`}
                 role="main"
             >
                 <Outlet />

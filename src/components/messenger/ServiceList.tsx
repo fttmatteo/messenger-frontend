@@ -40,9 +40,9 @@ export function ServiceList({ services, loading, emptyMessage = "No hay servicio
         )
     }
 
-    // Service list
+    // Service list - Compact List Container
     return (
-        <div className="space-y-2">
+        <div className="border border-border/50 rounded-lg bg-card overflow-hidden shadow-sm">
             {services.map((service) => (
                 <ServiceCard key={service.idServiceDelivery} service={service} />
             ))}
