@@ -1,49 +1,69 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import { trackingService } from "@/services/tracking.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
-import { getStatusIconConfig } from "@/lib/status-utils"
+import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
-import { useStatusColors } from "@/hooks/use-status-colors"
-import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Send, ChevronLeft } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Building2, Camera, PenLine, MessageSquare, Clock } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { motion, AnimatePresence } from "framer-motion"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
-type MessengerStatus = 'DELIVERED' | 'RETURNED'
+type MessengerStatus = 'PENDING' | 'DELIVERED' | 'RETURNED'
 
 interface StatusOption {
     value: MessengerStatus
     label: string
+    description: string
     icon: React.ReactNode
     requiresSignature: boolean
     requiresPhotos: boolean
     requiresObservation: boolean
 }
 
-const statusOptions: StatusOption[] = [
+const statusOptionsBase: StatusOption[] = [
+    {
+        value: 'PENDING',
+        label: 'Pendiente',
+        description: 'El vehículo está pendiente de entrega',
+        icon: <Clock className="h-7 w-7" />,
+        requiresSignature: true,
+        requiresPhotos: true,
+        requiresObservation: true
+    },
     {
         value: 'DELIVERED',
         label: 'Entregado',
-        icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+        description: 'El vehículo fue entregado exitosamente',
+        icon: <CheckCircle className="h-7 w-7" />,
         requiresSignature: true,
-        requiresPhotos: true,
+        requiresPhotos: false,
         requiresObservation: false
     },
     {
         value: 'RETURNED',
         label: 'Devuelto',
-        icon: <CornerDownLeft className="h-6 w-6 text-orange-500" />,
+        description: 'El vehículo no pudo ser entregado',
+        icon: <CornerDownLeft className="h-7 w-7" />,
         requiresSignature: false,
-        requiresPhotos: false,
+        requiresPhotos: true,
         requiresObservation: true
     }
 ]
+
+// Helper to convert hex to rgba for backgrounds
+function hexToRgba(hex: string, alpha: number): string {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    if (!result) return `rgba(128, 128, 128, ${alpha})`
+    return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`
+}
 
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
@@ -58,6 +78,12 @@ export default function UpdateStatus() {
     const [photos, setPhotos] = useState<File[]>([])
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
+
+    // Create status options with dynamic colors from admin settings
+    const statusOptions = useMemo(() => statusOptionsBase.map(option => ({
+        ...option,
+        color: colors[option.value] || '#6b7280' // fallback gray
+    })), [colors])
 
     useEffect(() => {
         const fetchService = async () => {
@@ -177,28 +203,24 @@ export default function UpdateStatus() {
 
     if (loading) {
         return (
-            <div className="flex flex-col h-full">
-                <header className="flex items-center gap-3 p-4 border-b">
-                    <span className="font-semibold">Actualizar estado</span>
-                </header>
-                <div className="flex-1 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
+            <div className="flex flex-col h-full items-center justify-center gap-4">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">Cargando servicio...</p>
             </div>
         )
     }
 
     if (error || !service) {
         return (
-            <div className="flex flex-col h-full">
-                <header className="flex items-center gap-3 p-4 border-b">
-                    <span className="font-semibold">Actualizar estado</span>
-                </header>
-                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-                    <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-                    <p className="text-muted-foreground mb-4">{error || 'Servicio no encontrado'}</p>
-                    <Button variant="outline" onClick={() => navigate(-1)}>Volver</Button>
+            <div className="flex flex-col h-full items-center justify-center p-6 text-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                    <AlertCircle className="h-8 w-8 text-red-500" />
                 </div>
+                <div>
+                    <p className="font-medium text-lg mb-1">Error</p>
+                    <p className="text-muted-foreground text-sm">{error || 'Servicio no encontrado'}</p>
+                </div>
+                <Button variant="outline" onClick={() => navigate(-1)}>Volver</Button>
             </div>
         )
     }
@@ -207,130 +229,188 @@ export default function UpdateStatus() {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Header */}
-            <header className="flex items-center justify-between gap-2 p-3 border-b bg-background sticky top-0 z-10">
-                <div className="flex-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate(-1)}
-                        className="h-9 w-9 -ml-1 text-muted-foreground"
-                    >
-                        <ChevronLeft className="h-6 w-6" />
-                    </Button>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-auto">
+                {/* Hero Card - Plate & Dealership */}
+                <div className="p-4 pb-2">
+                    <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
+                        <div className="flex flex-col items-center gap-3">
+                            <PlacaBadge
+                                plateNumber={service.plate.plateNumber}
+                                plateType={service.plate.plateType}
+                                size="xl"
+                            />
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Building2 className="h-4 w-4" />
+                                <span className="text-sm font-medium">{service.dealership.name}</span>
+                            </div>
+                        </div>
+                    </Card>
                 </div>
 
-                <div className="flex-[2] text-center min-w-0">
-                    <h1 className="font-bold text-sm sm:text-base truncate leading-tight">Actualizar estado</h1>
-                    <p className="text-[10px] text-muted-foreground truncate">
-                        {service.plate.plateNumber} · {service.dealership.name}
-                    </p>
-                </div>
-
-                <div className="flex-1 flex justify-end">
-                    <div
-                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full whitespace-nowrap"
-                        style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
-                    >
-                        <div className="w-2 h-2 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                        <span className="text-[10px] font-medium lowercase first-letter:uppercase">
-                            {getStatusIconConfig(service.currentStatus, colors).label}
-                        </span>
-                    </div>
-                </div>
-            </header>
-
-            {/* Content */}
-            <div className="flex-1 overflow-auto p-4 space-y-4">
                 {/* Status Selection */}
-                <div>
-                    <h3 className="text-sm font-semibold mb-3">Seleccionar nuevo estado</h3>
-                    <div className="space-y-2">
-                        {statusOptions.map((option) => (
-                            <button
-                                key={option.value}
-                                type="button"
-                                onClick={() => setSelectedStatus(option.value)}
-                                className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left touch-manipulation ${selectedStatus === option.value
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-muted hover:border-muted-foreground/30'
-                                    }`}
-                            >
-                                {option.icon}
-                                <div className="flex-1">
-                                    <p className="font-medium">{option.label}</p>
-                                </div>
-                            </button>
-                        ))}
+                <div className="px-4 py-3">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                        Seleccionar estado
+                    </p>
+                    <div className="space-y-3">
+                        {statusOptions.map((option) => {
+                            const isSelected = selectedStatus === option.value
+                            return (
+                                <motion.button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => setSelectedStatus(option.value)}
+                                    className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left touch-manipulation ${!isSelected ? 'border-border/40 bg-card hover:bg-muted/30' : ''
+                                        }`}
+                                    style={isSelected ? {
+                                        borderColor: option.color,
+                                        backgroundColor: hexToRgba(option.color, 0.1)
+                                    } : undefined}
+                                    whileTap={{ scale: 0.98 }}
+                                >
+                                    <div
+                                        className={`p-2.5 rounded-xl ${!isSelected ? 'bg-muted' : ''}`}
+                                        style={isSelected ? {
+                                            backgroundColor: hexToRgba(option.color, 0.15)
+                                        } : undefined}
+                                    >
+                                        <span
+                                            className={!isSelected ? 'text-muted-foreground' : ''}
+                                            style={isSelected ? { color: option.color } : undefined}
+                                        >
+                                            {option.icon}
+                                        </span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-base text-foreground">
+                                            {option.label}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">
+                                            {option.description}
+                                        </p>
+                                    </div>
+                                    {isSelected && (
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="w-5 h-5 rounded-full flex items-center justify-center"
+                                            style={{ backgroundColor: option.color }}
+                                        >
+                                            <CheckCircle className="h-3 w-3 text-white" />
+                                        </motion.div>
+                                    )}
+                                </motion.button>
+                            )
+                        })}
                     </div>
                 </div>
 
                 {/* Evidence Forms - Show based on selected status */}
-                {selectedOption && (
-                    <>
-                        {/* Signature */}
-                        {selectedOption.requiresSignature && (
-                            <>
-                                <Separator className="my-6" />
-                                <div>
-                                    <h3 className="text-sm font-semibold mb-3">Firma del asesor *</h3>
+                <AnimatePresence mode="wait">
+                    {selectedOption && (
+                        <motion.div
+                            key={selectedOption.value}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.2 }}
+                            className="px-4 pb-4 space-y-4"
+                        >
+                            {/* Signature Section */}
+                            {selectedOption.requiresSignature && (
+                                <Card className="p-4 border-border/50">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="p-1.5 rounded-lg bg-primary/10">
+                                            <PenLine className="h-4 w-4 text-primary" />
+                                        </div>
+                                        <h3 className="text-sm font-semibold">Firma del asesor</h3>
+                                        <span className="text-xs text-red-500">*</span>
+                                    </div>
                                     <SignatureCanvas
                                         ref={signatureRef}
                                         width={280}
                                         height={140}
                                     />
-                                </div>
-                            </>
-                        )}
+                                </Card>
+                            )}
 
-                        {/* Photos */}
-                        {selectedOption.requiresPhotos && (
-                            <>
-                                <Separator className="my-6" />
-                                <div>
-                                    <h3 className="text-sm font-semibold mb-3">Foto de evidencia *</h3>
+                            {/* Photos Section */}
+                            {selectedOption.requiresPhotos && (
+                                <Card className="p-4 border-border/50">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="p-1.5 rounded-lg bg-primary/10">
+                                            <Camera className="h-4 w-4 text-primary" />
+                                        </div>
+                                        <h3 className="text-sm font-semibold">Foto de evidencia</h3>
+                                        <span className="text-xs text-red-500">*</span>
+                                    </div>
                                     <EvidenceCapture
                                         maxPhotos={3}
                                         photos={photos}
                                         onPhotosChange={setPhotos}
                                     />
-                                </div>
-                            </>
-                        )}
+                                </Card>
+                            )}
 
-                        {/* Observation */}
-                        <Separator className="my-6" />
-                        <div>
-                            <h3 className="text-sm font-semibold mb-3">
-                                Observaciones {selectedOption.requiresObservation ? '*' : '(opcional)'}
-                            </h3>
-                            <Textarea
-                                placeholder={
-                                    selectedOption.value === 'RETURNED'
-                                        ? 'Explique el motivo de la devolución...'
-                                        : 'Notas adicionales sobre la entrega...'
-                                }
-                                value={observation}
-                                onChange={(e) => setObservation(e.target.value)}
-                                rows={3}
-                                className="resize-none"
-                            />
-                        </div>
-                    </>
-                )}
+                            {/* Observation Section */}
+                            <Card className="p-4 border-border/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-1.5 rounded-lg bg-primary/10">
+                                        <MessageSquare className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <h3 className="text-sm font-semibold">Observaciones</h3>
+                                    {selectedOption.requiresObservation && (
+                                        <span className="text-xs text-red-500">*</span>
+                                    )}
+                                    {!selectedOption.requiresObservation && (
+                                        <span className="text-xs text-muted-foreground">(opcional)</span>
+                                    )}
+                                </div>
+                                <Textarea
+                                    placeholder={
+                                        selectedOption.value === 'RETURNED'
+                                            ? 'Explique el motivo de la devolución...'
+                                            : selectedOption.value === 'PENDING'
+                                                ? 'Explique por qué el servicio queda pendiente...'
+                                                : 'Notas adicionales sobre la entrega...'
+                                    }
+                                    value={observation}
+                                    onChange={(e) => setObservation(e.target.value)}
+                                    rows={3}
+                                    className="resize-none bg-muted/30 border-border/50"
+                                />
+                            </Card>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
-            {/* Submit Button */}
-            <div className="p-4 border-t bg-background">
+            {/* Fixed Bottom Action */}
+            <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
                 <Button
-                    className="w-full h-12 text-base"
+                    className="w-full h-12 text-base font-semibold rounded-xl transition-all"
+                    style={{
+                        backgroundColor: selectedOption?.color || 'hsl(var(--primary))',
+                        color: 'white'
+                    }}
                     disabled={!canSubmit() || submitting}
                     onClick={() => setShowConfirmDialog(true)}
                 >
                     {submitting ? (
-                        <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Enviando...</>
+                        <>
+                            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                            Enviando...
+                        </>
                     ) : (
-                        <><Send className="h-5 w-5 mr-2" /> Confirmar {selectedOption?.label}</>
+                        <>
+                            {selectedOption && (
+                                <span className="mr-2">
+                                    {selectedOption.icon}
+                                </span>
+                            )}
+                            {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un estado'}
+                        </>
                     )}
                 </Button>
             </div>
@@ -350,7 +430,10 @@ export default function UpdateStatus() {
                         <AlertDialogAction
                             onClick={handleSubmit}
                             disabled={submitting}
-                            className={selectedOption?.value === 'DELIVERED' ? 'bg-green-600 hover:bg-green-700' : ''}
+                            style={{
+                                backgroundColor: selectedOption?.color || 'hsl(var(--primary))',
+                                color: 'white'
+                            }}
                         >
                             {submitting ? 'Enviando...' : 'Confirmar'}
                         </AlertDialogAction>
@@ -360,3 +443,4 @@ export default function UpdateStatus() {
         </div>
     )
 }
+

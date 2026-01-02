@@ -102,8 +102,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     <PlacaBadge
                         plateNumber={service.plate.plateNumber}
                         plateType={service.plate.plateType}
-                        size="md"
-                        className="shadow-none border border-border/60"
+                        size="lg"
                     />
                 </div>
 
