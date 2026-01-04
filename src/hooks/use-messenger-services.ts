@@ -101,6 +101,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
 
     const completedServices = useMemo(() =>
         services.filter(s =>
+            s.currentStatus === 'PENDING' ||
             s.currentStatus === 'DELIVERED' ||
             s.currentStatus === 'RETURNED' ||
             s.currentStatus === 'RESOLVED' ||

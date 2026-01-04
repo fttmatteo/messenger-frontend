@@ -15,13 +15,23 @@ export default function ServiciosPage() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [calendarOpen, setCalendarOpen] = useState(false)
 
+    // Get the last status change date for a service
+    const getLastChangeDate = (service: typeof completedServices[0]) => {
+        if (service.history && service.history.length > 0) {
+            // Get the most recent change date from history
+            const lastChange = service.history[service.history.length - 1]
+            return new Date(lastChange.changeDate)
+        }
+        return new Date(service.createdAt)
+    }
+
     const filteredServices = useMemo(() => {
         // If there's a search term, search across ALL dates (global search)
-        // If no search term, filter by selected date
+        // If no search term, filter by last status change date
         let services = searchTerm.trim()
             ? completedServices
             : completedServices.filter(service =>
-                isSameDay(new Date(service.createdAt), selectedDate)
+                isSameDay(getLastChangeDate(service), selectedDate)
             )
 
         if (searchTerm.trim()) {

@@ -189,10 +189,6 @@ export default function UpdateStatus() {
                 longitude
             })
 
-            toast.success('Estado actualizado', {
-                description: `Servicio marcado como ${option.label}`
-            })
-
             navigate('/messenger')
         } catch (error) {
             toast.error('Error al actualizar', {
