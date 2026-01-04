@@ -83,10 +83,14 @@ export default function UpdateStatus() {
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
     // Create status options with dynamic colors from admin settings
-    const statusOptions = useMemo(() => statusOptionsBase.map(option => ({
-        ...option,
-        color: colors[option.value] || '#6b7280' // fallback gray
-    })), [colors])
+    const statusOptions = useMemo(() => {
+        return statusOptionsBase
+            .filter(option => !service || option.value !== service.currentStatus)
+            .map(option => ({
+                ...option,
+                color: colors[option.value] || '#6b7280' // fallback gray
+            }))
+    }, [colors, service])
 
     useEffect(() => {
         const fetchService = async () => {
