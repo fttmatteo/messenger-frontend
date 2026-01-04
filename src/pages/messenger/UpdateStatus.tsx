@@ -359,7 +359,7 @@ export default function UpdateStatus() {
                                         <span className="text-xs text-red-500">*</span>
                                     </div>
                                     <EvidenceCapture
-                                        maxPhotos={3}
+                                        maxPhotos={1}
                                         photos={photos}
                                         onPhotosChange={setPhotos}
                                     />
