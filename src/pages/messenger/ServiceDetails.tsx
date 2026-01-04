@@ -253,16 +253,14 @@ export default function ServiceDetails() {
                             <h3 className="text-sm font-semibold">Información del servicio</h3>
                         </div>
                         <div className="space-y-2">
-                            <div className="flex justify-between items-center text-sm">
+                            <div className="flex items-center gap-2 text-sm">
                                 <span className="text-muted-foreground">Creado:</span>
                                 <span>{formatDateTime(service.createdAt)}</span>
                             </div>
 
-                            <div className="flex justify-between items-center text-sm">
-                                <div className="flex items-center gap-2">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">Mensajero:</span>
-                                </div>
+                            <div className="flex items-center gap-2 text-sm">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Mensajero:</span>
                                 <span className="font-medium">{service.messenger.fullName}</span>
                             </div>
                         </div>

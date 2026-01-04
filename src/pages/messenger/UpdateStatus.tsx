@@ -77,6 +77,7 @@ export default function UpdateStatus() {
     const [selectedStatus, setSelectedStatus] = useState<MessengerStatus | null>(null)
     const [observation, setObservation] = useState('')
     const [photos, setPhotos] = useState<File[]>([])
+    const [hasSignature, setHasSignature] = useState(false)
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
@@ -111,7 +112,7 @@ export default function UpdateStatus() {
         const option = getSelectedOption()
         if (!option) return false
 
-        if (option.requiresSignature && !signatureRef.current?.hasSignature()) {
+        if (option.requiresSignature && !hasSignature) {
             return false
         }
 
@@ -276,14 +277,14 @@ export default function UpdateStatus() {
                                         }`}
                                     style={isSelected ? {
                                         borderColor: option.color,
-                                        backgroundColor: hexToRgba(option.color, 0.1)
+                                        backgroundColor: hexToRgba(option.color, 0.06)
                                     } : undefined}
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <div
                                         className={`p-2.5 rounded-xl ${!isSelected ? 'bg-muted' : ''}`}
                                         style={isSelected ? {
-                                            backgroundColor: hexToRgba(option.color, 0.15)
+                                            backgroundColor: hexToRgba(option.color, 0.12)
                                         } : undefined}
                                     >
                                         <span
@@ -342,6 +343,7 @@ export default function UpdateStatus() {
                                         ref={signatureRef}
                                         width={280}
                                         height={140}
+                                        onSignatureChange={setHasSignature}
                                     />
                                 </Card>
                             )}
