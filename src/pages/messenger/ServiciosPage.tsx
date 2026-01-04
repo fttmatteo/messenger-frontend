@@ -33,18 +33,22 @@ export default function ServiciosPage() {
     }
 
     const filteredServices = useMemo(() => {
-        // Initial filter by date (if no search term)
-        let services = searchTerm.trim()
+        // We use global search if there's a search term OR a status filter active.
+        // Otherwise, we filter by the selected date.
+        const isGlobalSearch = searchTerm.trim() !== "" || statusFilter !== "all"
+
+        let services = isGlobalSearch
             ? completedServices
             : completedServices.filter(service =>
                 isSameDay(getLastChangeDate(service), selectedDate)
             )
 
-        // Filter by status
+        // Apply Status Filter
         if (statusFilter !== "all") {
             services = services.filter(s => s.currentStatus === statusFilter)
         }
 
+        // Apply Plate/Dealership Search filter
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
             services = services.filter(service =>
@@ -160,7 +164,10 @@ export default function ServiciosPage() {
                     )}
                     {statusFilter !== 'all' && <span className="shrink-0">·</span>}
                     <span className="truncate">
-                        {searchTerm.trim() ? "Búsqueda global" : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))}
+                        {searchTerm.trim() || statusFilter !== "all"
+                            ? "Historial global"
+                            : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))
+                        }
                     </span>
                     <span className="shrink-0">·</span>
                     <span className="font-medium shrink-0">{filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''}</span>
