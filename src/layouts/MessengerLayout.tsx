@@ -266,7 +266,7 @@ export default function MessengerLayout() {
                         variant="ghost"
                         size="icon"
                         onClick={handleLogout}
-                        className="h-9 w-9 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        className="h-9 w-9 -mr-2 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                         aria-label="Cerrar sesión"
                     >
                         <LogOut className="h-4 w-4" />

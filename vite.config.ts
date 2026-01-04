@@ -66,6 +66,7 @@ export default defineConfig(({ mode }) => {
         workbox: {
           globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
           navigateFallback: 'index.html',
+          navigateFallbackAllowlist: [/^\/(?!api)/],
           clientsClaim: true,
           skipWaiting: true,
           runtimeCaching: [

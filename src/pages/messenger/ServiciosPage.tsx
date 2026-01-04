@@ -16,9 +16,13 @@ export default function ServiciosPage() {
     const [calendarOpen, setCalendarOpen] = useState(false)
 
     const filteredServices = useMemo(() => {
-        let services = completedServices.filter(service =>
-            isSameDay(new Date(service.createdAt), selectedDate)
-        )
+        // If there's a search term, search across ALL dates (global search)
+        // If no search term, filter by selected date
+        let services = searchTerm.trim()
+            ? completedServices
+            : completedServices.filter(service =>
+                isSameDay(new Date(service.createdAt), selectedDate)
+            )
 
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
@@ -77,11 +81,11 @@ export default function ServiciosPage() {
             {/* Date indicator + Results count */}
             <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">
-                    {isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es })}
+                    {searchTerm.trim() ? "Todas las fechas" : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))}
                     {" · "}
                     {filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''}
                 </p>
-                {!isToday && (
+                {!isToday && !searchTerm.trim() && (
                     <Button
                         variant="ghost"
                         size="sm"
