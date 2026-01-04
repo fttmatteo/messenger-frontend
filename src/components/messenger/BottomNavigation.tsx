@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom"
-import { Inbox, History, Plus, BarChart3, Settings } from "lucide-react"
+import { Inbox, History, Plus, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeviceType } from "@/hooks/use-device-type"
 
@@ -14,7 +14,6 @@ const navItems: NavItem[] = [
     { icon: Inbox, label: "Asignados", path: "/messenger" },
     { icon: History, label: "Historial", path: "/messenger/servicios" },
     { icon: Plus, label: "Crear", path: "/messenger/crear", isCenter: true },
-    { icon: BarChart3, label: "Stats", path: "/messenger/estadisticas" },
     { icon: Settings, label: "Config", path: "/messenger/configuracion" },
 ]
 
