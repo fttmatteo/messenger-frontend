@@ -59,6 +59,8 @@ export interface StatusHistoryInfo {
     photos: PhotoInfo[]
     deliveryLatitude?: number
     deliveryLongitude?: number
+    signature?: SignatureInfo
+    observation?: string
 }
 
 // Main Service Delivery interface
@@ -100,6 +102,7 @@ export interface DailyStats {
     delivered: number
     returned: number
     canceled: number
+    pending: number
     total: number
 }
 

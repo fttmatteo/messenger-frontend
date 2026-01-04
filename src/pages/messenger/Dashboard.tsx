@@ -1,8 +1,6 @@
 import { useMessengerServices } from "@/hooks/use-messenger-services"
-import { usePullToRefresh } from "@/hooks/use-pull-to-refresh"
 import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
-import { PullIndicator } from "@/components/messenger/PullIndicator"
 import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,11 +11,6 @@ export default function MessengerDashboard() {
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
-
-    const { containerRef, isRefreshing: isPulling, pullDistance } = usePullToRefresh({
-        onRefresh: refetch,
-        disabled: !isOnline
-    })
 
     const handleRefresh = async () => {
         if (!isOnline || isRefreshing) return
@@ -44,16 +37,7 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div
-            ref={containerRef}
-            className="flex flex-col h-full overflow-hidden"
-        >
-            {/* Pull to refresh indicator */}
-            <PullIndicator
-                pullDistance={pullDistance}
-                isRefreshing={isPulling}
-            />
-
+        <div className="flex flex-col h-full overflow-hidden">
             <div className="flex flex-col h-full p-3 gap-3 overflow-auto">
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-2">
@@ -85,10 +69,10 @@ export default function MessengerDashboard() {
                         variant="ghost"
                         size="icon"
                         onClick={handleRefresh}
-                        disabled={isRefreshing || isPulling || !isOnline}
+                        disabled={isRefreshing || !isOnline}
                         className="h-10 w-10 shrink-0 rounded-lg"
                     >
-                        <RefreshCw className={`h-4 w-4 text-muted-foreground ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
 

@@ -162,7 +162,6 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
                 stopCamera()
                 onCapture(file, dataUrl)
-                toast.success("Foto capturada")
             } else {
                 toast.error("Error al capturar foto", { id: "error-captura" })
             }

@@ -6,6 +6,7 @@ import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
@@ -82,10 +83,14 @@ export default function UpdateStatus() {
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
     // Create status options with dynamic colors from admin settings
-    const statusOptions = useMemo(() => statusOptionsBase.map(option => ({
-        ...option,
-        color: colors[option.value] || '#6b7280' // fallback gray
-    })), [colors])
+    const statusOptions = useMemo(() => {
+        return statusOptionsBase
+            .filter(option => !service || option.value !== service.currentStatus)
+            .map(option => ({
+                ...option,
+                color: colors[option.value] || '#6b7280' // fallback gray
+            }))
+    }, [colors, service])
 
     useEffect(() => {
         const fetchService = async () => {
@@ -188,10 +193,6 @@ export default function UpdateStatus() {
                 longitude
             })
 
-            toast.success('Estado actualizado', {
-                description: `Servicio marcado como ${option.label}`
-            })
-
             navigate('/messenger')
         } catch (error) {
             toast.error('Error al actualizar', {
@@ -205,9 +206,43 @@ export default function UpdateStatus() {
 
     if (loading) {
         return (
-            <div className="flex flex-col h-full items-center justify-center gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">Cargando servicio...</p>
+            <div className="flex flex-col h-full">
+                <div className="flex-1 overflow-auto">
+                    {/* Hero Card Skeleton */}
+                    <div className="p-4 pb-2">
+                        <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
+                            <div className="flex flex-col items-center gap-3">
+                                <Skeleton className="h-12 w-32 rounded-md" />
+                                <Skeleton className="h-4 w-36" />
+                                <Skeleton className="h-7 w-24 rounded-full" />
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Status Selection Skeleton */}
+                    <div className="px-4 py-3">
+                        <Skeleton className="h-3 w-28 mb-3" />
+                        <div className="space-y-3">
+                            {[1, 2, 3].map((i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 p-4 rounded-xl border-2 border-border/40 bg-card"
+                                >
+                                    <Skeleton className="h-12 w-12 rounded-xl" />
+                                    <div className="flex-1 space-y-2">
+                                        <Skeleton className="h-5 w-24" />
+                                        <Skeleton className="h-3 w-44" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Fixed Bottom Action Skeleton */}
+                <div className="p-4 border-t bg-background/95">
+                    <Skeleton className="w-full h-12 rounded-xl" />
+                </div>
             </div>
         )
     }

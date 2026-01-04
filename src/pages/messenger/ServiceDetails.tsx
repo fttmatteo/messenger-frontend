@@ -4,7 +4,8 @@ import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { MapPin, Navigation, Phone, Clock, User, Building2, FileImage, Loader2, AlertCircle, Edit } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { MapPin, Navigation, Phone, Clock, User, Building2, FileImage, AlertCircle, Edit } from "lucide-react"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
@@ -130,11 +131,49 @@ export default function ServiceDetails() {
     if (loading) {
         return (
             <div className="flex flex-col h-full">
-                <header className="flex items-center gap-3 p-4 border-b">
-                    <div className="h-6 w-32 bg-muted rounded animate-pulse" />
-                </header>
-                <div className="flex-1 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <div className="flex-1 overflow-auto">
+                    {/* Hero Card Skeleton */}
+                    <div className="p-4 pb-2">
+                        <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
+                            <div className="flex flex-col items-center gap-3">
+                                <Skeleton className="h-12 w-32 rounded-md" />
+                                <Skeleton className="h-7 w-24 rounded-full" />
+                                <div className="flex items-center gap-2 w-full mt-2">
+                                    <Skeleton className="flex-1 h-11 rounded-lg" />
+                                    <Skeleton className="flex-1 h-11 rounded-lg" />
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Dealership Card Skeleton */}
+                    <div className="px-4 pb-2">
+                        <Card className="p-4 border-border/50">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Skeleton className="h-7 w-7 rounded-lg" />
+                                <Skeleton className="h-4 w-40" />
+                            </div>
+                            <div className="space-y-2">
+                                <Skeleton className="h-5 w-48" />
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-full" />
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Service Info Card Skeleton */}
+                    <div className="px-4 pb-2">
+                        <Card className="p-4 border-border/50">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Skeleton className="h-7 w-7 rounded-lg" />
+                                <Skeleton className="h-4 w-44" />
+                            </div>
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-56" />
+                                <Skeleton className="h-4 w-40" />
+                            </div>
+                        </Card>
+                    </div>
                 </div>
             </div>
         )
@@ -191,7 +230,7 @@ export default function ServiceDetails() {
                                     Navegar
                                 </Button>
 
-                                {service.currentStatus === 'ASSIGNED' && (
+                                {(service.currentStatus === 'ASSIGNED' || service.currentStatus === 'PENDING' || service.currentStatus === 'RETURNED') && (
                                     <Button
                                         variant="outline"
                                         className="flex-1 h-11 gap-2"

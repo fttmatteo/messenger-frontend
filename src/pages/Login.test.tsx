@@ -93,7 +93,11 @@ describe('Login Page', () => {
             role: 'ADMIN',
         };
 
-        vi.mocked(authService.authService.login).mockResolvedValue(mockLoginResponse);
+        vi.mocked(authService.authService.login).mockImplementation(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => resolve(mockLoginResponse), 100);
+            });
+        });
 
         renderWithProviders(<Login />);
 
@@ -104,6 +108,9 @@ describe('Login Page', () => {
         await user.type(documentInput, '12345678');
         await user.type(passwordInput, 'password123');
         await user.click(submitButton);
+
+        // Check if loader is visible - use unique text from FullScreenLoader
+        expect(screen.getByText('Por favor espera un momento')).toBeInTheDocument();
 
         await waitFor(() => {
             expect(authService.authService.login).toHaveBeenCalledWith({

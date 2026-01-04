@@ -191,7 +191,7 @@ export default function Servicios() {
                                                     <TableCell className="max-w-[150px] md:max-w-[200px] truncate">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <span className="cursor-default truncate block">{formatDisplayName(service.messenger.fullName)}</span>
+                                                                <span className="cursor-default truncate inline-block max-w-[100%] align-bottom">{formatDisplayName(service.messenger.fullName)}</span>
                                                             </TooltipTrigger>
                                                             <TooltipContent><p>{service.messenger.fullName}</p></TooltipContent>
                                                         </Tooltip>
