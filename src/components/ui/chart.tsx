@@ -3,7 +3,15 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 import type { Payload } from "recharts/types/component/DefaultTooltipContent"
-import type { Payload as LegendPayload } from "recharts/types/component/DefaultLegendContent"
+
+// Type for legend payload items
+type LegendPayload = {
+  value: string | number
+  id?: string
+  type?: string
+  color?: string
+  dataKey?: string | number
+}
 
 import { cn } from "@/lib/utils"
 
@@ -202,7 +210,7 @@ function ChartTooltipContent({
 
             return (
               <div
-                key={item.dataKey}
+                key={String(item.dataKey ?? index)}
                 className={cn(
                   "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
                   indicator === "dot" && "items-center"
