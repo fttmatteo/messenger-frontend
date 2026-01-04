@@ -121,17 +121,19 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         <Navigation className="h-3.5 w-3.5" />
                     </Button>
 
-                    {service.currentStatus === 'ASSIGNED' && (
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-primary/20 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
-                            onClick={handleUpdate}
-                            title="Actualizar"
-                        >
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    )}
+                    {(service.currentStatus === 'ASSIGNED' ||
+                        service.currentStatus === 'PENDING' ||
+                        service.currentStatus === 'RETURNED') && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-full border-2 border-primary/20 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
+                                onClick={handleUpdate}
+                                title="Actualizar"
+                            >
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        )}
                 </div>
             </div>
         </div>
