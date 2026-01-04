@@ -88,7 +88,6 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 const file = new File([blob], `evidencia_${Date.now()}.jpg`, { type: 'image/jpeg' })
                 onPhotosChange([...photos, file])
                 stopCamera()
-                toast.success('Foto capturada')
             }
         }, 'image/jpeg', 0.9)
     }
@@ -113,7 +112,6 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
         if (newPhotos.length > 0) {
             onPhotosChange([...photos, ...newPhotos])
-            toast.success(`${newPhotos.length} foto(s) agregada(s)`)
         }
 
         // Reset input

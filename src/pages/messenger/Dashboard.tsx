@@ -3,14 +3,17 @@ import { usePullToRefresh } from "@/hooks/use-pull-to-refresh"
 import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { PullIndicator } from "@/components/messenger/PullIndicator"
-import { RefreshCw, Database } from "lucide-react"
+import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useMemo } from "react"
 
 export default function MessengerDashboard() {
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
+    const [selectedDealership, setSelectedDealership] = useState<string>("all")
+
     const { containerRef, isRefreshing: isPulling, pullDistance } = usePullToRefresh({
         onRefresh: refetch,
         disabled: !isOnline
@@ -23,19 +26,22 @@ export default function MessengerDashboard() {
         setIsRefreshing(false)
     }
 
-    const today = new Date()
-    const dateString = today.toLocaleDateString('es-CO', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short'
-    })
+    // Extract unique dealerships from available services
+    const dealerships = useMemo(() => {
+        const map = new Map();
+        pendingServices.forEach(s => {
+            if (s.dealership && !map.has(s.dealership.idDealership)) {
+                map.set(s.dealership.idDealership, s.dealership.name);
+            }
+        });
+        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    }, [pendingServices]);
 
-    const getGreeting = () => {
-        const hour = today.getHours()
-        if (hour < 12) return 'Buenos días'
-        if (hour < 18) return 'Buenas tardes'
-        return 'Buenas noches'
-    }
+    // Filter services
+    const filteredServices = useMemo(() => {
+        if (selectedDealership === "all") return pendingServices;
+        return pendingServices.filter(s => String(s.dealership.idDealership) === selectedDealership);
+    }, [pendingServices, selectedDealership]);
 
     return (
         <div
@@ -49,42 +55,62 @@ export default function MessengerDashboard() {
             />
 
             <div className="flex flex-col h-full p-3 gap-3 overflow-auto">
-                {/* Compact Header with Greeting */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-muted-foreground">
-                            {getGreeting()} · <span className="capitalize">{dateString}</span>
-                        </span>
-                        {/* Subtle cache indicator */}
-                        {isFromCache && !loading && (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
-                                <Database className="h-2.5 w-2.5" />
-                                cache
-                            </span>
-                        )}
+                {/* Header with Dealership Filter */}
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                        <Select value={selectedDealership} onValueChange={setSelectedDealership}>
+                            <SelectTrigger className="w-full h-10 border-input/60 bg-background/50 backdrop-blur-sm shadow-sm">
+                                <div className="flex items-center gap-2 truncate">
+                                    <Building2 className="h-4 w-4 text-primary shrink-0" />
+                                    <SelectValue placeholder="Filtrar por concesionario" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent align="start">
+                                <SelectItem value="all" className="font-medium">
+                                    Todos los concesionarios - {pendingServices.length}
+                                </SelectItem>
+                                {dealerships.map((d) => {
+                                    const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
+                                    return (
+                                        <SelectItem key={d.id} value={String(d.id)}>
+                                            {d.name}<span className="text-muted-foreground ml-1">- {count}</span>
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
                     </div>
+
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleRefresh}
                         disabled={isRefreshing || isPulling || !isOnline}
-                        className="h-8 w-8"
+                        className="h-10 w-10 shrink-0 rounded-lg"
                     >
-                        <RefreshCw className={`h-4 w-4 ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 text-muted-foreground ${(isRefreshing || isPulling) ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
 
-                {/* Assigned Services Title */}
-                <p className="text-xs text-muted-foreground">
-                    {pendingServices.length} servicio{pendingServices.length !== 1 ? 's' : ''} creados{pendingServices.length !== 1 ? 's' : ''}
-                </p>
+                {/* Sub-header info */}
+                <div className="flex items-center justify-between px-1">
+                    <p className="text-xs text-muted-foreground font-medium">
+                        {filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''} visible{filteredServices.length !== 1 ? 's' : ''}
+                    </p>
+                    {isFromCache && !loading && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60 bg-muted/30 px-1.5 py-0.5 rounded-full">
+                            <Database className="h-2.5 w-2.5" />
+                            cache
+                        </span>
+                    )}
+                </div>
 
                 {/* Assigned Services List */}
                 <div className="flex-1 overflow-auto">
                     <ServiceList
-                        services={pendingServices}
+                        services={filteredServices}
                         loading={loading}
-                        emptyMessage="No tienes servicios creados"
+                        emptyMessage={selectedDealership === "all" ? "No tienes servicios asignados" : "No hay servicios en este concesionario"}
                     />
                 </div>
 

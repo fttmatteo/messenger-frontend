@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
+import { MessengerDetailsSkeleton } from "@/components/tracking/TrackingSkeletons"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { AddressDisplay, MessengerMarker } from "@/components/tracking"
 import {
@@ -152,15 +152,7 @@ export default function MessengerDetails() {
     const mapCenter = currentLocation || { lat: 6.2442, lng: -75.5812 } // Medellín default
 
     if (loading) {
-        return (
-            <div className="space-y-4 p-6">
-                <Skeleton className="h-8 w-48" />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <Skeleton className="h-[400px] lg:col-span-1" />
-                    <Skeleton className="h-[400px] lg:col-span-2" />
-                </div>
-            </div>
-        )
+        return <MessengerDetailsSkeleton />
     }
 
     if (!employee && !loading) {

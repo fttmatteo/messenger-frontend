@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
+import { Link, Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
@@ -97,10 +97,10 @@ function AdminLayoutContent() {
                                             tooltip={item.title}
                                             size="lg"
                                         >
-                                            <a href={item.url}>
+                                            <Link to={item.url}>
                                                 <item.icon />
                                                 <span>{item.title}</span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
