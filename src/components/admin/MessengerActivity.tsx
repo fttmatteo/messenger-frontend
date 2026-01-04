@@ -1,6 +1,5 @@
 import React from "react"
 import { TrendingUp, Clock, AlertCircle, MapPin, Calendar as CalendarIcon, ChevronDown } from "lucide-react"
-import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -33,9 +32,6 @@ interface MessengerProductivityProps {
 }
 
 export function MessengerProductivity({ stats }: MessengerProductivityProps) {
-    const effectiveness = stats?.total ? Math.round((stats.delivered / stats.total) * 100) : 0
-    const pending = stats?.assigned ? stats.assigned - (stats.delivered + stats.returned + stats.canceled) : 0
-
     return (
         <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -45,7 +41,7 @@ export function MessengerProductivity({ stats }: MessengerProductivityProps) {
                 </h4>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-2 gap-1.5">
                 <div className="bg-background/40 border p-2 rounded-lg text-center">
                     <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Entregados</p>
                     <p className="text-sm font-bold">{stats?.delivered || 0}</p>
@@ -55,19 +51,13 @@ export function MessengerProductivity({ stats }: MessengerProductivityProps) {
                     <p className="text-sm font-bold">{stats?.returned || 0}</p>
                 </div>
                 <div className="bg-background/40 border p-2 rounded-lg text-center">
+                    <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Asignados</p>
+                    <p className="text-sm font-bold">{stats?.total || 0}</p>
+                </div>
+                <div className="bg-background/40 border p-2 rounded-lg text-center">
                     <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Pendientes</p>
-                    <p className="text-sm font-bold">{pending}</p>
+                    <p className="text-sm font-bold">{stats?.pending || 0}</p>
                 </div>
-            </div>
-
-            <div className="space-y-1.5 bg-background/40 border p-2.5 rounded-lg">
-                <div className="flex justify-between items-end">
-                    <p className="text-[10px] text-muted-foreground uppercase font-medium">Efectividad</p>
-                    <p className="text-xs font-bold text-primary">
-                        {effectiveness}%
-                    </p>
-                </div>
-                <Progress value={effectiveness} className="h-1" />
             </div>
         </div>
     )
@@ -100,13 +90,13 @@ export function MessengerActivityTimeline({
 
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-7 text-[10px] px-2 gap-1 bg-background/50 border-dashed">
+                        <Button variant="outline" size="sm" className="h-7 text-[10px] px-2 gap-1 bg-transparent hover:bg-background/20 border-border/50">
                             <CalendarIcon className="h-3 w-3" />
                             {format(selectedDate, "dd MMM", { locale: es })}
                             <ChevronDown className="h-3 w-3 opacity-50" />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
+                    <PopoverContent className="w-auto p-0 z-50 bg-background/60 backdrop-blur-xl" align="start" side="left" sideOffset={12} collisionPadding={20}>
                         <Calendar
                             mode="single"
                             selected={selectedDate}

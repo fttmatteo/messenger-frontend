@@ -72,6 +72,7 @@ export function MessengerSidePanel({
                 delivered: response.dailyStats.delivered,
                 returned: response.dailyStats.returned,
                 canceled: response.dailyStats.canceled,
+                pending: response.dailyStats.pending,
                 total: response.dailyStats.total
             })
 

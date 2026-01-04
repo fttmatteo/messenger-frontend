@@ -100,6 +100,7 @@ export interface DailyStats {
     delivered: number
     returned: number
     canceled: number
+    pending: number
     total: number
 }
 
