@@ -47,6 +47,13 @@ export function HistoryEntryCard({
                 </div>
             </div>
 
+            {entry.observation && (
+                <div className="pt-2 text-xs">
+                    <span className="font-medium text-foreground">Observación: </span>
+                    <span className="text-muted-foreground">{entry.observation}</span>
+                </div>
+            )}
+
             {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
                     <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Lectura de placa</p>
@@ -74,18 +81,18 @@ export function HistoryEntryCard({
             )}
 
             {/* Combined Evidence Section (Signature + Photos) */}
-            {((entry.newStatus === 'DELIVERED' && signaturePath) || (entry.photos && entry.photos.length > 0)) && (
+            {(((entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath)) || (entry.photos && entry.photos.length > 0)) && (
                 <div className="pt-2 border-t border-border/50 flex flex-row gap-2 justify-center">
                     {/* Signature */}
-                    {entry.newStatus === 'DELIVERED' && signaturePath && (
+                    {(entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath) && (
                         <div className="flex flex-col items-center">
                             <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Firma</p>
                             <div
                                 className="relative group cursor-pointer h-16 w-16 bg-white rounded border border-border/50 flex items-center justify-center"
-                                onClick={() => handleImageClick(signaturePath)}
+                                onClick={() => handleImageClick(entry.signature?.signaturePath || signaturePath!)}
                             >
                                 <img
-                                    src={getImageUrl(signaturePath)}
+                                    src={getImageUrl(entry.signature?.signaturePath || signaturePath!)}
                                     alt="Firma"
                                     className="max-w-full max-h-full object-contain p-1"
                                 />
@@ -101,13 +108,6 @@ export function HistoryEntryCard({
                     {/* Photos */}
                     {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-col items-center">
-                            {/* Only show title if there isn't a signature next to it, or if needed for clarity. 
-                                 Given the side-by-side request, usually we just want the images. 
-                                 But keeping the title "Evidencia" per column is good if they are distinct columns. 
-                                 However, to make them look uniform, maybe treat them as a single gallery?
-                                 The user said "un unico tamaño". 
-                                 Let's keep the columns but use the same size w-16 h-16.
-                             */}
                             <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Evidencia</p>
                             <div className="flex flex-wrap gap-1.5 justify-center">
                                 {entry.photos.map((photo) => (

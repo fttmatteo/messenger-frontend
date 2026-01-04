@@ -59,6 +59,8 @@ export interface StatusHistoryInfo {
     photos: PhotoInfo[]
     deliveryLatitude?: number
     deliveryLongitude?: number
+    signature?: SignatureInfo
+    observation?: string
 }
 
 // Main Service Delivery interface
