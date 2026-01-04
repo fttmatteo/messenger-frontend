@@ -10,6 +10,7 @@ import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
+import { getStatusIconConfig } from "@/lib/status-utils"
 import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Building2, Camera, PenLine, MessageSquare, Clock } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -243,6 +244,16 @@ export default function UpdateStatus() {
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <Building2 className="h-4 w-4" />
                                 <span className="text-sm font-medium">{service.dealership.name}</span>
+                            </div>
+                            {/* Current Status Badge */}
+                            <div
+                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                            >
+                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                <span className="text-sm font-semibold">
+                                    {getStatusIconConfig(service.currentStatus, colors).label}
+                                </span>
                             </div>
                         </div>
                     </Card>

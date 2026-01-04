@@ -36,13 +36,13 @@ export default function MessengerLayout() {
 
     // Get page title based on path
     const getPageTitle = () => {
-        if (location.pathname.includes('historial-estadisticas')) return 'Historial Stats'
-        if (location.pathname.includes('historial-recorrido')) return 'Historial Ruta'
+        if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
+        if (location.pathname.includes('historial-recorrido')) return 'Historial ruta'
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion')) return 'Configuración'
-        if (location.pathname.includes('servicio/')) return 'Detalle Servicio'
-        if (location.pathname.includes('crear')) return 'Nuevo Servicio'
-        if (location.pathname.includes('actualizar')) return 'Actualizar Estado'
+        if (location.pathname.includes('actualizar')) return 'Actualizar estado'
+        if (location.pathname.includes('servicio/')) return 'Detalle servicio'
+        if (location.pathname.includes('crear')) return 'Nuevo servicio'
         return null // Will show logo instead
     }
 
