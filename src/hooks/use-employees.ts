@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import { toast } from "sonner"
-import { useDataList } from "@/hooks/useDataList"
+import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
 // Type Definitions

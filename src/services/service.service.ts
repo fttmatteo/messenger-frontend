@@ -1,5 +1,5 @@
 import apiClient from './api-client'
-import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats } from '@/types/service.types'
+import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse } from '@/types/service.types'
 
 class ServiceDeliveryService {
     /**
@@ -9,6 +9,30 @@ class ServiceDeliveryService {
      */
     async getAll(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/allServices')
+        return response.data
+    }
+
+    /**
+     * Get all services with pagination
+     * ADMIN: gets all services
+     * MESSENGER: gets only assigned services
+     */
+    async getAllPaginated(params: {
+        page?: number
+        size?: number
+        sortBy?: string
+        sortDirection?: 'asc' | 'desc'
+        search?: string
+    } = {}): Promise<PaginatedResponse<ServiceDelivery>> {
+        const response = await apiClient.get('/services/allServicesPageable', {
+            params: {
+                page: params.page ?? 0,
+                size: params.size ?? 10,
+                sortBy: params.sortBy ?? 'createdAt',
+                sortDirection: params.sortDirection ?? 'desc',
+                search: params.search
+            }
+        })
         return response.data
     }
 
@@ -38,6 +62,14 @@ class ServiceDeliveryService {
             formData.append('manualPlateNumber', request.manualPlateNumber)
         }
 
+        if (request.latitude) {
+            formData.append('latitude', request.latitude.toString())
+        }
+
+        if (request.longitude) {
+            formData.append('longitude', request.longitude.toString())
+        }
+
         const response = await apiClient.post('/services/createService', formData)
         return response.data
     }
@@ -62,6 +94,14 @@ class ServiceDeliveryService {
             request.photos.forEach(photo => {
                 formData.append('photos', photo)
             })
+        }
+
+        if (request.latitude) {
+            formData.append('latitude', request.latitude.toString())
+        }
+
+        if (request.longitude) {
+            formData.append('longitude', request.longitude.toString())
         }
 
         const response = await apiClient.put(`/services/updateService/${id}`, formData)
@@ -96,6 +136,14 @@ class ServiceDeliveryService {
      */
     async emptyTrash(): Promise<{ message: string; deletedCount: number }> {
         const response = await apiClient.delete('/services/trash/empty')
+        return response.data
+    }
+
+    /**
+     * Permanently delete a single service from trash - Admin only
+     */
+    async permanentDelete(id: number): Promise<{ message: string }> {
+        const response = await apiClient.delete(`/services/trash/${id}`)
         return response.data
     }
 

@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
-import { useDealerships } from "@/hooks/useDealerships"
+import { useDealerships } from "@/hooks/use-dealerships"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
@@ -9,11 +9,12 @@ import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { TableRowSkeleton } from "@/components/dealership/DealershipSkeletons"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { Map } from "@/components/Map"
@@ -51,6 +52,59 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     return null
 }
 
+// Address Display Component for Reverse Geocoding
+function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
+    const [address, setAddress] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let isMounted = true
+        const fetchAddress = async () => {
+            setLoading(true)
+            try {
+                if (!window.google?.maps?.Geocoder) {
+                    if (isMounted) {
+                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`) // Fallback
+                        setLoading(false)
+                    }
+                    return
+                }
+
+                const geocoder = new google.maps.Geocoder()
+                const response = await geocoder.geocode({ location: { lat, lng } })
+
+                if (isMounted) {
+                    if (response.results?.[0]) {
+                        setAddress(response.results[0].formatted_address)
+                    } else {
+                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+                    }
+                    setLoading(false)
+                }
+            } catch (err) {
+                console.error('Reverse geocode error:', err)
+                if (isMounted) {
+                    setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+                    setLoading(false)
+                }
+            }
+        }
+
+        fetchAddress()
+
+        return () => { isMounted = false }
+    }, [lat, lng])
+
+    if (loading) return <Skeleton className="h-4 w-48" />
+
+    return (
+        <span className="text-sm text-muted-foreground font-medium flex items-center gap-1">
+            <MapPinned className="h-3 w-3" />
+            {address}
+        </span>
+    )
+}
+
 export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
@@ -59,7 +113,6 @@ export default function Concesionarios() {
 
     // Use custom hooks
     const {
-        dealerships,
         loading,
         filteredAndSortedDealerships,
         paginatedDealerships,
@@ -79,36 +132,34 @@ export default function Concesionarios() {
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
-        <div className="space-y-2">
-            <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
-
-            {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-xl md:text-2xl font-bold">Concesionarios</h1>
-
-                    <div className="flex items-center gap-2">
-                        <ToggleGroup
-                            type="single"
-                            value={zoneFilter}
-                            onValueChange={(value) => setZoneFilter(value || "all")}
-                            className="justify-start"
-                        >
-                            <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
-                            {uniqueZones.map((zone) => (
-                                <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
-                            ))}
-                        </ToggleGroup>
-
-                        {zoneFilter !== "all" && (
-                            <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs">
-                                <X className="h-3 w-3 mr-1" />Limpiar
-                            </Button>
-                        )}
-                    </div>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title+Filters center, Button right */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Concesionarios</h1>
+                    <ToggleGroup
+                        type="single"
+                        value={zoneFilter}
+                        onValueChange={(value) => setZoneFilter(value || "all")}
+                        className="justify-start shrink-0"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
+                        {uniqueZones.map((zone) => (
+                            <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
+                    {zoneFilter !== "all" && (
+                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs shrink-0">
+                            <X className="h-3 w-3 mr-1" />Limpiar
+                        </Button>
+                    )}
+                </div>
+
+                <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo concesionario
@@ -116,15 +167,8 @@ export default function Concesionarios() {
                 </div>
             </div>
 
-            <Card className="gap-1 py-1">
-                <CardHeader className="p-2 pb-0">
-                    <CardDescription>
-                        {filteredAndSortedDealerships.length} de {dealerships.length} concesionario(s)
-                        {searchQuery && ` - Buscando "${searchQuery}"`}
-                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -141,14 +185,16 @@ export default function Concesionarios() {
                             </TableBody>
                         </Table>
                     ) : filteredAndSortedDealerships.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<Store />}
-                            emptyTitle="Sin concesionarios"
-                            emptyDescription="Aún no hay concesionarios registrados en el sistema"
-                            actionButton={{ label: "Crear primer concesionario", onClick: () => navigate("/admin/concesionarios/crear") }}
-                        />
+                        <div className="flex-1 flex items-center justify-center">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Store />}
+                                emptyTitle="Sin concesionarios"
+                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
                             <Table>
@@ -194,8 +240,8 @@ export default function Concesionarios() {
                                                 className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                 onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
                                             >
-                                                <TableCell className="font-medium text-base">{dealership.name}</TableCell>
-                                                <TableCell className="max-w-xs text-base">
+                                                <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
+                                                <TableCell className="max-w-xs text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <span className="cursor-default">
@@ -213,7 +259,7 @@ export default function Concesionarios() {
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TableCell>
-                                                <TableCell className="text-base">
+                                                <TableCell className="text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -224,7 +270,7 @@ export default function Concesionarios() {
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className="text-base px-2 py-0.5">{dealership.zone}</Badge>
+                                                    <Badge variant="outline" className="text-xs px-2 py-0.5">{dealership.zone}</Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
@@ -277,9 +323,9 @@ export default function Concesionarios() {
                             )}
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground font-mono">
-                                {locationPopup?.lat.toFixed(6)}, {locationPopup?.lng.toFixed(6)}
-                            </span>
+                            {locationPopup && (
+                                <AddressDisplay lat={locationPopup.lat} lng={locationPopup.lng} />
+                            )}
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"

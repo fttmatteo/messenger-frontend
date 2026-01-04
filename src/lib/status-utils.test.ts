@@ -1,37 +1,54 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
     getStatusBadge,
     getStatusIconConfig,
     getPlateTypeLabel,
     getAvailableStatusesForUser,
-    isWithin72hWindow,
     getServiceLockReason,
     canUserEditService
 } from './status-utils';
+import { DEFAULT_STATUS_COLORS } from './status-colors';
+
+// Default fallback color for unknown statuses
+const DEFAULT_FALLBACK_COLOR = '#6b7280';
 
 describe('status-utils', () => {
     describe('getStatusBadge', () => {
         it('should return correct badge config for known statuses', () => {
+            // PENDING
             expect(getStatusBadge('PENDING').label).toBe('Pendiente');
-            expect(getStatusBadge('PENDING').className).toContain('bg-indigo-500');
+            expect(getStatusBadge('PENDING').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.PENDING);
+
+            // CANCELED
             expect(getStatusBadge('CANCELED').label).toBe('Cancelado');
-            expect(getStatusBadge('CANCELED').className).toContain('bg-red-500');
+            expect(getStatusBadge('CANCELED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.CANCELED);
+
+            // DELETED
+            expect(getStatusBadge('DELETED').label).toBe('Eliminado');
+            expect(getStatusBadge('DELETED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
         });
 
         it('should return default for unknown status', () => {
-            // Testing invalid status input
+            // Testing invalid status input - falls back to gray-500
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
-            expect(result.className).toContain('bg-gray-500');
+            expect(result.style?.backgroundColor).toBe(DEFAULT_FALLBACK_COLOR);
         });
     });
 
     describe('getStatusIconConfig', () => {
         it('should return correct icon config', () => {
+            // DELIVERED
             const result = getStatusIconConfig('DELIVERED');
             expect(result.label).toBe('Entregado');
-            expect(result.dotColor).toContain('bg-green-500');
-            expect(result.textColor).toContain('text-green-500');
+            expect(result.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
+            expect(result.textStyle.color).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
+
+            // DELETED
+            const deletedResult = getStatusIconConfig('DELETED');
+            expect(deletedResult.label).toBe('Eliminado');
+            expect(deletedResult.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
+            expect(deletedResult.textStyle.color).toBe(DEFAULT_STATUS_COLORS.DELETED);
         });
     });
 
@@ -43,77 +60,54 @@ describe('status-utils', () => {
     });
 
     describe('Business Rules (Status Transitions)', () => {
-        const NOW = new Date('2024-01-01T12:00:00Z');
-
-        beforeEach(() => {
-            vi.useFakeTimers();
-            vi.setSystemTime(NOW);
-        });
-
-        afterEach(() => {
-            vi.useRealTimers();
-        });
-
         describe('MESSENGER Rules', () => {
-            it('should allow transitions from ASSIGNED', () => {
-                const statuses = getAvailableStatusesForUser('MESSENGER', 'ASSIGNED');
+            it('should return all messenger statuses', () => {
+                const statuses = getAvailableStatusesForUser('MESSENGER');
                 expect(statuses.map(s => s.value)).toEqual(['PENDING', 'DELIVERED', 'RETURNED']);
             });
 
-            it('should allow transitions from RETURNED', () => {
-                const statuses = getAvailableStatusesForUser('MESSENGER', 'RETURNED');
-                expect(statuses.map(s => s.value)).toEqual(['PENDING', 'DELIVERED', 'RETURNED']);
-            });
-
-            it('should return locked for PENDING', () => {
-                const statuses = getAvailableStatusesForUser('MESSENGER', 'PENDING');
-                expect(statuses).toEqual([]);
-                expect(getServiceLockReason('MESSENGER', 'PENDING')).toContain('revisión');
-            });
-
-            it('should return locked for DELIVERED', () => {
-                const statuses = getAvailableStatusesForUser('MESSENGER', 'DELIVERED');
-                expect(statuses).toEqual([]);
-                expect(getServiceLockReason('MESSENGER', 'DELIVERED')).toContain('entregado');
+            it('should not include admin-only statuses', () => {
+                const statuses = getAvailableStatusesForUser('MESSENGER');
+                const values = statuses.map(s => s.value);
+                expect(values).not.toContain('CANCELED');
+                expect(values).not.toContain('RESOLVED');
             });
         });
 
         describe('ADMIN Rules', () => {
-            it('should allow transitions from PENDING', () => {
-                const statuses = getAvailableStatusesForUser('ADMIN', 'PENDING');
+            it('should return all admin statuses', () => {
+                const statuses = getAvailableStatusesForUser('ADMIN');
                 expect(statuses.map(s => s.value)).toEqual(['CANCELED', 'RESOLVED']);
             });
 
-            it('should allow transitions from ASSIGNED', () => {
-                const statuses = getAvailableStatusesForUser('ADMIN', 'ASSIGNED');
-                expect(statuses.map(s => s.value)).toEqual(['CANCELED', 'RESOLVED']);
+            it('should not include messenger-only statuses', () => {
+                const statuses = getAvailableStatusesForUser('ADMIN');
+                const values = statuses.map(s => s.value);
+                expect(values).not.toContain('PENDING');
+                expect(values).not.toContain('DELIVERED');
+                expect(values).not.toContain('RETURNED');
             });
 
-            it('should allow transitions from DELIVERED within 72h', () => {
-                // Delivered 1 hour ago
-                const deliveredAt = new Date(NOW.getTime() - 1000 * 60 * 60).toISOString();
-                const statuses = getAvailableStatusesForUser('ADMIN', 'DELIVERED', deliveredAt);
-                expect(statuses.map(s => s.value)).toEqual(['CANCELED', 'RESOLVED']);
-                expect(isWithin72hWindow('DELIVERED', deliveredAt)).toBe(true);
+            it('should use Revisado label for RESOLVED', () => {
+                const statuses = getAvailableStatusesForUser('ADMIN');
+                const resolved = statuses.find(s => s.value === 'RESOLVED');
+                expect(resolved?.label).toBe('Revisado');
             });
+        });
 
-            it('should NOT allow transitions from DELIVERED after 72h', () => {
-                // Delivered 73 hours ago
-                const deliveredAt = new Date(NOW.getTime() - 1000 * 60 * 60 * 73).toISOString();
-                const statuses = getAvailableStatusesForUser('ADMIN', 'DELIVERED', deliveredAt);
-                expect(statuses).toEqual([]);
-                expect(isWithin72hWindow('DELIVERED', deliveredAt)).toBe(false);
-                expect(getServiceLockReason('ADMIN', 'DELIVERED', deliveredAt)).toContain('expirado');
+        describe('getServiceLockReason', () => {
+            it('should always return null (no locks in simplified rules)', () => {
+                expect(getServiceLockReason()).toBeNull();
             });
         });
 
         describe('canUserEditService', () => {
-            it('should return true if available statuses exist', () => {
-                expect(canUserEditService('MESSENGER', 'ASSIGNED')).toBe(true);
+            it('should return true for MESSENGER', () => {
+                expect(canUserEditService('MESSENGER')).toBe(true);
             });
 
-            it('should return false if no available statuses', () => {
-                expect(canUserEditService('MESSENGER', 'PENDING')).toBe(false);
+            it('should return true for ADMIN', () => {
+                expect(canUserEditService('ADMIN')).toBe(true);
             });
         });
     });

@@ -17,11 +17,11 @@ interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function TimelineItem({ className, children, isLast, ...props }: TimelineItemProps) {
     return (
-        <div className={cn("relative pl-8 pb-8 last:pb-0", className)} {...props}>
+        <div className={cn("relative pl-6 pb-4 last:pb-0 group/timeline-item", className)} {...props}>
             {/* Connecting Line */}
             {!isLast && (
                 <div
-                    className="absolute left-[11px] top-[28px] bottom-[-4px] w-[2px] bg-border"
+                    className="absolute left-[7px] top-[22px] bottom-[-4px] w-[2px] bg-border group-data-[small=true]/timeline-item:left-[5px] group-data-[small=true]/timeline-item:top-[18px]"
                     aria-hidden="true"
                 />
             )}
@@ -33,19 +33,23 @@ export function TimelineItem({ className, children, isLast, ...props }: Timeline
 interface TimelineHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
     icon?: React.ReactNode
     statusColor?: string
+    statusStyle?: React.CSSProperties
+    size?: 'default' | 'sm'
 }
 
-export function TimelineHeader({ className, children, icon, statusColor, ...props }: TimelineHeaderProps) {
+export function TimelineHeader({ className, children, icon, statusColor, statusStyle, size = 'default', ...props }: TimelineHeaderProps) {
     return (
-        <div className={cn("flex flex-col gap-2 mb-2", className)} {...props}>
-            {/* Status Icon/Dot */}
+        <div className={cn("flex flex-col gap-1 mb-1", className)} {...props}>
+            {/* Status Icon/Dot - Matched to header size (w-3 h-3) */}
             <div
                 className={cn(
-                    "absolute left-0 top-0.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background shadow-sm",
-                    statusColor // Optional: pass specific generic color classes if needed
+                    "absolute left-0 top-1.5 flex items-center justify-center rounded-full",
+                    size === 'default' ? "h-4 w-4" : "h-3 w-3 top-1",
+                    statusColor
                 )}
+                style={statusStyle}
             >
-                {icon || <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
+                {icon}
             </div>
             {/* Header Content (Status Badge, etc) */}
             <div className="flex items-center">

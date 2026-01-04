@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { employeeService } from "@/services/employee.service"
@@ -8,10 +8,11 @@ import type { EmployeeRole } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Eye, EyeOff } from "lucide-react"
-import { toast } from "sonner"
+import { useAdminUI } from "@/context/AdminUIContext"
 import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -25,23 +26,26 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
-
-
 export default function CreateEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
+
+    const { setSuccess, setError } = useAdminUI()
 
     const {
         register,
         handleSubmit,
         setValue,
-        watch,
+        control,
         formState: { errors, isSubmitting },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
     })
 
-    const selectedRole = watch("role")
+    const selectedRole = useWatch({
+        control,
+        name: "role",
+    })
 
     const onSubmit = async (data: EmployeeFormValues) => {
         try {
@@ -52,26 +56,34 @@ export default function CreateEmployee() {
                 password: data.password,
                 role: data.role as EmployeeRole,
             })
-            toast.success("Empleado creado exitosamente")
+            setSuccess("El nuevo empleado ha sido registrado correctamente")
             navigate("/admin/empleados")
         } catch (error) {
-            toast.error("Error al crear empleado", {
-                description: getErrorMessage(error),
-                id: "error-crear-empleado"
-            })
+            setError(getErrorMessage(error))
         }
     }
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold">Nuevo empleado</h1>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title center */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Empleados", href: "/admin/empleados" },
+                        { label: "Nuevo" }
+                    ]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo empleado</h1>
+                </div>
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-lg">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -171,11 +183,12 @@ export default function CreateEmployee() {
                             <Button
                                 type="button"
                                 variant="outline"
+                                size="sm"
                                 onClick={() => navigate("/admin/empleados")}
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Crear empleado
                             </Button>

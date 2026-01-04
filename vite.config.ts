@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'icons/*.png'],
+        includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
         manifest: {
           name: env.VITE_APP_NAME || 'PLAK',
           short_name: 'PLAK',
@@ -64,6 +64,10 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
+          navigateFallback: 'index.html',
+          clientsClaim: true,
+          skipWaiting: true,
           runtimeCaching: [
             {
               urlPattern: /^https?:\/\/.*\/api\/.*/i,
@@ -81,6 +85,10 @@ export default defineConfig(({ mode }) => {
               },
             },
           ],
+        },
+        devOptions: {
+          enabled: true,
+          type: 'module',
         },
       }),
     ],

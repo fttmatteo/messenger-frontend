@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useDataList } from './useDataList'
+import { useMemo } from 'react'
+import { useDataList } from './use-data-list'
 
 interface TestItem {
     id: number
@@ -246,6 +247,38 @@ describe('useDataList', () => {
             expect(result.current.itemsPerPage).toBe(5)
             expect(result.current.paginatedData).toHaveLength(5)
             expect(result.current.totalPages).toBe(1)
+        })
+
+        it('should reset to page 1 when customFilter change', () => {
+            const data = createTestData()
+
+            const { result, rerender } = renderHook(
+                ({ filterVal }) => {
+                    const customFilter = useMemo(() => (item: TestItem) => item.value > filterVal, [filterVal])
+                    return useDataList({
+                        data,
+                        searchQuery: '',
+                        searchFilter: () => true,
+                        customFilter,
+                        initialItemsPerPage: 2,
+                    })
+                },
+                {
+                    initialProps: { filterVal: 0 }
+                }
+            )
+
+            // Go to page 2
+            act(() => {
+                result.current.setCurrentPage(2)
+            })
+            expect(result.current.currentPage).toBe(2)
+
+            // Change custom filter
+            rerender({ filterVal: 25 })
+
+            // Should reset to page 1
+            expect(result.current.currentPage).toBe(1)
         })
     })
 })

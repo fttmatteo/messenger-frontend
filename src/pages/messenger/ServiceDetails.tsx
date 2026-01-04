@@ -3,17 +3,20 @@ import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { Card } from "@/components/ui/card"
 import { MapPin, Navigation, Phone, Clock, User, Building2, FileImage, Loader2, AlertCircle, Edit } from "lucide-react"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { toast } from "sonner"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useStatusColors } from "@/hooks/use-status-colors"
+
 
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -156,135 +159,141 @@ export default function ServiceDetails() {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Header */}
-            {/* Header */}
-            <header className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
-                <PlacaBadge
-                    plateNumber={service.plate.plateNumber}
-                    plateType={service.plate.plateType}
-                    size="sm"
-                />
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-auto">
+                {/* Hero Card - Plate, Status & Actions */}
+                <div className="p-4 pb-2">
+                    <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
+                        <div className="flex flex-col items-center gap-3">
+                            <PlacaBadge
+                                plateNumber={service.plate.plateNumber}
+                                plateType={service.plate.plateType}
+                                size="xl"
+                            />
 
-                {service.currentStatus === 'ASSIGNED' && (
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-2"
-                        onClick={handleUpdateStatus}
-                    >
-                        <Edit className="h-4 w-4" />
-                        Actualizar
-                    </Button>
-                )}
-            </header>
-
-            {/* Content */}
-            <div className="flex-1 overflow-auto p-4">
-                {/* Status Section - Minimalist */}
-                <div className="mb-8 flex items-center gap-4 px-1">
-                    <div className={`h-3 w-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                    <div className="flex flex-col">
-                        <span className="text-xs font-medium text-muted-foreground leading-none mb-1">
-                            Estado del servicio
-                        </span>
-                        <span className={`text-xl font-bold tracking-tight ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                            {getStatusIconConfig(service.currentStatus).label}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Dealership Info */}
-                <div>
-                    <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
-                        <Building2 className="h-4 w-4" />
-                        Concesionario destino
-                    </h3>
-                    <div className="space-y-3">
-                        <div>
-                            <p className="font-semibold text-base">{service.dealership.name}</p>
-                            <p className="text-sm text-muted-foreground">{service.dealership.zone}</p>
-                        </div>
-
-                        {service.dealership.address && (
-                            <div className="flex items-start gap-2 text-sm">
-                                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                                <span>{service.dealership.address}</span>
+                            <div
+                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                            >
+                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                <span className="text-sm font-semibold">
+                                    {getStatusIconConfig(service.currentStatus, colors).label}
+                                </span>
                             </div>
-                        )}
 
-                        {service.dealership.phone && (
-                            <div className="flex items-center gap-2 text-sm">
-                                <Phone className="h-4 w-4 text-muted-foreground" />
-                                <a
-                                    href={`tel:${service.dealership.phone}`}
-                                    className="text-primary underline"
+                            {/* Action Buttons - Side by Side */}
+                            <div className="flex items-center gap-2 w-full mt-2">
+                                <Button
+                                    className="flex-1 h-11 gap-2"
+                                    onClick={handleNavigate}
                                 >
-                                    {service.dealership.phone}
-                                </a>
-                            </div>
-                        )}
+                                    <Navigation className="h-4 w-4" />
+                                    Navegar
+                                </Button>
 
-                        <Button
-                            className="w-full h-12 text-base gap-2 mt-2"
-                            onClick={handleNavigate}
-                        >
-                            <Navigation className="h-5 w-5" />
-                            Iniciar navegación
-                        </Button>
-                    </div>
+                                {service.currentStatus === 'ASSIGNED' && (
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 h-11 gap-2"
+                                        onClick={handleUpdateStatus}
+                                    >
+                                        <Edit className="h-4 w-4" />
+                                        Actualizar
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </Card>
                 </div>
 
-                <Separator className="my-6" />
-
-                {/* Service Info */}
-                <div>
-                    <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
-                        <Clock className="h-4 w-4" />
-                        Información del servicio
-                    </h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Creado:</span>
-                            <span>{formatDateTime(service.createdAt)}</span>
+                {/* Dealership Card */}
+                <div className="px-4 pb-2">
+                    <Card className="p-4 border-border/50">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="p-1.5 rounded-lg bg-primary/10">
+                                <Building2 className="h-4 w-4 text-primary" />
+                            </div>
+                            <h3 className="text-sm font-semibold">Concesionario destino</h3>
                         </div>
+                        <div className="space-y-2">
+                            <div>
+                                <p className="font-semibold text-base">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground">{service.dealership.zone}</p>
+                            </div>
 
-                        <div className="flex justify-between items-center text-sm">
-                            <div className="flex items-center gap-2">
+                            {service.dealership.address && (
+                                <div className="flex items-start gap-2 text-sm">
+                                    <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                                    <span>{service.dealership.address}</span>
+                                </div>
+                            )}
+
+                            {service.dealership.phone && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Phone className="h-4 w-4 text-muted-foreground" />
+                                    <a
+                                        href={`tel:${service.dealership.phone}`}
+                                        className="text-primary underline"
+                                    >
+                                        {service.dealership.phone}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Service Info Card */}
+                <div className="px-4 pb-2">
+                    <Card className="p-4 border-border/50">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="p-1.5 rounded-lg bg-primary/10">
+                                <Clock className="h-4 w-4 text-primary" />
+                            </div>
+                            <h3 className="text-sm font-semibold">Información del servicio</h3>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="text-muted-foreground">Creado:</span>
+                                <span>{formatDateTime(service.createdAt)}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm">
                                 <User className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Mensajero:</span>
+                                <span className="font-medium">{service.messenger.fullName}</span>
                             </div>
-                            <span className="font-medium">{service.messenger.fullName}</span>
                         </div>
-                    </div>
+                    </Card>
                 </div>
 
-                {/* Observation */}
+                {/* Observation Card */}
                 {service.observation && (
-                    <>
-                        <Separator className="my-6" />
-                        <div>
+                    <div className="px-4 pb-2">
+                        <Card className="p-4 border-border/50">
                             <h3 className="font-semibold text-sm mb-2">Observaciones</h3>
                             <p className="text-sm text-muted-foreground">{service.observation}</p>
-                        </div>
-                    </>
+                        </Card>
+                    </div>
                 )}
 
-                {/* Plate Image - from photos array */}
+                {/* Plate Image Card */}
                 {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
-                    <>
-                        <Separator className="my-6" />
-                        <div className="mb-6">
-                            <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
-                                <FileImage className="h-4 w-4" />
-                                Lectura de la placa
-                            </h3>
+                    <div className="px-4 pb-4">
+                        <Card className="p-4 border-border/50">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="p-1.5 rounded-lg bg-primary/10">
+                                    <FileImage className="h-4 w-4 text-primary" />
+                                </div>
+                                <h3 className="text-sm font-semibold">Lectura de la placa</h3>
+                            </div>
                             <img
                                 src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
                                 alt="Placa del vehículo"
                                 className="w-full rounded-lg border object-contain max-h-48"
                             />
-                        </div>
-                    </>
+                        </Card>
+                    </div>
                 )}
             </div>
         </div>

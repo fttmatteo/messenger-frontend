@@ -6,6 +6,7 @@ export type ServiceStatus =
     | 'RETURNED'
     | 'CANCELED'
     | 'RESOLVED'
+    | 'DELETED'
 
 // Plate Type
 export type PlateType =
@@ -56,6 +57,8 @@ export interface StatusHistoryInfo {
     changeDate: string
     changedBy: EmployeeInfo
     photos: PhotoInfo[]
+    deliveryLatitude?: number
+    deliveryLongitude?: number
 }
 
 // Main Service Delivery interface
@@ -78,6 +81,8 @@ export interface CreateServiceRequest {
     dealershipId: string
     messengerDocument?: string
     manualPlateNumber?: string
+    latitude?: number
+    longitude?: number
 }
 
 export interface UpdateServiceStatusRequest {
@@ -85,6 +90,8 @@ export interface UpdateServiceStatusRequest {
     observation?: string
     signature?: File
     photos?: File[]
+    latitude?: number
+    longitude?: number
 }
 
 export interface DailyStats {
@@ -94,4 +101,15 @@ export interface DailyStats {
     returned: number
     canceled: number
     total: number
+}
+
+// Paginated Response (matches backend PageResponse)
+export interface PaginatedResponse<T> {
+    content: T[]
+    currentPage: number
+    pageSize: number
+    totalElements: number
+    totalPages: number
+    first: boolean
+    last: boolean
 }

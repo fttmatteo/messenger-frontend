@@ -1,14 +1,11 @@
-import { Card, CardContent } from "@/components/ui/card"
-// import { StatusBadge } from "./StatusBadge"
-import { MapPin, Navigation, Edit } from "lucide-react"
+import { Navigation, Edit } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
-// import { TooltipProvider } from "@/components/ui/tooltip"
-import { getStatusIconConfig } from "@/lib/status-utils"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 interface ServiceCardProps {
     service: ServiceDelivery
@@ -16,23 +13,14 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service }: ServiceCardProps) {
     const navigate = useNavigate()
+    const { colors } = useStatusColors()
 
     const handleClick = () => {
         navigate(`/messenger/servicio/${service.idServiceDelivery}`)
     }
 
-    // Get status color for border and button
-    const getStatusColor = (status: string) => {
-        const colors: Record<string, string> = {
-            ASSIGNED: '#3b82f6', // blue-500
-            PENDING: '#6366f1', // indigo-500
-            DELIVERED: '#22c55e', // green-500
-            RETURNED: '#f97316', // orange-500
-            CANCELED: '#ef4444', // red-500
-            RESOLVED: '#a855f7', // purple-500
-        }
-        return colors[status] || '#6b7280' // gray-500
-    }
+    // Get status color from centralized system
+    const statusColor = colors[service.currentStatus] || '#6b7280'
 
     const handleNavigate = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -98,66 +86,46 @@ export function ServiceCard({ service }: ServiceCardProps) {
     }
 
     return (
-        <Card
-            className="active:bg-muted/50 transition-all cursor-pointer touch-manipulation border-l-4 overflow-hidden relative"
-            style={{
-                borderLeftColor: getStatusColor(service.currentStatus)
-            }}
+        <div
+            className="group relative flex items-center bg-card hover:bg-muted/30 transition-colors cursor-pointer border border-border/50 rounded-lg overflow-hidden shadow-sm"
             onClick={handleClick}
         >
-            <CardContent className="p-2.5 flex items-center gap-3">
-                {/* Left: Info */}
-                <div className="flex-1 flex flex-col gap-2 min-w-0">
-                    {/* Header: Plate + Status */}
-                    <div className="flex flex-col items-start gap-1">
-                        <PlacaBadge
-                            plateNumber={service.plate.plateNumber}
-                            plateType={service.plate.plateType}
-                            size="sm"
-                            className="shadow-sm"
-                        />
-                        {/* Status */}
-                        <div className="flex items-center gap-1.5">
-                            <div className={`w-2 h-2 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                            <span className={`text-xs font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                {getStatusIconConfig(service.currentStatus).label}
-                            </span>
-                        </div>
-                    </div>
+            {/* Status Strip */}
+            <div
+                className="absolute left-0 top-0 bottom-0 w-1.5"
+                style={{ backgroundColor: statusColor }}
+            />
 
-                    {/* Dealership Info */}
-                    <div className="grid gap-0.5">
-                        <p className="text-sm font-medium text-foreground truncate leading-none">
-                            {service.dealership.name}
-                        </p>
-
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground min-w-0">
-                            <MapPin className="h-3 w-3 flex-shrink-0" />
-                            <span className="truncate">
-                                {service.dealership.address || 'Sin dirección'}
-                            </span>
-                        </div>
-                    </div>
+            <div className="flex items-center w-full pl-4 pr-3 py-3 gap-3">
+                {/* Visual Identifier (Plate) */}
+                <div className="shrink-0">
+                    <PlacaBadge
+                        plateNumber={service.plate.plateNumber}
+                        plateType={service.plate.plateType}
+                        size="lg"
+                    />
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex flex-col gap-2 shrink-0">
+                {/* Spacer to push actions to the right */}
+                <div className="flex-1" />
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 shrink-0">
                     <Button
-                        variant="default"
+                        variant="outline"
                         size="icon"
-                        className="h-9 w-9 rounded-full shadow-sm text-white border-0"
-                        style={{ backgroundColor: getStatusColor(service.currentStatus) }}
+                        className="h-8 w-8 rounded-full border-2 border-primary/20 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
                         onClick={handleNavigate}
                         title="Navegar"
                     >
-                        <Navigation className="h-4 w-4" />
+                        <Navigation className="h-3.5 w-3.5" />
                     </Button>
 
                     {service.currentStatus === 'ASSIGNED' && (
                         <Button
-                            variant="default"
+                            variant="outline"
                             size="icon"
-                            className="h-9 w-9 rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-md border-0"
+                            className="h-8 w-8 rounded-full border-2 border-primary/20 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
                             onClick={handleUpdate}
                             title="Actualizar"
                         >
@@ -165,7 +133,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         </Button>
                     )}
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }

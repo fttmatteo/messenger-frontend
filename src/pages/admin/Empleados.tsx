@@ -1,13 +1,13 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { useEmployees } from "@/hooks/useEmployees"
+import { useEmployees } from "@/hooks/use-employees"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
 import { ListEmptyState } from "@/components/ui/list-empty-state"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton } from "@/components/employee/EmployeeSkeletons"
@@ -24,7 +24,6 @@ export default function Empleados() {
 
     // Use custom hooks
     const {
-        employees,
         loading,
         filteredAndSortedEmployees,
         paginatedEmployees,
@@ -45,35 +44,33 @@ export default function Empleados() {
         : undefined
 
     return (
-        <div className="space-y-2">
-            <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
-
-            {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-xl md:text-2xl font-bold">Empleados</h1>
-
-                    <div className="flex items-center gap-2">
-                        <ToggleGroup
-                            type="single"
-                            value={roleFilter}
-                            onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
-                            className="justify-start"
-                        >
-                            <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
-                            <ToggleGroupItem value="ADMIN" aria-label="Admin" className="h-8 px-2 text-xs">Administradores</ToggleGroupItem>
-                            <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros" className="h-8 px-2 text-xs">Mensajeros</ToggleGroupItem>
-                        </ToggleGroup>
-
-                        {roleFilter !== "all" && (
-                            <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-8 text-xs">
-                                <X className="h-3 w-3 mr-1" />Limpiar
-                            </Button>
-                        )}
-                    </div>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title+Filters center, Button right */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Empleados</h1>
+                    <ToggleGroup
+                        type="single"
+                        value={roleFilter}
+                        onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
+                        className="justify-start shrink-0"
+                    >
+                        <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
+                        <ToggleGroupItem value="ADMIN" aria-label="Admin" className="h-8 px-2 text-xs">Administradores</ToggleGroupItem>
+                        <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros" className="h-8 px-2 text-xs">Mensajeros</ToggleGroupItem>
+                    </ToggleGroup>
+                    {roleFilter !== "all" && (
+                        <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-8 text-xs shrink-0">
+                            <X className="h-3 w-3 mr-1" />Limpiar
+                        </Button>
+                    )}
+                </div>
+
+                <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo empleado
@@ -81,15 +78,8 @@ export default function Empleados() {
                 </div>
             </div>
 
-            <Card className="gap-1 py-1">
-                <CardHeader className="p-2 pb-0">
-                    <CardDescription>
-                        {filteredAndSortedEmployees.length} de {employees.length} empleado(s)
-                        {searchQuery && ` - Buscando "${searchQuery}"`}
-                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -105,14 +95,16 @@ export default function Empleados() {
                             </TableBody>
                         </Table>
                     ) : filteredAndSortedEmployees.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<Users />}
-                            emptyTitle="Sin empleados"
-                            emptyDescription="Aún no hay empleados registrados en el sistema"
-                            actionButton={{ label: "Crear primer empleado", onClick: () => navigate("/admin/empleados/crear") }}
-                        />
+                        <div className="flex-1 flex items-center justify-center">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<Users />}
+                                emptyTitle="Sin empleados"
+                                emptyDescription="Aún no hay empleados registrados en el sistema"
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
                             <Table>
@@ -155,7 +147,7 @@ export default function Empleados() {
                                                 className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
                                                 onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
                                             >
-                                                <TableCell className="font-medium text-base">
+                                                <TableCell className="font-medium text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <span className="cursor-default">{formatDisplayName(employee.fullName)}</span>
@@ -164,12 +156,12 @@ export default function Empleados() {
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-sm">
+                                                    <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-xs">
                                                         {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="font-mono text-base">{employee.document}</TableCell>
-                                                <TableCell className="text-base">
+                                                <TableCell className="font-mono text-sm">{employee.document}</TableCell>
+                                                <TableCell className="text-sm">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <a href={`tel:${employee.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
@@ -189,6 +181,6 @@ export default function Empleados() {
                     )}
                 </CardContent>
             </Card>
-        </div>
+        </div >
     )
 }

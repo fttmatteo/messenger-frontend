@@ -1,47 +1,52 @@
 import type { ServiceStatus } from "@/types/service.types"
 import { Car, Bike, Truck } from "lucide-react"
+import { getStatusHexColor, getStatusLabel, getMergedColors, getStatusPillBackground } from "@/lib/status-colors"
 
 interface StatusBadgeConfig {
     label: string
     className: string
+    style?: React.CSSProperties
 }
 
 /**
  * Get the badge configuration for a service status.
- * Used to display consistent status badges across the application.
+ * Uses dynamic colors from the centralized color system.
  */
-export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfig {
-    const config: Record<string, StatusBadgeConfig> = {
-        ASSIGNED: { label: 'Asignado', className: 'bg-blue-500 text-white' },
-        PENDING: { label: 'Pendiente', className: 'bg-indigo-500 text-white' },
-        DELIVERED: { label: 'Entregado', className: 'bg-green-500 text-white' },
-        RETURNED: { label: 'Devuelto', className: 'bg-orange-500 text-white' },
-        CANCELED: { label: 'Cancelado', className: 'bg-red-500 text-white' },
-        RESOLVED: { label: 'Resuelto', className: 'bg-purple-500 text-white' },
+export function getStatusBadge(status: ServiceStatus | string, customColors?: Record<string, string>): StatusBadgeConfig {
+    const colors = customColors || getMergedColors()
+    return {
+        label: getStatusLabel(status),
+        className: 'text-white', // className only for text color
+        style: { backgroundColor: colors[status] || getStatusHexColor(status, colors), color: 'white' }
     }
-    return config[status] || { label: status, className: 'bg-gray-500 text-white' }
 }
 
 interface StatusIconConfig {
     label: string
-    dotColor: string // Color for the circular dot indicator
-    textColor: string // Color for the status text
+    dotColor: string // Kept for legacy support but prefer dotStyle
+    textColor: string // Kept for legacy support but prefer textStyle
+    dotStyle: React.CSSProperties
+    textStyle: React.CSSProperties
+    pillBackground: string // Background color for pill container (low opacity)
 }
 
 /**
  * Get the icon configuration for a service status (circular dot + text).
- * Used in timeline-style displays like the services list.
+ * Uses dynamic colors from the centralized color system.
  */
-export function getStatusIconConfig(status: ServiceStatus | string): StatusIconConfig {
-    const config: Record<string, StatusIconConfig> = {
-        ASSIGNED: { label: 'Asignado', dotColor: 'bg-blue-500', textColor: 'text-blue-500' },
-        PENDING: { label: 'Pendiente', dotColor: 'bg-indigo-500', textColor: 'text-indigo-500' },
-        DELIVERED: { label: 'Entregado', dotColor: 'bg-green-500', textColor: 'text-green-500' },
-        RETURNED: { label: 'Devuelto', dotColor: 'bg-orange-500', textColor: 'text-orange-500' },
-        CANCELED: { label: 'Cancelado', dotColor: 'bg-red-500', textColor: 'text-red-500' },
-        RESOLVED: { label: 'Resuelto', dotColor: 'bg-purple-500', textColor: 'text-purple-500' },
+export function getStatusIconConfig(status: ServiceStatus | string, customColors?: Record<string, string>): StatusIconConfig {
+    const hexColor = getStatusHexColor(status, customColors)
+    return {
+        label: getStatusLabel(status),
+        // Legacy class names - kept empty for backward compatibility with components that don't use styles
+        dotColor: '',
+        textColor: '',
+        // New inline styles with dynamic colors
+        dotStyle: { backgroundColor: hexColor },
+        textStyle: { color: hexColor },
+        // Pill background with 15% opacity
+        pillBackground: getStatusPillBackground(status, customColors, 0.15)
     }
-    return config[status] || { label: status, dotColor: 'bg-gray-500', textColor: 'text-gray-500' }
 }
 
 /**
@@ -80,18 +85,14 @@ interface AvailableStatus {
 }
 
 /**
- * Get available statuses for a user based on their role and the current service status.
+ * Get available statuses for a user based on their role.
  * 
  * Business Rules:
- * - MESSENGER can only use: PENDING, DELIVERED, RETURNED (from ASSIGNED or RETURNED states)
+ * - MESSENGER can only use: PENDING, DELIVERED, RETURNED
  * - ADMIN can only use: CANCELED, RESOLVED
- * - When service is in PENDING, messenger is LOCKED until admin intervenes
- * - When service is in DELIVERED/RESOLVED, no more transitions allowed (except within 72h window for admin)
  */
 export function getAvailableStatusesForUser(
-    role: UserRole,
-    currentStatus: ServiceStatus,
-    createdAt?: string
+    role: UserRole
 ): AvailableStatus[] {
     const MESSENGER_STATUSES: AvailableStatus[] = [
         { value: 'PENDING', label: 'Pendiente' },
@@ -101,108 +102,27 @@ export function getAvailableStatusesForUser(
 
     const ADMIN_STATUSES: AvailableStatus[] = [
         { value: 'CANCELED', label: 'Cancelado' },
-        { value: 'RESOLVED', label: 'Resuelto' },
+        { value: 'RESOLVED', label: 'Revisado' },
     ]
 
-    // Check if service is within 72h window (for DELIVERED/RESOLVED)
-    const within72h = createdAt ? isWithin72hWindow(currentStatus, createdAt) : true
-
     if (role === 'MESSENGER') {
-        // Messenger can only act on ASSIGNED or RETURNED states
-        if (currentStatus === 'ASSIGNED' || currentStatus === 'RETURNED') {
-            return MESSENGER_STATUSES
-        }
-        // Messenger is locked for PENDING, DELIVERED, CANCELED, RESOLVED
-        return []
+        return MESSENGER_STATUSES
     }
 
     if (role === 'ADMIN') {
-        // Admin can use CANCELED/RESOLVED on most states
-        if (currentStatus === 'ASSIGNED' || currentStatus === 'PENDING' || currentStatus === 'RETURNED') {
-            return ADMIN_STATUSES
-        }
-        // For DELIVERED, admin can still change within 72h
-        if (currentStatus === 'DELIVERED' && within72h) {
-            return ADMIN_STATUSES
-        }
-        // CANCELED: admin can reassign (status stays CANCELED, but can change messenger)
-        // RESOLVED: final state (within 72h from DELIVERED)
-        return []
+        return ADMIN_STATUSES
     }
 
     return []
 }
 
-/**
- * Check if the service is in its 72-hour edit window.
- * Only applies to DELIVERED and RESOLVED statuses.
- */
-export function isWithin72hWindow(currentStatus: ServiceStatus, deliveredAt: string): boolean {
-    if (currentStatus !== 'DELIVERED' && currentStatus !== 'RESOLVED') {
-        return true // No window restriction for other statuses
-    }
-
-    const deliveredDate = new Date(deliveredAt)
-    const now = new Date()
-    const hoursDiff = (now.getTime() - deliveredDate.getTime()) / (1000 * 60 * 60)
-
-    return hoursDiff <= 72
-}
-
-/**
- * Get remaining time in the 72-hour window.
- * Returns { hours, minutes } or null if window has expired.
- */
-export function getTimeRemainingIn72hWindow(deliveredAt: string): { hours: number; minutes: number } | null {
-    const deliveredDate = new Date(deliveredAt)
-    const windowEnd = new Date(deliveredDate.getTime() + (72 * 60 * 60 * 1000))
-    const now = new Date()
-
-    const remainingMs = windowEnd.getTime() - now.getTime()
-
-    if (remainingMs <= 0) {
-        return null
-    }
-
-    const hours = Math.floor(remainingMs / (1000 * 60 * 60))
-    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60))
-
-    return { hours, minutes }
-}
 
 /**
  * Check if a service is locked for a specific user role.
  * Returns a message explaining why it's locked, or null if not locked.
  */
-export function getServiceLockReason(
-    role: UserRole,
-    currentStatus: ServiceStatus,
-    createdAt?: string
-): string | null {
-    if (role === 'MESSENGER') {
-        if (currentStatus === 'PENDING') {
-            return 'Este servicio está en revisión. El administrador debe intervenir antes de continuar.'
-        }
-        if (currentStatus === 'DELIVERED') {
-            return 'Este servicio ya fue entregado.'
-        }
-        if (currentStatus === 'CANCELED') {
-            return 'Este servicio fue cancelado.'
-        }
-        if (currentStatus === 'RESOLVED') {
-            return 'Este servicio fue resuelto.'
-        }
-    }
-
-    if (role === 'ADMIN') {
-        if (currentStatus === 'DELIVERED' || currentStatus === 'RESOLVED') {
-            const within72h = createdAt ? isWithin72hWindow(currentStatus, createdAt) : false
-            if (!within72h) {
-                return 'La ventana de 72 horas para modificar este servicio ha expirado.'
-            }
-        }
-    }
-
+export function getServiceLockReason(): string | null {
+    // No locks - all states can be changed based only on role permissions
     return null
 }
 
@@ -210,10 +130,8 @@ export function getServiceLockReason(
  * Check if the current user can edit the service (update status).
  */
 export function canUserEditService(
-    role: UserRole,
-    currentStatus: ServiceStatus,
-    createdAt?: string
+    role: UserRole
 ): boolean {
-    const availableStatuses = getAvailableStatusesForUser(role, currentStatus, createdAt)
+    const availableStatuses = getAvailableStatusesForUser(role)
     return availableStatuses.length > 0
 }

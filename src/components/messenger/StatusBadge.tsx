@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import type { ServiceStatus } from "@/types/service.types"
-import { Bike, CheckCircle, CornerDownLeft, XCircle, CheckCheck, Clock } from "lucide-react"
+import { Bike, CheckCircle, CornerDownLeft, XCircle, CheckCheck, Clock, Trash2 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -33,9 +33,14 @@ const statusConfig: Partial<Record<ServiceStatus, { label: string; className: st
         Icon: XCircle
     },
     RESOLVED: {
-        label: 'Resuelto',
+        label: 'Revisado',
         className: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200',
         Icon: CheckCheck
+    },
+    DELETED: {
+        label: 'Eliminado',
+        className: 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-400 border-slate-200',
+        Icon: Trash2
     }
 }
 

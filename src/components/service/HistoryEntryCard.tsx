@@ -47,11 +47,10 @@ export function HistoryEntryCard({
                 </div>
             </div>
 
-            {/* Plate photos for ASSIGNED */}
             {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
                 <div className="pt-2 border-t border-border/50">
-                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Lectura de placa</p>
-                    <div className="flex flex-wrap gap-2 justify-center">
+                    <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Lectura de placa</p>
+                    <div className="flex flex-wrap gap-1 justify-center">
                         {platePhotos.map((photo) => (
                             <div
                                 key={photo.idPhoto}
@@ -61,11 +60,11 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Lectura de placa"
-                                    className="w-24 h-24 object-cover rounded-md border border-border/50"
+                                    className="w-16 h-16 object-cover rounded border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-4 w-4 text-white" />
+                                        <Expand className="h-3 w-3 text-white" />
                                     </div>
                                 </div>
                             </div>
@@ -74,54 +73,64 @@ export function HistoryEntryCard({
                 </div>
             )}
 
-            {/* Signature for DELIVERED */}
-            {entry.newStatus === 'DELIVERED' && signaturePath && (
-                <div className="pt-2 border-t border-border/50">
-                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Firma digital</p>
-                    <div className="flex justify-center">
-                        <div
-                            className="relative group cursor-pointer h-24 w-40 bg-white rounded-md border border-border/50 flex items-center justify-center"
-                            onClick={() => handleImageClick(signaturePath)}
-                        >
-                            <img
-                                src={getImageUrl(signaturePath)}
-                                alt="Firma"
-                                className="max-w-full max-h-full object-contain p-1"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                                <div className="bg-black/60 rounded-full p-1.5">
-                                    <Expand className="h-4 w-4 text-white" />
+            {/* Combined Evidence Section (Signature + Photos) */}
+            {((entry.newStatus === 'DELIVERED' && signaturePath) || (entry.photos && entry.photos.length > 0)) && (
+                <div className="pt-2 border-t border-border/50 flex flex-row gap-2 justify-center">
+                    {/* Signature */}
+                    {entry.newStatus === 'DELIVERED' && signaturePath && (
+                        <div className="flex flex-col items-center">
+                            <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Firma</p>
+                            <div
+                                className="relative group cursor-pointer h-16 w-16 bg-white rounded border border-border/50 flex items-center justify-center"
+                                onClick={() => handleImageClick(signaturePath)}
+                            >
+                                <img
+                                    src={getImageUrl(signaturePath)}
+                                    alt="Firma"
+                                    className="max-w-full max-h-full object-contain p-1"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                                    <div className="bg-black/60 rounded-full p-1.5">
+                                        <Expand className="h-3 w-3 text-white" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    )}
 
-            {/* Other photos */}
-            {entry.photos && entry.photos.length > 0 && (
-                <div className="pt-2 border-t border-border/50">
-                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">Evidencia fotográfica</p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                        {entry.photos.map((photo) => (
-                            <div
-                                key={photo.idPhoto}
-                                className="relative group cursor-pointer"
-                                onClick={() => handleImageClick(photo.photoPath)}
-                            >
-                                <img
-                                    src={getImageUrl(photo.photoPath)}
-                                    alt="Evidencia"
-                                    className="w-24 h-24 object-cover rounded-md border border-border/50"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="bg-black/60 rounded-full p-1.5">
-                                        <Expand className="h-4 w-4 text-white" />
+                    {/* Photos */}
+                    {entry.photos && entry.photos.length > 0 && (
+                        <div className="flex flex-col items-center">
+                            {/* Only show title if there isn't a signature next to it, or if needed for clarity. 
+                                 Given the side-by-side request, usually we just want the images. 
+                                 But keeping the title "Evidencia" per column is good if they are distinct columns. 
+                                 However, to make them look uniform, maybe treat them as a single gallery?
+                                 The user said "un unico tamaño". 
+                                 Let's keep the columns but use the same size w-16 h-16.
+                             */}
+                            <p className="text-xs font-medium text-muted-foreground mb-1 text-center">Evidencia</p>
+                            <div className="flex flex-wrap gap-1.5 justify-center">
+                                {entry.photos.map((photo) => (
+                                    <div
+                                        key={photo.idPhoto}
+                                        className="relative group cursor-pointer"
+                                        onClick={() => handleImageClick(photo.photoPath)}
+                                    >
+                                        <img
+                                            src={getImageUrl(photo.photoPath)}
+                                            alt="Evidencia"
+                                            className="w-16 h-16 object-cover rounded border border-border/50"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="bg-black/60 rounded-full p-1.5">
+                                                <Expand className="h-3 w-3 text-white" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

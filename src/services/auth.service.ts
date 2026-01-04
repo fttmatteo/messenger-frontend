@@ -1,4 +1,4 @@
-import type { AuthResponse, LoginCredentials } from '../types/auth.types';
+import type { AuthResponse, LoginCredentials } from '@/types';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
 
@@ -64,5 +64,9 @@ export const authService = {
 
     getToken() {
         return localStorage.getItem('token') || sessionStorage.getItem('token');
+    },
+
+    getRole() {
+        return localStorage.getItem('role') || sessionStorage.getItem('role');
     }
 };

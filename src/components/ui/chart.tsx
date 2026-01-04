@@ -4,7 +4,7 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 import type { Payload } from "recharts/types/component/DefaultTooltipContent"
 
-// Type for legend payload items
+// Type for legend payload items (inline definition for recharts v3.x compatibility)
 type LegendPayload = {
   value: string | number
   id?: string

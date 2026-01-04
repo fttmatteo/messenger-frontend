@@ -137,7 +137,7 @@ export function useDataList<T>({
     useEffect(() => {
         // eslint-disable-next-line
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, itemsPerPage]) // Omitted customFilter to avoid loops if unstable fn passed
+    }, [searchQuery, sortField, sortDirection, itemsPerPage, customFilter])
 
     const handleSort = (field: string) => {
         if (sortField === field) {

@@ -5,6 +5,7 @@ import { Home } from "lucide-react"
 interface BreadcrumbSegment {
     label: string
     href?: string
+    onClick?: () => void
 }
 
 interface AdminBreadcrumbProps {
@@ -37,6 +38,12 @@ export function AdminBreadcrumb({ segments, className }: AdminBreadcrumbProps) {
                             <BreadcrumbItem>
                                 {isLast ? (
                                     <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                                ) : segment.onClick ? (
+                                    <BreadcrumbLink asChild>
+                                        <button onClick={segment.onClick} className="hover:text-foreground transition-colors">
+                                            {segment.label}
+                                        </button>
+                                    </BreadcrumbLink>
                                 ) : (
                                     <BreadcrumbLink asChild>
                                         <Link to={segment.href || "#"}>{segment.label}</Link>

@@ -1,0 +1,104 @@
+import { useEffect, useRef } from "react"
+import { useGoogleMap } from "@react-google-maps/api"
+
+export interface PulsingMarkerProps {
+    /** Position of the marker on the map */
+    position: google.maps.LatLngLiteral
+    /** Click handler for the marker */
+    onClick?: () => void
+    /** Title for the marker (shown on hover) */
+    title?: string
+    /** Color of the marker pin (default: '#4f46e5') */
+    color?: string
+    /** Whether to show pulse animation (for active markers) */
+    isActive?: boolean
+}
+
+/**
+ * A marker component with optional pulse animation for indicating active state.
+ * Uses Google Maps Advanced Marker API.
+ */
+export function PulsingMarker({
+    position,
+    onClick,
+    title,
+    color = '#4f46e5',
+    isActive = false
+}: PulsingMarkerProps) {
+    const map = useGoogleMap()
+    const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
+
+    useEffect(() => {
+        if (!map || !window.google?.maps?.marker) return
+
+        // Create container with pulse effect for active markers
+        const container = document.createElement('div')
+        container.style.position = 'relative'
+
+        if (isActive) {
+            // Pulse effect
+            const pulse = document.createElement('div')
+            pulse.style.cssText = `
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                background: ${color}40;
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse 2s infinite;
+            `
+            container.appendChild(pulse)
+
+            // Add keyframes if they don't exist
+            if (!document.getElementById('pulse-keyframes')) {
+                const style = document.createElement('style')
+                style.id = 'pulse-keyframes'
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                        100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+                    }
+                `
+                document.head.appendChild(style)
+            }
+        }
+
+        const pinElement = new google.maps.marker.PinElement({
+            background: color,
+            borderColor: 'white',
+            glyphColor: 'white',
+            scale: isActive ? 1.2 : 1,
+        })
+        container.appendChild(pinElement.element)
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position,
+            title,
+            content: container
+        })
+
+        marker.addListener('click', () => {
+            if (onClick) onClick()
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            if (markerRef.current) {
+                markerRef.current.map = null
+            }
+        }
+    }, [map, color, onClick, position, title, isActive])
+
+    // Update position when it changes
+    useEffect(() => {
+        if (markerRef.current) {
+            markerRef.current.position = position
+        }
+    }, [position])
+
+    return null
+}

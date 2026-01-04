@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, fireEvent } from '@testing-library/react';
-import { useScrollToTop } from './useScrollToTop';
+import { useScrollToTop } from './use-scroll-to-top';
 
 describe('useScrollToTop', () => {
     beforeEach(() => {

@@ -1,22 +1,24 @@
 import { useEffect, useState, useRef } from "react"
 import { Map } from "@/components/Map"
 import { useGoogleMap, Polyline } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
-import { MapPin, Navigation, Route, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { getErrorMessage } from "@/lib/error-utils"
+import { MapPin, Route, Loader2 } from "lucide-react"
+
+import type { ServiceStatus } from "@/types/service.types"
+import { getStatusBadge } from "@/lib/status-utils"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 interface ServiceTrackingMapProps {
     serviceId: number
     dealershipLat?: number
     dealershipLng?: number
     dealershipName?: string
+    serviceStatus?: ServiceStatus
     className?: string
 }
 
@@ -70,17 +72,37 @@ export function ServiceTrackingMap({
     dealershipLat,
     dealershipLng,
     dealershipName,
+    serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
+    // Get colors from context
+    const { colors } = useStatusColors()
+
+    // Helper to get HEX color from status
+    const getStatusHexColor = (status?: ServiceStatus | string): string => {
+        return colors[status || ''] || '#6b7280'
+    }
+
+    // ... state hooks ...
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
     const [loading, setLoading] = useState(true)
     const [distance, setDistance] = useState<{ meters: number | null, seconds: number | null } | null>(null)
     const [loadingDistance, setLoadingDistance] = useState(false)
+    const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
 
     const mapCenter = dealershipLat && dealershipLng
         ? { lat: dealershipLat, lng: dealershipLng }
         : { lat: 6.2442, lng: -75.5812 }
 
+    // Pan to a specific position on the map
+    const panTo = (position: google.maps.LatLngLiteral) => {
+        if (mapInstance) {
+            mapInstance.panTo(position)
+            mapInstance.setZoom(16)
+        }
+    }
+
+    // ... useEffect for data fetching ...
     useEffect(() => {
         const fetchTrackingData = async () => {
             try {
@@ -98,6 +120,40 @@ export function ServiceTrackingMap({
         fetchTrackingData()
     }, [serviceId])
 
+    // Auto-calculate distance when tracking data is loaded
+    useEffect(() => {
+        const autoCalculateDistance = async () => {
+            if (trackingData.length === 0 || !dealershipLat || !dealershipLng) return
+
+            const path = trackingData
+                .filter(h => h.latitude && h.longitude)
+                .map(h => ({ lat: h.latitude, lng: h.longitude }))
+
+            const lastPos = path.length > 0 ? path[path.length - 1] : null
+            if (!lastPos) return
+
+            try {
+                setLoadingDistance(true)
+                const result = await locationService.calculateDistance(
+                    lastPos.lat,
+                    lastPos.lng,
+                    dealershipLat,
+                    dealershipLng
+                )
+                setDistance({
+                    meters: result.distanceMeters,
+                    seconds: result.durationSeconds
+                })
+            } catch (error) {
+                console.error("Error calculating distance:", error)
+            } finally {
+                setLoadingDistance(false)
+            }
+        }
+
+        autoCalculateDistance()
+    }, [trackingData, dealershipLat, dealershipLng])
+
     const trackingPath = trackingData
         .filter(h => h.latitude && h.longitude)
         .map(h => ({ lat: h.latitude, lng: h.longitude }))
@@ -105,30 +161,12 @@ export function ServiceTrackingMap({
     const lastPosition = trackingPath.length > 0 ? trackingPath[trackingPath.length - 1] : null
     const firstPosition = trackingPath.length > 0 ? trackingPath[0] : null
 
-    const calculateDistance = async () => {
-        if (!lastPosition || !dealershipLat || !dealershipLng) return
+    // Determine colors and labels based on status
+    const startColor = getStatusHexColor('ASSIGNED')
+    const endColor = serviceStatus ? getStatusHexColor(serviceStatus) : getStatusHexColor('PENDING')
+    const endLabel = serviceStatus ? getStatusBadge(serviceStatus, colors).label : 'Última ubicación'
 
-        try {
-            setLoadingDistance(true)
-            const result = await locationService.calculateDistance(
-                lastPosition.lat,
-                lastPosition.lng,
-                dealershipLat,
-                dealershipLng
-            )
-            setDistance({
-                meters: result.distanceMeters,
-                seconds: result.durationSeconds
-            })
-        } catch (error) {
-            toast.error("Error al calcular distancia", {
-                description: getErrorMessage(error),
-                id: "error-calcular-distancia"
-            })
-        } finally {
-            setLoadingDistance(false)
-        }
-    }
+
 
     const formatDistance = (meters: number) => {
         if (meters >= 1000) {
@@ -147,6 +185,7 @@ export function ServiceTrackingMap({
         return `${mins} min`
     }
 
+    // ... loading and empty states ...
     if (loading) {
         return (
             <Card className={className}>
@@ -183,123 +222,125 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className}>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Route className="h-5 w-5" />
-                    Recorrido del servicio
+            <CardHeader className="px-2 py-1">
+                <CardTitle className="flex items-center justify-between text-sm text-foreground font-medium">
+                    {/* Left: Title */}
+                    <div className="flex items-center gap-2">
+                        <Route className="h-4 w-4" />
+                        Recorrido del servicio
+                    </div>
+                    {/* Center: Legend - Clickable */}
+                    <div className="flex items-center gap-4 text-sm font-normal">
+                        {firstPosition && (
+                            <button
+                                onClick={() => panTo(firstPosition)}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a inicio"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: startColor }} />
+                                <span className="text-muted-foreground">Inicio</span>
+                            </button>
+                        )}
+                        {trackingPath.length > 1 && lastPosition && (
+                            <button
+                                onClick={() => panTo(lastPosition)}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a posición actual"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: endColor }} />
+                                <span className="text-muted-foreground">Actual</span>
+                            </button>
+                        )}
+                        {dealershipLat && dealershipLng && (
+                            <button
+                                onClick={() => panTo({ lat: dealershipLat, lng: dealershipLng })}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title="Ir a destino"
+                            >
+                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                                <span className="text-muted-foreground">Destino</span>
+                            </button>
+                        )}
+                    </div>
+                    {/* Right: Distance info */}
+                    {lastPosition && dealershipLat && dealershipLng && (
+                        <div className="flex items-center gap-2">
+                            {loadingDistance ? (
+                                <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                </div>
+                            ) : distance && distance.meters !== null ? (
+                                <>
+                                    <Badge variant="secondary" className="text-xs font-normal">
+                                        <MapPin className="h-3 w-3 mr-1" />
+                                        {formatDistance(distance.meters)}
+                                    </Badge>
+                                    {distance.seconds !== null && (
+                                        <Badge variant="outline" className="text-xs font-normal">
+                                            ~{formatDuration(distance.seconds)}
+                                        </Badge>
+                                    )}
+                                </>
+                            ) : null}
+                        </div>
+                    )}
                 </CardTitle>
-                <CardDescription>
-                    {trackingData.length > 0
-                        ? `${trackingData.length} puntos registrados`
-                        : "Ubicación del concesionario"
-                    }
-                </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-2 pt-1">
                 {/* Map */}
                 <div className="w-full h-[300px] rounded-md overflow-hidden border">
                     <Map
                         className="w-full h-full"
                         center={lastPosition || mapCenter}
                         zoom={14}
+                        onLoad={setMapInstance}
                     >
                         {/* Tracking route polyline */}
                         {trackingPath.length > 1 && (
                             <Polyline
                                 path={trackingPath}
                                 options={{
-                                    strokeColor: '#4f46e5',
+                                    strokeColor: endColor, // Route matches current status color
                                     strokeOpacity: 0.8,
                                     strokeWeight: 4,
                                 }}
                             />
                         )}
 
-                        {/* Start marker */}
+                        {/* Start marker: Always "Asignado" (Blue) */}
                         {firstPosition && (
                             <AdvancedMarker
                                 position={firstPosition}
-                                title="Inicio del recorrido"
-                                color="#22c55e"
+                                title="Inicio - Asignado"
+                                color={startColor}
                                 label="A"
                             />
                         )}
 
-                        {/* Last/Current position marker */}
+                        {/* Last/Current position marker: Matches current Service Status */}
                         {lastPosition && lastPosition !== firstPosition && (
                             <AdvancedMarker
                                 position={lastPosition}
-                                title="Última ubicación del mensajero"
-                                color="#4f46e5"
+                                title={endLabel}
+                                color={endColor}
                                 label="B"
                             />
                         )}
 
-                        {/* Dealership marker */}
+                        {/* Dealership marker: Always Orange (matches Returned/Destination concept or Keep generic orange) */}
                         {dealershipLat && dealershipLng && (
                             <AdvancedMarker
                                 position={{ lat: dealershipLat, lng: dealershipLng }}
                                 title={dealershipName || "Concesionario"}
                                 color="#f97316"
+                            // Customize icon or label if needed
                             />
                         )}
                     </Map>
                 </div>
 
-                {/* Legend */}
-                <div className="flex flex-wrap gap-4 text-xs">
-                    {firstPosition && (
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-green-500" />
-                            <span className="text-muted-foreground">Inicio</span>
-                        </div>
-                    )}
-                    {trackingPath.length > 1 && (
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-indigo-500" />
-                            <span className="text-muted-foreground">Última ubicación</span>
-                        </div>
-                    )}
-                    {dealershipLat && dealershipLng && (
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-orange-500" />
-                            <span className="text-muted-foreground">Concesionario</span>
-                        </div>
-                    )}
-                </div>
 
-                {/* Distance info */}
-                {lastPosition && dealershipLat && dealershipLng && (
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-2 border-t">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={calculateDistance}
-                            disabled={loadingDistance}
-                        >
-                            {loadingDistance ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            ) : (
-                                <Navigation className="h-4 w-4 mr-2" />
-                            )}
-                            Calcular distancia
-                        </Button>
 
-                        {distance && distance.meters !== null && (
-                            <div className="flex items-center gap-2">
-                                <Badge variant="secondary" className="text-sm">
-                                    <MapPin className="h-3 w-3 mr-1" />
-                                    {formatDistance(distance.meters)}
-                                </Badge>
-                                {distance.seconds !== null && (
-                                    <Badge variant="outline" className="text-sm">
-                                        ~{formatDuration(distance.seconds)}
-                                    </Badge>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
             </CardContent>
         </Card>
     )

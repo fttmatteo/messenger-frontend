@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff, Trash2, Save } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -118,15 +119,26 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="mb-2">
-                <h1 className="text-xl md:text-2xl font-bold">Editar empleado</h1>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title center */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Empleados", href: "/admin/empleados" },
+                        { label: "Editar" }
+                    ]} />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar empleado</h1>
+                </div>
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -226,21 +238,28 @@ export default function EditEmployee() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => navigate("/admin/empleados")}
+                                size="sm"
+                                onClick={() => navigate(-1)}
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            <Button type="submit" size="sm" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="mr-2 h-4 w-4" />
+                                )}
                                 Guardar cambios
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         type="button"
-                                        variant="outline"
-                                        className="ml-auto text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="ml-auto text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                     >
+                                        <Trash2 className="h-4 w-4 mr-2" />
                                         Eliminar
                                     </Button>
                                 </AlertDialogTrigger>
@@ -258,9 +277,13 @@ export default function EditEmployee() {
                                         <AlertDialogAction
                                             onClick={handleDelete}
                                             disabled={deleting}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            className="bg-red-500 text-white hover:bg-red-600"
                                         >
-                                            {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            {deleting ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                            )}
                                             Eliminar
                                         </AlertDialogAction>
                                     </AlertDialogFooter>

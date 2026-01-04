@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
-import { useServices } from "@/hooks/useServices"
+import { useServices } from "@/hooks/use-services"
 import { listItemVariants } from "@/lib/animation-variants"
 import { SortIndicator } from "@/components/ui/sort-indicator"
 import { ListEmptyState } from "@/components/ui/list-empty-state"
@@ -10,7 +10,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { TableRowSkeleton } from "@/components/service/ServiceSkeletons"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
@@ -19,6 +19,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { useStatusColors } from "@/hooks/use-status-colors"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -27,21 +28,21 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'DELIVERED', label: 'Entregado' },
     { value: 'RETURNED', label: 'Devuelto' },
     { value: 'CANCELED', label: 'Cancelado' },
-    { value: 'RESOLVED', label: 'Resuelto' },
+    { value: 'RESOLVED', label: 'Revisado' },
 ]
 
 export default function Servicios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    const { colors } = useStatusColors()
 
     // Use custom hooks
     const {
         services,
         loading,
-        filteredAndSortedServices,
-        paginatedServices,
         currentPage,
         totalPages,
+        totalElements,
         itemsPerPage,
         setCurrentPage,
         setItemsPerPage,
@@ -61,51 +62,44 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="space-y-2">
-            <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
-
-            {/* Header with inline filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-xl md:text-2xl font-bold">Servicios</h1>
-
-                    <div className="flex items-center gap-2">
-                        <Select
-                            value={statusFilter.length === 1 ? statusFilter[0] : "all"}
-                            onValueChange={(value) => {
-                                if (value === "all") setStatusFilter([])
-                                else setStatusFilter([value as ServiceStatus])
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[160px] text-xs">
-                                <SelectValue placeholder="Estado" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
-                                {AVAILABLE_STATUSES.map(status => (
-                                    <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
-                        {statusFilter.length > 0 && (
-                            <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
-                                <X className="h-3 w-3 mr-1" />Limpiar
-                            </Button>
-                        )}
-                    </div>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header: Breadcrumb left, Title+Filters center */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
                 </div>
+
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
+                    <Select
+                        value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                        onValueChange={(value) => {
+                            if (value === "all") setStatusFilter([])
+                            else setStatusFilter([value as ServiceStatus])
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[160px] text-xs">
+                            <SelectValue placeholder="Estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
+                            {AVAILABLE_STATUSES.map(status => (
+                                <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {statusFilter.length > 0 && (
+                        <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
+                            <X className="h-3 w-3 mr-1" />Limpiar
+                        </Button>
+                    )}
+                </div>
+
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <Card className="gap-1 py-1">
-                <CardHeader className="p-2 pb-0">
-                    <CardDescription>
-                        {filteredAndSortedServices.length} de {services.length} servicio(s)
-                        {searchQuery && ` - Buscando "${searchQuery}"`}
-                        {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                <CardContent className="flex-1 flex flex-col min-h-0">
                     {loading ? (
                         <Table>
                             <TableHeader>
@@ -122,17 +116,20 @@ export default function Servicios() {
                                 {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                             </TableBody>
                         </Table>
-                    ) : filteredAndSortedServices.length === 0 ? (
-                        <ListEmptyState
-                            isSearchResult={!!searchQuery}
-                            searchQuery={searchQuery}
-                            emptyIcon={<PackageCheck />}
-                            emptyTitle="Sin servicios"
-                            emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
-                        />
+                    ) : services.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center h-full">
+                            <ListEmptyState
+                                isSearchResult={!!searchQuery}
+                                searchQuery={searchQuery}
+                                emptyIcon={<PackageCheck />}
+                                emptyTitle="Sin servicios"
+                                emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
+                                className="py-0"
+                            />
+                        </div>
                     ) : (
                         <>
-                            <div>
+                            <div className="flex-1 overflow-auto min-h-0">
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
@@ -173,7 +170,7 @@ export default function Servicios() {
                                     </TableHeader>
                                     <TableBody>
                                         <AnimatePresence mode="popLayout">
-                                            {paginatedServices.map((service, index) => (
+                                            {services.map((service, index) => (
                                                 <motion.tr
                                                     key={service.idServiceDelivery}
                                                     variants={listItemVariants}
@@ -200,23 +197,26 @@ export default function Servicios() {
                                                         </Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <div className="flex items-center gap-2">
-                                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                                            <span className={`text-base font-medium ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                                {getStatusIconConfig(service.currentStatus).label}
+                                                        <div
+                                                            className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full"
+                                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                                        >
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                                            <span className="text-sm font-medium">
+                                                                {getStatusIconConfig(service.currentStatus, colors).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="whitespace-nowrap text-base">
+                                                    <TableCell className="whitespace-nowrap text-sm">
                                                         {format(new Date(service.createdAt), "dd MMM yyyy", { locale: es })}
                                                     </TableCell>
                                                     <TableCell className="text-center">
-                                                        <div className="flex items-center justify-center gap-2">
+                                                        <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
                                                             <Button
-                                                                variant="default"
+                                                                variant="outline"
                                                                 size="icon"
-                                                                onClick={(e) => { e.stopPropagation(); handleUpdateStatus(service) }}
-                                                                className="h-8 w-8 bg-primary hover:bg-primary/90"
+                                                                onClick={() => handleUpdateStatus(service)}
+                                                                className="h-8 w-8 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors"
                                                                 title="Actualizar estado"
                                                             >
                                                                 <Edit className="h-4 w-4" />
@@ -230,7 +230,7 @@ export default function Servicios() {
                                     </TableBody>
                                 </Table>
                             </div>
-                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedServices.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
+                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={totalElements} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                         </>
                     )}
                 </CardContent>

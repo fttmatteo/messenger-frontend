@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
-import { useParams, useNavigate, Link } from "react-router-dom"
-import { Home, Loader2, Save, UserPlus, Clock, AlertTriangle } from "lucide-react"
+import { useParams, useNavigate } from "react-router-dom"
+import { Loader2, Save, UserPlus } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { useStatusColors } from "@/hooks/use-status-colors"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 
@@ -11,19 +12,21 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useAuth } from "@/context/AuthContext"
-import { getAvailableStatusesForUser, getServiceLockReason, getTimeRemainingIn72hWindow, getStatusIconConfig } from "@/lib/status-utils"
+import { getAvailableStatusesForUser, getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
+import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
 
 export default function UpdateServiceStatus() {
     const { id } = useParams()
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
+    const { colors } = useStatusColors()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -124,79 +127,33 @@ export default function UpdateServiceStatus() {
     }
 
     if (loading) {
-        return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )
+        return <UpdateServiceStatusSkeleton />
     }
 
     if (!service) return null
 
     return (
-        <div className="space-y-2">
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin">
-                                <Home className="h-4 w-4" />
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to="/admin/servicios">
-                                Servicios
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to={`/admin/servicios/${id}`}>
-                                {service.plate.plateNumber}
-                            </Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Actualizar estado</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+        <div className="flex flex-col h-full gap-1">
+            {/* Header with Navigation and Centered Title */}
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <AdminBreadcrumb segments={[
+                        { label: "Servicios", href: "/admin/servicios" },
+                        { label: service.plate.plateNumber, href: `/admin/servicios/${id}` },
+                        { label: "Actualizar" }
+                    ]} />
+                </div>
 
-            {/* Editing Window Alert - Integrated at top */}
-            {(() => {
-                const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
-                const lockReason = role
-                    ? getServiceLockReason(role, service.currentStatus, service.createdAt)
-                    : null
-                const timeRemaining = (service.currentStatus === 'DELIVERED' || service.currentStatus === 'RESOLVED')
-                    ? getTimeRemainingIn72hWindow(service.createdAt)
-                    : null
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Actualizar estado</h1>
+                </div>
 
-                if (!lockReason && timeRemaining) {
-                    return (
-                        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-100 px-4 py-3 rounded-lg flex items-start gap-3">
-                            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                                <p className="font-semibold text-base">Ventana de edición activa</p>
-                                <p className="text-sm mt-1">
-                                    Tienes <strong className="font-bold">{timeRemaining.hours}h {timeRemaining.minutes}m</strong> restantes para modificar este servicio.
-                                </p>
-                            </div>
-                        </div>
-                    )
-                }
-                return null
-            })()}
+                <div className="hidden md:flex md:flex-1"></div>
+            </div>
 
             {/* Reassign Alert - Integrated at top for CANCELED services */}
             {showReassign && messengers.length > 0 && (
-                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-4">
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-4 mb-2">
                     <div className="flex items-start gap-3">
                         <UserPlus className="h-6 w-6 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                         <div className="flex-1">
@@ -246,92 +203,68 @@ export default function UpdateServiceStatus() {
                 </div>
             )}
 
-            {/* Header */}
-            <div>
-                <h1 className="text-xl font-bold">Actualizar estado</h1>
-            </div>
-
-            <Card className="gap-1 py-1">
+            <Card className="flex flex-col gap-1 py-1">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <PlacaBadge
                             plateNumber={service.plate.plateNumber}
                             plateType={service.plate.plateType}
-                            size="xl"
+                            size="lg"
                         />
                         {/* Status Selector */}
-                        {(() => {
-                            const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
-                            const availableStatuses = role
-                                ? getAvailableStatusesForUser(role, service.currentStatus, service.createdAt)
-                                : []
-                            const lockReason = role
-                                ? getServiceLockReason(role, service.currentStatus, service.createdAt)
-                                : null
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground hidden sm:inline">Estado:</span>
+                            {(() => {
+                                const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
+                                const availableStatuses = role
+                                    ? getAvailableStatusesForUser(role)
+                                    : []
 
-                            return (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground hidden sm:inline">Estado:</span>
-                                    {lockReason || availableStatuses.length === 0 ? (
-                                        <div className="flex items-center gap-2 px-3 py-1.5 border rounded-md bg-muted/30">
-                                            <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(service.currentStatus).dotColor}`} />
-                                            <span className={`font-medium text-sm ${getStatusIconConfig(service.currentStatus).textColor}`}>
-                                                {getStatusIconConfig(service.currentStatus).label}
+                                if (availableStatuses.length === 0) {
+                                    return (
+                                        <div
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                        >
+                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                            <span className="font-medium text-sm">
+                                                {getStatusIconConfig(service.currentStatus, colors).label}
                                             </span>
                                         </div>
-                                    ) : (
-                                        <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
-                                            <SelectTrigger className="w-[200px]">
-                                                <SelectValue placeholder="Selecciona un nuevo estado">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(newStatus).dotColor}`} />
-                                                        <span>{getStatusIconConfig(newStatus).label}</span>
-                                                    </div>
-                                                </SelectValue>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel className="text-muted-foreground">Selecciona un nuevo estado</SelectLabel>
-                                                    {availableStatuses.map((status) => (
-                                                        <SelectItem key={status.value} value={status.value}>
-                                                            <div className="flex items-center gap-2">
-                                                                <div className={`w-3 h-3 rounded-full ${getStatusIconConfig(status.value).dotColor}`} />
-                                                                <span>{status.label}</span>
-                                                            </div>
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                </div>
-                            )
-                        })()}
+                                    )
+                                }
+
+                                return (
+                                    <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
+                                        <SelectTrigger className="w-[200px]">
+                                            <SelectValue placeholder="Selecciona un nuevo estado">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus, colors).dotStyle} />
+                                                    <span>{getStatusIconConfig(newStatus, colors).label}</span>
+                                                </div>
+                                            </SelectValue>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel className="text-muted-foreground">Selecciona un nuevo estado</SelectLabel>
+                                                {availableStatuses.map((status) => (
+                                                    <SelectItem key={status.value} value={status.value}>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(status.value, colors).dotStyle} />
+                                                            <span>{status.label}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )
+                            })()}
+                        </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
 
-
-                    {/* Lock Warning Alert */}
-                    {(() => {
-                        const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
-                        const lockReason = role
-                            ? getServiceLockReason(role, service.currentStatus, service.createdAt)
-                            : null
-
-                        if (lockReason) {
-                            return (
-                                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 px-4 py-3 rounded-lg flex items-start gap-2">
-                                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold">Servicio bloqueado</p>
-                                        <p className="text-sm mt-1">{lockReason}</p>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        return null
-                    })()}
 
 
                     {/* Observation */}
@@ -353,7 +286,8 @@ export default function UpdateServiceStatus() {
                     <div className="flex gap-4 pt-4 border-t mt-6">
                         <Button
                             variant="outline"
-                            onClick={() => navigate("/admin/servicios")}
+                            size="sm"
+                            onClick={() => navigate(-1)}
                             disabled={updating}
                             type="button"
                         >
@@ -362,6 +296,7 @@ export default function UpdateServiceStatus() {
                         <Button
                             onClick={handleUpdateStatus}
                             disabled={updating}
+                            size="sm"
                             className="flex-1 sm:flex-none"
                         >
                             {updating ? (

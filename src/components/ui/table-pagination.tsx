@@ -43,10 +43,10 @@ export function TablePagination({
     const hasResults = totalItems > 0
 
     return (
-        <div className="mt-4 space-y-3">
+        <div className="mt-auto pt-2">
             {/* Results info and items per page selector */}
             <div className="flex items-center justify-between gap-4 flex-wrap">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                     {hasResults ? (
                         <>
                             Mostrando <span className="font-medium">{startItem}-{endItem}</span> de{" "}
@@ -62,19 +62,19 @@ export function TablePagination({
 
                 {hasResults && (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground whitespace-nowrap">Items por página:</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">Items por página:</span>
                         <Select
                             value={itemsPerPage.toString()}
                             onValueChange={(value) => onItemsPerPageChange(Number(value))}
                         >
-                            <SelectTrigger className="w-[70px] h-9">
+                            <SelectTrigger className="w-[80px] h-7 text-xs">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="5">5</SelectItem>
-                                <SelectItem value="10">10</SelectItem>
-                                <SelectItem value="20">20</SelectItem>
-                                <SelectItem value="50">50</SelectItem>
+                                <SelectItem value="5" className="text-xs">5</SelectItem>
+                                <SelectItem value="10" className="text-xs">10</SelectItem>
+                                <SelectItem value="20" className="text-xs">20</SelectItem>
+                                <SelectItem value="50" className="text-xs">50</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

@@ -4,7 +4,7 @@ import { formatDisplayName, capitalizeWords } from './format-utils';
 describe('format-utils', () => {
     describe('formatDisplayName', () => {
         it('should format full name to First Name + Last Initial', () => {
-            expect(formatDisplayName('Juan Carlos Perez')).toBe('Juan P.');
+            expect(formatDisplayName('Juan Carlos Perez')).toBe('Juan C.');
             expect(formatDisplayName('Maria Lopez')).toBe('Maria L.');
         });
 

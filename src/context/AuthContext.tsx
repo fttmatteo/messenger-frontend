@@ -1,17 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
-import { authService } from '../services/auth.service';
-import type { LoginCredentials, User } from '../types/auth.types';
-
-interface AuthContextType {
-    user: User | null;
-    login: (credentials: LoginCredentials) => Promise<void>;
-    logout: () => void;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    updateUser: (data: Partial<User>) => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import React, { useContext, useState } from 'react'
+import { authService } from '@/services/auth.service'
+import type { LoginCredentials, User } from '@/types'
+import { AuthContext } from './AuthContextDef'
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(() => {
