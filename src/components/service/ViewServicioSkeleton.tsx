@@ -25,7 +25,7 @@ export function ViewServicioSkeleton() {
             {/* Split Layout: Info (Left), History (Right) & Map (Bottom) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* General Information */}
-                <Card className="h-[600px] flex flex-col">
+                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <Skeleton className="h-6 w-44" />
                     </CardHeader>
@@ -47,7 +47,7 @@ export function ViewServicioSkeleton() {
                 </Card>
 
                 {/* History Timeline */}
-                <Card className="h-[600px] flex flex-col">
+                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <Skeleton className="h-6 w-40" />
                     </CardHeader>

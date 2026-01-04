@@ -197,7 +197,7 @@ export default function ViewServicio() {
             {/* Split Layout: Info (Left), History (Right) & Map (Full Width) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* General Information - Vertical Layout */}
-                <Card className="h-[600px] flex flex-col">
+                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
                     </CardHeader>
@@ -278,7 +278,7 @@ export default function ViewServicio() {
                 </Card>
 
                 {/* History Timeline - Vertical & Scrollable */}
-                <Card className="h-[600px] flex flex-col">
+                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
                     </CardHeader>
