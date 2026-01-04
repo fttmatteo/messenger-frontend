@@ -87,7 +87,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
     return (
         <div
-            className="group relative flex items-center bg-card hover:bg-muted/30 transition-colors cursor-pointer border-b border-border/40 last:border-0"
+            className="group relative flex items-center bg-card hover:bg-muted/30 transition-colors cursor-pointer border border-border/50 rounded-lg overflow-hidden shadow-sm"
             onClick={handleClick}
         >
             {/* Status Strip */}
