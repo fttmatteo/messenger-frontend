@@ -197,7 +197,7 @@ export default function ViewServicio() {
             {/* Split Layout: Info (Left), History (Right) & Map (Full Width) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* General Information - Vertical Layout */}
-                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
+                <Card className="h-[calc(100vh-135px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
                     </CardHeader>
@@ -272,7 +272,7 @@ export default function ViewServicio() {
                 </Card>
 
                 {/* History Timeline - Vertical & Scrollable */}
-                <Card className="h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
+                <Card className="h-[calc(100vh-135px)] min-h-[500px] flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
                     </CardHeader>
@@ -288,12 +288,12 @@ export default function ViewServicio() {
                                                 key={entry.idStatusHistory}
                                                 isLast={index === (service.history?.length || 0) - 1}
                                             >
-                                                <TimelineHeader statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
+                                                <TimelineHeader size="sm" statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
                                                     <div
-                                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full ml-1"
+                                                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ml-1"
                                                         style={{ backgroundColor: getStatusIconConfig(entry.newStatus, colors).pillBackground }}
                                                     >
-                                                        <span className="text-lg font-bold">
+                                                        <span className="text-xs font-bold">
                                                             {getStatusIconConfig(entry.newStatus, colors).label}
                                                         </span>
                                                     </div>
