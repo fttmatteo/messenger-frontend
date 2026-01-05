@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { useTheme } from "next-themes"
 import { Card } from "@/components/ui/card"
 import { Palette, ChevronRight } from "lucide-react"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 function getThemeLabel(theme: string | undefined) {
     switch (theme) {
@@ -15,10 +16,11 @@ function getThemeLabel(theme: string | undefined) {
 export default function ConfiguracionPage() {
     const { theme } = useTheme()
     const navigate = useNavigate()
+    const { isIOS } = useDeviceType()
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-auto">
+            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 {/* Settings List */}
                 <div className="p-4">
                     <Card className="border-border/50 overflow-hidden">

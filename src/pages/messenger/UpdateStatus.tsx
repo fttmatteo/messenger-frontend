@@ -36,7 +36,7 @@ const statusOptionsBase: StatusOption[] = [
     {
         value: 'PENDING',
         label: 'Pendiente',
-        description: 'El vehículo está pendiente de entrega',
+        description: 'La placa está pendiente de entrega',
         icon: <Clock className="h-7 w-7" />,
         requiresSignature: true,
         requiresPhotos: true,
@@ -45,7 +45,7 @@ const statusOptionsBase: StatusOption[] = [
     {
         value: 'DELIVERED',
         label: 'Entregado',
-        description: 'El vehículo fue entregado exitosamente',
+        description: 'La placa fue entregada exitosamente',
         icon: <CheckCircle className="h-7 w-7" />,
         requiresSignature: true,
         requiresPhotos: false,
@@ -54,7 +54,7 @@ const statusOptionsBase: StatusOption[] = [
     {
         value: 'RETURNED',
         label: 'Devuelto',
-        description: 'El vehículo no pudo ser entregado',
+        description: 'La placa no pudo ser entregada',
         icon: <CornerDownLeft className="h-7 w-7" />,
         requiresSignature: false,
         requiresPhotos: true,
@@ -365,7 +365,7 @@ export default function UpdateStatus() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
-                            className="px-4 pb-4 space-y-4"
+                            className="px-4 pb-40 space-y-4"
                         >
                             {/* Signature Section */}
                             {selectedOption.requiresSignature && (
@@ -427,9 +427,13 @@ export default function UpdateStatus() {
                                                 : 'Notas adicionales sobre la entrega...'
                                     }
                                     value={observation}
-                                    onChange={(e) => setObservation(e.target.value)}
+                                    onChange={(e) => {
+                                        setObservation(e.target.value)
+                                        e.target.style.height = 'auto'
+                                        e.target.style.height = `${e.target.scrollHeight}px`
+                                    }}
                                     rows={3}
-                                    className="resize-none bg-muted/30 border-border/50"
+                                    className="resize-none bg-muted/30 border-border/50 min-h-[80px] overflow-hidden"
                                 />
                             </Card>
                         </motion.div>

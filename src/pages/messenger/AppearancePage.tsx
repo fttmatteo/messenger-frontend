@@ -1,4 +1,5 @@
 import { useTheme } from "next-themes"
+import { useDeviceType } from "@/hooks/use-device-type"
 import { Card } from "@/components/ui/card"
 import { Sun, Moon, Monitor, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -35,10 +36,11 @@ const themeOptions: ThemeOptionItem[] = [
 
 export default function AppearancePage() {
     const { theme, setTheme } = useTheme()
+    const { isIOS } = useDeviceType()
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-auto">
+            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 <div className="p-4">
                     <Card className="p-4 border-border/50">
                         <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-3">

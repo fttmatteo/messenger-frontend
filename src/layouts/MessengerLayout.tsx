@@ -12,7 +12,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
-import { useDeviceType } from "@/hooks/use-device-type"
 
 
 export default function MessengerLayout() {
@@ -23,7 +22,6 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
-    const { isIOS } = useDeviceType()
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -185,7 +183,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-background">
+        <div className="flex flex-col h-[100dvh] bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -281,7 +279,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className={`flex-1 overflow-auto ${hideBottomNav ? '' : (isIOS ? 'pb-[104px]' : 'pb-[92px]')}`}
+                className="flex-1 overflow-hidden relative"
                 role="main"
             >
                 <Outlet />
