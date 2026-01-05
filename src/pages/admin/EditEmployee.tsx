@@ -149,6 +149,7 @@ export default function EditEmployee() {
                                 <Input
                                     id="document"
                                     placeholder="1234567890"
+                                    autoComplete="off"
                                     {...register("document")}
                                 />
                                 {errors.document && (
@@ -162,6 +163,7 @@ export default function EditEmployee() {
                                 <Input
                                     id="phone"
                                     placeholder="3001234567"
+                                    autoComplete="tel"
                                     {...register("phone")}
                                 />
                                 {errors.phone && (
@@ -175,6 +177,7 @@ export default function EditEmployee() {
                                 <Input
                                     id="fullName"
                                     placeholder="Juan Pérez García"
+                                    autoComplete="name"
                                     {...register("fullName")}
                                 />
                                 {errors.fullName && (
@@ -191,6 +194,7 @@ export default function EditEmployee() {
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Dejar vacío para no cambiar"
                                         className="pr-10"
+                                        autoComplete="new-password"
                                         {...register("password")}
                                     />
                                     <Button
@@ -216,10 +220,11 @@ export default function EditEmployee() {
                             <div className="space-y-2">
                                 <Label htmlFor="role">Cargo</Label>
                                 <Select
+                                    name="role"
                                     value={selectedRole}
                                     onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="role">
                                         <SelectValue placeholder="Selecciona un rol" />
                                     </SelectTrigger>
                                     <SelectContent>
