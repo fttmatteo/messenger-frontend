@@ -12,6 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 
 export default function MessengerLayout() {
@@ -22,6 +23,7 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
+    const { isIOS } = useDeviceType()
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -279,7 +281,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className={`flex-1 overflow-auto ${hideBottomNav ? '' : ''}`}
+                className={`flex-1 overflow-auto ${hideBottomNav ? '' : (isIOS ? 'pb-[104px]' : 'pb-[92px]')}`}
                 role="main"
             >
                 <Outlet />
