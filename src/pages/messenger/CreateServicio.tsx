@@ -324,9 +324,10 @@ export default function MessengerCreateServicio() {
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 disabled={loadingData}
+                                                name="dealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger className="h-11 touch-manipulation">
+                                                    <SelectTrigger id="dealershipId" className="h-11 touch-manipulation">
                                                         <SelectValue placeholder="Selecciona destino" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -382,6 +383,7 @@ export default function MessengerCreateServicio() {
                                                         className="h-11 font-mono uppercase touch-manipulation text-lg tracking-wider"
                                                         maxLength={7}
                                                         autoFocus
+                                                        autoComplete="off"
                                                     />
                                                 </FormControl>
                                                 <FormDescription className="text-xs">

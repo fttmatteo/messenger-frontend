@@ -44,8 +44,8 @@ export default function MessengerDashboard() {
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                        <Select value={selectedDealership} onValueChange={setSelectedDealership}>
-                            <SelectTrigger className="w-full h-10 border-input/60 bg-background/50 backdrop-blur-sm shadow-sm">
+                        <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
+                            <SelectTrigger id="dealership-filter" className="w-full h-10 border-input/60 bg-background/50 backdrop-blur-sm shadow-sm">
                                 <div className="flex items-center gap-2 truncate">
                                     <Building2 className="h-4 w-4 text-primary shrink-0" />
                                     <SelectValue placeholder="Filtrar por concesionario" />

@@ -419,6 +419,8 @@ export default function UpdateStatus() {
                                     )}
                                 </div>
                                 <Textarea
+                                    name="observation"
+                                    id="observation"
                                     placeholder={
                                         selectedOption.value === 'RETURNED'
                                             ? 'Explique el motivo de la devolución...'

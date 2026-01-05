@@ -207,6 +207,8 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                     </Button>
                     <label className="flex-1">
                         <input
+                            id="file-upload"
+                            name="file-upload"
                             type="file"
                             accept="image/*"
                             multiple
