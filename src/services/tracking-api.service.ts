@@ -31,8 +31,8 @@ export const trackingApiService = {
         return response.data;
     },
 
-    getLastLocation: async (messengerId: number): Promise<LiveTrackingUpdate> => {
-        const response = await api.get<LiveTrackingUpdate>(`/tracking/messenger/${messengerId}`);
+    getLastLocation: async (messengerId: number): Promise<LiveTrackingUpdate | null> => {
+        const response = await api.get<LiveTrackingUpdate | null>(`/tracking/messenger/${messengerId}`);
         return response.data;
     },
 
