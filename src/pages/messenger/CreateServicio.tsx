@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { createLogger } from "@/utils/logger"
 
-const logger = createLogger('CreateServicio')
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+
+
 import { serviceDeliveryService } from "@/services/service.service"
-import { trackingService } from "@/services/tracking.service"
 import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,7 @@ import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useDeviceType } from "@/hooks/use-device-type"
 import { cn } from "@/lib/utils"
+import { useSmartLocation } from "@/hooks/use-smart-location"
 
 // Form validation schema
 const formSchema = z.object({
@@ -35,6 +35,7 @@ type FormValues = z.infer<typeof formSchema>
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
     const { isIOS } = useDeviceType()
+    const { getCurrentLocation } = useSmartLocation()
 
     // Form state
     const [loading, setLoading] = useState(false)
@@ -107,62 +108,32 @@ export default function MessengerCreateServicio() {
         setShowCamera(true)
     }, [form])
 
-    // Get user location with fallback
-    const getLocation = async (): Promise<{ latitude?: number; longitude?: number }> => {
-        // Check cached location first
-        const lastKnown = trackingService.getLastKnownLocation()
-        const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000)
 
-        if (isRecent && lastKnown) {
-            logger.info("Using cached location for service creation")
-            return { latitude: lastKnown.latitude, longitude: lastKnown.longitude }
-        }
 
-        try {
-            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                if (!navigator.geolocation) {
-                    reject(new Error("La geolocalización no es soportada por este navegador."))
-                    return
-                }
 
-                const timeoutId = setTimeout(() => {
-                    reject(new Error("Tiempo de espera agotado (Timeout)"))
-                }, 10000)
 
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        clearTimeout(timeoutId)
-                        resolve(pos)
-                    },
-                    (err) => {
-                        clearTimeout(timeoutId)
-                        let msg = err.message
-                        if (err.code === 1) msg = "Permiso de ubicación denegado"
-                        else if (err.code === 2) msg = "Ubicación no disponible"
-                        else if (err.code === 3) msg = "Tiempo de espera agotado"
-                        reject(new Error(msg))
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                )
-            })
 
-            return { latitude: position.coords.latitude, longitude: position.coords.longitude }
-        } catch (error) {
-            logger.warn("Could not get location:", error)
-            const msg = error instanceof Error ? error.message : "Error desconocido"
-            toast.warning("Ubicación no capturada", {
-                description: `${msg}. El servicio se creará sin ubicación inicial.`,
-                duration: 4000
-            })
-            return {}
-        }
-    }
+    // ... other state ...
+
+    // ... (keep handlePhotoCapture, handleImageSelect, clearImage) ...
+
+    // REMOVED: getLocation function (logic moved to hook)
 
     // Form submit handler
     const onSubmit = async (values: FormValues) => {
         try {
             setLoading(true)
-            const { latitude, longitude } = await getLocation()
+
+            let latitude: number | undefined
+            let longitude: number | undefined
+
+            try {
+                const location = await getCurrentLocation();
+                latitude = location.latitude;
+                longitude = location.longitude;
+            } catch {
+                // Location error already handled/toasted in hook
+            }
 
             await serviceDeliveryService.create({
                 image: values.image,
