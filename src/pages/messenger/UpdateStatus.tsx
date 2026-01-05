@@ -17,6 +17,8 @@ import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { useDeviceType } from "@/hooks/use-device-type"
+import { cn } from "@/lib/utils"
 
 type MessengerStatus = 'PENDING' | 'DELIVERED' | 'RETURNED'
 
@@ -71,6 +73,7 @@ export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { colors } = useStatusColors()
+    const { isIOS } = useDeviceType()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -435,7 +438,7 @@ export default function UpdateStatus() {
             </div>
 
             {/* Fixed Bottom Action */}
-            <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
+            <div className={cn("p-4 border-t bg-background/95 backdrop-blur-sm", isIOS ? "pb-8" : "pb-4")}>
                 <Button
                     className="w-full h-12 text-base font-semibold rounded-xl transition-all"
                     style={{
@@ -491,4 +494,3 @@ export default function UpdateStatus() {
         </div>
     )
 }
-

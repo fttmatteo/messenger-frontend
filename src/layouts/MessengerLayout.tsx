@@ -26,10 +26,10 @@ export default function MessengerLayout() {
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Determine if we are in a sub-page (detail pages that need back button)
     const isSubPage = location.pathname.includes('/servicio/') ||
         location.pathname.includes('/historial') ||
-        location.pathname.includes('/actualizar')
+        location.pathname.includes('/actualizar') ||
+        location.pathname.includes('/configuracion/')
 
     // Hide bottom nav on create and update pages for cleaner UX
     const hideBottomNav = location.pathname.includes('/crear') || location.pathname.includes('/actualizar')
@@ -39,6 +39,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
         if (location.pathname.includes('historial-recorrido')) return 'Historial ruta'
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
+        if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('actualizar')) return 'Actualizar estado'
         if (location.pathname.includes('servicio/')) return 'Detalle servicio'

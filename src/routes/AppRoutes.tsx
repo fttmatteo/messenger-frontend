@@ -41,6 +41,7 @@ const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateS
 const MessengerRouteHistoryPage = React.lazy(() => import('@/pages/messenger/RouteHistoryPage'));
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
+const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
 
 const MobileOnlyGuard = React.lazy(() => import('@/components/MobileOnlyGuard').then(m => ({ default: m.MobileOnlyGuard })));
 const DesktopOnlyGuard = React.lazy(() => import('@/components/DesktopOnlyGuard').then(m => ({ default: m.DesktopOnlyGuard })));
@@ -158,6 +159,7 @@ export function AppRoutes() {
                     <Route path="historial-recorrido" element={<MessengerRouteHistoryPage />} />
                     <Route path="servicios" element={<MessengerServiciosPage />} />
                     <Route path="configuracion" element={<MessengerConfiguracionPage />} />
+                    <Route path="configuracion/apariencia" element={<MessengerAppearancePage />} />
                 </Route>
 
                 {/* Catch all */}

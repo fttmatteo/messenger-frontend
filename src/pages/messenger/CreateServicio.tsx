@@ -17,6 +17,8 @@ import { PlateCamera, ImageUploadFallback } from "@/components/camera"
 import { X, Loader2, Bike, Camera, Building2, Edit3 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useDeviceType } from "@/hooks/use-device-type"
+import { cn } from "@/lib/utils"
 
 // Form validation schema
 const formSchema = z.object({
@@ -29,6 +31,7 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
+    const { isIOS } = useDeviceType()
 
     // Form state
     const [loading, setLoading] = useState(false)
@@ -394,7 +397,7 @@ export default function MessengerCreateServicio() {
                     </div>
 
                     {/* Fixed Bottom Action */}
-                    <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
+                    <div className={cn("p-4 border-t bg-background/95 backdrop-blur-sm", isIOS ? "pb-8" : "pb-4")}>
                         <div className="flex gap-3">
                             <Button
                                 type="button"
