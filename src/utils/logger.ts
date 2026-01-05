@@ -18,13 +18,13 @@ class Logger {
         return `[${this.prefix}] ${message}`;
     }
 
-    public info(message: string, ...args: any[]) {
+    public info(message: string, ...args: unknown[]) {
         if (isDev) {
             console.log(this.formatMessage(message), ...args);
         }
     }
 
-    public warn(message: string, ...args: any[]) {
+    public warn(message: string, ...args: unknown[]) {
         // Warnings are usually important enough to show in prod too, 
         // but we can silence them if strictness is required.
         // For now, let's keep them in dev only to meet the "clean console" requirement strictly,
@@ -35,12 +35,12 @@ class Logger {
         }
     }
 
-    public error(message: string, ...args: any[]) {
+    public error(message: string, ...args: unknown[]) {
         // Errors should generally be visible, but maybe not full stack traces to users.
         console.error(this.formatMessage(message), ...args);
     }
 
-    public debug(message: string, ...args: any[]) {
+    public debug(message: string, ...args: unknown[]) {
         if (isDev) {
             console.debug(this.formatMessage(message), ...args);
         }

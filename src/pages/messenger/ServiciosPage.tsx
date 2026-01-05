@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Search, CalendarIcon, Filter, Check } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusLabel } from "@/lib/status-colors"
@@ -25,14 +25,14 @@ export default function ServiciosPage() {
     const [statusFilter, setStatusFilter] = useState<string>("all")
 
     // Get the last status change date for a service
-    const getLastChangeDate = (service: typeof completedServices[0]) => {
+    const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
         if (service.history && service.history.length > 0) {
             // Get the most recent change date from history
             const lastChange = service.history[service.history.length - 1]
             return new Date(lastChange.changeDate)
         }
         return new Date(service.createdAt)
-    }
+    }, [])
 
     const filteredServices = useMemo(() => {
         // We use global search if there's a search term OR a status filter active.
@@ -61,7 +61,7 @@ export default function ServiciosPage() {
         }
 
         return services
-    }, [completedServices, selectedDate, searchTerm, statusFilter])
+    }, [completedServices, selectedDate, searchTerm, statusFilter, getLastChangeDate])
 
     const isToday = isSameDay(selectedDate, new Date())
 
