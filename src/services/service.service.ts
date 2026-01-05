@@ -1,5 +1,5 @@
 import apiClient from './api-client'
-import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse } from '@/types/service.types'
+import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
 
 class ServiceDeliveryService {
     /**
@@ -22,6 +22,7 @@ class ServiceDeliveryService {
         size?: number
         sortBy?: string
         sortDirection?: 'asc' | 'desc'
+        status?: ServiceStatus[]
         search?: string
     } = {}): Promise<PaginatedResponse<ServiceDelivery>> {
         const response = await apiClient.get('/services/allServicesPageable', {
@@ -30,6 +31,7 @@ class ServiceDeliveryService {
                 size: params.size ?? 10,
                 sortBy: params.sortBy ?? 'createdAt',
                 sortDirection: params.sortDirection ?? 'desc',
+                status: params.status?.join(','),
                 search: params.search
             }
         })

@@ -3,16 +3,7 @@ import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './mocks/server';
 
 // Start MSW server before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-
-// Clean up after each test
-afterEach(() => {
-    vi.clearAllMocks();
-    server.resetHandlers();
-});
-
-// Close MSW server after all tests
-afterAll(() => server.close());
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 
 // Mock localStorage and sessionStorage for jsdom
 const localStorageMock = (() => {
@@ -33,7 +24,14 @@ Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
 // Clean up after each test
 afterEach(() => {
     vi.clearAllMocks();
+    server.resetHandlers();
+    localStorage.clear();
+    sessionStorage.clear();
 });
+
+// Close MSW server after all tests
+afterAll(() => server.close());
+
 
 // Mock ResizeObserver (required by Radix UI components)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

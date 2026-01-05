@@ -1,0 +1,97 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import Servicios from '../Servicios'
+import { StatusColorProvider } from '@/context/StatusColorContext'
+
+import { AuthProvider } from '@/context/AuthContext'
+import { server } from '@/test/mocks/server'
+import { http, HttpResponse } from 'msw'
+
+// Mock useOutletContext for search query
+vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom')
+    return {
+        ...actual,
+        useOutletContext: () => ({ searchQuery: '' })
+    }
+})
+
+// Mock useStatusColors to avoid context issues if needed, but we use the Provider
+describe('Servicios Admin Page Integration', () => {
+    beforeEach(() => {
+        server.use(
+            http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
+                return HttpResponse.json({
+                    content: [
+                        {
+                            idServiceDelivery: 1,
+                            plate: { plateNumber: 'ADM-001', plateType: 'PARTICULAR' },
+                            dealership: { name: 'Dealership-Alpha' },
+                            messenger: { fullName: 'Messenger-Beta' },
+                            currentStatus: 'ASSIGNED',
+                            createdAt: new Date().toISOString()
+                        }
+                    ],
+                    totalPages: 1,
+                    totalElements: 1,
+                    currentPage: 0,
+                    pageSize: 10,
+                    first: true,
+                    last: true
+                });
+            })
+        )
+    })
+
+    const renderPage = () => {
+        localStorage.setItem('role', 'ADMIN')
+        return render(
+            <MemoryRouter>
+                <AuthProvider>
+                    <StatusColorProvider>
+                        <Servicios />
+                    </StatusColorProvider>
+                </AuthProvider>
+            </MemoryRouter>
+        )
+    }
+
+    it('should load and display services list', async () => {
+        renderPage()
+
+        // Wait for skeleton to disappear
+        await waitFor(() => {
+            expect(screen.queryByTestId('service-skeleton-0')).not.toBeInTheDocument()
+        }, { timeout: 4000 })
+
+        // Check for dealership first
+        expect(await screen.findByText(/Dealership-Alpha/i)).toBeInTheDocument()
+
+        // Then check for plate parts
+        expect(await screen.findByText(/ADM/i)).toBeInTheDocument()
+        expect(await screen.findByText(/001/i)).toBeInTheDocument()
+        expect(await screen.findByText(/Messenger-Beta/i)).toBeInTheDocument()
+        expect(await screen.findByText(/Asignado/i)).toBeInTheDocument()
+    })
+
+    it('should show empty state when no services', async () => {
+        server.use(
+            http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
+                return HttpResponse.json({
+                    content: [],
+                    totalPages: 0,
+                    totalElements: 0,
+                    currentPage: 0,
+                    pageSize: 10,
+                    first: true,
+                    last: true
+                });
+            })
+        )
+
+        renderPage()
+
+        expect(await screen.findByText(/Sin servicios/i)).toBeInTheDocument()
+    })
+})

@@ -68,6 +68,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
                 size: itemsPerPage,
                 sortBy: sortField,
                 sortDirection: sortDirection,
+                status: statusFilter.length > 0 ? statusFilter : undefined,
                 search: searchQuery
             })
 
@@ -82,7 +83,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
         } finally {
             setLoading(false)
         }
-    }, [currentPage, itemsPerPage, sortField, sortDirection, searchQuery])
+    }, [currentPage, itemsPerPage, sortField, sortDirection, statusFilter, searchQuery])
 
     // Handle sorting
     const handleSort = useCallback((field: string) => {

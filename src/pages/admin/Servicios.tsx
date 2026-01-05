@@ -33,7 +33,8 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 
 export default function Servicios() {
     const navigate = useNavigate()
-    const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    const outletContext = useOutletContext<{ searchQuery?: string }>()
+    const searchQuery = outletContext?.searchQuery || ""
     const { colors } = useStatusColors()
 
     // Use custom hooks
@@ -57,7 +58,7 @@ export default function Servicios() {
         navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)
     }
 
-    const filterLabel = statusFilter.length > 0
+    const filterLabel = (statusFilter?.length ?? 0) > 0
         ? `${statusFilter.length} filtro${statusFilter.length > 1 ? 's' : ''} activo${statusFilter.length > 1 ? 's' : ''}`
         : undefined
 
@@ -72,7 +73,7 @@ export default function Servicios() {
                 <div className="flex-1 flex items-center justify-center gap-3">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
                     <Select
-                        value={statusFilter.length === 1 ? statusFilter[0] : "all"}
+                        value={(statusFilter?.length ?? 0) === 1 ? statusFilter[0] : "all"}
                         onValueChange={(value) => {
                             if (value === "all") setStatusFilter([])
                             else setStatusFilter([value as ServiceStatus])
@@ -88,7 +89,7 @@ export default function Servicios() {
                             ))}
                         </SelectContent>
                     </Select>
-                    {statusFilter.length > 0 && (
+                    {(statusFilter?.length ?? 0) > 0 && (
                         <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
                             <X className="h-3 w-3 mr-1" />Limpiar
                         </Button>
@@ -116,7 +117,7 @@ export default function Servicios() {
                                 {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
                             </TableBody>
                         </Table>
-                    ) : services.length === 0 ? (
+                    ) : (services?.length ?? 0) === 0 ? (
                         <div className="flex-1 flex items-center justify-center h-full">
                             <ListEmptyState
                                 isSearchResult={!!searchQuery}
