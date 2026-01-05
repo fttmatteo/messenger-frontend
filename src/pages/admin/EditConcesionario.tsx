@@ -228,6 +228,7 @@ export default function EditConcesionario() {
                                     <Input
                                         id="name"
                                         placeholder="Mundo Yamaha"
+                                        autoComplete="organization"
                                         {...register("name")}
                                     />
                                     {errors.name && (
@@ -241,6 +242,7 @@ export default function EditConcesionario() {
                                     <Input
                                         id="phone"
                                         placeholder="3001234567"
+                                        autoComplete="tel"
                                         {...register("phone")}
                                     />
                                     {errors.phone && (
@@ -255,6 +257,7 @@ export default function EditConcesionario() {
                                         id="address"
                                         placeholder="Calle 123 #45-67, Medellin"
                                         rows={2}
+                                        autoComplete="street-address"
                                         {...register("address")}
                                     />
                                     {errors.address && (
@@ -266,10 +269,11 @@ export default function EditConcesionario() {
                                 <div className="space-y-2">
                                     <Label htmlFor="zone">Zona</Label>
                                     <Select
+                                        name="zone"
                                         value={selectedZone}
                                         onValueChange={(value) => setValue("zone", value)}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger id="zone">
                                             <SelectValue placeholder="Selecciona una zona" />
                                         </SelectTrigger>
                                         <SelectContent>
