@@ -106,14 +106,18 @@ export default function MessengerLayout() {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
                             logout()
                             navigate("/login")
-                        } else {
-                            console.log("Señal GPS débil o agotada. Reintentando...")
+                        } else if (error.code === 2) {
+                            // Position unavailable - show warning but don't logout
+                            toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000 })
+                        } else if (error.code === 3) {
+                            // Timeout - GPS taking too long
+                            toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000 })
                         }
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 30000,
-                        maximumAge: 0
+                        timeout: 15000, // Reducido de 30s a 15s para feedback más rápido
+                        maximumAge: 5000 // Permitir cache de 5s para mejor rendimiento
                     }
                 )
             } else {
@@ -147,6 +151,20 @@ export default function MessengerLayout() {
             }
         }
     }, [isOnline, user?.id, logout, navigate, updateUser])
+
+    // Heartbeat timer: envía señal de vida cada 30 segundos independiente del GPS
+    useEffect(() => {
+        if (!isOnline || !user?.id) return
+
+        const userId = user.id // TypeScript sabe que no es undefined aquí
+
+        // Enviar heartbeat cada 30 segundos
+        const heartbeatInterval = setInterval(() => {
+            trackingService.sendHeartbeat(userId)
+        }, 30000) // 30 segundos
+
+        return () => clearInterval(heartbeatInterval)
+    }, [isOnline, user?.id])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)

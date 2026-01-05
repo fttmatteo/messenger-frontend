@@ -21,7 +21,8 @@ export interface LiveTrackingUpdate {
     messengerName: string;
     latitude: number;
     longitude: number;
-    lastUpdate?: string; // ISO string
+    lastUpdate?: string; // ISO string - última ubicación GPS
+    lastHeartbeat?: string; // ISO string - última señal de vida (puede no tener GPS)
     status: 'ACTIVE' | 'INACTIVE' | 'OFFLINE';
     speed: number;
     heading: number;
@@ -31,17 +32,23 @@ export interface LiveTrackingUpdate {
 const STORAGE_KEY = 'tracking_offline_queue';
 const MAX_QUEUE_SIZE = 100;
 
+// Retry exponencial config
+const INITIAL_RECONNECT_DELAY = 2000; // 2 segundos inicial
+const MAX_RECONNECT_DELAY = 60000; // 60 segundos máximo
+const JITTER_FACTOR = 0.3; // ±30% variación para evitar thundering herd
+
 class TrackingService {
     private client: Client;
     private isConnected: boolean = false;
     private offlineQueue: Partial<LiveTrackingUpdate>[] = [];
+    private reconnectAttempt: number = 0;
 
     constructor() {
         this.loadQueue();
 
         this.client = new Client({
             brokerURL: getWebSocketUrl(),
-            reconnectDelay: 5000,
+            reconnectDelay: INITIAL_RECONNECT_DELAY,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             connectHeaders: {
@@ -52,6 +59,8 @@ class TrackingService {
         this.client.onConnect = () => {
             console.log('Connected to Tracking WebSocket');
             this.isConnected = true;
+            this.reconnectAttempt = 0; // Reset on successful connection
+            this.client.reconnectDelay = INITIAL_RECONNECT_DELAY; // Reset delay
             this.drainQueue();
         };
 
@@ -64,6 +73,35 @@ class TrackingService {
             console.error('Broker reported error: ' + frame.headers['message']);
             console.error('Additional details: ' + frame.body);
         };
+
+        // Retry exponencial con jitter en cada cierre de conexión
+        this.client.onWebSocketClose = () => {
+            this.reconnectAttempt++;
+            const newDelay = this.calculateReconnectDelay();
+            this.client.reconnectDelay = newDelay;
+            console.log(`WebSocket closed. Reconnect attempt ${this.reconnectAttempt}, next delay: ${newDelay}ms`);
+        };
+    }
+
+    /**
+     * Calcula delay de reconexión exponencial con jitter.
+     * Evita que todos los clientes reconecten al mismo tiempo (thundering herd).
+     */
+    private calculateReconnectDelay(): number {
+        this.reconnectAttempt++;
+
+        // Exponencial: 2s, 4s, 8s, 16s, 32s, 60s (cap)
+        const baseDelay = Math.min(
+            INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempt - 1),
+            MAX_RECONNECT_DELAY
+        );
+
+        // Agregar jitter aleatorio ±30%
+        const jitter = baseDelay * JITTER_FACTOR * (Math.random() * 2 - 1);
+        const delay = Math.round(baseDelay + jitter);
+
+        console.log(`WebSocket reconnect attempt ${this.reconnectAttempt}, delay: ${delay}ms`);
+        return delay;
     }
 
     private loadQueue() {
@@ -145,8 +183,17 @@ class TrackingService {
     }
 
     private bufferUpdate(update: Partial<LiveTrackingUpdate>) {
-        // Only buffer active status updates with coordinates
-        if (update.status !== 'ACTIVE' || !update.latitude) return;
+        // Buffer both ACTIVE updates with coordinates AND OFFLINE status changes
+        // OFFLINE status is important to sync when reconnecting
+        const isActiveWithCoords = update.status === 'ACTIVE' && update.latitude;
+        const isOfflineStatus = update.status === 'OFFLINE';
+
+        if (!isActiveWithCoords && !isOfflineStatus) return;
+
+        // For OFFLINE, only keep the last one (no need to queue multiple)
+        if (isOfflineStatus) {
+            this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'OFFLINE');
+        }
 
         this.offlineQueue.push(update);
 
@@ -195,6 +242,28 @@ class TrackingService {
 
     public getLastKnownLocation() {
         return this.lastLocation;
+    }
+
+    /**
+     * Envía un heartbeat (señal de vida) al servidor.
+     * Indica que el mensajero está conectado aunque no tenga GPS.
+     */
+    public sendHeartbeat(messengerId: number) {
+        if (!this.isConnected || !messengerId) {
+            return;
+        }
+
+        try {
+            this.client.publish({
+                destination: '/app/tracking/heartbeat',
+                body: JSON.stringify({
+                    messengerId,
+                    lastUpdate: new Date().toISOString()
+                })
+            });
+        } catch (error) {
+            console.error('Error sending heartbeat:', error);
+        }
     }
 }
 
