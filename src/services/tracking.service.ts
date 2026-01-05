@@ -1,5 +1,8 @@
 import { Client } from '@stomp/stompjs';
 import { authService } from './auth.service';
+import { createLogger } from '@/utils/logger';
+
+const logger = createLogger('TrackingService');
 
 const getWebSocketUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -57,7 +60,7 @@ class TrackingService {
         });
 
         this.client.onConnect = () => {
-            console.log('Connected to Tracking WebSocket');
+            logger.info('Connected to Tracking WebSocket');
             this.isConnected = true;
             this.reconnectAttempt = 0; // Reset on successful connection
             this.client.reconnectDelay = INITIAL_RECONNECT_DELAY; // Reset delay
@@ -65,13 +68,13 @@ class TrackingService {
         };
 
         this.client.onDisconnect = () => {
-            console.log('Disconnected from Tracking WebSocket');
+            logger.info('Disconnected from Tracking WebSocket');
             this.isConnected = false;
         };
 
         this.client.onStompError = (frame) => {
-            console.error('Broker reported error: ' + frame.headers['message']);
-            console.error('Additional details: ' + frame.body);
+            logger.error('Broker reported error: ' + frame.headers['message']);
+            logger.error('Additional details: ' + frame.body);
         };
 
         // Retry exponencial con jitter en cada cierre de conexión
@@ -79,7 +82,7 @@ class TrackingService {
             this.reconnectAttempt++;
             const newDelay = this.calculateReconnectDelay();
             this.client.reconnectDelay = newDelay;
-            console.log(`WebSocket closed. Reconnect attempt ${this.reconnectAttempt}, next delay: ${newDelay}ms`);
+            logger.info(`WebSocket closed. Reconnect attempt ${this.reconnectAttempt}, next delay: ${newDelay}ms`);
         };
     }
 
@@ -100,7 +103,7 @@ class TrackingService {
         const jitter = baseDelay * JITTER_FACTOR * (Math.random() * 2 - 1);
         const delay = Math.round(baseDelay + jitter);
 
-        console.log(`WebSocket reconnect attempt ${this.reconnectAttempt}, delay: ${delay}ms`);
+        logger.info(`WebSocket reconnect attempt ${this.reconnectAttempt}, delay: ${delay}ms`);
         return delay;
     }
 
@@ -111,7 +114,7 @@ class TrackingService {
                 this.offlineQueue = JSON.parse(saved);
             }
         } catch (e) {
-            console.warn('Failed to load tracking queue', e);
+            logger.warn('Failed to load tracking queue', e);
             this.offlineQueue = [];
         }
     }
@@ -120,14 +123,14 @@ class TrackingService {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.offlineQueue));
         } catch (e) {
-            console.warn('Failed to save tracking queue', e);
+            logger.warn('Failed to save tracking queue', e);
         }
     }
 
     private drainQueue() {
         if (!this.isConnected || this.offlineQueue.length === 0) return;
 
-        console.log(`Draining ${this.offlineQueue.length} buffered tracking updates`);
+        logger.info(`Draining ${this.offlineQueue.length} buffered tracking updates`);
         const updates = [...this.offlineQueue];
         this.offlineQueue = [];
         this.saveQueue();
@@ -174,7 +177,7 @@ class TrackingService {
                     body: JSON.stringify(updateWithTime)
                 });
             } catch (error) {
-                console.error('Error sending tracking update, buffering...', error);
+                logger.error('Error sending tracking update, buffering...', error);
                 this.bufferUpdate(updateWithTime);
             }
         } else {
@@ -262,7 +265,7 @@ class TrackingService {
                 })
             });
         } catch (error) {
-            console.error('Error sending heartbeat:', error);
+            logger.error('Error sending heartbeat:', error);
         }
     }
 }

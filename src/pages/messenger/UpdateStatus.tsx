@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('UpdateStatus')
 import { serviceDeliveryService } from "@/services/service.service"
 import { trackingService } from "@/services/tracking.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
@@ -160,7 +163,7 @@ export default function UpdateStatus() {
             const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000) // 5 minutes validity
 
             if (isRecent && lastKnown) {
-                console.log("Using cached location for status update")
+                logger.info("Using cached location for status update")
                 latitude = lastKnown.latitude
                 longitude = lastKnown.longitude
             } else {
@@ -180,7 +183,7 @@ export default function UpdateStatus() {
                     latitude = pos.coords.latitude
                     longitude = pos.coords.longitude
                 } catch (e) {
-                    console.warn("Could not get location for status update", e)
+                    logger.warn("Could not get location for status update", e)
                     toast.warning("No se pudo obtener la ubicación (GPS)", {
                         description: "El cambio se registrará sin geolocalización."
                     })

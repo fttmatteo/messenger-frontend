@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('CreateServicio')
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -111,7 +114,7 @@ export default function MessengerCreateServicio() {
         const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000)
 
         if (isRecent && lastKnown) {
-            console.log("Using cached location for service creation")
+            logger.info("Using cached location for service creation")
             return { latitude: lastKnown.latitude, longitude: lastKnown.longitude }
         }
 
@@ -145,7 +148,7 @@ export default function MessengerCreateServicio() {
 
             return { latitude: position.coords.latitude, longitude: position.coords.longitude }
         } catch (error) {
-            console.warn("Could not get location:", error)
+            logger.warn("Could not get location:", error)
             const msg = error instanceof Error ? error.message : "Error desconocido"
             toast.warning("Ubicación no capturada", {
                 description: `${msg}. El servicio se creará sin ubicación inicial.`,

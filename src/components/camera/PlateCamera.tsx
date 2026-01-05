@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, X, Upload } from "lucide-react"
 import { toast } from "sonner"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('PlateCamera')
 
 export interface PlateCameraProps {
     /** Called when a photo is captured with the File and preview URL */
@@ -40,7 +43,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
     const startCamera = useCallback(async () => {
         if (streamRef.current) {
-            console.log('Camera already active, skipping startCamera')
+            logger.info('Camera already active, skipping startCamera')
             return
         }
 

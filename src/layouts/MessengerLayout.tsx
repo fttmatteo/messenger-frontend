@@ -12,6 +12,9 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('MessengerLayout')
 
 
 export default function MessengerLayout() {
@@ -80,7 +83,7 @@ export default function MessengerLayout() {
                         })
                         trackingService.setLastLocation(latitude, longitude)
                     },
-                    (error) => console.log("Initial quick fix failed:", error.message),
+                    (error) => logger.info("Initial quick fix failed:", error.message),
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 )
 
