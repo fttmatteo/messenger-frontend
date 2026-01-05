@@ -1,5 +1,18 @@
 import '@testing-library/jest-dom';
-import { afterEach, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+import { server } from './mocks/server';
+
+// Start MSW server before all tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+
+// Clean up after each test
+afterEach(() => {
+    vi.clearAllMocks();
+    server.resetHandlers();
+});
+
+// Close MSW server after all tests
+afterAll(() => server.close());
 
 // Mock localStorage and sessionStorage for jsdom
 const localStorageMock = (() => {
@@ -39,6 +52,15 @@ afterEach(() => {
     disconnect() { }
     takeRecords() { return []; }
 };
+
+// Mock matchMedia (for responsive hooks)
+// Mock pointer events for Radix UI select
+if (typeof window !== 'undefined' && window.Element && !window.Element.prototype.hasPointerCapture) {
+    window.Element.prototype.hasPointerCapture = vi.fn();
+    window.Element.prototype.releasePointerCapture = vi.fn();
+    window.Element.prototype.setPointerCapture = vi.fn();
+    window.Element.prototype.scrollIntoView = vi.fn();
+}
 
 // Mock matchMedia (for responsive hooks)
 Object.defineProperty(window, 'matchMedia', {
