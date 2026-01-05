@@ -41,7 +41,7 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                     <input
                         ref={inputRef}
                         type="color"
-                        value={color}
+                        value={color.length > 7 ? color.slice(0, 7) : color}
                         onChange={(e) => onColorChange(status, e.target.value)}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         aria-label={`Seleccionar color para ${getStatusLabel(status)}`}

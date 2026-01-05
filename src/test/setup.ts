@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom';
-import { afterEach, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+import { server } from './mocks/server';
+
+// Start MSW server before all tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 
 // Mock localStorage and sessionStorage for jsdom
 const localStorageMock = (() => {
@@ -20,7 +24,14 @@ Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
 // Clean up after each test
 afterEach(() => {
     vi.clearAllMocks();
+    server.resetHandlers();
+    localStorage.clear();
+    sessionStorage.clear();
 });
+
+// Close MSW server after all tests
+afterAll(() => server.close());
+
 
 // Mock ResizeObserver (required by Radix UI components)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,6 +50,15 @@ afterEach(() => {
     disconnect() { }
     takeRecords() { return []; }
 };
+
+// Mock matchMedia (for responsive hooks)
+// Mock pointer events for Radix UI select
+if (typeof window !== 'undefined' && window.Element && !window.Element.prototype.hasPointerCapture) {
+    window.Element.prototype.hasPointerCapture = vi.fn();
+    window.Element.prototype.releasePointerCapture = vi.fn();
+    window.Element.prototype.setPointerCapture = vi.fn();
+    window.Element.prototype.scrollIntoView = vi.fn();
+}
 
 // Mock matchMedia (for responsive hooks)
 Object.defineProperty(window, 'matchMedia', {

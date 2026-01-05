@@ -5,17 +5,19 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Search, CalendarIcon, Filter, Check } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusLabel } from "@/lib/status-colors"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { cn } from "@/lib/utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 export default function ServiciosPage() {
     const { loading, completedServices, error } = useMessengerServices()
     const { colors } = useStatusColors()
+    const { isIOS } = useDeviceType()
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [calendarOpen, setCalendarOpen] = useState(false)
@@ -23,14 +25,14 @@ export default function ServiciosPage() {
     const [statusFilter, setStatusFilter] = useState<string>("all")
 
     // Get the last status change date for a service
-    const getLastChangeDate = (service: typeof completedServices[0]) => {
+    const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
         if (service.history && service.history.length > 0) {
             // Get the most recent change date from history
             const lastChange = service.history[service.history.length - 1]
             return new Date(lastChange.changeDate)
         }
         return new Date(service.createdAt)
-    }
+    }, [])
 
     const filteredServices = useMemo(() => {
         // We use global search if there's a search term OR a status filter active.
@@ -59,7 +61,7 @@ export default function ServiciosPage() {
         }
 
         return services
-    }, [completedServices, selectedDate, searchTerm, statusFilter])
+    }, [completedServices, selectedDate, searchTerm, statusFilter, getLastChangeDate])
 
     const isToday = isSameDay(selectedDate, new Date())
 
@@ -70,6 +72,9 @@ export default function ServiciosPage() {
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
+                        id="search-services"
+                        name="search"
+                        autoComplete="off"
                         placeholder="Buscar por placa..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -185,7 +190,7 @@ export default function ServiciosPage() {
             </div>
 
             {/* Services List */}
-            <div className="flex-1 overflow-auto">
+            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 <ServiceList
                     services={filteredServices}
                     loading={loading}

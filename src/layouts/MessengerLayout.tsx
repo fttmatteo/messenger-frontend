@@ -12,6 +12,9 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('MessengerLayout')
 
 
 export default function MessengerLayout() {
@@ -26,10 +29,10 @@ export default function MessengerLayout() {
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
-    // Determine if we are in a sub-page (detail pages that need back button)
     const isSubPage = location.pathname.includes('/servicio/') ||
         location.pathname.includes('/historial') ||
-        location.pathname.includes('/actualizar')
+        location.pathname.includes('/actualizar') ||
+        location.pathname.includes('/configuracion/')
 
     // Hide bottom nav on create and update pages for cleaner UX
     const hideBottomNav = location.pathname.includes('/crear') || location.pathname.includes('/actualizar')
@@ -39,6 +42,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
         if (location.pathname.includes('historial-recorrido')) return 'Historial ruta'
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
+        if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('actualizar')) return 'Actualizar estado'
         if (location.pathname.includes('servicio/')) return 'Detalle servicio'
@@ -79,7 +83,7 @@ export default function MessengerLayout() {
                         })
                         trackingService.setLastLocation(latitude, longitude)
                     },
-                    (error) => console.log("Initial quick fix failed:", error.message),
+                    (error) => logger.info("Initial quick fix failed:", error.message),
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 )
 
@@ -105,14 +109,18 @@ export default function MessengerLayout() {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
                             logout()
                             navigate("/login")
-                        } else {
-                            console.log("Señal GPS débil o agotada. Reintentando...")
+                        } else if (error.code === 2) {
+                            // Position unavailable - show warning but don't logout
+                            toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000 })
+                        } else if (error.code === 3) {
+                            // Timeout - GPS taking too long
+                            toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000 })
                         }
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 30000,
-                        maximumAge: 0
+                        timeout: 15000, // Reducido de 30s a 15s para feedback más rápido
+                        maximumAge: 5000 // Permitir cache de 5s para mejor rendimiento
                     }
                 )
             } else {
@@ -146,6 +154,20 @@ export default function MessengerLayout() {
             }
         }
     }, [isOnline, user?.id, logout, navigate, updateUser])
+
+    // Heartbeat timer: envía señal de vida cada 30 segundos independiente del GPS
+    useEffect(() => {
+        if (!isOnline || !user?.id) return
+
+        const userId = user.id // TypeScript sabe que no es undefined aquí
+
+        // Enviar heartbeat cada 30 segundos
+        const heartbeatInterval = setInterval(() => {
+            trackingService.sendHeartbeat(userId)
+        }, 30000) // 30 segundos
+
+        return () => clearInterval(heartbeatInterval)
+    }, [isOnline, user?.id])
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -182,7 +204,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-background">
+        <div className="flex flex-col h-[100dvh] bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -278,7 +300,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className={`flex-1 overflow-auto ${hideBottomNav ? '' : 'pb-32'}`}
+                className="flex-1 overflow-hidden relative"
                 role="main"
             >
                 <Outlet />

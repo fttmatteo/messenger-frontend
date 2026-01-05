@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+
 import { serviceDeliveryService } from "@/services/service.service"
-import { trackingService } from "@/services/tracking.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,53 +12,16 @@ import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import { Loader2, AlertCircle, CheckCircle, CornerDownLeft, Building2, Camera, PenLine, MessageSquare, Clock } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { useDeviceType } from "@/hooks/use-device-type"
+import { cn } from "@/lib/utils"
 
-type MessengerStatus = 'PENDING' | 'DELIVERED' | 'RETURNED'
-
-interface StatusOption {
-    value: MessengerStatus
-    label: string
-    description: string
-    icon: React.ReactNode
-    requiresSignature: boolean
-    requiresPhotos: boolean
-    requiresObservation: boolean
-}
-
-const statusOptionsBase: StatusOption[] = [
-    {
-        value: 'PENDING',
-        label: 'Pendiente',
-        description: 'El vehículo está pendiente de entrega',
-        icon: <Clock className="h-7 w-7" />,
-        requiresSignature: true,
-        requiresPhotos: true,
-        requiresObservation: true
-    },
-    {
-        value: 'DELIVERED',
-        label: 'Entregado',
-        description: 'El vehículo fue entregado exitosamente',
-        icon: <CheckCircle className="h-7 w-7" />,
-        requiresSignature: true,
-        requiresPhotos: false,
-        requiresObservation: false
-    },
-    {
-        value: 'RETURNED',
-        label: 'Devuelto',
-        description: 'El vehículo no pudo ser entregado',
-        icon: <CornerDownLeft className="h-7 w-7" />,
-        requiresSignature: false,
-        requiresPhotos: true,
-        requiresObservation: true
-    }
-]
+import { useSmartLocation } from "@/hooks/use-smart-location"
+import { STATUS_OPTIONS } from "@/config/status-options"
 
 // Helper to convert hex to rgba for backgrounds
 function hexToRgba(hex: string, alpha: number): string {
@@ -67,28 +30,39 @@ function hexToRgba(hex: string, alpha: number): string {
     return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`
 }
 
+
+
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { colors } = useStatusColors()
+    const { isIOS } = useDeviceType()
+    const { getCurrentLocation } = useSmartLocation()
+
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [selectedStatus, setSelectedStatus] = useState<MessengerStatus | null>(null)
+    const [selectedStatus, setSelectedStatus] = useState<ServiceStatus | null>(null)
     const [observation, setObservation] = useState('')
     const [photos, setPhotos] = useState<File[]>([])
     const [hasSignature, setHasSignature] = useState(false)
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
-    // Create status options with dynamic colors from admin settings
+    // statusOptions derived from shared config
     const statusOptions = useMemo(() => {
-        return statusOptionsBase
-            .filter(option => !service || option.value !== service.currentStatus)
+        return STATUS_OPTIONS
+            .filter(option => !service || option.id !== service.currentStatus)
             .map(option => ({
-                ...option,
-                color: colors[option.value] || '#6b7280' // fallback gray
+                value: option.id, // Map 'id' to 'value' to match existing component usage if possible, or update component
+                label: option.label,
+                description: option.description,
+                icon: option.icon, // This is now a Component, not an Element. We need to render it.
+                requiresSignature: option.requiresSignature,
+                requiresPhotos: option.requiresPhotos,
+                requiresObservation: option.requiresObservation,
+                color: colors[option.id] || '#6b7280'
             }))
     }, [colors, service])
 
@@ -148,40 +122,16 @@ export default function UpdateStatus() {
                 if (sig) signatureFile = sig
             }
 
-            // Capture Location
+            // Capture Location using hook
             let latitude: number | undefined
             let longitude: number | undefined
 
-            // OPTIMIZATION: Check last known location from tracking service first
-            const lastKnown = trackingService.getLastKnownLocation()
-            const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000) // 5 minutes validity
-
-            if (isRecent && lastKnown) {
-                console.log("Using cached location for status update")
-                latitude = lastKnown.latitude
-                longitude = lastKnown.longitude
-            } else {
-                try {
-                    const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-                        if (!navigator.geolocation) {
-                            reject(new Error("Geolocalización no soportada"))
-                            return
-                        }
-                        const timeoutId = setTimeout(() => reject(new Error("Timeout")), 5000)
-                        navigator.geolocation.getCurrentPosition(
-                            (p) => { clearTimeout(timeoutId); resolve(p) },
-                            (e) => { clearTimeout(timeoutId); reject(e) },
-                            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-                        )
-                    })
-                    latitude = pos.coords.latitude
-                    longitude = pos.coords.longitude
-                } catch (e) {
-                    console.warn("Could not get location for status update", e)
-                    toast.warning("No se pudo obtener la ubicación (GPS)", {
-                        description: "El cambio se registrará sin geolocalización."
-                    })
-                }
+            try {
+                const loc = await getCurrentLocation()
+                latitude = loc.latitude
+                longitude = loc.longitude
+            } catch {
+                // Already toasted by hook
             }
 
             await serviceDeliveryService.updateStatus(Number(id), {
@@ -326,7 +276,7 @@ export default function UpdateStatus() {
                                             className={!isSelected ? 'text-muted-foreground' : ''}
                                             style={isSelected ? { color: option.color } : undefined}
                                         >
-                                            {option.icon}
+                                            <option.icon className="h-7 w-7" />
                                         </span>
                                     </div>
                                     <div className="flex-1">
@@ -362,7 +312,7 @@ export default function UpdateStatus() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
-                            className="px-4 pb-4 space-y-4"
+                            className="px-4 pb-40 space-y-4"
                         >
                             {/* Signature Section */}
                             {selectedOption.requiresSignature && (
@@ -416,6 +366,8 @@ export default function UpdateStatus() {
                                     )}
                                 </div>
                                 <Textarea
+                                    name="observation"
+                                    id="observation"
                                     placeholder={
                                         selectedOption.value === 'RETURNED'
                                             ? 'Explique el motivo de la devolución...'
@@ -424,9 +376,13 @@ export default function UpdateStatus() {
                                                 : 'Notas adicionales sobre la entrega...'
                                     }
                                     value={observation}
-                                    onChange={(e) => setObservation(e.target.value)}
+                                    onChange={(e) => {
+                                        setObservation(e.target.value)
+                                        e.target.style.height = 'auto'
+                                        e.target.style.height = `${e.target.scrollHeight}px`
+                                    }}
                                     rows={3}
-                                    className="resize-none bg-muted/30 border-border/50"
+                                    className="resize-none bg-muted/30 border-border/50 min-h-[80px] overflow-hidden"
                                 />
                             </Card>
                         </motion.div>
@@ -435,7 +391,7 @@ export default function UpdateStatus() {
             </div>
 
             {/* Fixed Bottom Action */}
-            <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
+            <div className={cn("p-4 border-t bg-background/95 backdrop-blur-sm", isIOS ? "pb-8" : "pb-4")}>
                 <Button
                     className="w-full h-12 text-base font-semibold rounded-xl transition-all"
                     style={{
@@ -454,7 +410,7 @@ export default function UpdateStatus() {
                         <>
                             {selectedOption && (
                                 <span className="mr-2">
-                                    {selectedOption.icon}
+                                    <selectedOption.icon className="h-5 w-5" />
                                 </span>
                             )}
                             {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un estado'}
@@ -491,4 +447,3 @@ export default function UpdateStatus() {
         </div>
     )
 }
-

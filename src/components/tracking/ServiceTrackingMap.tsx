@@ -39,7 +39,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
             background: color,
             borderColor: 'white',
             glyphColor: 'white',
-            glyph: label,
+            ...(label && { glyphText: label }),
         })
 
         const marker = new google.maps.marker.AdvancedMarkerElement({

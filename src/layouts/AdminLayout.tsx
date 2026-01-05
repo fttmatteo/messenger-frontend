@@ -143,12 +143,14 @@ function AdminLayoutContent() {
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
+                                            id="mobile-search"
                                             placeholder="Buscar..."
                                             className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
                                             value={searchQuery}
                                             onChange={(e) => handleSearchChange(e.target.value)}
                                             autoFocus
                                             onBlur={() => !searchQuery && setShowSearchInput(false)}
+                                            autoComplete="off"
                                         />
                                     </div>
                                 ) : (
@@ -181,10 +183,12 @@ function AdminLayoutContent() {
                                 <div className="relative w-full max-w-md">
                                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
+                                        id="desktop-search"
                                         placeholder="Buscar..."
                                         className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
                                         value={searchQuery}
                                         onChange={(e) => handleSearchChange(e.target.value)}
+                                        autoComplete="off"
                                     />
                                 </div>
 

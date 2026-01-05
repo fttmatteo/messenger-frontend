@@ -3,40 +3,23 @@ import { useParams, useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
 import { Polyline } from "@react-google-maps/api"
 import { useTheme } from "next-themes"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessengerDetailsSkeleton } from "@/components/tracking/TrackingSkeletons"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { AddressDisplay, MessengerMarker } from "@/components/tracking"
-import {
-    ArrowLeft,
-    MapPin,
-    Navigation,
-    Clock,
-    CalendarIcon,
-    Route,
-    User,
-    Phone,
-    Loader2
-} from "lucide-react"
+import { MessengerMarker } from "@/components/tracking"
+import { ArrowLeft, MapPin, User } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { format, formatDistanceToNow } from "date-fns"
-import { es } from "date-fns/locale"
+import { format } from "date-fns"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
+import type { TrackingHistoryItem } from "@/types/tracking.types"
 
-interface TrackingHistoryItem {
-    id?: number
-    latitude: number
-    longitude: number
-    timestamp: string
-    speed?: number
-}
+// New components
+import { MessengerInfoCard } from "@/components/tracking/MessengerInfoCard"
+import { TrackingHistoryList } from "@/components/tracking/TrackingHistoryList"
 
 export default function MessengerDetails() {
     const { id } = useParams<{ id: string }>()
@@ -136,14 +119,6 @@ export default function MessengerDetails() {
         fetchHistory()
     }, [fetchHistory])
 
-    // Helper for safe date formatting
-    const safeFormat = (dateInput: string | Date | undefined, formatStr: string) => {
-        if (!dateInput) return ""
-        const date = new Date(dateInput)
-        if (!isFinite(date.getTime())) return "Fecha inválida"
-        return format(date, formatStr, { locale: es })
-    }
-
     // History path for polyline
     const historyPath = historyData
         .filter(h => h.latitude && h.longitude && h.latitude !== 0)
@@ -211,182 +186,24 @@ export default function MessengerDetails() {
                 {/* Left Column - Info + History */}
                 <div className="space-y-6">
                     {/* Current Status Card */}
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                                <User className="h-4 w-4 text-primary" />
-                                Información General
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {employee?.phone && (
-                                <div className="flex items-center gap-3 text-sm">
-                                    <Phone className="h-4 w-4 text-muted-foreground" />
-                                    <a href={`tel:${employee.phone}`} className="hover:underline font-medium text-primary">
-                                        {employee.phone}
-                                    </a>
-                                </div>
-                            )}
-                            {speed !== null && speed > 0 && (
-                                <div className="flex items-center gap-3 text-sm">
-                                    <Navigation className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">{(speed * 3.6).toFixed(1)} km/h</span>
-                                </div>
-                            )}
-                            {lastUpdate && (
-                                <div className="flex items-center gap-3 text-sm">
-                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">
-                                        Última señal: {formatDistanceToNow(lastUpdate, { addSuffix: true, locale: es })}
-                                    </span>
-                                </div>
-                            )}
-                            {currentLocation && (
-                                <div className="flex items-center gap-3 text-sm">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-mono text-[10px] bg-muted px-2 py-1 rounded select-all">
-                                        {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
-                                    </span>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                    <MessengerInfoCard
+                        employee={employee}
+                        speed={speed}
+                        lastUpdate={lastUpdate}
+                        currentLocation={currentLocation}
+                    />
 
                     {/* History Card */}
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                                <Route className="h-4 w-4 text-primary" />
-                                Historial del Día
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Date Picker */}
-                            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start text-left font-normal h-10 border-dashed">
-                                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                                        {format(historyDate, "PPP", { locale: es })}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={historyDate}
-                                        onSelect={(date) => {
-                                            if (date) {
-                                                setHistoryDate(date)
-                                                setCalendarOpen(false)
-                                            }
-                                        }}
-                                        locale={es}
-                                        disabled={(date) => date > new Date()}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-
-                            {/* Toggle Route */}
-                            {historyPath.length > 0 && (
-                                <Button
-                                    variant={showHistoryRoute ? "default" : "outline"}
-                                    size="sm"
-                                    className="w-full h-9"
-                                    onClick={() => setShowHistoryRoute(!showHistoryRoute)}
-                                >
-                                    <Route className="h-4 w-4 mr-2" />
-                                    {showHistoryRoute ? "Ocultar ruta" : "Ver ruta en mapa"}
-                                </Button>
-                            )}
-
-                            {/* History List */}
-                            {loadingHistory ? (
-                                <div className="flex items-center justify-center py-10">
-                                    <Loader2 className="h-7 w-7 animate-spin text-primary/40" />
-                                </div>
-                            ) : historyData.length === 0 ? (
-                                <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/30">
-                                    <p className="text-sm text-muted-foreground font-medium">
-                                        Sin movimientos
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-1">
-                                        {format(historyDate, "dd MMM yyyy", { locale: es })}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    <ScrollArea className="h-72 rounded-lg border bg-muted/10">
-                                        <div className="p-4 space-y-3">
-                                            {(() => {
-                                                const grouped: Array<{
-                                                    startTime: string;
-                                                    endTime: string;
-                                                    lat: number;
-                                                    lng: number;
-                                                    count: number;
-                                                    maxSpeed: number;
-                                                }> = [];
-
-                                                // Sort by time ascending for grouping
-                                                const sorted = [...historyData].sort((a, b) =>
-                                                    new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-                                                );
-
-                                                sorted.forEach((item) => {
-                                                    const key = `${item.latitude.toFixed(4)},${item.longitude.toFixed(4)}`;
-                                                    const last = grouped[grouped.length - 1];
-                                                    const lastKey = last ? `${last.lat.toFixed(4)},${last.lng.toFixed(4)}` : null;
-
-                                                    if (last && key === lastKey) {
-                                                        last.endTime = item.timestamp;
-                                                        last.count++;
-                                                        last.maxSpeed = Math.max(last.maxSpeed, (item.speed || 0) * 3.6);
-                                                    } else {
-                                                        grouped.push({
-                                                            startTime: item.timestamp,
-                                                            endTime: item.timestamp,
-                                                            lat: item.latitude,
-                                                            lng: item.longitude,
-                                                            count: 1,
-                                                            maxSpeed: (item.speed || 0) * 3.6
-                                                        });
-                                                    }
-                                                });
-
-                                                // Return reversed for UI (newest first)
-                                                return grouped.reverse().map((group, i) => (
-                                                    <div key={i} className="p-3 rounded-lg border bg-card text-xs shadow-sm hover:border-primary/30 transition-colors">
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <div className="flex items-center gap-1.5 font-bold text-primary">
-                                                                <span>{safeFormat(group.startTime, "HH:mm")}</span>
-                                                                {group.startTime !== group.endTime && (
-                                                                    <>
-                                                                        <span className="text-muted-foreground font-normal">→</span>
-                                                                        <span>{safeFormat(group.endTime, "HH:mm")}</span>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                            {group.maxSpeed > 2 && (
-                                                                <Badge variant="secondary" className="text-[10px] px-1.5 h-4.5 font-mono">
-                                                                    {group.maxSpeed.toFixed(0)} km/h
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-muted-foreground">
-                                                            <MapPin className="h-3 w-3 opacity-70 shrink-0" />
-                                                            <AddressDisplay lat={group.lat} lng={group.lng} />
-                                                        </div>
-                                                    </div>
-                                                ));
-                                            })()}
-                                        </div>
-                                    </ScrollArea>
-                                    <p className="text-[10px] text-center text-muted-foreground uppercase tracking-wider">
-                                        {historyData.length} puntos registrados
-                                    </p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                    <TrackingHistoryList
+                        historyData={historyData}
+                        loading={loadingHistory}
+                        date={historyDate}
+                        onDateSelect={setHistoryDate}
+                        showRoute={showHistoryRoute}
+                        onToggleRoute={() => setShowHistoryRoute(!showHistoryRoute)}
+                        calendarOpen={calendarOpen}
+                        setCalendarOpen={setCalendarOpen}
+                    />
                 </div>
 
                 {/* Right Column - Map */}

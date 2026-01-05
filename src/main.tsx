@@ -1,23 +1,26 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { registerSW } from "virtual:pwa-register"
+import { createLogger } from "@/utils/logger"
 
 import "./index.css"
 import App from "./App.tsx"
+
+const logger = createLogger('PWA')
 
 // Register service worker for PWA with enhanced callbacks
 const updateSW = registerSW({
   immediate: true,
   onOfflineReady() {
-    console.log('PWA: App ready to work offline')
+    logger.info('App ready to work offline')
     window.dispatchEvent(new CustomEvent('sw-offline-ready'))
   },
   onNeedRefresh() {
-    console.log('PWA: New version available')
+    logger.info('New version available')
     window.dispatchEvent(new CustomEvent('sw-need-refresh'))
   },
   onRegisteredSW(swUrl, registration) {
-    console.log('PWA: Service Worker registered:', swUrl)
+    logger.info('Service Worker registered:', swUrl)
     // Check for updates periodically (every hour)
     if (registration) {
       setInterval(() => {
@@ -26,7 +29,7 @@ const updateSW = registerSW({
     }
   },
   onRegisterError(error) {
-    console.error('PWA: Service Worker registration error:', error)
+    logger.error('Service Worker registration error:', error)
   },
 })
 

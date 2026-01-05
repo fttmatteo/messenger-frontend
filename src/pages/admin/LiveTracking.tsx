@@ -16,6 +16,12 @@ import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
 
+/** Helper para validar coordenadas finitas antes de usar en el mapa */
+const isValidCoords = (lat?: number, lng?: number): boolean => {
+    return typeof lat === 'number' && typeof lng === 'number' &&
+        isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0
+}
+
 export default function LiveTracking() {
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
@@ -96,8 +102,8 @@ export default function LiveTracking() {
             }
 
             // Center map on first active messenger if available
-            const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && m.latitude !== 0)
-            if (!manual && firstActive) {
+            const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
+            if (!manual && firstActive && isValidCoords(firstActive.latitude, firstActive.longitude)) {
                 setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
             }
         } catch (error) {
@@ -133,7 +139,7 @@ export default function LiveTracking() {
         })
 
         // Follow mode: update map center when following a messenger
-        if (followingMessengerId === update.messengerId && update.latitude && update.longitude) {
+        if (followingMessengerId === update.messengerId && isValidCoords(update.latitude, update.longitude)) {
             setMapCenter({ lat: update.latitude, lng: update.longitude })
         }
     }, [followingMessengerId])
@@ -156,7 +162,7 @@ export default function LiveTracking() {
     const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
         setShowMessengerDetails(true)
-        if (messenger.latitude && messenger.longitude) {
+        if (isValidCoords(messenger.latitude, messenger.longitude)) {
             setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
         }
     }, [])
@@ -173,7 +179,7 @@ export default function LiveTracking() {
         } else {
             setFollowingMessengerId(messengerId)
             const messenger = messengers.find(m => m.messengerId === messengerId)
-            if (messenger?.latitude && messenger?.longitude) {
+            if (messenger && isValidCoords(messenger.latitude, messenger.longitude)) {
                 setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
             }
         }

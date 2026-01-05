@@ -1,4 +1,7 @@
 import { get, set, del } from 'idb-keyval'
+import { createLogger } from '@/utils/logger';
+
+const logger = createLogger('OfflineSyncService');
 
 const PENDING_ACTIONS_KEY = 'pending_offline_actions'
 const MAX_RETRY_COUNT = 3
@@ -57,7 +60,7 @@ class OfflineSyncService {
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
 
-        console.log(`Queued offline action: ${type}`, action.id)
+        logger.info(`Queued offline action: ${type}`, action.id)
         return action.id
     }
 
@@ -108,12 +111,12 @@ class OfflineSyncService {
      */
     async syncAll(): Promise<number> {
         if (this.isSyncing) {
-            console.log('Sync already in progress')
+            logger.info('Sync already in progress')
             return 0
         }
 
         if (!navigator.onLine) {
-            console.log('Still offline, cannot sync')
+            logger.info('Still offline, cannot sync')
             return 0
         }
 
@@ -127,7 +130,7 @@ class OfflineSyncService {
                 return 0
             }
 
-            console.log(`Syncing ${actions.length} pending actions...`)
+            logger.info(`Syncing ${actions.length} pending actions...`)
 
             for (const action of actions) {
                 try {
@@ -139,7 +142,7 @@ class OfflineSyncService {
                         if (success) {
                             await this.removeAction(action.id)
                             syncedCount++
-                            console.log(`Synced action: ${action.type}`, action.id)
+                            logger.info(`Synced action: ${action.type}`, action.id)
                         } else {
                             await this.handleFailedAction(action)
                         }
@@ -154,12 +157,12 @@ class OfflineSyncService {
                                 await this.handleFailedAction(action)
                             }
                         } else {
-                            console.warn(`No handler for action type: ${action.type}`)
+                            logger.warn(`No handler for action type: ${action.type}`)
                             await this.handleFailedAction(action)
                         }
                     }
                 } catch (error) {
-                    console.error(`Error syncing action ${action.id}:`, error)
+                    logger.error(`Error syncing action ${action.id}:`, error)
                     await this.handleFailedAction(action)
                 }
             }
@@ -187,7 +190,7 @@ class OfflineSyncService {
 
             return response.ok
         } catch (error) {
-            console.error('Generic sync failed:', error)
+            logger.error('Generic sync failed:', error)
             return false
         }
     }
@@ -197,7 +200,7 @@ class OfflineSyncService {
      */
     private async handleFailedAction(action: OfflineAction): Promise<void> {
         if (action.retryCount >= MAX_RETRY_COUNT) {
-            console.warn(`Action ${action.id} exceeded max retries, removing`)
+            logger.warn(`Action ${action.id} exceeded max retries, removing`)
             await this.removeAction(action.id)
         } else {
             await this.incrementRetry(action.id)

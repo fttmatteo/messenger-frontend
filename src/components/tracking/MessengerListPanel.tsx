@@ -1,13 +1,23 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { Users, Navigation, Clock, ChevronRight, ChevronLeft } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Users, Navigation, Clock, ChevronRight, ChevronLeft, Wifi, MapPin } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { isMessengerOnline } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
+
+/** Tiempo máximo para considerar "reciente" (2 minutos) */
+const RECENT_THRESHOLD_MS = 2 * 60 * 1000
+
+/** Helper para verificar si un timestamp es reciente */
+const isRecent = (timestamp: string | undefined, now: number): boolean => {
+    if (!timestamp) return false
+    const date = new Date(timestamp).getTime()
+    return !isNaN(date) && (now - date) < RECENT_THRESHOLD_MS
+}
 
 export interface MessengerListPanelProps {
     /** List of messengers to display */
@@ -82,7 +92,11 @@ export function MessengerListPanel({
                         <div className="divide-y">
                             {messengers.map((messenger) => {
                                 const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
-                                const isRecent = lastUpdateDate && (now - lastUpdateDate.getTime() < 60000)
+                                const hasRecentUpdate = lastUpdateDate && (now - lastUpdateDate.getTime() < 60000)
+
+                                // Indicadores separados: Conectado (heartbeat) vs GPS (lastUpdate)
+                                const isConnected = isRecent(messenger.lastHeartbeat, now) || isRecent(messenger.lastUpdate, now)
+                                const hasGps = isRecent(messenger.lastUpdate, now)
 
                                 return (
                                     <button
@@ -98,10 +112,29 @@ export function MessengerListPanel({
                                             <span className="font-medium text-sm truncate">
                                                 {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
                                             </span>
-                                            <div className={cn(
-                                                "w-2 h-2 rounded-full shrink-0",
-                                                isMessengerOnline(messenger.status, messenger.lastUpdate) ? "bg-green-500" : "bg-gray-400"
-                                            )} />
+                                            {/* Indicadores de estado */}
+                                            <div className="flex items-center gap-1">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "h-5 px-1.5 text-[10px] gap-0.5",
+                                                        isConnected ? "bg-green-500/10 text-green-600 border-green-500/30" : "bg-gray-500/10 text-gray-500 border-gray-500/30"
+                                                    )}
+                                                    title={isConnected ? "Conectado" : "Desconectado"}
+                                                >
+                                                    <Wifi className="h-2.5 w-2.5" />
+                                                </Badge>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "h-5 px-1.5 text-[10px] gap-0.5",
+                                                        hasGps ? "bg-blue-500/10 text-blue-600 border-blue-500/30" : "bg-gray-500/10 text-gray-500 border-gray-500/30"
+                                                    )}
+                                                    title={hasGps ? "GPS Activo" : "Sin GPS"}
+                                                >
+                                                    <MapPin className="h-2.5 w-2.5" />
+                                                </Badge>
+                                            </div>
                                         </div>
                                         {messenger.speed !== undefined && messenger.speed > 0 && (
                                             <p className="text-xs text-muted-foreground mt-1">
@@ -112,7 +145,7 @@ export function MessengerListPanel({
                                         {lastUpdateDate && (
                                             <p className="text-xs text-muted-foreground">
                                                 <Clock className="h-3 w-3 inline mr-1" />
-                                                {isRecent
+                                                {hasRecentUpdate
                                                     ? "Actualizado ahora"
                                                     : formatDistanceToNow(lastUpdateDate, { addSuffix: true, locale: es })}
                                             </p>
@@ -127,3 +160,4 @@ export function MessengerListPanel({
         </div>
     )
 }
+
