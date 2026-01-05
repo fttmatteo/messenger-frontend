@@ -5,15 +5,15 @@
 # 📱 Messenger Frontend
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-7.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-orange?style=for-the-badge&logo=playwright&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-Passing-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)
 
-**Plataforma integral para la gestión de logística y mensajería en tiempo real.**
-Interfaz moderna, responsiva y accesible para administradores y mensajeros.
+**Plataforma de alta ingeniería para la gestión logística y mensajería urbana.**
+Interfaz robusta, resiliente a fallos de red y protegida por una estrategia de pruebas integral.
 
-[English version](README.md) • [Características](#-características-principales) • [Tecnología](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-y-mantenimiento)
+[English version](README.md) • [Características](#-características-principales) • [Estrategia de Calidad](#-estrategia-de-calidad-y-pruebas) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-y-mantenimiento)
 
 </div>
 
@@ -21,86 +21,106 @@ Interfaz moderna, responsiva y accesible para administradores y mensajeros.
 
 ## 📋 Descripción General
 
-**Messenger Frontend** es la interfaz de usuario del sistema PLAK, diseñada para orquestar operaciones de mensajería urbana. La aplicación ofrece dos experiencias distintas según el rol del usuario:
+**Messenger Frontend** es la interfaz de usuario crítica del sistema PLAK. Más que un simple dashboard, es un sistema distribuido que orquesta operaciones en tiempo real, garantizando la continuidad del negocio incluso en condiciones de conectividad adversas.
 
-1.  **Dashboard Administrativo**: Para el monitoreo global, gestión de empleados, concesionarios y visualización de servicios.
-2.  **App de Mensajero (Mobile PWA)**: Optimizada para uso en campo, permite gestionar asignaciones, actualizar estados, capturar evidencias y creación de servicios.
+El sistema se divide en dos experiencias optimizadas:
 
-El sistema destaca por su capacidad de **tracking en tiempo real** utilizando WebSockets y la API de Google Maps con Advanced Markers.
-
-### 📸 Capturas de Pantalla
-
-| Panel Administrativo | Monitoreo en Vivo |
-|:---:|:---:|
-| ![Placeholder Panel](https://via.placeholder.com/800x450.png?text=Captura+Panel+Admin) | ![Placeholder Mapa](https://via.placeholder.com/800x450.png?text=Captura+Mapa+Tracking) |
-| *Vista general de métricas y estado del sistema* | *Posición de la flota en tiempo real sobre Google Maps* |
-
-| Interfaz Móvil | Detalles del Servicio |
-|:---:|:---:|
-| ![Placeholder Móvil](https://via.placeholder.com/400x800.png?text=Interfaz+App+Movil) | ![Placeholder Detalles](https://via.placeholder.com/400x800.png?text=Vista+Detalles+Servicio) |
-| *Vista de campo para mensajeros (PWA)* | *Historial detallado y línea de tiempo de estados* |
+1.  **Centro de Comando (Admin Dashboard)**: Torre de control para monitoreo de flota en tiempo real, gestión de concesionarios y auditoría de servicios con evidencia digital.
+2.  **Field App (Messenger PWA)**: Aplicación progresiva instalable diseñada para operar en campo. Capaz de encolar transacciones offline y sincronizarlas automáticamente.
 
 ---
 
 ## ✨ Características Principales
 
+### 🛡️ Robustez y Resiliencia (Offline-First)
+-   **Sincronización Inteligente**: Implementación de patrón *Store-and-Forward*. Las acciones realizadas sin internet se persisten en `IndexedDB` y se reintentan automáticamente.
+-   **Service Workers**: Caché estratégica de assets y API responses para carga instantánea bajo cualquier condición de red (VitePWA).
+-   **Optimización de Bundle**: Análisis continuo del tamaño del bundle para asegurar performance en dispositivos de gama media/baja.
+
+### 🗺️ Ingeniería Geoespacial
+-   **Live Tracking (WebSocket)**: Comunicación bidireccional vía STOMP/SockJS para actualizaciones de posición con latencia sub-segundo.
+-   **Advanced Markers API**: Renderizado de alto rendimiento en Google Maps, soportando miles de entidades simultáneas sin degradación de FPS.
+-   **Geocodificación Resiliente**: Sistema de colas para resolución de direcciones que respeta los rate-limits de la API de Google.
+
 ### 📱 Experiencia de Usuario (UX)
--   **Diseño Mobile-First**: Interfaz adaptativa optimizada para dispositivos táctiles (App Mensajero).
--   **Modo Oscuro**: Soporte nativo para temas claro y oscuro con `next-themes`.
--   **PWA Completo**: Instalable en dispositivos móviles con notificaciones de actualización y soporte offline.
--   **Accesibilidad (A11y)**: Navegación por teclado, etiquetas ARIA y roles semánticos implementados.
+-   **Diseño Adaptativo**: Interfaz fluida desde monitores 4K hasta móviles de 5".
+-   **Modo Oscuro/Claro**: Soporte nativo y persistente.
+-   **Captura de Evidencia**: Procesamiento de imágenes en cliente y firmas digitales vectoriales.
 
-### 📶 Capacidades Offline (PWA)
--   **Sincronización en Segundo Plano**: Las acciones realizadas sin conexión se encolan y sincronizan automáticamente al recuperar internet.
--   **Caché de Datos Críticos**: Uso de `IndexedDB` (vía `idb-keyval`) para persistir datos esenciales como concesionarios y estados de servicio.
--   **Indicadores de Conectividad**: Notificaciones visuales en tiempo real sobre el estado de la red y sincronización pendiente.
+---
 
-### 🗺️ Geolocalización y Mapas
--   **Tracking en Vivo**: Visualización en tiempo real de la flota de mensajeros sobre Google Maps mediante WebSockets (STOMP).
--   **Marcadores Avanzados**: Uso de `AdvancedMarkerElement` con efectos visuales (pulso) para mensajeros activos.
--   **Geocodificación Inversa**: Sistema optimizado de caché y encolamiento para convertir coordenadas en direcciones legibles.
+## 🧪 Estrategia de Calidad y Pruebas
 
-### ⚙️ Funcionalidades Operativas
--   **Gestión de Ciclo de Vida**: Flujo completo de servicio (Asignado → En Progreso → Entregado/Devuelto).
--   **Papelera y Archivo**: Sistema de eliminación suave con visor de elementos eliminados y restauración.
--   **Captura de Evidencias**:
-    -   📸 **Cámara Nativa**: Captura directa de placas con procesamiento local de imágenes.
-    -   ✍️ **Firma Digital**: Soporte para firmas en pantalla táctil (`canvas`).
+Este proyecto se adhiere al estándar de **"The Testing Trophy"**, priorizando la confianza en el despliegue sobre la cobertura vanidosa.
+
+| Nivel | Herramientas | Enfoque |
+| :--- | :--- | :--- |
+| **E2E (Punta a Punta)** | `Playwright` | Monitoreo de flujos críticos del negocio (Login, Mapas, Creación de Concesionarios) en navegadores reales (Chromium). |
+| **Integración** | `Vitest` + `MSW` | Pruebas de páginas completas simulando la capa de red con **Mock Service Worker**. Garantiza que el frontend maneja respuestas de API reales (éxito, error, carga) sin depender del backend. |
+| **Unitarias** | `Vitest` | Lógica de negocio aislada, utilidades y hooks complejos. |
+| **Visuales** | `Playwright Snapshots` | Detección automática de regresiones en el diseño (pixel-perfect diffing). |
+| **Estáticos** | `ESLint`, `TypeScript` | Reglas estrictas para prevenir errores en tiempo de desarrollo. |
+
+### Ejecución de Pruebas
+```bash
+# Ejecutar suite unitaria y de integración
+npm run test:run
+
+# Ejecutar pruebas E2E (requiere servidor local)
+npx playwright test
+
+# Generar reporte de análisis de bundle
+npm run build # Genera stats.html
+```
+
+### 📸 Capturas de Pantalla
+
+<!-- TODO: Agregar capturas de pantalla reales del proyecto aquí -->
+
+| Panel Administrativo | Mapa en Vivo |
+|:---:|:---:|
+| *[Insertar Captura del Panel Administrativo]* | *[Insertar Captura del Mapa de Tracking]* |
+| *Vista general de métricas y estado del sistema* | *Posición de la flota en tiempo real sobre Google Maps* |
+
+| Interfaz Móvil | Detalles del Servicio |
+|:---:|:---:|
+| *[Insertar Captura de la App Móvil]* | *[Insertar Captura de Detalles del Servicio]* |
+| *Vista de campo para mensajeros (PWA)* | *Historial detallado y línea de tiempo de estados* |
+
+---
 
 ---
 
 ## 🛠 Stack Tecnológico
 
-El proyecto utiliza tecnologías de vanguardia para asegurar escalabilidad y mantenibilidad:
+La arquitectura está diseñada para ser escalable, mantenible y performante a largo plazo.
 
 | Categoría | Tecnologías | Propósito |
 | :--- | :--- | :--- |
-| **Core** | `React 19`, `TypeScript` | Base del framework y seguridad de tipos total. |
-| **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline-first, caching y service workers. |
-| **Estilos & UI** | `Tailwind CSS v4`, `Shadcn/UI`, `Framer Motion` | Diseño premium, componentes accesibles y animaciones. |
-| **Estado** | `Context API`, `Custom Hooks` | Gestión de estado reactiva y desacoplada. |
-| **Mapas** | `@react-google-maps/api` | Integración avanzada con Google Maps. |
-| **Real-time** | `@stomp/stompjs`, `SockJS` | Actualizaciones instantáneas de ubicación. |
-| **Testing** | `Vitest`, `React Testing Library` | Cobertura de tests unitarios y de integración. |
+| **Core** | `React 19`, `TypeScript` | Base sólida y tipado estricto. |
+| **State** | `React Query` (implícito), `Context API` | Gestión de estado asíncrono y global. |
+| **Forms** | `React Hook Form`, `Zod` | Validación de esquemas y formularios performantes. |
+| **UI Kit** | `Tailwind CSS v4`, `Shadcn/UI` | Sistema de diseño consistente y accesible. |
+| **PWA** | `vite-plugin-pwa`, `idb-keyval` | Capacidades offline y persistencia local. |
+| **Maps** | `@react-google-maps/api` | Integración profunda con Google Maps Platform. |
+| **Real-time** | `@stomp/stompjs` | Protocolo de mensajería para tracking en vivo. |
 
 ---
 
-## 🏗 Arquitectura y Mantenimiento
+## 🏗 Arquitectura del Proyecto
 
-El proyecto sigue un riguroso estándar de calidad tras una fase intensiva de refactorización:
-
--   **Modularización**: Componentes grandes como la cámara, el mapa y la gestión de servicios se han extraído en módulos especializados (`camera`, `tracking`, `admin`).
--   **Patrón de Contextos**: Separación de definiciones (`ContextDef.ts`) e implementaciones (`ContextProvider.tsx`) para evitar dependencia circular.
--   **Clean Code**: Hooks personalizados renombrados a `kebab-case`, imports estandarizados con el alias `@/` y barrel exports para tipos y componentes.
+El código sigue principios de **Clean Architecture** adaptados al frontend:
 
 ```
 src/
-├── components/          # 🧩 Componentes modulares (camera, tracking, admin)
-├── context/             # 🌐 Proveedores siguiendo el patrón Context/Def
-├── hooks/               # 🎣 Custom Hooks en kebab-case
-├── services/            # 📡 Capa API y sincronización offline
-├── types/               # 📝 Tipado centralizado
-└── ...
+├── components/          # 🧩 Bloques de construcción UI (Atómicos y Moleculares)
+├── context/             # 🌐 Estado Global (Auth, Theme, Maps)
+├── hooks/               # 🎣 Lógica de negocio reutilizable (Custom Hooks)
+├── pages/               # 📄 Vistas principales y composición de layouts
+├── services/            # 📡 Capa de Infraestructura (API, PWA, Sync)
+├── schemas/             # 📝 Definiciones de validación (Zod)
+├── test/                # 🧪 Configuración de pruebas y Mocks (MSW)
+└── types/               # 🏷️ Definiciones de tipos TypeScript
 ```
 
 ---
@@ -108,53 +128,47 @@ src/
 ## 🚀 Instalación y Despliegue
 
 ### Prerrequisitos
--   Node.js v18.0.0 o superior
--   API Key de Google Maps habilitada (con Map ID para Advanced Markers)
+-   Node.js v20.0.0+ (Recomendado)
+-   NPM v10+
 
-### Pasos Rápidos
-1.  Clonar el repositorio:
+### Desarrollo Local
+1.  **Clonar el repositorio:**
     ```bash
-    git clone https://github.com/tu-usuario/plak-frontend.git
+    git clone https://github.com/tu-organizacion/plak-frontend.git
+    cd plak-frontend
     ```
-2.  Instalar dependencias:
+2.  **Instalar dependencias:**
     ```bash
     npm install
     ```
-3.  Configura el `.env` con `VITE_API_URL` y las llaves de Maps.
-4.  Ejecutar la aplicación:
+3.  **Configurar entorno:**
+    Crea un archivo `.env` basado en `.env.example`:
+    ```env
+    VITE_API_URL=http://localhost:8080/api
+    VITE_GOOGLE_MAPS_KEY=tu_api_key
+    ```
+4.  **Iniciar servidor:**
     ```bash
-    npm run dev  # Para desarrollo
-    npm run build # Para producción
+    npm run dev
     ```
 
-### 📜 Scripts Disponibles
-
-| Script | Descripción |
+### Scripts de NPM
+| Script | Acción |
 | :--- | :--- |
-| `npm run dev` | Inicia el servidor de desarrollo con HMR. |
-| `npm run build` | Compila y optimiza la aplicación para producción. |
-| `npm run preview` | Previsualiza localmente el build de producción. |
-| `npm run lint` | Ejecuta el análisis estático de código (ESLint). |
-| `npm run test:run` | Ejecuta la suite de pruebas unitarias una sola vez. |
-| `npm run test:ui` | Abre la interfaz interactiva de Vitest para pruebas. |
+| `dev` | Inicia servidor de desarrollo (HMR). |
+| `build` | Compila para producción y genera reporte de tamaño. |
+| `lint` | Verifica calidad de código. |
+| `test:run` | Corre pruebas Vitest una vez. |
+| `test:ui` | Interfaz gráfica para pruebas unitarias. |
+| `preview` | Sirve la build de producción localmente. |
 
 ---
 
-## 🔒 Seguridad y Buenas Prácticas
+## 🔒 Seguridad
 
--   **Autenticación Robusta**: Gestión de sesiones mediante JWT con interceptores de Axios para renovación automática de tokens.
--   **Seguridad de Tipos**: Validación de esquemas en tiempo de ejecución con `Zod` para respuestas de API y formularios.
--   **CI/CD Ready**: Configuración preparada para despliegue continuo con validaciones automáticas de linting y tests.
--   **Rendimiento**: División de código (Code Splitting) nativo mediante `React.lazy` y `Suspense`.
-
----
-
-## 🤝 Contribución
-
-¡Las contribuciones son bienvenidas! Para mantener la calidad del proyecto:
-1.  Asegúrate de que `npm run lint` no devuelva errores.
-2.  Verifica que todos los tests pasen con `npm run test:run`.
-3.  Sigue las convenciones de nombres de archivos y estructura modular establecida.
+-   **JWT Handling**: Rotación automática de tokens mediante interceptores.
+-   **Sanitización**: Previene XSS por diseño en React + escapado automático.
+-   **Route Guards**: Protección de rutas basada en roles (Admin vs Messenger) a nivel de router.
 
 ---
 
