@@ -1,7 +1,18 @@
 import { createElement } from "react"
-// ... imports
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Building2, User, Calendar, PhoneCall } from "lucide-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+import { PlacaBadge } from "@/components/PlacaBadge"
+import { getPlateTypeIcon } from "@/lib/status-utils"
+import type { ServiceDelivery } from "@/types/service.types"
 
-// ... component
+interface ServiceGeneralInfoCardProps {
+    service: ServiceDelivery
+    className?: string
+}
+
 export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInfoCardProps) {
     // Removed const PlateIcon = ...
 
