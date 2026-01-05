@@ -1,15 +1,10 @@
 import { useNavigate } from "react-router-dom"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { dealershipService } from "@/services/dealership.service"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, MapPin } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { capitalizeWords } from "@/lib/format-utils"
@@ -18,22 +13,8 @@ import { useState, useRef, useEffect } from "react"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
-
-// Available zones
-const ZONES = [
-    { value: "NORTE", label: "Norte" },
-    { value: "SUR", label: "Sur" },
-    { value: "CENTRO", label: "Centro" },
-]
-
-const dealershipSchema = z.object({
-    name: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
-    address: z.string().min(1, "La dirección es requerida").min(10, "La dirección debe ser más detallada"),
-    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    zone: z.string().min(1, "La zona es requerida"),
-})
-
-type DealershipFormValues = z.infer<typeof dealershipSchema>
+import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
+import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
 
 // Marker component for the dealership location
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
@@ -73,14 +54,7 @@ export default function CreateConcesionario() {
     const [geocoding, setGeocoding] = useState(false)
     const [previewDone, setPreviewDone] = useState(false)
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        control,
-        watch,
-        formState: { errors, isSubmitting },
-    } = useForm<DealershipFormValues>({
+    const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
         defaultValues: {
             name: "",
@@ -90,11 +64,7 @@ export default function CreateConcesionario() {
         },
     })
 
-    const selectedZone = useWatch({
-        control,
-        name: "zone",
-    })
-
+    const { handleSubmit, watch, formState: { isSubmitting } } = form
     const currentAddress = watch("address")
 
     const handlePreviewLocation = async () => {
@@ -107,8 +77,6 @@ export default function CreateConcesionario() {
                 return
             }
             const geocoder = new google.maps.Geocoder()
-            // Append city/region if needed, assuming user enters comprehensive address or we append context
-            // For now use address as is or append ", Antioquia, Colombia" if user context implies it
             const addressToGeocode = currentAddress.toLowerCase().includes('medellin') || currentAddress.toLowerCase().includes('antioquia')
                 ? currentAddress
                 : `${currentAddress}, Medellin, Colombia`
@@ -144,7 +112,6 @@ export default function CreateConcesionario() {
             })
 
             // 2. Trigger Backend Geocoding (Persist)
-            // Even if we previewed locally, we ask backend to canonicalize/store it
             try {
                 await dealershipService.geocode(created.idDealership)
                 setSuccess("Concesionario creado y ubicado exitosamente")
@@ -184,77 +151,8 @@ export default function CreateConcesionario() {
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
-                            <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
-                                {/* Nombre */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Nombre del concesionario</Label>
-                                    <Input
-                                        id="name"
-                                        placeholder="Nombre concesionario"
-                                        autoComplete="organization"
-                                        {...register("name")}
-                                    />
-                                    {errors.name && (
-                                        <p className="text-sm text-red-500">{errors.name.message}</p>
-                                    )}
-                                </div>
 
-                                {/* Teléfono */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">Teléfono</Label>
-                                    <Input
-                                        id="phone"
-                                        placeholder="3001234567"
-                                        autoComplete="tel"
-                                        {...register("phone")}
-                                    />
-                                    {errors.phone && (
-                                        <p className="text-sm text-red-500">{errors.phone.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Dirección - spans full width */}
-                                <div className="space-y-2 md:col-span-2">
-                                    <Label htmlFor="address">Dirección completa</Label>
-                                    <Textarea
-                                        id="address"
-                                        placeholder="Calle 123 #45-67, Medellin"
-                                        rows={2}
-                                        autoComplete="street-address"
-                                        {...register("address")}
-                                    />
-                                    {errors.address && (
-                                        <p className="text-sm text-red-500">{errors.address.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Zona */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="zone">Zona</Label>
-                                    <Select
-                                        name="zone"
-                                        value={selectedZone}
-                                        onValueChange={(value) => setValue("zone", value)}
-                                    >
-                                        <SelectTrigger id="zone">
-                                            <SelectValue placeholder="Selecciona una zona" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel className="text-muted-foreground">Selecciona una zona</SelectLabel>
-                                                {ZONES.map((zone) => (
-                                                    <SelectItem key={zone.value} value={zone.value}>
-                                                        {zone.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.zone && (
-                                        <p className="text-sm text-red-500">{errors.zone.message}</p>
-                                    )}
-                                </div>
-                            </div>
+                            <ConcesionarioForm form={form} />
 
                             {/* Submit Buttons */}
                             <div className="flex gap-4 pt-6 mt-auto border-t">
