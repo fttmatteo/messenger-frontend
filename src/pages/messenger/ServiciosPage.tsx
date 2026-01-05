@@ -185,7 +185,7 @@ export default function ServiciosPage() {
             </div>
 
             {/* Services List */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto pb-32">
                 <ServiceList
                     services={filteredServices}
                     loading={loading}

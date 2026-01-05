@@ -38,7 +38,7 @@ export default function MessengerDashboard() {
 
     return (
         <div className="flex flex-col h-full overflow-hidden">
-            <div className="flex flex-col h-full p-3 gap-3 overflow-auto">
+            <div className="flex flex-col h-full p-3 gap-3 overflow-auto pb-32">
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
