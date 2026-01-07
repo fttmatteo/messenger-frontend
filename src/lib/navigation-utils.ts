@@ -1,3 +1,5 @@
+import { toast } from "sonner"
+
 /**
  * Utility for handling map navigation safely across devices, especially for PWAs on iOS.
  */
