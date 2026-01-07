@@ -5,7 +5,11 @@ function ThemeColorSync() {
     const { resolvedTheme } = useTheme()
 
     useEffect(() => {
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+        // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
+        const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
+        // 2. Selector for iOS status bar style
+        const metaAppleStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+
         const body = document.body
         const html = document.documentElement
 
@@ -13,21 +17,34 @@ function ThemeColorSync() {
         const darkColor = '#141414'
         const lightColor = '#ffffff'
 
-        const color = resolvedTheme === 'dark' ? darkColor : lightColor
+        const isDark = resolvedTheme === 'dark'
+        const color = isDark ? darkColor : lightColor
 
-        // 1. Update Meta Tag
-        if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', color)
+        // Update ALL theme-color tags
+        if (metaThemeColors.length > 0) {
+            metaThemeColors.forEach(meta => {
+                meta.setAttribute('content', color)
+            })
         } else {
-            // Create if missing
             const meta = document.createElement('meta')
             meta.name = 'theme-color'
             meta.content = color
             document.head.appendChild(meta)
         }
 
-        // 2. Force background color on body/html immediately to prevent white flashes
-        // This reinforces the CSS variables but acts as a fail-safe
+        // Update iOS specific status bar style
+        // 'black-translucent' gives the most premium feel in Dark Mode if viewport-fit=cover used
+        // 'default' is white-ish in Light Mode
+        if (metaAppleStatus) {
+            metaAppleStatus.setAttribute('content', isDark ? 'black-translucent' : 'default')
+        } else {
+            const meta = document.createElement('meta')
+            meta.name = 'apple-mobile-web-app-status-bar-style'
+            meta.content = isDark ? 'black-translucent' : 'default'
+            document.head.appendChild(meta)
+        }
+
+        // Force background color checks
         body.style.backgroundColor = color
         html.style.backgroundColor = color
 

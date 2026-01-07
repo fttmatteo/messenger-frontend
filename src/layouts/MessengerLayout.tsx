@@ -214,7 +214,7 @@ export default function MessengerLayout() {
             </a>
             {/* Simplified Header */}
             {/* Simplified Header */}
-            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 relative" role="banner">
+            <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b bg-background/95 backdrop-blur-md px-4 relative" role="banner">
                 {/* Left: Back button or Logo */}
                 <div className="flex-1 flex justify-start z-10">
                     {isSubPage ? (
