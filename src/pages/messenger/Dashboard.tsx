@@ -1,6 +1,5 @@
 import { useMessengerServices } from "@/hooks/use-messenger-services"
 import { useNetwork } from "@/hooks/use-network"
-import { useDeviceType } from "@/hooks/use-device-type"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,7 +9,6 @@ import { useState, useMemo } from "react"
 export default function MessengerDashboard() {
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
-    const { isIOS } = useDeviceType()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
 
@@ -40,7 +38,7 @@ export default function MessengerDashboard() {
 
     return (
         <div className="flex flex-col">
-            <div className={`flex flex-col p-3 gap-3 ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+            <div className={`flex flex-col p-3 gap-3`}>
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">

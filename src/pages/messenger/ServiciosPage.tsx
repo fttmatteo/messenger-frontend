@@ -12,12 +12,10 @@ import { getStatusLabel } from "@/lib/status-colors"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { cn } from "@/lib/utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
-import { useDeviceType } from "@/hooks/use-device-type"
 
 export default function ServiciosPage() {
     const { loading, completedServices, error } = useMessengerServices()
     const { colors } = useStatusColors()
-    const { isIOS } = useDeviceType()
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [calendarOpen, setCalendarOpen] = useState(false)
@@ -190,7 +188,7 @@ export default function ServiciosPage() {
             </div>
 
             {/* Services List */}
-            <div className={`${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+            <div className="">
                 <ServiceList
                     services={filteredServices}
                     loading={loading}

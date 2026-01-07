@@ -300,7 +300,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="pt-12 relative"
+                className="pt-12 pb-24 relative"
                 role="main"
             >
                 <Outlet />
