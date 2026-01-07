@@ -64,7 +64,7 @@ export default function ServiciosPage() {
     const isToday = isSameDay(selectedDate, new Date())
 
     return (
-        <div className="flex flex-col h-full p-3 gap-3">
+        <div className="flex flex-col p-3 gap-3">
             {/* Search Bar + Filters */}
             <div className="flex gap-2">
                 <div className="relative flex-1">

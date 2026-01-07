@@ -189,7 +189,7 @@ export default function ServiceDetails() {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col">
             {/* Scrollable Content */}
             <div className="">
                 {/* Hero Card - Plate, Status & Actions */}

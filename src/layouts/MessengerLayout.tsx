@@ -306,7 +306,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="pt-[calc(48px+env(safe-area-inset-top,0px))] pb-24 relative"
+                className="pt-[calc(48px+env(safe-area-inset-top,0px))] pb-[calc(56px+env(safe-area-inset-bottom,0px))] relative"
                 role="main"
             >
                 <Outlet />

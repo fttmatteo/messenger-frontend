@@ -33,12 +33,12 @@ export function BottomNavigation() {
         <nav
             className={cn(
                 "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300",
-                "pb-[calc(12px+env(safe-area-inset-bottom,0px))]"
+                "pb-[env(safe-area-inset-bottom,0px)]"
             )}
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-16 px-2">
+            <div className="flex items-center justify-around h-14 px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
@@ -65,7 +65,7 @@ export function BottomNavigation() {
                             key={item.path}
                             onClick={() => navigate(item.path)}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 min-w-[60px] relative",
+                                "flex flex-col items-center justify-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 min-w-[60px] relative",
                                 active
                                     ? "text-primary"
                                     : "text-muted-foreground hover:text-foreground"
@@ -82,9 +82,6 @@ export function BottomNavigation() {
                             )}>
                                 {item.label}
                             </span>
-                            {active && (
-                                <div className="absolute bottom-1 w-1 h-1 rounded-full bg-primary" />
-                            )}
                         </button>
                     )
                 })}
