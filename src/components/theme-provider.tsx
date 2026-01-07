@@ -1,10 +1,10 @@
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme } from "next-themes"
-import { useEffect } from "react"
+import { useLayoutEffect } from "react"
 
 function ThemeColorSync() {
     const { resolvedTheme } = useTheme()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
         const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
         // 2. Selector for iOS status bar style
@@ -33,8 +33,6 @@ function ThemeColorSync() {
         }
 
         // Update iOS specific status bar style
-        // 'black-translucent' gives the most premium feel in Dark Mode if viewport-fit=cover used
-        // 'default' is white-ish in Light Mode
         if (metaAppleStatus) {
             metaAppleStatus.setAttribute('content', isDark ? 'black-translucent' : 'default')
         } else {
@@ -44,7 +42,7 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // Force background color checks
+        // Force background color checks IMMEDIATELY before paint
         body.style.backgroundColor = color
         html.style.backgroundColor = color
 
@@ -55,7 +53,7 @@ function ThemeColorSync() {
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     return (
-        <NextThemesProvider {...props}>
+        <NextThemesProvider {...props} disableTransitionOnChange>
             <ThemeColorSync />
             {children}
         </NextThemesProvider>

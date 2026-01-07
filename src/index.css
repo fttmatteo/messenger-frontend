@@ -143,6 +143,7 @@
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
     min-height: 100dvh;
+    transition: none !important;
   }
 
   @media (min-width: 768px) {
@@ -160,6 +161,7 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     min-height: 100dvh;
+    transition: none !important;
   }
 
   /* Desktop typography scaling */
