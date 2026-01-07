@@ -69,10 +69,52 @@ export default function ServiceDetails() {
             }
 
             toast.dismiss(toastId)
-            
-            // Fix: Use window.location.href instead of window.open to prevent about:blank issues
-            // on mobile devices when redirecting to native maps app
-            window.location.href = url
+
+            // Fix: Handle iOS specifically to avoid white screen (about:blank)
+            // Use native scheme comgooglemaps:// and fallback to App Store if not installed
+            if (isIOS) {
+                let iosUrl = ''
+
+                if (latitude && longitude) {
+                    iosUrl = `comgooglemaps://?daddr=${latitude},${longitude}&directionsmode=driving`
+                } else if (address) {
+                    iosUrl = `comgooglemaps://?daddr=${encodeURIComponent(address)}&directionsmode=driving`
+                }
+
+                // Fallback to App Store
+                const appStoreUrl = "https://apps.apple.com/us/app/google-maps/id585027354"
+
+                const start = Date.now()
+                // Try to open Google Maps
+                window.location.href = iosUrl
+
+                // If the user effectively stays on this page (app didn't open immediately),
+                // we *could* redirect. However, modern iOS prompts "Open in Google Maps?".
+                // If they don't have it, Safari shows an invalid address error.
+                // The most reliable "auto" fallback is tricky without false positives.
+                // We'll set a timeout to redirect to store if the page is still visible/active after 2s.
+                setTimeout(() => {
+                    const now = Date.now()
+                    // If less than 2.5s passed (meaning the thread wasn't suspended by app switch)
+                    // and document is still visible
+                    if (now - start < 2500 && !document.hidden) {
+                        // Optional: Ask user or just redirect? User asked to redirect.
+                        // But checking valid scheme failure is hard. 
+                        // A safer UX is often letting Safari show the error or just redirecting explicitly.
+                        // Let's assume if it fails, the user remains here.
+
+                        // For this specific request "redireccionalo", we will try to redirect to store
+                        // but only if we are reasonably sure we are still here.
+                        if (confirm("¿No tienes Google Maps instalado? Ir a la tienda.")) {
+                            window.location.href = appStoreUrl
+                        }
+                    }
+                }, 2000)
+
+            } else {
+                // Android / Desktop standard behavior
+                window.location.href = url
+            }
         }
 
         const cached = trackingService.getLastKnownLocation()
