@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { useDeviceType } from "@/hooks/use-device-type"
+import { openMaps } from "@/lib/navigation-utils"
 
 interface ServiceCardProps {
     service: ServiceDelivery
@@ -22,6 +24,10 @@ export function ServiceCard({ service }: ServiceCardProps) {
     // Get status color from centralized system
     const statusColor = colors[service.currentStatus] || '#6b7280'
 
+    const { isIOS } = useDeviceType()
+
+    // ...
+
     const handleNavigate = (e: React.MouseEvent) => {
         e.stopPropagation()
 
@@ -31,30 +37,20 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
         const toastId = toast.loading("Obteniendo ubicación...", { duration: 2000 })
 
-        const openMaps = (originLat?: number, originLng?: number) => {
-            let url = ''
-
-            if (latitude && longitude) {
-                url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
-                if (originLat && originLng) {
-                    url += `&origin=${originLat},${originLng}`
-                }
-            } else if (address) {
-                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
-            } else {
-                toast.error('Ubicación no disponible', { id: toastId })
-                return
-            }
-
+        const triggerNavigation = (originLat?: number, originLng?: number) => {
             toast.dismiss(toastId)
-            window.open(url, '_blank')
+            openMaps(
+                { latitude, longitude, address },
+                isIOS,
+                originLat,
+                originLng
+            )
         }
 
         // 1. Try cache
         const cached = trackingService.getLastKnownLocation()
         if (cached && (Date.now() - cached.timestamp < 120000)) {
-            toast.dismiss(toastId)
-            openMaps(cached.latitude, cached.longitude)
+            triggerNavigation(cached.latitude, cached.longitude)
             return
         }
 
@@ -62,12 +58,12 @@ export function ServiceCard({ service }: ServiceCardProps) {
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    openMaps(position.coords.latitude, position.coords.longitude)
+                    triggerNavigation(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
                     console.warn("GPS error", error)
                     toast.warning("Usando ubicación aproximada", { id: toastId })
-                    openMaps()
+                    triggerNavigation()
                 },
                 {
                     enableHighAccuracy: true,
@@ -76,7 +72,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                 }
             )
         } else {
-            openMaps()
+            triggerNavigation()
         }
     }
 

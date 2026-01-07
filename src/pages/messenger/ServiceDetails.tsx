@@ -13,6 +13,7 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { useDeviceType } from "@/hooks/use-device-type"
+import { openMaps } from "@/lib/navigation-utils"
 
 
 export default function ServiceDetails() {
@@ -53,101 +54,39 @@ export default function ServiceDetails() {
 
         const { latitude, longitude, address } = service.dealership
         const toastId = toast.loading("Obteniendo ubicación precisa...")
-        const openMaps = (originLat?: number, originLng?: number) => {
-            let url = ''
 
-            if (latitude && longitude) {
-                url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
-                if (originLat && originLng) {
-                    url += `&origin=${originLat},${originLng}`
-                }
-            } else if (address) {
-                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
-            } else {
-                toast.error('No hay ubicación disponible para este concesionario', { id: toastId })
-                return
-            }
-
+        const triggerNavigation = (originLat?: number, originLng?: number) => {
             toast.dismiss(toastId)
-
-            // Fix: Handle iOS specifically to avoid white screen (about:blank)
-            // Use native scheme comgooglemaps:// and fallback to App Store if not installed
-            if (isIOS) {
-                let iosUrl = ''
-
-                if (latitude && longitude) {
-                    iosUrl = `comgooglemaps://?daddr=${latitude},${longitude}&directionsmode=driving`
-                } else if (address) {
-                    iosUrl = `comgooglemaps://?daddr=${encodeURIComponent(address)}&directionsmode=driving`
-                }
-
-                // Fallback to App Store
-                const appStoreUrl = "https://apps.apple.com/us/app/google-maps/id585027354"
-
-                const start = Date.now()
-                // Try to open Google Maps using an iframe to prevent PWA white screen
-                const iframe = document.createElement('iframe');
-                iframe.setAttribute('src', iosUrl);
-                iframe.setAttribute('style', 'display:none;');
-                document.body.appendChild(iframe);
-
-                // Remove iframe after short delay
-                setTimeout(() => {
-                    document.body.removeChild(iframe);
-                }, 1000);
-
-                // If the user effectively stays on this page (app didn't open immediately),
-                // we *could* redirect. However, modern iOS prompts "Open in Google Maps?".
-                // If they don't have it, Safari shows an invalid address error.
-                // The most reliable "auto" fallback is tricky without false positives.
-                // We'll set a timeout to redirect to store if the page is still visible/active after 2s.
-                setTimeout(() => {
-                    const now = Date.now()
-                    // If less than 2.5s passed (meaning the thread wasn't suspended by app switch)
-                    // and document is still visible
-                    if (now - start < 2500 && !document.hidden) {
-                        // Optional: Ask user or just redirect? User asked to redirect.
-                        // But checking valid scheme failure is hard. 
-                        // A safer UX is often letting Safari show the error or just redirecting explicitly.
-                        // Let's assume if it fails, the user remains here.
-
-                        // For this specific request "redireccionalo", we will try to redirect to store
-                        // but only if we are reasonably sure we are still here.
-                        if (confirm("¿No tienes Google Maps instalado? Ir a la tienda.")) {
-                            window.location.href = appStoreUrl
-                        }
-                    }
-                }, 2000)
-
-            } else {
-                // Android / Desktop standard behavior
-                window.location.href = url
-            }
+            openMaps(
+                { latitude, longitude, address },
+                isIOS,
+                originLat,
+                originLng
+            )
         }
 
         const cached = trackingService.getLastKnownLocation()
         if (cached && (Date.now() - cached.timestamp < 120000)) {
-            toast.dismiss(toastId)
-            openMaps(cached.latitude, cached.longitude)
+            triggerNavigation(cached.latitude, cached.longitude)
             return
         }
 
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    openMaps(position.coords.latitude, position.coords.longitude)
+                    triggerNavigation(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
                     console.warn("High accuracy error", error)
                     toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
-                            openMaps(pos.coords.latitude, pos.coords.longitude)
+                            triggerNavigation(pos.coords.latitude, pos.coords.longitude)
                         },
                         (err) => {
                             console.warn("Low accuracy error", err)
                             toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
-                            openMaps()
+                            triggerNavigation()
                         },
                         {
                             enableHighAccuracy: false,
@@ -163,7 +102,7 @@ export default function ServiceDetails() {
                 }
             )
         } else {
-            openMaps()
+            triggerNavigation()
         }
     }
 
