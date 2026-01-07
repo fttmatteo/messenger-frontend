@@ -69,7 +69,10 @@ export default function ServiceDetails() {
             }
 
             toast.dismiss(toastId)
-            window.open(url, '_blank')
+            
+            // Fix: Use window.location.href instead of window.open to prevent about:blank issues
+            // on mobile devices when redirecting to native maps app
+            window.location.href = url
         }
 
         const cached = trackingService.getLastKnownLocation()
