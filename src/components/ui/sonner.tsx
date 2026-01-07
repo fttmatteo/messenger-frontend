@@ -21,8 +21,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "!shadow-lg",
-          error: "!bg-[hsl(0,84%,60%)] !border-[hsl(0,84%,50%)] [&_*]:!text-white",
-          success: "!bg-green-500 !border-green-600 [&_*]:!text-white",
+          error: "!bg-[hsl(0,84%,60%)] !border-[hsl(0,84%,50%)] [&_*]:!text-white !mt-4 !rounded-lg",
+          success: "!bg-green-500 !border-green-600 [&_*]:!text-white !mt-4 !rounded-lg",
         }
       }}
       icons={{

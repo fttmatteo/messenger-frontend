@@ -85,8 +85,16 @@ export default function ServiceDetails() {
                 const appStoreUrl = "https://apps.apple.com/us/app/google-maps/id585027354"
 
                 const start = Date.now()
-                // Try to open Google Maps
-                window.location.href = iosUrl
+                // Try to open Google Maps using an iframe to prevent PWA white screen
+                const iframe = document.createElement('iframe');
+                iframe.setAttribute('src', iosUrl);
+                iframe.setAttribute('style', 'display:none;');
+                document.body.appendChild(iframe);
+
+                // Remove iframe after short delay
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 1000);
 
                 // If the user effectively stays on this page (app didn't open immediately),
                 // we *could* redirect. However, modern iOS prompts "Open in Google Maps?".
