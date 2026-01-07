@@ -139,6 +139,7 @@
 
   html {
     overflow-x: hidden;
+    @apply bg-background text-foreground;
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
   }
