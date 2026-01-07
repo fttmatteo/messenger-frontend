@@ -66,7 +66,16 @@ export const openMaps = (
         }
 
         const appStoreUrl = "https://apps.apple.com/us/app/google-maps/id585027354";
-        const start = Date.now();
+        // Show a non-intrusive toast informing the user
+        // This avoids blocking the UI or false positives with system prompts
+        toast.info("Abriendo Google Maps...", {
+            description: "¿No abre? Toca aquí para instalar la App.",
+            action: {
+                label: "Instalar",
+                onClick: () => window.location.href = appStoreUrl,
+            },
+            duration: 5000,
+        });
 
         // Iframe Injection Technique
         const iframe = document.createElement('iframe');
@@ -79,31 +88,8 @@ export const openMaps = (
             document.body.removeChild(iframe);
         }, 1000);
 
-        // --- Robust Fallback Logic ---
-        let appOpened = false;
-
-        const onBlur = () => { appOpened = true; };
-        const onVisibilityChange = () => {
-            if (document.hidden) appOpened = true;
-        };
-
-        window.addEventListener('blur', onBlur);
-        document.addEventListener('visibilitychange', onVisibilityChange);
-
-        setTimeout(() => {
-            // Clean up listeners
-            window.removeEventListener('blur', onBlur);
-            document.removeEventListener('visibilitychange', onVisibilityChange);
-
-            const now = Date.now();
-
-            // Heuristic: If detecting app switch failed (still visible/focused) and time hasn't skipped
-            if (!appOpened && !document.hidden && (now - start < 3500)) {
-                if (confirm("¿No tienes Google Maps instalado? Ir a la tienda.")) {
-                    window.location.href = appStoreUrl;
-                }
-            }
-        }, 2500);
+        // Removed the complex blur/visibility heuristic as it conflicts with iOS system prompts.
+        // The Toast approach puts control in the user's hands.
     } else {
         // Android / Desktop
         // Using window.location.href maps to intent on Android PWA usually better than window.open
