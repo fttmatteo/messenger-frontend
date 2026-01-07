@@ -1,4 +1,5 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
+import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
@@ -306,7 +307,12 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="pt-[calc(48px+env(safe-area-inset-top,0px))] pb-[calc(68px+env(safe-area-inset-bottom,0px))] relative"
+                className={cn(
+                    "pt-[calc(48px+env(safe-area-inset-top,0px))] relative",
+                    !hideBottomNav
+                        ? "pb-[calc(68px+env(safe-area-inset-bottom,0px))]"
+                        : "pb-[env(safe-area-inset-bottom,0px)]"
+                )}
                 role="main"
             >
                 <Outlet />

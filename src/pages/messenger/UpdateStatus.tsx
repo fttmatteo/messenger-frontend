@@ -17,8 +17,6 @@ import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
-import { useDeviceType } from "@/hooks/use-device-type"
-import { cn } from "@/lib/utils"
 
 import { useSmartLocation } from "@/hooks/use-smart-location"
 import { STATUS_OPTIONS } from "@/config/status-options"
@@ -36,7 +34,6 @@ export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { colors } = useStatusColors()
-    const { isIOS } = useDeviceType()
     const { getCurrentLocation } = useSmartLocation()
 
     const [service, setService] = useState<ServiceDelivery | null>(null)
@@ -215,7 +212,7 @@ export default function UpdateStatus() {
     const selectedOption = getSelectedOption()
 
     return (
-        <div className="">
+        <div className="relative pb-32">
             {/* Content */}
             <div className="">
                 {/* Hero Card - Plate & Dealership */}
@@ -312,7 +309,7 @@ export default function UpdateStatus() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
-                            className="px-4 pb-40 space-y-4"
+                            className="px-4 pb-4 space-y-4"
                         >
                             {/* Signature Section */}
                             {selectedOption.requiresSignature && (
@@ -391,9 +388,9 @@ export default function UpdateStatus() {
             </div>
 
             {/* Fixed Bottom Action */}
-            <div className={cn("p-4 border-t bg-background/95 backdrop-blur-sm", isIOS ? "pb-8" : "pb-4")}>
+            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/30 bg-background/80 backdrop-blur-xl">
                 <Button
-                    className="w-full h-12 text-base font-semibold rounded-xl transition-all"
+                    className="w-full h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
                     style={{
                         backgroundColor: selectedOption?.color || 'hsl(var(--primary))',
                         color: 'white'
