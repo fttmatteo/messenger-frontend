@@ -44,7 +44,7 @@ export const openMaps = (
     if (isIOS) {
         // Check if running in standalone mode (PWA)
         // 'standalone' property is non-standard but works on iOS Safari
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
 
         if (!isStandalone) {
             // iOS Browser (Safari) -> Open in new tab (Web behavior like Admin)
