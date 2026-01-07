@@ -33,12 +33,12 @@ export function BottomNavigation() {
         <nav
             className={cn(
                 "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300",
-                "pb-[env(safe-area-inset-bottom,12px)]"
+                "pb-[calc(12px+env(safe-area-inset-bottom,0px))]"
             )}
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-20 px-2">
+            <div className="flex items-center justify-around h-16 px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon

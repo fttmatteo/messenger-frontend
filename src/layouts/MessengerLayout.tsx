@@ -217,25 +217,8 @@ export default function MessengerLayout() {
                 {/* Safe Area Spacer for PWA/Notch */}
                 <div className="h-[env(safe-area-inset-top,0px)] w-full" />
 
-                <div className="flex h-12 items-center justify-between px-4 w-full">
-                    {/* Left: Back button or Logo */}
-                    <div className="flex-1 flex justify-start z-10">
-                        {isSubPage ? (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => navigate(-1)}
-                                className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
-                                aria-label="Volver"
-                            >
-                                <ChevronLeft className="h-5 w-5" />
-                            </Button>
-                        ) : (
-                            <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
-                        )}
-                    </div>
-
-                    {/* Center: Page title or Status - Absolutely Centered */}
+                <div className="relative flex h-12 items-center justify-between px-4 w-full">
+                    {/* Center: Page title or Status - Absolutely Centered within the h-12 area */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                         {pageTitle ? (
                             <div className="flex items-center justify-center gap-2">
@@ -284,6 +267,25 @@ export default function MessengerLayout() {
                             </div>
                         )}
                     </div>
+
+                    {/* Left: Back button or Logo */}
+                    <div className="flex-1 flex justify-start z-10">
+                        {isSubPage ? (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => navigate(-1)}
+                                className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
+                                aria-label="Volver"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </Button>
+                        ) : (
+                            <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
+                        )}
+                    </div>
+
+
 
                     {/* Right: Logout */}
                     <div className="flex-1 flex justify-end items-center gap-1 z-10">
