@@ -38,7 +38,7 @@ export function BottomNavigation() {
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-14 px-2">
+            <div className="flex items-center justify-around h-[68px] pt-4 pb-2 px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
