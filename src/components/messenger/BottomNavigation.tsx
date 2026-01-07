@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { Inbox, History, Plus, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useDeviceType } from "@/hooks/use-device-type"
+
 
 interface NavItem {
     icon: React.ComponentType<{ className?: string }>
@@ -20,7 +20,7 @@ const navItems: NavItem[] = [
 export function BottomNavigation() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { isIOS } = useDeviceType()
+
 
     const isActive = (path: string) => {
         if (path === "/messenger") {
@@ -32,9 +32,9 @@ export function BottomNavigation() {
     return (
         <nav
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 transition-all duration-300",
-                isIOS ? "pb-6" : "pb-3"
-            )}
+                "fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 transition-all duration-300 pb-3"
+            )
+            }
             role="navigation"
             aria-label="Navegación principal"
         >

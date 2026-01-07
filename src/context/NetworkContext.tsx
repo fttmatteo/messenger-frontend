@@ -15,10 +15,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     const [needRefresh, setNeedRefresh] = useState(false)
     const [pendingActionsCount, setPendingActionsCount] = useState(0)
 
-    // Track if this is the first offline-ready event
-    const [hasShownOfflineReady, setHasShownOfflineReady] = useState(() => {
-        return localStorage.getItem('pwa_offline_ready_shown') === 'true'
-    })
+
 
     // Sync pending actions when coming back online
     const syncPendingActions = useCallback(async () => {
@@ -98,17 +95,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     useEffect(() => {
         const handleOfflineReady = () => {
             setOfflineReady(true)
-
-            // Show toast only once (first time app becomes offline-ready)
-            if (!hasShownOfflineReady) {
-                toast.success('App lista para uso sin conexión', {
-                    description: 'Puedes seguir trabajando sin internet',
-                    icon: <WifiOff className="h-4 w-4" />,
-                    duration: 5000,
-                })
-                localStorage.setItem('pwa_offline_ready_shown', 'true')
-                setHasShownOfflineReady(true)
-            }
         }
 
         const handleNeedRefresh = () => {
@@ -132,7 +118,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             window.removeEventListener('sw-offline-ready', handleOfflineReady)
             window.removeEventListener('sw-need-refresh', handleNeedRefresh)
         }
-    }, [hasShownOfflineReady, updateServiceWorker])
+    }, [updateServiceWorker])
 
     // Update pending actions count periodically
     useEffect(() => {
