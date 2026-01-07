@@ -176,8 +176,8 @@ export default function MessengerCreateServicio() {
     // Loading skeleton while fetching dealerships
     if (loadingData) {
         return (
-            <div className="flex flex-col h-full">
-                <div className="flex-1 overflow-auto">
+            <div className="">
+                <div className="">
                     {/* Photo Section Skeleton */}
                     <div className="p-4 pb-2">
                         <Card className="p-4 border-border/50">
@@ -213,11 +213,11 @@ export default function MessengerCreateServicio() {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-                    {/* Scrollable Content */}
-                    <div className="flex-1 overflow-auto">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
+                    {/* Content */}
+                    <div className="">
                         {/* Photo Section Card */}
                         <div className="p-4 pb-2">
                             <Card className="p-4 border-border/50">

@@ -6,8 +6,8 @@ export default function RouteHistoryPage() {
     const { isIOS } = useDeviceType()
 
     return (
-        <div className="flex flex-col h-full">
-            <div className={`flex-1 overflow-auto p-4 ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+        <div className="">
+            <div className={`p-4 ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 <h2 className="text-lg font-semibold mb-4">Historial de Recorrido</h2>
 
                 <Card className="bg-muted/30 border-dashed">

@@ -19,8 +19,8 @@ export default function ConfiguracionPage() {
     const { isIOS } = useDeviceType()
 
     return (
-        <div className="flex flex-col h-full">
-            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+        <div className="">
+            <div className={`${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 {/* Settings List */}
                 <div className="p-4">
                     <Card className="border-border/50 overflow-hidden">

@@ -39,8 +39,8 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col h-full overflow-hidden">
-            <div className={`flex flex-col h-full p-3 gap-3 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+        <div className="flex flex-col">
+            <div className={`flex flex-col p-3 gap-3 ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export default function MessengerDashboard() {
                 </div>
 
                 {/* Assigned Services List */}
-                <div className="flex-1 overflow-auto">
+                <div className="">
                     <ServiceList
                         services={filteredServices}
                         loading={loading}

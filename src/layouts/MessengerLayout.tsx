@@ -204,7 +204,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-background">
+        <div className="relative min-h-[100dvh] bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -214,7 +214,7 @@ export default function MessengerLayout() {
             </a>
             {/* Simplified Header */}
             {/* Simplified Header */}
-            <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b bg-background/95 backdrop-blur-md px-4 relative" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-40 flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-md px-4" role="banner">
                 {/* Left: Back button or Logo */}
                 <div className="flex-1 flex justify-start z-10">
                     {isSubPage ? (
@@ -300,7 +300,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 overflow-hidden relative"
+                className="pt-12 relative"
                 role="main"
             >
                 <Outlet />

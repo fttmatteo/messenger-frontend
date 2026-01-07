@@ -193,7 +193,7 @@ export default function ServiceDetails() {
     return (
         <div className="flex flex-col h-full">
             {/* Scrollable Content */}
-            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+            <div className={isIOS ? 'pb-[104px]' : 'pb-[92px]'}>
                 {/* Hero Card - Plate, Status & Actions */}
                 <div className="p-4 pb-2">
                     <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">

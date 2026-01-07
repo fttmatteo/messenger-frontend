@@ -190,7 +190,7 @@ export default function ServiciosPage() {
             </div>
 
             {/* Services List */}
-            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+            <div className={`${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 <ServiceList
                     services={filteredServices}
                     loading={loading}

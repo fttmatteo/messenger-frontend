@@ -1,10 +1,10 @@
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme } from "next-themes"
-import { useLayoutEffect } from "react"
+import { useEffect } from "react"
 
 function ThemeColorSync() {
     const { resolvedTheme } = useTheme()
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
         const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
         // 2. Selector for iOS status bar style
@@ -42,7 +42,7 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // Force background color checks IMMEDIATELY before paint
+        // Force background color checks
         body.style.backgroundColor = color
         html.style.backgroundColor = color
 
@@ -53,7 +53,7 @@ function ThemeColorSync() {
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     return (
-        <NextThemesProvider {...props} disableTransitionOnChange>
+        <NextThemesProvider {...props}>
             <ThemeColorSync />
             {children}
         </NextThemesProvider>

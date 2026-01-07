@@ -39,8 +39,8 @@ export default function AppearancePage() {
     const { isIOS } = useDeviceType()
 
     return (
-        <div className="flex flex-col h-full">
-            <div className={`flex-1 overflow-auto ${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
+        <div className="">
+            <div className={`${isIOS ? 'pb-[104px]' : 'pb-[92px]'}`}>
                 <div className="p-4">
                     <Card className="p-4 border-border/50">
                         <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-3">
