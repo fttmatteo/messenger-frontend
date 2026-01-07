@@ -213,86 +213,90 @@ export default function MessengerLayout() {
                 Saltar al contenido principal
             </a>
             {/* Simplified Header */}
-            {/* Simplified Header */}
-            <header className="fixed top-0 left-0 right-0 z-40 flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-md px-4" role="banner">
-                {/* Left: Back button or Logo */}
-                <div className="flex-1 flex justify-start z-10">
-                    {isSubPage ? (
+            <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background/80 backdrop-blur-md" role="banner">
+                {/* Safe Area Spacer for PWA/Notch */}
+                <div className="h-[env(safe-area-inset-top,0px)] w-full" />
+
+                <div className="flex h-12 items-center justify-between px-4 w-full">
+                    {/* Left: Back button or Logo */}
+                    <div className="flex-1 flex justify-start z-10">
+                        {isSubPage ? (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => navigate(-1)}
+                                className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
+                                aria-label="Volver"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </Button>
+                        ) : (
+                            <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
+                        )}
+                    </div>
+
+                    {/* Center: Page title or Status - Absolutely Centered */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
+                        {pageTitle ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="font-semibold text-sm">{pageTitle}</span>
+                                {/* Subtle network offline indicator */}
+                                {!isNetworkOnline && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse pointer-events-auto"
+                                    >
+                                        <WifiOff className="h-2.5 w-2.5 mr-0.5" />
+                                        Sin red
+                                    </Badge>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-2 pointer-events-auto">
+                                <Badge
+                                    variant="secondary"
+                                    className={`text-xs px-3 py-0.5 font-medium border-0 ${isOnline
+                                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                        : "bg-muted text-muted-foreground"
+                                        }`}
+                                >
+                                    {isOnline ? 'ACTIVO' : 'OFFLINE'}
+                                </Badge>
+                                {/* Subtle network offline indicator */}
+                                {!isNetworkOnline && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse"
+                                    >
+                                        <WifiOff className="h-2.5 w-2.5" />
+                                    </Badge>
+                                )}
+                                {/* Pending sync actions indicator */}
+                                {pendingActionsCount > 0 && isNetworkOnline && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-[10px] px-1.5 py-0 border-blue-400 text-blue-600 dark:text-blue-400"
+                                    >
+                                        <CloudOff className="h-2.5 w-2.5 mr-0.5" />
+                                        {pendingActionsCount}
+                                    </Badge>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right: Logout */}
+                    <div className="flex-1 flex justify-end items-center gap-1 z-10">
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => navigate(-1)}
-                            className="h-9 w-9 -ml-2 rounded-full hover:bg-muted"
-                            aria-label="Volver"
+                            onClick={handleLogout}
+                            className="h-9 w-9 -mr-2 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                            aria-label="Cerrar sesión"
                         >
-                            <ChevronLeft className="h-5 w-5" />
+                            <LogOut className="h-4 w-4" />
                         </Button>
-                    ) : (
-                        <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
-                    )}
-                </div>
-
-                {/* Center: Page title or Status - Absolutely Centered */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
-                    {pageTitle ? (
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="font-semibold text-sm">{pageTitle}</span>
-                            {/* Subtle network offline indicator */}
-                            {!isNetworkOnline && (
-                                <Badge
-                                    variant="outline"
-                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse pointer-events-auto"
-                                >
-                                    <WifiOff className="h-2.5 w-2.5 mr-0.5" />
-                                    Sin red
-                                </Badge>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-center gap-2 pointer-events-auto">
-                            <Badge
-                                variant="secondary"
-                                className={`text-xs px-3 py-0.5 font-medium border-0 ${isOnline
-                                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                    : "bg-muted text-muted-foreground"
-                                    }`}
-                            >
-                                {isOnline ? 'ACTIVO' : 'OFFLINE'}
-                            </Badge>
-                            {/* Subtle network offline indicator */}
-                            {!isNetworkOnline && (
-                                <Badge
-                                    variant="outline"
-                                    className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse"
-                                >
-                                    <WifiOff className="h-2.5 w-2.5" />
-                                </Badge>
-                            )}
-                            {/* Pending sync actions indicator */}
-                            {pendingActionsCount > 0 && isNetworkOnline && (
-                                <Badge
-                                    variant="outline"
-                                    className="text-[10px] px-1.5 py-0 border-blue-400 text-blue-600 dark:text-blue-400"
-                                >
-                                    <CloudOff className="h-2.5 w-2.5 mr-0.5" />
-                                    {pendingActionsCount}
-                                </Badge>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Right: Logout */}
-                <div className="flex-1 flex justify-end items-center gap-1 z-10">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleLogout}
-                        className="h-9 w-9 -mr-2 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
-                        aria-label="Cerrar sesión"
-                    >
-                        <LogOut className="h-4 w-4" />
-                    </Button>
+                    </div>
                 </div>
             </header>
 
@@ -300,7 +304,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="pt-12 pb-24 relative"
+                className="pt-[calc(48px+env(safe-area-inset-top,0px))] pb-24 relative"
                 role="main"
             >
                 <Outlet />
