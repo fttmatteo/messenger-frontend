@@ -142,6 +142,7 @@
     @apply bg-background text-foreground;
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
+    min-height: 100dvh;
   }
 
   @media (min-width: 768px) {
@@ -158,6 +159,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    min-height: 100dvh;
   }
 
   /* Desktop typography scaling */

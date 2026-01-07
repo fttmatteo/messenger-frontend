@@ -40,8 +40,20 @@ export const openMaps = (
         url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     }
 
-    // IOS Handling (PWA Safe)
+    // IOS Handling
     if (isIOS) {
+        // Check if running in standalone mode (PWA)
+        // 'standalone' property is non-standard but works on iOS Safari
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+
+        if (!isStandalone) {
+            // iOS Browser (Safari) -> Open in new tab (Web behavior like Admin)
+            // This avoids the 'Open in App' prompts and fallback issues in the browser context
+            window.location.href = url;
+            return;
+        }
+
+        // iOS PWA (Installed) -> Try to open Native App
         let iosUrl = '';
         if (latitude && longitude) {
             iosUrl = `comgooglemaps://?daddr=${latitude},${longitude}&directionsmode=driving`;
@@ -66,8 +78,6 @@ export const openMaps = (
         }, 1000);
 
         // --- Robust Fallback Logic ---
-        // We want to detect if the app opened. If it did, the browser window will likely
-        // lose focus (blur) or become hidden (visibilitychange).
         let appOpened = false;
 
         const onBlur = () => { appOpened = true; };
@@ -85,14 +95,8 @@ export const openMaps = (
 
             const now = Date.now();
 
-            // Heuristic 1: If the thread was suspended (e.g. by iOS switching apps), 
-            // the actual elapsed time will be significantly larger than the 2500ms timeout 
-            // (e.g., if we come back 5 seconds later).
-            // However, modern iOS multitasking might keep JS running briefly.
-
-            // Heuristic 2: Check if we detected a blur or visibility change.
+            // Heuristic: If detecting app switch failed (still visible/focused) and time hasn't skipped
             if (!appOpened && !document.hidden && (now - start < 3500)) {
-                // If we are still here, visible, focused, and time didn't leap forward:
                 if (confirm("¿No tienes Google Maps instalado? Ir a la tienda.")) {
                     window.location.href = appStoreUrl;
                 }
