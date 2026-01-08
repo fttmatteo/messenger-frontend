@@ -79,14 +79,12 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                                 toast.success("Cámara lista", { duration: 1500 })
                             })
                             .catch(err => {
-                                console.error('Video play error:', err)
                                 setCameraError('Error al reproducir video')
                             })
                     }
                 }
             }
         } catch (error) {
-            console.error('Camera error:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {

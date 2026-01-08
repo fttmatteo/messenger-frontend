@@ -21,7 +21,6 @@ export function useSmartLocation() {
             const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000)
 
             if (isRecent && lastKnown) {
-                logger.info("Using cached location")
                 return { latitude: lastKnown.latitude, longitude: lastKnown.longitude }
             }
 
@@ -56,7 +55,6 @@ export function useSmartLocation() {
                 )
             })
         } catch (error) {
-            logger.warn("Could not get location:", error)
             const msg = error instanceof Error ? error.message : "Error desconocido"
             toast.warning("Ubicación no capturada", {
                 description: `${msg}. Se continuará sin ubicación precisa.`,

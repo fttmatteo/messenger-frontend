@@ -43,7 +43,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                     setIsFromCache(true)
                 }
             } catch (err) {
-                console.warn('Failed to load cached services:', err)
+                // Failed to load cached services, continuing anyway
             }
         }
         loadCachedData()

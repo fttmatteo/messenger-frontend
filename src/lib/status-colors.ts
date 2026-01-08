@@ -37,7 +37,7 @@ export function loadCustomColors(userId?: number | string): Record<string, strin
             return JSON.parse(stored)
         }
     } catch (error) {
-        console.error('Error loading custom colors:', error)
+        // Failed to load custom colors from storage
     }
     return {}
 }
@@ -49,7 +49,7 @@ export function saveCustomColors(colors: Record<string, string>, userId?: number
     try {
         localStorage.setItem(getStorageKey(userId), JSON.stringify(colors))
     } catch (error) {
-        console.error('Error saving custom colors:', error)
+        // Failed to save custom colors to storage
     }
 }
 
@@ -60,7 +60,7 @@ export function clearCustomColors(userId?: number | string): void {
     try {
         localStorage.removeItem(getStorageKey(userId))
     } catch (error) {
-        console.error('Error clearing custom colors:', error)
+        // Failed to clear custom colors from storage
     }
 }
 

@@ -35,7 +35,6 @@ export const authService = {
             const validatedData = LoginResponseSchema.parse(rawData);
             return validatedData;
         } catch (error) {
-            console.error('Response validation failed:', error);
             throw new Error('Invalid server response format');
         }
     },
@@ -64,7 +63,7 @@ export const authService = {
                 credentials: 'include'
             });
         } catch (error) {
-            console.error('Error en logout:', error);
+            console.warn('Logout error:', error);
         }
         
         // Limpiar metadata local

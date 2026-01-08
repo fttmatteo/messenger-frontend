@@ -27,7 +27,7 @@ class OfflineCacheService {
             await set(KEYS.MESSENGER_SERVICES, services)
             await this.updateCacheMetadata()
         } catch (error) {
-            console.error('Error caching services:', error)
+            // Failed to cache services, continuing anyway
         }
     }
 
@@ -61,7 +61,7 @@ class OfflineCacheService {
         try {
             await del(KEYS.MESSENGER_SERVICES)
         } catch (error) {
-            console.error('Error clearing cached services:', error)
+            // Failed to clear cached services, continuing anyway
         }
     }
 
@@ -115,7 +115,7 @@ class OfflineCacheService {
             await del(KEYS.MESSENGER_SERVICES)
             await del(KEYS.CACHE_METADATA)
         } catch (error) {
-            console.error('Error clearing cache:', error)
+            // Failed to clear cache, continuing anyway
         }
     }
 }

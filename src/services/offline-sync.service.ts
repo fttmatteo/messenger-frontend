@@ -60,7 +60,6 @@ class OfflineSyncService {
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
 
-        logger.info(`Queued offline action: ${type}`, action.id)
         return action.id
     }
 
@@ -111,12 +110,10 @@ class OfflineSyncService {
      */
     async syncAll(): Promise<number> {
         if (this.isSyncing) {
-            logger.info('Sync already in progress')
             return 0
         }
 
         if (!navigator.onLine) {
-            logger.info('Still offline, cannot sync')
             return 0
         }
 
@@ -130,8 +127,6 @@ class OfflineSyncService {
                 return 0
             }
 
-            logger.info(`Syncing ${actions.length} pending actions...`)
-
             for (const action of actions) {
                 try {
                     const handler = this.handlers.get(action.type)
@@ -142,7 +137,6 @@ class OfflineSyncService {
                         if (success) {
                             await this.removeAction(action.id)
                             syncedCount++
-                            logger.info(`Synced action: ${action.type}`, action.id)
                         } else {
                             await this.handleFailedAction(action)
                         }
@@ -157,12 +151,10 @@ class OfflineSyncService {
                                 await this.handleFailedAction(action)
                             }
                         } else {
-                            logger.warn(`No handler for action type: ${action.type}`)
                             await this.handleFailedAction(action)
                         }
                     }
                 } catch (error) {
-                    logger.error(`Error syncing action ${action.id}:`, error)
                     await this.handleFailedAction(action)
                 }
             }
@@ -190,7 +182,6 @@ class OfflineSyncService {
 
             return response.ok
         } catch (error) {
-            logger.error('Generic sync failed:', error)
             return false
         }
     }
@@ -200,7 +191,6 @@ class OfflineSyncService {
      */
     private async handleFailedAction(action: OfflineAction): Promise<void> {
         if (action.retryCount >= MAX_RETRY_COUNT) {
-            logger.warn(`Action ${action.id} exceeded max retries, removing`)
             await this.removeAction(action.id)
         } else {
             await this.incrementRetry(action.id)

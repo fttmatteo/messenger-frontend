@@ -62,7 +62,6 @@ class TrackingService {
         });
 
         this.client.onConnect = () => {
-            logger.info('Connected to Tracking WebSocket');
             this.isConnected = true;
             this.reconnectAttempt = 0; // Reset on successful connection
             this.client.reconnectDelay = INITIAL_RECONNECT_DELAY; // Reset delay
@@ -70,7 +69,6 @@ class TrackingService {
         };
 
         this.client.onDisconnect = () => {
-            logger.info('Disconnected from Tracking WebSocket');
             this.isConnected = false;
         };
 
@@ -84,7 +82,6 @@ class TrackingService {
             this.reconnectAttempt++;
             const newDelay = this.calculateReconnectDelay();
             this.client.reconnectDelay = newDelay;
-            logger.info(`WebSocket closed. Reconnect attempt ${this.reconnectAttempt}, next delay: ${newDelay}ms`);
         };
     }
 
@@ -105,7 +102,6 @@ class TrackingService {
         const jitter = baseDelay * JITTER_FACTOR * (Math.random() * 2 - 1);
         const delay = Math.round(baseDelay + jitter);
 
-        logger.info(`WebSocket reconnect attempt ${this.reconnectAttempt}, delay: ${delay}ms`);
         return delay;
     }
 
@@ -116,7 +112,6 @@ class TrackingService {
                 this.offlineQueue = JSON.parse(saved);
             }
         } catch (e) {
-            logger.warn('Failed to load tracking queue', e);
             this.offlineQueue = [];
         }
     }
@@ -125,14 +120,13 @@ class TrackingService {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.offlineQueue));
         } catch (e) {
-            logger.warn('Failed to save tracking queue', e);
+            // Failed to save queue, continuing anyway
         }
     }
 
     private drainQueue() {
         if (!this.isConnected || this.offlineQueue.length === 0) return;
 
-        logger.info(`Draining ${this.offlineQueue.length} buffered tracking updates`);
         const updates = [...this.offlineQueue];
         this.offlineQueue = [];
         this.saveQueue();

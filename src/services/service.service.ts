@@ -11,12 +11,7 @@ class ServiceDeliveryService {
      */
     async getAll(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/allServices')
-        try {
-            return z.array(ServiceDeliverySchema).parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return z.array(ServiceDeliverySchema).parse(response.data)
     }
 
     /**
@@ -42,12 +37,7 @@ class ServiceDeliveryService {
                 search: params.search
             }
         })
-        try {
-            return PaginatedSchema(ServiceDeliverySchema).parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return PaginatedSchema(ServiceDeliverySchema).parse(response.data)
     }
 
     /**
@@ -56,12 +46,7 @@ class ServiceDeliveryService {
      */
     async getById(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.get(`/services/findByServiceId/${id}`)
-        try {
-            return ServiceDeliverySchema.parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return ServiceDeliverySchema.parse(response.data)
     }
 
     /**
@@ -90,12 +75,7 @@ class ServiceDeliveryService {
         }
 
         const response = await apiClient.post('/services/createService', formData)
-        try {
-            return ServiceDeliverySchema.parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return ServiceDeliverySchema.parse(response.data)
     }
 
     /**
@@ -129,12 +109,7 @@ class ServiceDeliveryService {
         }
 
         const response = await apiClient.put(`/services/updateService/${id}`, formData)
-        try {
-            return ServiceDeliverySchema.parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return ServiceDeliverySchema.parse(response.data)
     }
 
     /**
@@ -149,12 +124,7 @@ class ServiceDeliveryService {
      */
     async getTrash(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/trash')
-        try {
-            return z.array(ServiceDeliverySchema).parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return z.array(ServiceDeliverySchema).parse(response.data)
     }
 
     /**
@@ -162,12 +132,7 @@ class ServiceDeliveryService {
      */
     async restore(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.post(`/services/trash/restore/${id}`)
-        try {
-            return ServiceDeliverySchema.parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return ServiceDeliverySchema.parse(response.data)
     }
 
     /**
@@ -192,12 +157,7 @@ class ServiceDeliveryService {
      */
     async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
         const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
-        try {
-            return ServiceDeliverySchema.parse(response.data)
-        } catch (error) {
-            console.error('Response validation failed:', error)
-            throw new Error('Invalid server response format')
-        }
+        return ServiceDeliverySchema.parse(response.data)
     }
 
     /**

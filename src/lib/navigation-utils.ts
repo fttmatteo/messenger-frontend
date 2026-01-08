@@ -25,7 +25,6 @@ export const openMaps = (
     const { latitude, longitude, address } = destination;
 
     if (!latitude && !longitude && !address) {
-        console.warn("No location provided for navigation");
         return;
     }
 
