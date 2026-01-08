@@ -19,7 +19,6 @@ interface Location {
  */
 export const openMaps = (
     destination: Location,
-    isIOS: boolean,
     originLat?: number,
     originLng?: number
 ) => {

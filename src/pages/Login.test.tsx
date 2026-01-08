@@ -88,9 +88,9 @@ describe('Login Page', () => {
     it('should call login on successful form submission', async () => {
         const user = userEvent.setup();
         const mockLoginResponse = {
-            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZG9jdW1lbnQiOiIxMjM0NTY3OCIsInJvbGUiOiJBRE1JTiJ9.test',
-            refreshToken: 'refresh-token',
             role: 'ADMIN',
+            message: 'ok',
+            user: { id: 1, document: 12345678, role: 'ADMIN' },
         };
 
         vi.mocked(authService.authService.login).mockImplementation(() => {

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useStatusColors } from "@/hooks/use-status-colors"
-import { useDeviceType } from "@/hooks/use-device-type"
 import { openMaps } from "@/lib/navigation-utils"
 
 interface ServiceCardProps {
@@ -24,8 +23,6 @@ export function ServiceCard({ service }: ServiceCardProps) {
     // Get status color from centralized system
     const statusColor = colors[service.currentStatus] || '#6b7280'
 
-    const { isIOS } = useDeviceType()
-
     // ...
 
     const handleNavigate = (e: React.MouseEvent) => {
@@ -41,7 +38,6 @@ export function ServiceCard({ service }: ServiceCardProps) {
             toast.dismiss(toastId)
             openMaps(
                 { latitude, longitude, address },
-                isIOS,
                 originLat,
                 originLng
             )

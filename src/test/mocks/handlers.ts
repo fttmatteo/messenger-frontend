@@ -20,8 +20,8 @@ export const handlers: RequestHandler[] = [
             }
         }, {
             headers: {
-                // Simular set-cookie de access/refresh token (JS no puede leer HttpOnly; es suficiente para el flujo de pruebas)
-                'Set-Cookie': ['accessToken=fake; Path=/; HttpOnly', 'refreshToken=fake; Path=/auth/refresh; HttpOnly']
+                // Simular set-cookie de access/refresh token (string única para evitar conflictos de tipos)
+                'Set-Cookie': 'accessToken=fake; Path=/; HttpOnly; SameSite=None; Secure'
             }
         });
     }),

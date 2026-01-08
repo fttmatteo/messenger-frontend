@@ -1,18 +1,6 @@
-import type { LoginCredentials } from '@/types';
+import type { LoginCredentials, LoginResponse } from '@/types';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
-
-// Nueva interfaz para la respuesta de login con cookies
-interface LoginResponse {
-    role: string;
-    message: string;
-    user?: {
-        id?: number;
-        name?: string;
-        document?: number;
-        dealershipName?: string;
-    };
-}
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
