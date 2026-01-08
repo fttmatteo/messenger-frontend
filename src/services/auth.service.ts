@@ -1,4 +1,5 @@
 import type { LoginCredentials, LoginResponse } from '@/types';
+import { LoginResponseSchema } from '@/schemas/api-schemas';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
 
@@ -18,9 +19,16 @@ export const authService = {
             throw new Error(errorData.message || 'Error en el inicio de sesión');
         }
 
-        const data: LoginResponse = await response.json();
-        // No guardamos tokens ni estado aquí; lo gestiona AuthContext según rememberMe.
-        return data;
+        const rawData = await response.json();
+        
+        // Validar respuesta contra schema Zod
+        try {
+            const validatedData = LoginResponseSchema.parse(rawData);
+            return validatedData;
+        } catch (error) {
+            console.error('Response validation failed:', error);
+            throw new Error('Invalid server response format');
+        }
     },
 
     async refreshToken(): Promise<void> {

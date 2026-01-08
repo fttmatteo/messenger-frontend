@@ -1,5 +1,7 @@
+import { z } from 'zod'
 import apiClient from './api-client'
 import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
+import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
 
 class ServiceDeliveryService {
     /**
@@ -9,7 +11,12 @@ class ServiceDeliveryService {
      */
     async getAll(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/allServices')
-        return response.data
+        try {
+            return z.array(ServiceDeliverySchema).parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -35,7 +42,12 @@ class ServiceDeliveryService {
                 search: params.search
             }
         })
-        return response.data
+        try {
+            return PaginatedSchema(ServiceDeliverySchema).parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -44,7 +56,12 @@ class ServiceDeliveryService {
      */
     async getById(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.get(`/services/findByServiceId/${id}`)
-        return response.data
+        try {
+            return ServiceDeliverySchema.parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -73,7 +90,12 @@ class ServiceDeliveryService {
         }
 
         const response = await apiClient.post('/services/createService', formData)
-        return response.data
+        try {
+            return ServiceDeliverySchema.parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -107,7 +129,12 @@ class ServiceDeliveryService {
         }
 
         const response = await apiClient.put(`/services/updateService/${id}`, formData)
-        return response.data
+        try {
+            return ServiceDeliverySchema.parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -122,7 +149,12 @@ class ServiceDeliveryService {
      */
     async getTrash(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/trash')
-        return response.data
+        try {
+            return z.array(ServiceDeliverySchema).parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -130,7 +162,12 @@ class ServiceDeliveryService {
      */
     async restore(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.post(`/services/trash/restore/${id}`)
-        return response.data
+        try {
+            return ServiceDeliverySchema.parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
@@ -155,7 +192,12 @@ class ServiceDeliveryService {
      */
     async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
         const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
-        return response.data
+        try {
+            return ServiceDeliverySchema.parse(response.data)
+        } catch (error) {
+            console.error('Response validation failed:', error)
+            throw new Error('Invalid server response format')
+        }
     }
 
     /**
