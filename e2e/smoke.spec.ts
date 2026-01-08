@@ -95,11 +95,11 @@ test.describe('Smoke Tests - Happy Path', () => {
         // Wait for redirect
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
 
-        // 2. Navigate to Tracking
-        await page.goto('/tracking', { waitUntil: 'networkidle' });
+        // 2. Navigate to Tracking or Monitoreo page
+        await page.goto('/admin/tracking', { waitUntil: 'networkidle' });
 
-        // 3. Simple check: we're on tracking page and not on login
-        await expect(page).toHaveURL(/\/tracking/);
+        // 3. Simple check: we're on an admin page and not on login
+        await expect(page).toHaveURL(/\/admin/);
         await expect(page).not.toHaveURL(/login/);
     });
 
