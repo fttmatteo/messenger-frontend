@@ -1,5 +1,3 @@
-import { toast } from "sonner"
-
 /**
  * Utility for handling map navigation across all devices and contexts.
  * Uses the same configuration for both PWA and Web - opens Google Maps in a new tab.

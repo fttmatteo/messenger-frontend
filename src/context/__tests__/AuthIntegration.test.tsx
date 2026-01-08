@@ -43,8 +43,9 @@ describe('AuthIntegration (MSW)', () => {
         })
 
         // 4. Verify persistence
-        expect(localStorage.getItem('token')).toBeDefined()
+        expect(localStorage.getItem('role')).toBe('ADMIN')
         expect(localStorage.getItem('user')).toContain('"id":123')
+        expect(localStorage.getItem('token')).toBeNull()
     })
 
     it('should logout and clear storage', async () => {
@@ -67,7 +68,8 @@ describe('AuthIntegration (MSW)', () => {
 
         expect(result.current.isAuthenticated).toBe(false)
         expect(result.current.user).toBeNull()
-        expect(sessionStorage.getItem('token')).toBeNull()
+        expect(sessionStorage.getItem('user')).toBeNull()
+        expect(localStorage.getItem('user')).toBeNull()
     })
 
     it('should restore session from localStorage on mount', async () => {
@@ -78,7 +80,7 @@ describe('AuthIntegration (MSW)', () => {
             isOnline: true
         }
         localStorage.setItem('user', JSON.stringify(storedUser))
-        localStorage.setItem('token', 'valid-token')
+        localStorage.setItem('role', storedUser.role)
 
         const { result } = renderHook(() => useAuth(), { wrapper })
 

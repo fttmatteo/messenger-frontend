@@ -1,4 +1,4 @@
-import type { AuthResponse, LoginCredentials } from '@/types';
+import type { LoginCredentials } from '@/types';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
 
@@ -31,17 +31,7 @@ export const authService = {
         }
 
         const data: LoginResponse = await response.json();
-        
-        // Ya NO guardamos tokens en localStorage
-        // Los tokens están en cookies HttpOnly (más seguro)
-        
-        // Solo guardar metadata del usuario (NO sensible)
-        const storage = localStorage; // Puedes cambiar a sessionStorage si prefieres
-        storage.setItem('role', data.role);
-        if (data.user) {
-            storage.setItem('user', JSON.stringify(data.user));
-        }
-        
+        // No guardamos tokens ni estado aquí; lo gestiona AuthContext según rememberMe.
         return data;
     },
 

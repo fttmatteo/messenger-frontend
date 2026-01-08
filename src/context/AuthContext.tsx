@@ -6,8 +6,7 @@ import { AuthContext } from './AuthContextDef'
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (storedUser && token) {
+        if (storedUser) {
             try {
                 return JSON.parse(storedUser);
             } catch (e) {
@@ -24,34 +23,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await authService.login(credentials);
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
-        // Store data
-        storage.setItem('token', data.token);
-        storage.setItem('refreshToken', data.refreshToken);
-        storage.setItem('role', data.role);
-
-        // Try to get ID from token payload (robust decode for JWT/Base64URL)
-        let userId: number | undefined;
-        try {
-            const base64Url = data.token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(
-                atob(base64)
-                    .split('')
-                    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join('')
-            );
-            const payload = JSON.parse(jsonPayload);
-            if (payload.id) userId = payload.id;
-        } catch (e) {
-            console.error("Error decoding token", e);
-        }
-
-        const userObj = {
+        const userObj: User = {
             document: credentials.document,
             role: data.role,
-            id: userId,
+            id: data.user?.id,
+            name: data.user?.name,
+            dealershipName: data.user?.dealershipName,
             isOnline: data.role === 'MESSENGER'
         };
+
+        storage.setItem('role', data.role);
         storage.setItem('user', JSON.stringify(userObj));
 
         setUser(userObj);
@@ -73,6 +54,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = () => {
         authService.logout();
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('role');
         setUser(null);
     };
 

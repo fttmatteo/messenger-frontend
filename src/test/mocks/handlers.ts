@@ -5,16 +5,24 @@ export const handlers: RequestHandler[] = [
     http.get(new RegExp('.*/auth/check.*'), () => {
         return HttpResponse.json({ authenticated: true, user: { id: 1, name: 'Test User' } });
     }),
+    http.post(new RegExp('.*/auth/logout.*'), () => {
+        return HttpResponse.json({ message: 'Logout ok' });
+    }),
     http.post(new RegExp('.*/auth/login.*'), async ({ request }) => {
         const body = await request.json() as { document: string };
-        const mockPayload = { id: 123, sub: body.document, role: 'ADMIN' };
-        const base64Payload = btoa(JSON.stringify(mockPayload));
-        const mockToken = `header.${base64Payload}.signature`;
-
         return HttpResponse.json({
-            token: mockToken,
-            refreshToken: 'fake-refresh-token',
-            role: 'ADMIN'
+            role: 'ADMIN',
+            message: 'Login exitoso',
+            user: {
+                id: 123,
+                document: body.document,
+                role: 'ADMIN'
+            }
+        }, {
+            headers: {
+                // Simular set-cookie de access/refresh token (JS no puede leer HttpOnly; es suficiente para el flujo de pruebas)
+                'Set-Cookie': ['accessToken=fake; Path=/; HttpOnly', 'refreshToken=fake; Path=/auth/refresh; HttpOnly']
+            }
         });
     }),
     http.get(new RegExp('.*/services/findByServiceId/.*'), ({ request }) => {
