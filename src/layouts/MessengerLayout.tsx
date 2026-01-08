@@ -30,6 +30,24 @@ export default function MessengerLayout() {
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
 
+    // Debug: Log user info on mount
+    useEffect(() => {
+        logger.info('🔍 User info cargada:', {
+            hasUser: !!user,
+            userId: user?.id,
+            userDocument: user?.document,
+            userName: user?.name,
+            role: user?.role,
+            isOnline: user?.isOnline
+        })
+        
+        if (user && !user.id && user.document) {
+            logger.warn('⚠️ user.id no disponible, usando document como ID', user)
+        } else if (user && !user.id && !user.document) {
+            logger.error('❌ PROBLEMA: ni user.id ni user.document están disponibles', user)
+        }
+    }, [user])
+
     const isSubPage = location.pathname.includes('/servicio/') ||
         location.pathname.includes('/historial') ||
         location.pathname.includes('/actualizar') ||
@@ -57,15 +75,28 @@ export default function MessengerLayout() {
 
     useEffect(() => {
         if (isOnline) {
+            // Usar user.id si existe, sino usar document como fallback
+            const userId = user?.id || user?.document
+            
+            if (!userId) {
+                logger.error('❌ No se puede iniciar tracking: ni user.id ni user.document están disponibles', user)
+                toast.error('Error: ID de usuario no disponible', { id: 'user-id-missing' })
+                return
+            }
+
+            if (!user?.id) {
+                logger.warn(`⚠️ Usando document (${userId}) como messengerId porque user.id no está disponible`)
+            }
+            
+            logger.info(`🚀 Iniciando tracking para mensajero ${userId}`)
 
             trackingService.connect(() => {
                 // Send immediate status update to appear online instantly
-                if (user?.id) {
-                    trackingService.sendUpdate({
-                        messengerId: user.id,
-                        status: 'ACTIVE'
-                    })
-                }
+                trackingService.sendUpdate({
+                    messengerId: userId,
+                    status: 'ACTIVE'
+                })
+                logger.info(`✅ Conexión WebSocket establecida, status ACTIVE enviado para mensajero ${userId}`)
             })
 
             if ('geolocation' in navigator) {
@@ -73,35 +104,49 @@ export default function MessengerLayout() {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
-                        trackingService.sendUpdate({
-                            messengerId: user?.id,
-                            latitude,
-                            longitude,
-                            speed: speed || 0,
-                            heading: heading || 0,
-                            accuracy,
-                            status: 'ACTIVE'
-                        })
-                        trackingService.setLastLocation(latitude, longitude)
+                        logger.info(`📍 Ubicación inicial obtenida: lat=${latitude}, lng=${longitude}, accuracy=${accuracy}m`)
+                        
+                        if (latitude && longitude && latitude !== 0 && longitude !== 0) {
+                            trackingService.sendUpdate({
+                                messengerId: userId,
+                                latitude,
+                                longitude,
+                                speed: speed || 0,
+                                heading: heading || 0,
+                                accuracy,
+                                status: 'ACTIVE'
+                            })
+                            trackingService.setLastLocation(latitude, longitude)
+                            logger.info(`✅ Ubicación inicial enviada al servidor para mensajero ${userId}`)
+                        } else {
+                            logger.error(`❌ Coordenadas inválidas: lat=${latitude}, lng=${longitude}`)
+                            toast.error('GPS devolvió coordenadas inválidas. Esperando señal válida...', { id: 'invalid-coords' })
+                        }
                     },
-                    (error) => logger.info("Initial quick fix failed:", error.message),
+                    (error) => logger.warn(`⚠️ Error obteniendo ubicación inicial: ${error.message} (code: ${error.code})`),
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 )
 
                 watchIdRef.current = navigator.geolocation.watchPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
-                        trackingService.sendUpdate({
-                            messengerId: user?.id,
-                            latitude,
-                            longitude,
-                            speed: speed || 0,
-                            heading: heading || 0,
-                            accuracy,
-                            status: 'ACTIVE'
-                        })
-                        // Cache locally for instant navigation
-                        trackingService.setLastLocation(latitude, longitude)
+                        logger.info(`📍 GPS actualizado: lat=${latitude}, lng=${longitude}, accuracy=${accuracy}m, speed=${speed}m/s`)
+                        
+                        if (latitude && longitude && latitude !== 0 && longitude !== 0) {
+                            trackingService.sendUpdate({
+                                messengerId: userId,
+                                latitude,
+                                longitude,
+                                speed: speed || 0,
+                                heading: heading || 0,
+                                accuracy,
+                                status: 'ACTIVE'
+                            })
+                            // Cache locally for instant navigation
+                            trackingService.setLastLocation(latitude, longitude)
+                        } else {
+                            logger.warn(`⚠️ GPS devolvió coordenadas inválidas (0,0 o null): lat=${latitude}, lng=${longitude}`)
+                        }
                     },
                     (error) => {
                         console.warn('Geolocation partial error:', error.message)
@@ -135,9 +180,11 @@ export default function MessengerLayout() {
                 watchIdRef.current = null
             }
 
-            if (user?.id) {
+            const userId = user?.id || user?.document
+            if (userId) {
+                logger.info(`📴 Mensajero ${userId} desconectándose, enviando status OFFLINE`)
                 trackingService.sendUpdate({
-                    messengerId: user.id,
+                    messengerId: userId,
                     status: 'OFFLINE'
                 })
             }

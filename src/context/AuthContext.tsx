@@ -23,6 +23,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await authService.login(credentials);
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
+        console.log('🔍 Login response data:', data);
+        console.log('🔍 User data from backend:', data.user);
+
         // Limpiar el otro storage para evitar fugas de rol/usuario
         const oppositeStorage = credentials.rememberMe ? sessionStorage : localStorage;
         oppositeStorage.removeItem('role');
@@ -36,6 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             dealershipName: data.user?.dealershipName,
             isOnline: data.role === 'MESSENGER'
         };
+
+        console.log('✅ User object being saved:', userObj);
 
         storage.setItem('role', data.role);
         storage.setItem('user', JSON.stringify(userObj));
