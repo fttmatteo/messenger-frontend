@@ -1,11 +1,4 @@
-/**
- * Utility for controlled logging.
- * Logs are only output to console in development mode or if explicitly enabled.
- */
-
 const isDev = import.meta.env.DEV;
-
-
 
 class Logger {
     private prefix: string;
@@ -14,29 +7,41 @@ class Logger {
         this.prefix = prefix;
     }
 
-    private formatMessage(message: string): string {
-        return `[${this.prefix}] ${message}`;
+    private formatMessage(message: string, correlationId?: string): string {
+        const timestamp = new Date().toISOString();
+        const cid = correlationId ? ` [CID:${correlationId}]` : '';
+        return `${timestamp} [${this.prefix}]${cid} ${message}`;
     }
 
-
+    public info(message: string, ...args: unknown[]) {
+        if (isDev) {
+            console.info(this.formatMessage(message), ...args);
+        }
+    }
 
     public warn(message: string, ...args: unknown[]) {
-        // Warnings are usually important enough to show in prod too, 
-        // but we can silence them if strictness is required.
-        // For now, let's keep them in dev only to meet the "clean console" requirement strictly,
-        // or allow them if they are critical. 
-        // Providing a safe default:
         if (isDev) {
             console.warn(this.formatMessage(message), ...args);
         }
     }
 
     public error(message: string, ...args: unknown[]) {
-        // Errors should generally be visible, but maybe not full stack traces to users.
         console.error(this.formatMessage(message), ...args);
     }
 
+    public apiError(message: string, error: any) {
+        const correlationId = error?.response?.headers?.['x-correlation-id'];
+        const status = error?.response?.status;
+        const url = error?.config?.url;
 
+        console.error(
+            this.formatMessage(`${message} | URL: ${url} | Status: ${status}`, correlationId),
+            {
+                data: error?.response?.data,
+                message: error.message
+            }
+        );
+    }
 }
 
 export const logger = new Logger('System');

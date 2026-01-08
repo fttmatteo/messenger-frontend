@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { authService } from './auth.service'
+import { logger } from '../utils/logger'
+import { v4 as uuidv4 } from 'uuid'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -10,12 +12,13 @@ export const apiClient = axios.create({
     withCredentials: true, // CRÍTICO: Enviar cookies en cada request
 })
 
-// Request interceptor - Ya NO necesitamos añadir Authorization header manualmente
-// Las cookies se envían automáticamente gracias a withCredentials: true
+// Request interceptor - Correlation ID and cookies handled automatically
 apiClient.interceptors.request.use(
     (config) => {
-        // Las cookies HttpOnly se envían automáticamente
-        // Ya no necesitamos manipular el header Authorization
+        // Generar o usar Correlation ID para trazabilidad
+        const correlationId = uuidv4();
+        config.headers['X-Correlation-ID'] = correlationId;
+
         return config
     },
     (error) => {
@@ -47,11 +50,19 @@ const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue = []
 }
 
-// Response interceptor - handle 401 errors globally
+// Response interceptor - handle 401 errors globally and log all errors
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Podemos loguear metadata opcionalmente aquí
+        return response
+    },
     async (error) => {
         const originalRequest = error.config
+
+        // Loguear error de API de forma profesional
+        if (!originalRequest?._retry || error.response?.status !== 401) {
+            logger.apiError('Error en petición API', error);
+        }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
@@ -59,8 +70,6 @@ apiClient.interceptors.response.use(
                     failedQueue.push({ resolve, reject })
                 })
                     .then(() => {
-                        // Ya no necesitamos pasar el token
-                        // La cookie se envía automáticamente
                         return apiClient(originalRequest)
                     })
                     .catch((err) => {
@@ -74,12 +83,9 @@ apiClient.interceptors.response.use(
             try {
                 // Refresh token automáticamente desde cookie
                 await authService.refreshToken()
-                
-                // Ya no necesitamos setear headers manualmente
-                // La cookie nueva se envía automáticamente
                 processQueue(null, 'refreshed')
 
-                // Retry original request (cookie se envía automáticamente)
+                // Retry original request
                 return apiClient(originalRequest)
             } catch (err) {
                 processQueue(err, null)
