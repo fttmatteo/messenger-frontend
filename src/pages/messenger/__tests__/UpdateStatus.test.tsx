@@ -24,9 +24,17 @@ describe('UpdateStatus Page Integration', () => {
                 return HttpResponse.json({
                     idServiceDelivery: 123,
                     currentStatus: 'PENDING',
-                    plate: { plateNumber: 'ABC-123', plateType: 'PARTICULAR' },
-                    dealership: { name: 'Test Dealership' },
-                    history: []
+                    plate: { idPlate: 1, plateNumber: 'ABC-123', plateType: 'CAR' },
+                    dealership: {
+                        idDealership: 10,
+                        name: 'Test Dealership',
+                        address: '123 Main St',
+                        phone: '555-0000',
+                        zone: 'Z1'
+                    },
+                    history: [],
+                    photos: [],
+                    createdAt: new Date().toISOString()
                 });
             })
         )

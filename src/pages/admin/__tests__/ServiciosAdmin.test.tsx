@@ -26,9 +26,21 @@ describe('Servicios Admin Page Integration', () => {
                     content: [
                         {
                             idServiceDelivery: 1,
-                            plate: { plateNumber: 'ADM-001', plateType: 'PARTICULAR' },
-                            dealership: { name: 'Dealership-Alpha' },
-                            messenger: { fullName: 'Messenger-Beta' },
+                            plate: { idPlate: 101, plateNumber: 'ADM-001', plateType: 'CAR' },
+                            dealership: {
+                                idDealership: 201,
+                                name: 'Dealership-Alpha',
+                                address: '123 Main',
+                                phone: '555-1111',
+                                zone: 'North'
+                            },
+                            messenger: {
+                                idEmployee: 301,
+                                document: 9001,
+                                fullName: 'Messenger-Beta',
+                                phone: '555-2222',
+                                role: 'MESSENGER'
+                            },
                             currentStatus: 'ASSIGNED',
                             createdAt: new Date().toISOString()
                         }
