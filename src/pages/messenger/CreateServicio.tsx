@@ -19,8 +19,6 @@ import { PlateCamera, ImageUploadFallback } from "@/components/camera"
 import { X, Loader2, Bike, Camera, Building2, Edit3 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
-import { useDeviceType } from "@/hooks/use-device-type"
-import { cn } from "@/lib/utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
 
 // Form validation schema
@@ -34,7 +32,6 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
-    const { isIOS } = useDeviceType()
     const { getCurrentLocation } = useSmartLocation()
 
     // Form state
@@ -373,21 +370,21 @@ export default function MessengerCreateServicio() {
                     </div>
 
                     {/* Fixed Bottom Action */}
-                    <div className={cn("p-4 border-t bg-background/95 backdrop-blur-sm", isIOS ? "pb-8" : "pb-4")}>
+                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/30 bg-background/80 backdrop-blur-xl">
                         <div className="flex gap-3">
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => navigate(-1)}
                                 disabled={loading}
-                                className="h-12 text-base font-semibold rounded-xl touch-manipulation"
+                                className="flex-1 h-12 text-base font-semibold rounded-2xl transition-all border-border/50"
                             >
                                 Cancelar
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={loading || loadingData || showCamera}
-                                className="flex-1 h-12 text-base font-semibold rounded-xl touch-manipulation"
+                                className="flex-1 h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
                             >
                                 {loading ? (
                                     <>

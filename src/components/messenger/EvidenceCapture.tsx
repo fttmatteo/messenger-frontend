@@ -171,25 +171,30 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
             {/* Photo previews */}
             {photos.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
-                    {photos.map((photo, index) => (
-                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden border">
-                            <img
-                                src={URL.createObjectURL(photo)}
-                                alt={`Evidencia ${index + 1}`}
-                                className="w-full h-full object-cover"
-                            />
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                size="icon"
-                                className="absolute top-1 right-1 h-6 w-6"
-                                onClick={() => removePhoto(index)}
-                            >
-                                <X className="h-3 w-3" />
-                            </Button>
-                        </div>
-                    ))}
+                <div className="space-y-3">
+                    <div className={`grid gap-3 ${photos.length === 1 ? 'grid-cols-1 max-w-sm' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                        {photos.map((photo, index) => (
+                            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-border/50 bg-muted/50">
+                                <img
+                                    src={URL.createObjectURL(photo)}
+                                    alt={`Evidencia ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md hover:bg-red-500 hover:text-white transition-colors"
+                                    onClick={() => removePhoto(index)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                    <p className="text-xs text-white font-medium">Foto {index + 1} de {photos.length}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 

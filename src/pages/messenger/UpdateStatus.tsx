@@ -212,7 +212,7 @@ export default function UpdateStatus() {
     const selectedOption = getSelectedOption()
 
     return (
-        <div className="relative pb-32">
+        <div className="relative pb-24">
             {/* Content */}
             <div className="">
                 {/* Hero Card - Plate & Dealership */}
@@ -323,8 +323,6 @@ export default function UpdateStatus() {
                                     </div>
                                     <SignatureCanvas
                                         ref={signatureRef}
-                                        width={280}
-                                        height={140}
                                         onSignatureChange={setHasSignature}
                                     />
                                 </Card>
@@ -367,10 +365,10 @@ export default function UpdateStatus() {
                                     id="observation"
                                     placeholder={
                                         selectedOption.value === 'RETURNED'
-                                            ? 'Explique el motivo de la devolución...'
+                                            ? 'Motivo de la devolución...'
                                             : selectedOption.value === 'PENDING'
-                                                ? 'Explique por qué el servicio queda pendiente...'
-                                                : 'Notas adicionales sobre la entrega...'
+                                                ? 'Motivo del servicio pendiente...'
+                                                : 'Notas adicionales...'
                                     }
                                     value={observation}
                                     onChange={(e) => {
@@ -378,8 +376,8 @@ export default function UpdateStatus() {
                                         e.target.style.height = 'auto'
                                         e.target.style.height = `${e.target.scrollHeight}px`
                                     }}
-                                    rows={3}
-                                    className="resize-none bg-muted/30 border-border/50 min-h-[80px] overflow-hidden"
+                                    rows={4}
+                                    className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-sm sm:text-base leading-relaxed p-3"
                                 />
                             </Card>
                         </motion.div>

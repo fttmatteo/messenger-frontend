@@ -90,9 +90,9 @@ export default function LoginMobile() {
                             />
                         </div>
                         <div className="flex items-center justify-center">
-                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
+                            <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
-                        <CardDescription className="text-center text-xs text-muted-foreground">
+                        <CardDescription className="text-center text-sm text-muted-foreground">
                             Ingrese sus credenciales
                         </CardDescription>
                     </CardHeader>
@@ -100,9 +100,9 @@ export default function LoginMobile() {
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <Label htmlFor="document" className="text-xs font-medium text-foreground/80">Documento</Label>
+                                    <Label htmlFor="document" className="text-sm font-medium text-foreground/90">Documento</Label>
                                     {errors.document && (
-                                        <p className="text-[10px] text-red-500 font-medium">{errors.document.message}</p>
+                                        <p className="text-xs text-red-500 font-medium">{errors.document.message}</p>
                                     )}
                                 </div>
                                 <Input
@@ -112,15 +112,15 @@ export default function LoginMobile() {
                                     placeholder="Ingrese su número de documento"
                                     autoComplete="username"
                                     {...register("document")}
-                                    className="h-9 text-sm"
+                                    className="h-11 text-base"
                                 />
                             </div>
 
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <Label htmlFor="password" className="text-xs font-medium text-foreground/80">Contraseña</Label>
+                                    <Label htmlFor="password" className="text-sm font-medium text-foreground/90">Contraseña</Label>
                                     {errors.password && (
-                                        <p className="text-[10px] text-red-500 font-medium">{errors.password.message}</p>
+                                        <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>
                                     )}
                                 </div>
                                 <div className="relative">
@@ -130,7 +130,7 @@ export default function LoginMobile() {
                                         placeholder="Ingrese su contraseña"
                                         autoComplete="current-password"
                                         {...register("password")}
-                                        className="pr-10 h-9 text-sm"
+                                        className="pr-10 h-11 text-base"
                                     />
                                     <Button
                                         type="button"
@@ -160,17 +160,17 @@ export default function LoginMobile() {
                                                 name={field.name}
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
-                                                className="h-3.5 w-3.5 rounded-sm"
+                                                className="h-4 w-4 rounded-sm"
                                             />
                                         )}
                                     />
-                                    <Label htmlFor="rememberMe" className="text-[11px] text-muted-foreground font-normal cursor-pointer">
+                                    <Label htmlFor="rememberMe" className="text-sm text-muted-foreground font-normal cursor-pointer">
                                         Recordar contraseña
                                     </Label>
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full h-9 text-sm font-medium mt-1" disabled={isSubmitting}>
+                            <Button type="submit" className="w-full h-11 text-base font-medium mt-1" disabled={isSubmitting}>
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>

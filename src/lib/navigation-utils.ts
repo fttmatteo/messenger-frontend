@@ -1,4 +1,5 @@
 import { toast } from "sonner"
+import type React from "react"
 
 /**
  * Utility for handling map navigation safely across devices, especially for PWAs on iOS.
@@ -72,7 +73,10 @@ export const openMaps = (
             description: "¿No abre? Toca aquí para instalar la App.",
             action: {
                 label: "Instalar",
-                onClick: () => window.location.href = appStoreUrl,
+                onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
+                    event.preventDefault();
+                    window.location.href = appStoreUrl;
+                },
             },
             duration: 5000,
         });

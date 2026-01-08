@@ -4,6 +4,7 @@ import { registerSW } from "virtual:pwa-register"
 import { createLogger } from "@/utils/logger"
 
 import "./index.css"
+import "./styles/toast.css"
 import App from "./App.tsx"
 
 const logger = createLogger('PWA')

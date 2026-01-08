@@ -124,9 +124,9 @@ export default function Login() {
                             />
                         </div>
                         <div className="flex items-center justify-center">
-                            <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
+                            <CardTitle className="text-2xl sm:text-3xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
-                        <CardDescription className="text-center text-sm text-muted-foreground">
+                        <CardDescription className="text-center text-base sm:text-lg text-muted-foreground">
                             Ingrese sus credenciales
                         </CardDescription>
                     </CardHeader>
@@ -134,9 +134,9 @@ export default function Login() {
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3">
                             <div className="space-y-1.5 sm:space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <Label htmlFor="document" className="text-sm font-medium text-foreground/80">Documento</Label>
+                                    <Label htmlFor="document" className="text-base sm:text-lg font-medium text-foreground/90">Documento</Label>
                                     {errors.document && (
-                                        <p className="text-xs text-red-500 font-medium">{errors.document.message}</p>
+                                        <p className="text-sm text-red-500 font-medium">{errors.document.message}</p>
                                     )}
                                 </div>
                                 <Input
@@ -146,15 +146,15 @@ export default function Login() {
                                     placeholder="Ingrese su número de documento"
                                     autoComplete="username"
                                     {...register("document")}
-                                    className="h-9 sm:h-10 text-sm"
+                                    className="h-11 sm:h-12 text-base"
                                 />
                             </div>
 
                             <div className="space-y-1.5 sm:space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Contraseña</Label>
+                                    <Label htmlFor="password" className="text-base sm:text-lg font-medium text-foreground/90">Contraseña</Label>
                                     {errors.password && (
-                                        <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>
+                                        <p className="text-sm text-red-500 font-medium">{errors.password.message}</p>
                                     )}
                                 </div>
                                 <div className="relative">
@@ -164,7 +164,7 @@ export default function Login() {
                                         placeholder="Ingrese su contraseña"
                                         autoComplete="current-password"
                                         {...register("password")}
-                                        className="pr-10 h-9 sm:h-10 text-sm"
+                                        className="pr-10 h-11 sm:h-12 text-base"
                                     />
                                     <Button
                                         type="button"
@@ -174,9 +174,9 @@ export default function Login() {
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                            <EyeOff className="h-5 w-5 text-muted-foreground" />
                                         ) : (
-                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                            <Eye className="h-5 w-5 text-muted-foreground" />
                                         )}
                                         <span className="sr-only">Toggle password visibility</span>
                                     </Button>
@@ -194,17 +194,17 @@ export default function Login() {
                                                 name={field.name}
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
-                                                className="h-4 w-4 rounded-sm"
+                                                className="h-5 w-5 rounded-sm"
                                             />
                                         )}
                                     />
-                                    <Label htmlFor="rememberMe" className="text-xs text-muted-foreground font-normal cursor-pointer">
+                                    <Label htmlFor="rememberMe" className="text-sm sm:text-base text-muted-foreground font-normal cursor-pointer">
                                         Recordar contraseña
                                     </Label>
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full h-9 sm:h-10 text-sm font-medium mt-1.5 sm:mt-2" disabled={isSubmitting}>
+                            <Button type="submit" className="w-full h-11 sm:h-12 text-base sm:text-lg font-medium mt-1.5 sm:mt-2" disabled={isSubmitting}>
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>

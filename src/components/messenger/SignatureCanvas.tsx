@@ -249,15 +249,15 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 </div>
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                    <DialogContent className="max-w-[100vw] w-screen h-screen max-h-screen p-4 flex flex-col gap-3 rounded-none" aria-describedby={undefined}>
-                        <DialogHeader>
-                            <DialogTitle>Firma del asesor</DialogTitle>
+                    <DialogContent className="max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] px-[calc(1rem+env(safe-area-inset-left,0px))] flex flex-col gap-3 sm:gap-4 rounded-none [&>button]:top-[calc(1rem+env(safe-area-inset-top,0px))] [&>button]:right-[calc(1rem+env(safe-area-inset-right,0px))]" aria-describedby={undefined}>
+                        <DialogHeader className="flex-shrink-0">
+                            <DialogTitle className="text-lg sm:text-xl">Firma del asesor</DialogTitle>
                             <VisuallyHidden>
                                 <DialogDescription>Dibuje su firma en el área de abajo</DialogDescription>
                             </VisuallyHidden>
                         </DialogHeader>
 
-                        <div className="flex-1 relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white">
+                        <div className="flex-1 relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0">
                             <canvas
                                 ref={fullscreenCanvasRef}
                                 className="touch-none cursor-crosshair absolute inset-0 w-full h-full"
@@ -269,21 +269,21 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 onTouchMove={handleMove}
                                 onTouchEnd={handleEnd}
                             />
-                            <div className="absolute bottom-8 left-8 right-8 border-b-2 border-gray-300 pointer-events-none" />
+                            <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 right-6 sm:right-8 border-b-2 border-gray-300 pointer-events-none" />
                             {!tempHasDrawn && (
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <span className="text-muted-foreground/40 text-xl">Firme aquí</span>
+                                    <span className="text-muted-foreground/40 text-base sm:text-xl">Firme aquí</span>
                                 </div>
                             )}
                         </div>
 
-                        <div className="flex gap-3">
-                            <Button variant="outline" onClick={clearFullscreen} className="flex-1 h-12">
-                                <Eraser className="h-4 w-4 mr-2" />
+                        <div className="flex gap-3 flex-shrink-0">
+                            <Button variant="outline" onClick={clearFullscreen} className="flex-1 h-11 sm:h-12 text-sm sm:text-base">
+                                <Eraser className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Limpiar
                             </Button>
-                            <Button onClick={confirmSignature} className="flex-1 h-12" disabled={!tempHasDrawn}>
-                                <Check className="h-4 w-4 mr-2" />
+                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn}>
+                                <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Confirmar firma
                             </Button>
                         </div>

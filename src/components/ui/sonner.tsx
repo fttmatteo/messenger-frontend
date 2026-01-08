@@ -18,38 +18,39 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="top-center"
-      offset={isMobile ? "calc(env(safe-area-inset-top, 0px) + 12px)" : "24px"}
+      offset={isMobile ? 80 : 32}
+      gap={12}
+      duration={4000}
       toastOptions={{
         classNames: {
           toast: cn(
-            "group toast !bg-background/95 !backdrop-blur-xl !border-border/50 !shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] !rounded-2xl !p-4 !gap-3",
-            "!fixed !inset-x-0 !mx-auto !w-fit !min-w-[320px] !max-w-[420px] !flex !items-start !border-l-4"
+            "group toast !bg-background/95 !backdrop-blur-xl !border-border/50",
+            "!shadow-lg !rounded-xl !p-4 !gap-3 !border-l-4",
+            "!mt-[max(1rem,env(safe-area-inset-top))] sm:!mt-0",
+            "!flex !items-center !justify-between !leading-relaxed"
           ),
-          title: "!font-bold !text-sm !leading-tight",
-          description: "!text-muted-foreground !text-[11px] !mt-1 !leading-normal",
-          actionButton: "!bg-primary !text-primary-foreground !rounded-xl !px-4 !h-8 !text-[11px] !font-bold !ml-auto",
-          cancelButton: "!bg-muted !text-muted-foreground !rounded-xl !px-4 !h-8 !text-[11px] !font-bold",
-          error: "!border-l-red-500 !text-foreground",
-          success: "!border-l-green-500 !text-foreground",
-          info: "!border-l-blue-500 !text-foreground",
-          warning: "!border-l-amber-500 !text-foreground",
+          title: "!font-semibold !text-sm !text-foreground !flex-1",
+          description: "!text-muted-foreground !text-xs !mt-0.5 !flex-1",
+          actionButton: "!bg-primary !text-primary-foreground !rounded-lg !px-3 sm:!px-4 !py-2 !h-auto !text-xs sm:!text-sm !font-medium !ml-2 !flex-shrink-0 hover:!opacity-90 transition-opacity",
+          cancelButton: "!bg-muted hover:!bg-muted/80 !text-muted-foreground !rounded-lg !px-3 sm:!px-4 !py-2 !h-auto !text-xs sm:!text-sm !font-medium !flex-shrink-0 transition-colors",
+          error: "!border-l-red-500/80 !bg-red-50/50 dark:!bg-red-950/20",
+          success: "!border-l-green-500/80 !bg-green-50/50 dark:!bg-green-950/20",
+          info: "!border-l-blue-500/80 !bg-blue-50/50 dark:!bg-blue-950/20",
+          warning: "!border-l-amber-500/80 !bg-amber-50/50 dark:!bg-amber-950/20",
+          loading: "!border-l-primary/80 !bg-primary/5",
+        },
+        style: {
+          fontFamily: "inherit",
+          wordBreak: "break-word",
         }
       }}
       icons={{
-        success: <CircleCheckIcon className="size-5 text-green-500" />,
-        info: <InfoIcon className="size-5 text-blue-500" />,
-        warning: <TriangleAlertIcon className="size-5 text-amber-500" />,
-        error: <TriangleAlertIcon className="size-5 text-red-500" />,
-        loading: <Loader2Icon className="size-5 text-primary animate-spin" />,
+        success: <CircleCheckIcon className="!size-5 !text-green-500 !flex-shrink-0" />,
+        info: <InfoIcon className="!size-5 !text-blue-500 !flex-shrink-0" />,
+        warning: <TriangleAlertIcon className="!size-5 !text-amber-500 !flex-shrink-0" />,
+        error: <TriangleAlertIcon className="!size-5 !text-red-500 !flex-shrink-0" />,
+        loading: <Loader2Icon className="!size-5 !text-primary !animate-spin !flex-shrink-0" />,
       }}
-      style={
-        {
-          "--normal-bg": "var(--background)",
-          "--normal-text": "var(--foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "1rem",
-        } as React.CSSProperties
-      }
       {...props}
     />
   )
