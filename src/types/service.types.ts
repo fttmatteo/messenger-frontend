@@ -68,7 +68,8 @@ export interface ServiceDelivery {
     idServiceDelivery: number
     plate: PlateInfo
     dealership: DealershipInfo
-    messenger: EmployeeInfo
+    // Backend may omit or null messenger when not assigned
+    messenger?: EmployeeInfo | null
     currentStatus: ServiceStatus
     observation?: string
     signature?: SignatureInfo

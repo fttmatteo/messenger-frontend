@@ -16,13 +16,14 @@ export interface AuthResponse {
 export interface LoginResponse {
     role: string;
     message: string;
+    // User payload may be absent or explicitly null depending on backend response
     user?: {
         id?: number;
         name?: string;
         document?: number;
         dealershipName?: string;
         role?: string;
-    };
+    } | null;
 }
 
 export interface LoginCredentials {
