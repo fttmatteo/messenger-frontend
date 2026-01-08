@@ -78,7 +78,7 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                                 setCameraReady(true)
                                 toast.success("Cámara lista", { duration: 1500 })
                             })
-                            .catch(err => {
+                            .catch(() => {
                                 setCameraError('Error al reproducir video')
                             })
                     }

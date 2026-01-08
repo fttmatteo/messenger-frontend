@@ -56,6 +56,7 @@ export function useSmartLocation() {
             })
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Error desconocido"
+            logger.error("Error al obtener ubicación inteligente", error)
             toast.warning("Ubicación no capturada", {
                 description: `${msg}. Se continuará sin ubicación precisa.`,
                 duration: 4000

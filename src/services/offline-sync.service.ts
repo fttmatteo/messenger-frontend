@@ -1,7 +1,4 @@
 import { get, set, del } from 'idb-keyval'
-import { createLogger } from '@/utils/logger';
-
-const logger = createLogger('OfflineSyncService');
 
 const PENDING_ACTIONS_KEY = 'pending_offline_actions'
 const MAX_RETRY_COUNT = 3
@@ -154,7 +151,7 @@ class OfflineSyncService {
                             await this.handleFailedAction(action)
                         }
                     }
-                } catch (error) {
+                } catch {
                     await this.handleFailedAction(action)
                 }
             }
@@ -181,7 +178,7 @@ class OfflineSyncService {
             })
 
             return response.ok
-        } catch (error) {
+        } catch {
             return false
         }
     }

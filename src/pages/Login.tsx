@@ -54,8 +54,8 @@ export default function Login() {
             })
             navigate("/")
         } catch (error) {
-            const err = error as any;
-            
+            const err = error as { statusCode?: number }
+
             // Manejar rate limiting (429)
             if (err.statusCode === 429) {
                 // Mostrar notificación persistente de Sonner
@@ -67,12 +67,12 @@ export default function Login() {
                         closeButton: false,
                     }
                 );
-                
+
                 // Contar hacia atrás y actualizar el toast
                 let counter = 15;
                 const interval = setInterval(() => {
                     counter--;
-                    
+
                     if (counter <= 0) {
                         clearInterval(interval);
                         toast.dismiss(toastId);
@@ -82,7 +82,7 @@ export default function Login() {
                         });
                         return;
                     }
-                    
+
                     // Actualizar el toast con el tiempo restante
                     toast.error(
                         `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,

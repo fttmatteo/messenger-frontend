@@ -29,16 +29,27 @@ class Logger {
         console.error(this.formatMessage(message), ...args);
     }
 
-    public apiError(message: string, error: any) {
-        const correlationId = error?.response?.headers?.['x-correlation-id'];
-        const status = error?.response?.status;
-        const url = error?.config?.url;
+    public apiError(message: string, error: unknown) {
+        // Cast to any for simple access to axios-like properties, or use a more specific type
+        const err = error as {
+            response?: {
+                headers?: Record<string, string>;
+                status?: number;
+                data?: unknown;
+            };
+            config?: { url?: string };
+            message: string
+        };
+
+        const correlationId = err?.response?.headers?.['x-correlation-id'];
+        const status = err?.response?.status;
+        const url = err?.config?.url;
 
         console.error(
             this.formatMessage(`${message} | URL: ${url} | Status: ${status}`, correlationId),
             {
-                data: error?.response?.data,
-                message: error.message
+                data: err?.response?.data,
+                message: err.message
             }
         );
     }

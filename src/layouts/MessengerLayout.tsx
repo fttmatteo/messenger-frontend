@@ -59,7 +59,7 @@ export default function MessengerLayout() {
         if (isOnline) {
             // Usar user.id si existe, sino usar document como fallback
             const userId = user?.id || user?.document
-            
+
             if (!userId) {
                 logger.error('❌ No se puede iniciar tracking: ni user.id ni user.document están disponibles', user)
                 toast.error('Error: ID de usuario no disponible', { id: 'user-id-missing' })
@@ -69,7 +69,7 @@ export default function MessengerLayout() {
             if (!user?.id) {
                 // Using document as fallback for messengerId
             }
-            
+
             trackingService.connect(() => {
                 // Send immediate status update to appear online instantly
                 trackingService.sendUpdate({
@@ -83,7 +83,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
-                        
+
                         if (latitude && longitude && latitude !== 0 && longitude !== 0) {
                             trackingService.sendUpdate({
                                 messengerId: userId,
@@ -99,14 +99,14 @@ export default function MessengerLayout() {
                             toast.error('GPS devolvió coordenadas inválidas. Esperando señal válida...', { id: 'invalid-coords' })
                         }
                     },
-                    (error) => { /* error getting initial location */ },
+                    () => { /* error getting initial location */ },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 )
 
                 watchIdRef.current = navigator.geolocation.watchPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
-                        
+
                         if (latitude && longitude && latitude !== 0 && longitude !== 0) {
                             trackingService.sendUpdate({
                                 messengerId: userId,
@@ -173,7 +173,7 @@ export default function MessengerLayout() {
                 navigator.geolocation.clearWatch(watchIdRef.current)
             }
         }
-    }, [isOnline, user?.id, logout, navigate, updateUser])
+    }, [isOnline, user, logout, navigate, updateUser])
 
     // Heartbeat timer: envía señal de vida cada 30 segundos independiente del GPS
     useEffect(() => {

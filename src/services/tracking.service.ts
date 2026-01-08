@@ -111,7 +111,7 @@ class TrackingService {
             if (saved) {
                 this.offlineQueue = JSON.parse(saved);
             }
-        } catch (e) {
+        } catch {
             this.offlineQueue = [];
         }
     }
@@ -119,7 +119,7 @@ class TrackingService {
     private saveQueue() {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.offlineQueue));
-        } catch (e) {
+        } catch {
             // Failed to save queue, continuing anyway
         }
     }
@@ -140,7 +140,7 @@ class TrackingService {
         // WebSocket cookies se envían automáticamente (como en HTTP requests)
         // No necesitamos pasar token manualmente en header
         // Las cookies HttpOnly están protegidas contra XSS
-        
+
         if (onConnectCallback) {
             const originalOnConnect = this.client.onConnect;
             this.client.onConnect = (frame) => {

@@ -42,7 +42,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                     setServices(cached)
                     setIsFromCache(true)
                 }
-            } catch (err) {
+            } catch {
                 // Failed to load cached services, continuing anyway
             }
         }

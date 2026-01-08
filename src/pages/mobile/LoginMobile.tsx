@@ -49,8 +49,8 @@ export default function LoginMobile() {
             })
             navigate("/")
         } catch (error) {
-            const err = error as any;
-            
+            const err = error as { statusCode?: number }
+
             // Manejar rate limiting (429)
             if (err.statusCode === 429) {
                 // Mostrar notificación persistente de Sonner con mismo diseño
@@ -62,12 +62,12 @@ export default function LoginMobile() {
                         closeButton: false,
                     }
                 );
-                
+
                 // Contar hacia atrás y actualizar el toast
                 let counter = 15;
                 const interval = setInterval(() => {
                     counter--;
-                    
+
                     if (counter <= 0) {
                         clearInterval(interval);
                         if (toastId) {
@@ -79,7 +79,7 @@ export default function LoginMobile() {
                         });
                         return;
                     }
-                    
+
                     // Actualizar el toast con el tiempo restante
                     toast.error(
                         `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
@@ -214,9 +214,9 @@ export default function LoginMobile() {
                                 </div>
                             </div>
 
-                            <Button 
-                                type="submit" 
-                                className="w-full h-11 text-base font-medium mt-1" 
+                            <Button
+                                type="submit"
+                                className="w-full h-11 text-base font-medium mt-1"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}

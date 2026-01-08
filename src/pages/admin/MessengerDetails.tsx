@@ -76,7 +76,7 @@ export default function MessengerDetails() {
                         setLastUpdate(date && isFinite(date.getTime()) ? date : null)
                     }
                 } catch {
-
+                    // Ignore error if last location is not found
                 }
                 setIsActive(false)
             }

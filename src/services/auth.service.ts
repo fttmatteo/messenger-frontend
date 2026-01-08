@@ -15,26 +15,26 @@ export const authService = {
         });
 
         const rawData = await response.json();
-        
+
         if (!response.ok) {
             // Manejar específicamente el rate limiting (429)
             if (response.status === 429) {
-                const error = new Error(rawData.message || 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.');
-                (error as any).statusCode = 429;
+                const error = new Error(rawData.message || 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.') as Error & { statusCode?: number };
+                error.statusCode = 429;
                 throw error;
             }
-            
+
             // Para otros errores (401, etc.)
-            const error = new Error(rawData.message || 'Error en el inicio de sesión');
-            (error as any).statusCode = response.status;
+            const error = new Error(rawData.message || 'Error en el inicio de sesión') as Error & { statusCode?: number };
+            error.statusCode = response.status;
             throw error;
         }
-        
+
         // Validar respuesta contra schema Zod
         try {
             const validatedData = LoginResponseSchema.parse(rawData);
             return validatedData;
-        } catch (error) {
+        } catch {
             throw new Error('Invalid server response format');
         }
     },
@@ -50,7 +50,7 @@ export const authService = {
         if (!response.ok) {
             throw new Error('Failed to refresh token');
         }
-        
+
         // Nueva cookie se setea automáticamente por el servidor
         // NO necesitamos hacer nada más
     },
@@ -65,7 +65,7 @@ export const authService = {
         } catch (error) {
             console.warn('Logout error:', error);
         }
-        
+
         // Limpiar metadata local
         const keys = ['role', 'user'];
         keys.forEach(key => {

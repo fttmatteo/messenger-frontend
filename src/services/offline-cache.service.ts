@@ -26,7 +26,7 @@ class OfflineCacheService {
         try {
             await set(KEYS.MESSENGER_SERVICES, services)
             await this.updateCacheMetadata()
-        } catch (error) {
+        } catch {
             // Failed to cache services, continuing anyway
         }
     }
@@ -60,7 +60,7 @@ class OfflineCacheService {
     async clearServices(): Promise<void> {
         try {
             await del(KEYS.MESSENGER_SERVICES)
-        } catch (error) {
+        } catch {
             // Failed to clear cached services, continuing anyway
         }
     }
@@ -114,7 +114,7 @@ class OfflineCacheService {
         try {
             await del(KEYS.MESSENGER_SERVICES)
             await del(KEYS.CACHE_METADATA)
-        } catch (error) {
+        } catch {
             // Failed to clear cache, continuing anyway
         }
     }
