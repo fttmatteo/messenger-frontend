@@ -18,11 +18,7 @@ class Logger {
         return `[${this.prefix}] ${message}`;
     }
 
-    public info(message: string, ...args: unknown[]) {
-        if (isDev) {
-            console.log(this.formatMessage(message), ...args);
-        }
-    }
+
 
     public warn(message: string, ...args: unknown[]) {
         // Warnings are usually important enough to show in prod too, 
@@ -40,11 +36,7 @@ class Logger {
         console.error(this.formatMessage(message), ...args);
     }
 
-    public debug(message: string, ...args: unknown[]) {
-        if (isDev) {
-            console.debug(this.formatMessage(message), ...args);
-        }
-    }
+
 }
 
 export const logger = new Logger('System');

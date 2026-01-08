@@ -76,7 +76,7 @@ export default function MessengerDetails() {
                         setLastUpdate(date && isFinite(date.getTime()) ? date : null)
                     }
                 } catch {
-                    console.debug("No previous location found for messenger", messengerId)
+
                 }
                 setIsActive(false)
             }
