@@ -39,9 +39,11 @@ export default defineConfig({
     webServer: {
         // Use explicit host/port so GitHub runners and Playwright can reach the dev server
         // strictPort makes the command fail fast instead of hanging waiting for a random port
-        command: 'npm run dev -- --host 0.0.0.0 --port 4173 --strictPort --clearScreen false',
+        command: 'npm run dev -- --host 0.0.0.0 --port 4173 --strictPort --clearScreen false --logLevel info',
         url: 'http://127.0.0.1:4173',
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 120 * 1000,
+        stdout: 'pipe',
+        stderr: 'pipe',
     },
 });
