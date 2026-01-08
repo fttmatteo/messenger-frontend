@@ -23,6 +23,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await authService.login(credentials);
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
+        // Limpiar el otro storage para evitar fugas de rol/usuario
+        const oppositeStorage = credentials.rememberMe ? sessionStorage : localStorage;
+        oppositeStorage.removeItem('role');
+        oppositeStorage.removeItem('user');
+
         const userObj: User = {
             document: credentials.document,
             role: data.role,

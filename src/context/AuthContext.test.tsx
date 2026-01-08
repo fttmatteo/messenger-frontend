@@ -55,7 +55,7 @@ describe('AuthContext', () => {
                 isOnline: false
             }
             localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('token', 'fake-token')
+            localStorage.setItem('role', 'ADMIN')
 
             const { result } = renderHook(() => useAuth(), { wrapper })
 
@@ -75,7 +75,7 @@ describe('AuthContext', () => {
                 isOnline: true
             }
             sessionStorage.setItem('user', JSON.stringify(storedUser))
-            sessionStorage.setItem('token', 'fake-token')
+            sessionStorage.setItem('role', 'MESSENGER')
 
             const { result } = renderHook(() => useAuth(), { wrapper })
 
@@ -90,15 +90,10 @@ describe('AuthContext', () => {
 
     describe('login', () => {
         it('should login with rememberMe and store in localStorage', async () => {
-            // Create a mock JWT token with id in payload
-            const mockPayload = { id: 123, sub: '12345', role: 'ADMIN' }
-            const base64Payload = btoa(JSON.stringify(mockPayload))
-            const mockToken = `header.${base64Payload}.signature`
-
             vi.mocked(authService.login).mockResolvedValue({
-                token: mockToken,
-                refreshToken: 'refresh-token',
                 role: 'ADMIN',
+                message: 'ok',
+                user: { id: 123, document: 12345, role: 'ADMIN' }
             })
 
             const { result } = renderHook(() => useAuth(), { wrapper })
@@ -120,8 +115,8 @@ describe('AuthContext', () => {
                 password: 'password',
                 rememberMe: true,
             })
-            expect(localStorage.getItem('token')).toBe(mockToken)
             expect(localStorage.getItem('role')).toBe('ADMIN')
+            expect(localStorage.getItem('user')).toContain('"id":123')
             expect(result.current.isAuthenticated).toBe(true)
             expect(result.current.user?.role).toBe('ADMIN')
         })
@@ -131,14 +126,10 @@ describe('AuthContext', () => {
             localStorage.clear()
             sessionStorage.clear()
 
-            const mockPayload = { id: 456, sub: '67890', role: 'MESSENGER' }
-            const base64Payload = btoa(JSON.stringify(mockPayload))
-            const mockToken = `header.${base64Payload}.signature`
-
             vi.mocked(authService.login).mockResolvedValue({
-                token: mockToken,
-                refreshToken: 'refresh-token',
                 role: 'MESSENGER',
+                message: 'ok',
+                user: { id: 456, document: 67890, role: 'MESSENGER' }
             })
 
             const { result } = renderHook(() => useAuth(), { wrapper })
@@ -155,9 +146,9 @@ describe('AuthContext', () => {
                 })
             })
 
-            expect(sessionStorage.getItem('token')).toBe(mockToken)
             expect(sessionStorage.getItem('role')).toBe('MESSENGER')
-            // localStorage should not have token from this login
+            expect(sessionStorage.getItem('user')).toContain('"id":456')
+            // En jsdom los mocks de localStorage/sessionStorage comparten backing store; validamos que se haya guardado en el store activo
             expect(result.current.user?.role).toBe('MESSENGER')
             expect(result.current.user?.isOnline).toBe(true) // Messenger should be online
         })
@@ -172,7 +163,7 @@ describe('AuthContext', () => {
                 isOnline: false
             }
             localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('token', 'fake-token')
+            localStorage.setItem('role', 'ADMIN')
 
             const { result } = renderHook(() => useAuth(), { wrapper })
 
@@ -199,7 +190,7 @@ describe('AuthContext', () => {
                 isOnline: false
             }
             localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('token', 'fake-token')
+            localStorage.setItem('role', 'MESSENGER')
 
             const { result } = renderHook(() => useAuth(), { wrapper })
 
