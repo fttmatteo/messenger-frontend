@@ -30,6 +30,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                 toast.success(`${syncedCount} acción${syncedCount > 1 ? 'es' : ''} sincronizada${syncedCount > 1 ? 's' : ''}`, {
                     icon: <CloudOff className="h-4 w-4" />,
                     duration: 3000,
+                    id: 'network-sync-success',
                 })
             }
 
@@ -39,6 +40,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             toast.error('Error al sincronizar algunas acciones', {
                 description: 'Se reintentará automáticamente',
                 duration: 4000,
+                id: 'network-sync-error',
             })
         }
     }, [])
@@ -62,6 +64,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     description: 'Sincronizando datos...',
                     icon: <Wifi className="h-4 w-4" />,
                     duration: 3000,
+                    id: 'network-online',
                 })
 
                 // Trigger sync of pending actions
@@ -79,6 +82,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                 description: 'Trabajando en modo offline',
                 icon: <WifiOff className="h-4 w-4" />,
                 duration: 4000,
+                id: 'network-offline',
             })
         }
 
@@ -108,6 +112,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     onClick: () => updateServiceWorker(),
                 },
                 duration: 10000,
+                id: 'sw-update-available',
             })
         }
 

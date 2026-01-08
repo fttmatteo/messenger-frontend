@@ -1,4 +1,4 @@
-import React, { createContext, useContext, type ReactNode } from 'react';
+import React, { createContext, useContext, useRef, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
 interface AdminUIContextType {
@@ -10,30 +10,60 @@ interface AdminUIContextType {
 
 const AdminUIContext = createContext<AdminUIContextType | undefined>(undefined);
 
+// Helper to generate unique IDs
+let toastCounter = 0;
+const generateUniqueId = (prefix: string): string => {
+    return `${prefix}-${Date.now()}-${++toastCounter}`;
+};
+
 export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const lastErrorIdRef = useRef<string | null>(null);
+    const lastSuccessIdRef = useRef<string | null>(null);
 
     // Wrapper around sonner toast.error with optional ID to prevent duplicates
     const setError = (msg: string | null, id?: string) => {
         if (!msg) return;
+        
+        // Generate unique ID if not provided
+        const toastId = id || generateUniqueId('admin-error');
+        
+        // Dismiss previous error toast if it exists
+        if (lastErrorIdRef.current) {
+            toast.dismiss(lastErrorIdRef.current);
+        }
+        
         toast.error(msg, {
-            id: id || msg, // Use message as ID if not provided
+            id: toastId,
             position: 'top-center',
             duration: 3000,
             className: 'bg-red-500 text-white border-red-600',
             descriptionClassName: 'text-white/90'
         });
+        
+        lastErrorIdRef.current = toastId;
     };
 
     // Wrapper around sonner toast.success with optional ID to prevent duplicates
     const setSuccess = (msg: string | null, id?: string) => {
         if (!msg) return;
+        
+        // Generate unique ID if not provided
+        const toastId = id || generateUniqueId('admin-success');
+        
+        // Dismiss previous success toast if it exists
+        if (lastSuccessIdRef.current) {
+            toast.dismiss(lastSuccessIdRef.current);
+        }
+        
         toast.success(msg, {
-            id: id || msg, // Use message as ID if not provided
+            id: toastId,
             position: 'top-center',
             duration: 3000,
             className: 'bg-green-500 text-white border-green-600',
             descriptionClassName: 'text-white/90'
         });
+        
+        lastSuccessIdRef.current = toastId;
     };
 
     const clearError = () => {

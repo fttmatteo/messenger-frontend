@@ -111,6 +111,7 @@ export const openMaps = (
                 },
             },
             duration: 5000,
+            id: 'open-maps-ios',
         });
 
         // Iframe Injection Technique to trigger the app
@@ -132,6 +133,7 @@ export const openMaps = (
         // Fallback to web URL if intent doesn't work
         toast.info("Abriendo Google Maps...", {
             duration: 3000,
+            id: 'open-maps-android',
         });
 
         const iframe = document.createElement('iframe');

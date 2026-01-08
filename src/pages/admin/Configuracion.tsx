@@ -27,7 +27,7 @@ export default function Configuracion() {
 
     const handleResetAll = () => {
         resetToDefaults()
-        toast.success('Colores restaurados a valores por defecto')
+        toast.success('Colores restaurados a valores por defecto', { id: 'reset-colors-success' })
     }
 
     return (

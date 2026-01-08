@@ -143,7 +143,8 @@ export default function UpdateStatus() {
             navigate('/messenger')
         } catch (error) {
             toast.error('Error al actualizar', {
-                description: getErrorMessage(error)
+                description: getErrorMessage(error),
+                id: 'update-status-error',
             })
         } finally {
             setSubmitting(false)

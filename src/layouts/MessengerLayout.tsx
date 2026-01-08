@@ -107,15 +107,15 @@ export default function MessengerLayout() {
                         console.warn('Geolocation partial error:', error.message)
 
                         if (error.code === 1) {
-                            toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...')
+                            toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
                             // Position unavailable - show warning but don't logout
-                            toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000 })
+                            toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000, id: 'messenger-gps-weak' })
                         } else if (error.code === 3) {
                             // Timeout - GPS taking too long
-                            toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000 })
+                            toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000, id: 'messenger-gps-timeout' })
                         }
                     },
                     {
@@ -125,7 +125,7 @@ export default function MessengerLayout() {
                     }
                 )
             } else {
-                toast.error('Geolocalización no soportada')
+                toast.error('Geolocalización no soportada', { id: 'messenger-geolocation-unsupported' })
                 updateUser({ isOnline: false })
             }
         } else {
