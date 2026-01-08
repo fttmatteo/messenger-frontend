@@ -49,11 +49,55 @@ export default function LoginMobile() {
             })
             navigate("/")
         } catch (error) {
-            toast.error(getErrorMessage(error), {
-                id: 'login-error',
-                position: 'top-left',
-                duration: 4000
-            })
+            const err = error as any;
+            
+            // Manejar rate limiting (429)
+            if (err.statusCode === 429) {
+                // Mostrar notificación persistente de Sonner con mismo diseño
+                const toastId = toast.error(
+                    `Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.`,
+                    {
+                        position: 'top-center',
+                        duration: Infinity, // Persistente mientras esté bloqueado
+                        closeButton: false,
+                    }
+                );
+                
+                // Contar hacia atrás y actualizar el toast
+                let counter = 15;
+                const interval = setInterval(() => {
+                    counter--;
+                    
+                    if (counter <= 0) {
+                        clearInterval(interval);
+                        if (toastId) {
+                            toast.dismiss(toastId);
+                        }
+                        toast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
+                            position: 'top-center',
+                            duration: 4000,
+                        });
+                        return;
+                    }
+                    
+                    // Actualizar el toast con el tiempo restante
+                    toast.error(
+                        `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
+                        {
+                            id: toastId,
+                            position: 'top-center',
+                            duration: Infinity,
+                            closeButton: false,
+                        }
+                    );
+                }, 60000); // Actualizar cada minuto
+            } else {
+                // Otros errores
+                toast.error(getErrorMessage(error), {
+                    position: 'top-center',
+                    duration: 4000
+                })
+            }
         }
     }
 
@@ -170,7 +214,11 @@ export default function LoginMobile() {
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full h-11 text-base font-medium mt-1" disabled={isSubmitting}>
+                            <Button 
+                                type="submit" 
+                                className="w-full h-11 text-base font-medium mt-1" 
+                                disabled={isSubmitting}
+                            >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>

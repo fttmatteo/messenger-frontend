@@ -67,7 +67,8 @@ export const EmployeeInfoSchema = z.object({
 
 export const StatusHistoryInfoSchema = z.object({
     idStatusHistory: z.number(),
-    previousStatus: ServiceStatusSchema.nullable(),
+    // previousStatus can be null or any valid status; coerce invalid values to null
+    previousStatus: z.union([ServiceStatusSchema, z.null()]).catch(null),
     newStatus: ServiceStatusSchema,
     changeDate: z.string(),
     changedBy: EmployeeInfoSchema,

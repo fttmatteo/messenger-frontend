@@ -52,6 +52,7 @@ export interface EmployeeInfo {
 
 export interface StatusHistoryInfo {
     idStatusHistory: number
+    // previousStatus can be null when service transitions from initial state
     previousStatus: ServiceStatus | null
     newStatus: ServiceStatus
     changeDate: string

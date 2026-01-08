@@ -14,12 +14,21 @@ export const authService = {
             body: JSON.stringify(credentials),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || 'Error en el inicio de sesión');
-        }
-
         const rawData = await response.json();
+        
+        if (!response.ok) {
+            // Manejar específicamente el rate limiting (429)
+            if (response.status === 429) {
+                const error = new Error(rawData.message || 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.');
+                (error as any).statusCode = 429;
+                throw error;
+            }
+            
+            // Para otros errores (401, etc.)
+            const error = new Error(rawData.message || 'Error en el inicio de sesión');
+            (error as any).statusCode = response.status;
+            throw error;
+        }
         
         // Validar respuesta contra schema Zod
         try {

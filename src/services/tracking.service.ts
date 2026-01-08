@@ -143,7 +143,10 @@ class TrackingService {
     }
 
     public connect(onConnectCallback?: () => void) {
-        // Las cookies se envían automáticamente, no necesitamos actualizar headers
+        // WebSocket cookies se envían automáticamente (como en HTTP requests)
+        // No necesitamos pasar token manualmente en header
+        // Las cookies HttpOnly están protegidas contra XSS
+        
         if (onConnectCallback) {
             const originalOnConnect = this.client.onConnect;
             this.client.onConnect = (frame) => {
