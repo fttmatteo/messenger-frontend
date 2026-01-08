@@ -323,7 +323,7 @@ export default function MessengerLayout() {
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <AlertDialogContent className="max-w-[90vw] rounded-xl">
+                <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background/80 backdrop-blur-md">
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
