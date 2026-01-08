@@ -291,7 +291,7 @@ export default function ServiceDetails() {
                             <div className="flex items-center gap-2 text-sm">
                                 <User className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Mensajero:</span>
-                                <span className="font-medium">{service.messenger.fullName}</span>
+                                <span className="font-medium">{service.messenger?.fullName ?? 'No asignado'}</span>
                             </div>
                         </div>
                     </Card>

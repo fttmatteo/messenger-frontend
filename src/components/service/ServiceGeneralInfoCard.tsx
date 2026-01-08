@@ -15,6 +15,8 @@ interface ServiceGeneralInfoCardProps {
 
 export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInfoCardProps) {
     // Removed const PlateIcon = ...
+    const messengerName = service.messenger?.fullName ?? 'No asignado'
+    const messengerPhone = service.messenger?.phone
 
     return (
         <Card className={`h-[calc(100vh-135px)] min-h-[500px] flex flex-col ${className}`}>
@@ -65,20 +67,22 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                     <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Mensajero</p>
-                        <p className="text-sm text-muted-foreground">{service.messenger.fullName}</p>
-                        <p className="text-xs text-muted-foreground">
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <a href={`tel:${service.messenger.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                        <PhoneCall className="h-3 w-3" />
-                                        {service.messenger.phone}
-                                    </a>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Llamar</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </p>
+                        <p className="text-sm text-muted-foreground">{messengerName}</p>
+                        {messengerPhone && (
+                            <p className="text-xs text-muted-foreground">
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <a href={`tel:${messengerPhone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                            <PhoneCall className="h-3 w-3" />
+                                            {messengerPhone}
+                                        </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Llamar</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </p>
+                        )}
                     </div>
                 </div>
 

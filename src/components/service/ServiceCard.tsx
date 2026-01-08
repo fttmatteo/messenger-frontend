@@ -24,6 +24,7 @@ interface ServiceCardProps {
  */
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
+    const messengerName = formatDisplayName(service.messenger?.fullName ?? 'No asignado')
 
 
 
@@ -62,10 +63,10 @@ export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardPro
                                     <User className="h-3.5 w-3.5 shrink-0" />
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <span className="truncate cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
+                                            <span className="truncate cursor-default">{messengerName}</span>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            <p>{service.messenger.fullName}</p>
+                                            <p>{service.messenger?.fullName ?? 'No asignado'}</p>
                                         </TooltipContent>
                                     </Tooltip>
                                 </div>

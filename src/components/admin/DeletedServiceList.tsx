@@ -41,7 +41,7 @@ export function DeletedServiceCard({ service, isRestoring, onRestore, itemVarian
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <User className="h-3.5 w-3.5" />
-                                    <span>{formatDisplayName(service.messenger.fullName)}</span>
+                                    <span>{formatDisplayName(service.messenger?.fullName ?? 'No asignado')}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Clock className="h-3.5 w-3.5" />

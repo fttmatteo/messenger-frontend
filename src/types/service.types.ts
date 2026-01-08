@@ -56,7 +56,7 @@ export interface StatusHistoryInfo {
     newStatus: ServiceStatus
     changeDate: string
     changedBy: EmployeeInfo
-    photos: PhotoInfo[]
+    photos?: PhotoInfo[]
     deliveryLatitude?: number
     deliveryLongitude?: number
     signature?: SignatureInfo

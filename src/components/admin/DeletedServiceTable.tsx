@@ -25,6 +25,7 @@ interface DeletedServiceRowProps {
 export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore, onDelete, itemVariants }: DeletedServiceRowProps) {
     const [actionType, setActionType] = useState<'restore' | 'permanent-delete' | null>(null)
     const daysRemaining = getDaysRemaining(service.createdAt)
+    const messengerName = formatDisplayName(service.messenger?.fullName ?? 'No asignado')
 
     return (
         <>
@@ -44,10 +45,10 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                 <TableCell className="text-sm">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <span className="cursor-default">{formatDisplayName(service.messenger.fullName)}</span>
+                            <span className="cursor-default">{messengerName}</span>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{service.messenger.fullName}</p>
+                            <p>{service.messenger?.fullName ?? 'No asignado'}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TableCell>
