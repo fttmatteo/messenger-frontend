@@ -1,20 +1,14 @@
 import axios from 'axios';
 import type { LiveTrackingUpdate } from './tracking.service';
-import { authService } from './auth.service';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const api = axios.create({
     baseURL: API_URL,
+    withCredentials: true, // Enviar cookies automáticamente
 });
 
-api.interceptors.request.use((config) => {
-    const token = authService.getToken();
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+// Ya no necesitamos interceptor - las cookies se envían automáticamente
 
 export const trackingApiService = {
     getActiveMessengers: async (): Promise<LiveTrackingUpdate[]> => {

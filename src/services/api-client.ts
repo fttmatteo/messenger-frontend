@@ -7,15 +7,15 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 export const apiClient = axios.create({
     baseURL: API_URL,
     timeout: 30000,
+    withCredentials: true, // CRÍTICO: Enviar cookies en cada request
 })
 
-// Request interceptor - add auth token
+// Request interceptor - Ya NO necesitamos añadir Authorization header manualmente
+// Las cookies se envían automáticamente gracias a withCredentials: true
 apiClient.interceptors.request.use(
     (config) => {
-        const token = authService.getToken()
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
-        }
+        // Las cookies HttpOnly se envían automáticamente
+        // Ya no necesitamos manipular el header Authorization
         return config
     },
     (error) => {
@@ -58,8 +58,9 @@ apiClient.interceptors.response.use(
                 return new Promise(function (resolve, reject) {
                     failedQueue.push({ resolve, reject })
                 })
-                    .then((token) => {
-                        originalRequest.headers.Authorization = 'Bearer ' + token
+                    .then(() => {
+                        // Ya no necesitamos pasar el token
+                        // La cookie se envía automáticamente
                         return apiClient(originalRequest)
                     })
                     .catch((err) => {
@@ -71,12 +72,14 @@ apiClient.interceptors.response.use(
             isRefreshing = true
 
             try {
-                const { token } = await authService.refreshToken()
-                apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + token
-                processQueue(null, token)
+                // Refresh token automáticamente desde cookie
+                await authService.refreshToken()
+                
+                // Ya no necesitamos setear headers manualmente
+                // La cookie nueva se envía automáticamente
+                processQueue(null, 'refreshed')
 
-                // Retry original request
-                originalRequest.headers.Authorization = 'Bearer ' + token
+                // Retry original request (cookie se envía automáticamente)
                 return apiClient(originalRequest)
             } catch (err) {
                 processQueue(err, null)

@@ -2,13 +2,26 @@ import type { AuthResponse, LoginCredentials } from '@/types';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
 
+// Nueva interfaz para la respuesta de login con cookies
+interface LoginResponse {
+    role: string;
+    message: string;
+    user?: {
+        id?: number;
+        name?: string;
+        document?: number;
+        dealershipName?: string;
+    };
+}
+
 export const authService = {
-    async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    async login(credentials: LoginCredentials): Promise<LoginResponse> {
         const response = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include', // CRÍTICO: Enviar y recibir cookies
             body: JSON.stringify(credentials),
         });
 
@@ -17,39 +30,50 @@ export const authService = {
             throw new Error(errorData.message || 'Error en el inicio de sesión');
         }
 
-        return response.json();
+        const data: LoginResponse = await response.json();
+        
+        // Ya NO guardamos tokens en localStorage
+        // Los tokens están en cookies HttpOnly (más seguro)
+        
+        // Solo guardar metadata del usuario (NO sensible)
+        const storage = localStorage; // Puedes cambiar a sessionStorage si prefieres
+        storage.setItem('role', data.role);
+        if (data.user) {
+            storage.setItem('user', JSON.stringify(data.user));
+        }
+        
+        return data;
     },
 
-    async refreshToken(): Promise<AuthResponse> {
-        const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
-
-        if (!refreshToken) {
-            throw new Error('No refresh token available');
-        }
-
+    async refreshToken(): Promise<void> {
+        // El refresh token está en cookie automáticamente
+        // NO necesitamos enviarlo en el body
         const response = await fetch(`${API_URL}/refresh`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ refreshToken }),
+            credentials: 'include', // Envía cookie automáticamente
         });
 
         if (!response.ok) {
             throw new Error('Failed to refresh token');
         }
-
-        const data: AuthResponse = await response.json();
-        const storage = localStorage.getItem('refreshToken') ? localStorage : sessionStorage;
-
-        storage.setItem('token', data.token);
-        storage.setItem('refreshToken', data.refreshToken);
-
-        return data;
+        
+        // Nueva cookie se setea automáticamente por el servidor
+        // NO necesitamos hacer nada más
     },
 
-    logout() {
-        const keys = ['token', 'refreshToken', 'role', 'user'];
+    async logout() {
+        try {
+            // Llamar endpoint de logout para limpiar cookies del servidor
+            await fetch(`${API_URL}/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error('Error en logout:', error);
+        }
+        
+        // Limpiar metadata local
+        const keys = ['role', 'user'];
         keys.forEach(key => {
             localStorage.removeItem(key);
             sessionStorage.removeItem(key);
@@ -63,7 +87,10 @@ export const authService = {
     },
 
     getToken() {
-        return localStorage.getItem('token') || sessionStorage.getItem('token');
+        // Ya NO necesitamos este método
+        // Las cookies se envían automáticamente con cada request
+        // Mantenemos por compatibilidad pero retorna null
+        return null;
     },
 
     getRole() {

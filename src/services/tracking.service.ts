@@ -1,5 +1,4 @@
 import { Client } from '@stomp/stompjs';
-import { authService } from './auth.service';
 import { createLogger } from '@/utils/logger';
 
 const logger = createLogger('TrackingService');
@@ -15,9 +14,13 @@ const getWebSocketUrl = () => {
     return base.replace('http', 'ws') + '/ws/tracking';
 };
 
-const getAuthToken = () => {
-    return authService.getToken() || '';
-};
+// NOTA: WebSocket no soporta cookies HttpOnly automáticamente
+// Para autenticación WebSocket, necesitamos implementar una de estas soluciones:
+// 1. Token de sesión específico para WebSocket obtenido vía endpoint HTTP
+// 2. Autenticación después del handshake inicial
+// 3. Ticket de un solo uso obtenido del backend
+// Por ahora, mantenemos sin autenticación en el header inicial
+// La autenticación se valida en el backend por mensajes individuales
 
 export interface LiveTrackingUpdate {
     messengerId: number;
@@ -54,9 +57,8 @@ class TrackingService {
             reconnectDelay: INITIAL_RECONNECT_DELAY,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
-            connectHeaders: {
-                Authorization: `Bearer ${getAuthToken()}`
-            },
+            // Las cookies se envían automáticamente con la conexión WebSocket
+            // No necesitamos Authorization header
         });
 
         this.client.onConnect = () => {
@@ -141,11 +143,7 @@ class TrackingService {
     }
 
     public connect(onConnectCallback?: () => void) {
-        // Update token before connecting (in case it changed)
-        this.client.connectHeaders = {
-            Authorization: `Bearer ${getAuthToken()}`
-        };
-
+        // Las cookies se envían automáticamente, no necesitamos actualizar headers
         if (onConnectCallback) {
             const originalOnConnect = this.client.onConnect;
             this.client.onConnect = (frame) => {
