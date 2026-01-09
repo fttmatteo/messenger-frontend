@@ -12,6 +12,12 @@ export const apiClient = axios.create({
     withCredentials: true, // CRÍTICO: Enviar cookies en cada request
 })
 
+// Defensivo: Limpiar residuo de 'token' en localStorage si existe (legacy)
+// Esto evita que alguna librería o componente legacy intente decodificarlo si quedó basura.
+if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+    localStorage.removeItem('token');
+}
+
 // Request interceptor - Correlation ID and cookies handled automatically
 apiClient.interceptors.request.use(
     (config) => {
