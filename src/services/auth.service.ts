@@ -1,67 +1,31 @@
 import type { LoginCredentials, LoginResponse } from '@/types';
 import { LoginResponseSchema } from '@/schemas/api-schemas';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/auth';
+import apiClient from './api-client';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include', // CRÍTICO: Enviar y recibir cookies
-            body: JSON.stringify(credentials),
-        });
-
-        const rawData = await response.json();
-
-        if (!response.ok) {
-            // Manejar específicamente el rate limiting (429)
-            if (response.status === 429) {
-                const error = new Error(rawData.message || 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.') as Error & { statusCode?: number };
-                error.statusCode = 429;
-                throw error;
-            }
-
-            // Para otros errores (401, etc.)
-            const error = new Error(rawData.message || 'Error en el inicio de sesión') as Error & { statusCode?: number };
-            error.statusCode = response.status;
-            throw error;
-        }
+        const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+        const rawData = response.data;
 
         // Validar respuesta contra schema Zod
         try {
             const validatedData = LoginResponseSchema.parse(rawData);
             return validatedData;
-        } catch {
+        } catch (error) {
+            console.error('Validation error:', error);
             throw new Error('Invalid server response format');
         }
     },
 
     async refreshToken(): Promise<void> {
-        // El refresh token está en cookie automáticamente
-        // NO necesitamos enviarlo en el body
-        const response = await fetch(`${API_URL}/refresh`, {
-            method: 'POST',
-            credentials: 'include', // Envía cookie automáticamente
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to refresh token');
-        }
-
-        // Nueva cookie se setea automáticamente por el servidor
-        // NO necesitamos hacer nada más
+        // El interceptor de Axios ya maneja withCredentials: true
+        await apiClient.post('/auth/refresh');
     },
 
     async logout() {
         try {
             // Llamar endpoint de logout para limpiar cookies del servidor
-            await fetch(`${API_URL}/logout`, {
-                method: 'POST',
-                credentials: 'include'
-            });
+            await apiClient.post('/auth/logout');
         } catch (error) {
             console.warn('Logout error:', error);
         }
@@ -72,6 +36,9 @@ export const authService = {
             localStorage.removeItem(key);
             sessionStorage.removeItem(key);
         });
+
+        // Limpiar token fallback
+        sessionStorage.removeItem('accessToken');
     },
 
     getCurrentUser() {
@@ -81,24 +48,13 @@ export const authService = {
     },
 
     getToken() {
-        // Ya NO necesitamos este método
-        // Las cookies se envían automáticamente con cada request
-        // Mantenemos por compatibilidad pero retorna null
-        return null;
+        // Retornar el token de sessionStorage como fallback si es necesario
+        return sessionStorage.getItem('accessToken');
     },
 
     async getWsToken(): Promise<string> {
-        const response = await fetch(`${API_URL}/ws-token`, {
-            method: 'POST',
-            credentials: 'include',
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to get WebSocket token');
-        }
-
-        const data = await response.json();
-        return data.wsToken;
+        const response = await apiClient.post<{ wsToken: string }>('/auth/ws-token');
+        return response.data.wsToken;
     },
 
     getRole() {
