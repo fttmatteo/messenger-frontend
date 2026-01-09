@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { authService } from './auth.service'
 import { logger } from '../utils/logger'
-import { v4 as uuidv4 } from 'uuid'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -18,19 +17,35 @@ if (typeof window !== 'undefined' && localStorage.getItem('token')) {
     localStorage.removeItem('token');
 }
 
-// Request interceptor - Correlation ID and cookies handled automatically
+// Interceptor de petición: añadir token si existe en sessionStorage (fallback para cookies)
 apiClient.interceptors.request.use(
     (config) => {
-        // Generar o usar Correlation ID para trazabilidad
-        const correlationId = uuidv4();
-        config.headers['X-Correlation-ID'] = correlationId;
+        const token = sessionStorage.getItem('accessToken');
+        if (token && !config.headers.Authorization) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
 
-        return config
+        const correlationId = crypto.randomUUID();
+        config.headers['X-Correlation-Id'] = correlationId;
+        return config;
     },
-    (error) => {
-        return Promise.reject(error)
+    (error) => Promise.reject(error)
+);
+
+// Interceptor de respuesta: capturar token del body si llega
+apiClient.interceptors.response.use(
+    (response) => {
+        // Si la respuesta trae un accessToken en el body, lo guardamos como fallback
+        if (response.data && response.data.accessToken) {
+            sessionStorage.setItem('accessToken', response.data.accessToken);
+        }
+        return response;
+    },
+    async (error) => {
+        // This part is handled by the subsequent interceptor, so we just pass the error along
+        return Promise.reject(error);
     }
-)
+);
 
 // Flag to track if token refresh is already in progress
 let isRefreshing = false
