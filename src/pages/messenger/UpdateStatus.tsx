@@ -387,7 +387,7 @@ export default function UpdateStatus() {
             </div>
 
             {/* Fixed Bottom Action */}
-            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/30 bg-background/80 backdrop-blur-xl">
+            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/40 bg-background/80 backdrop-blur-xl">
                 <Button
                     className="w-full h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
                     style={{

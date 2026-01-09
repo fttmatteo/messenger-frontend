@@ -173,7 +173,7 @@ export default function MessengerCreateServicio() {
     // Loading skeleton while fetching dealerships
     if (loadingData) {
         return (
-            <div className="">
+            <div className="pb-24">
                 <div className="">
                     {/* Photo Section Skeleton */}
                     <div className="p-4 pb-2">
@@ -210,7 +210,7 @@ export default function MessengerCreateServicio() {
     }
 
     return (
-        <div className="">
+        <div className="pb-24">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
                     {/* Content */}
@@ -370,7 +370,7 @@ export default function MessengerCreateServicio() {
                     </div>
 
                     {/* Fixed Bottom Action */}
-                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/30 bg-background/80 backdrop-blur-xl">
+                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/40 bg-background/80 backdrop-blur-xl">
                         <div className="flex gap-3">
                             <Button
                                 type="button"

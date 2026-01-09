@@ -19,7 +19,7 @@ interface DeletedServiceCardProps {
 
 export function DeletedServiceCard({ service, isRestoring, onRestore, itemVariants }: DeletedServiceCardProps) {
     const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
-    const daysRemaining = getDaysRemaining(service.createdAt)
+    const daysRemaining = getDaysRemaining(service.deletedAt ?? service.createdAt)
 
     return (
         <motion.div

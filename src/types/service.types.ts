@@ -77,6 +77,8 @@ export interface ServiceDelivery {
     photos: PhotoInfo[]
     history: StatusHistoryInfo[]
     createdAt: string
+    /** Date when service was moved to trash (soft deleted). Only present for deleted services. */
+    deletedAt?: string
 }
 
 // Request types

@@ -24,7 +24,7 @@ interface DeletedServiceRowProps {
 
 export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore, onDelete, itemVariants }: DeletedServiceRowProps) {
     const [actionType, setActionType] = useState<'restore' | 'permanent-delete' | null>(null)
-    const daysRemaining = getDaysRemaining(service.createdAt)
+    const daysRemaining = getDaysRemaining(service.deletedAt ?? service.createdAt)
     const messengerName = formatDisplayName(service.messenger?.fullName ?? 'No asignado')
 
     return (
@@ -55,7 +55,7 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                 <TableCell className="text-sm">
                     <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        {format(new Date(service.createdAt), "dd/MM/yyyy", { locale: es })}
+                        {format(new Date(service.deletedAt ?? service.createdAt), "dd/MM/yyyy", { locale: es })}
                     </div>
                 </TableCell>
                 <TableCell>

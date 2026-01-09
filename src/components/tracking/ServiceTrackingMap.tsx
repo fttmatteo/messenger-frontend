@@ -144,8 +144,10 @@ export function ServiceTrackingMap({
                     meters: result.distanceMeters,
                     seconds: result.durationSeconds
                 })
-            } catch (error) {
-                console.error("Error calculating distance:", error)
+            } catch {
+                // Silently fail - distance calculation may not be possible 
+                // (e.g., intercontinental distances, no driving route available)
+                setDistance(null)
             } finally {
                 setLoadingDistance(false)
             }
