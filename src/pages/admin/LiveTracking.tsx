@@ -158,6 +158,7 @@ export default function LiveTracking() {
                 })
             } catch (err) {
                 console.error('Failed to get WS token, falling back to cookie-only', err)
+                setError('Error al obtener ticket de conexión WebSocket. Podría haber redundancia en cookies.')
                 trackingService.connect(undefined, () => {
                     setConnected(true)
                     trackingService.subscribeToAll(handleTrackingUpdate)

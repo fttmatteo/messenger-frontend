@@ -140,9 +140,19 @@ class TrackingService {
         // WebSocket cookies se envían automáticamente (como en HTTP requests)
         // Pero para Safari Mobile, usamos el token temporal si está disponible
         if (token) {
+            // 1. Añadimos el token a los headers de STOMP (para compatibilidad con tests y otros browsers)
             this.client.connectHeaders = {
                 'Authorization': `Bearer ${token}`
             };
+
+            // 2. FUNDAMENTAL PARA SAFARI MOBILE: Añadimos el token a la URL del Handshake HTTP
+            const baseUrl = getWebSocketUrl();
+            const separator = baseUrl.includes('?') ? '&' : '?';
+            this.client.brokerURL = `${baseUrl}${separator}token=${token}`;
+        } else {
+            // Reset URL a la base si no hay token
+            this.client.brokerURL = getWebSocketUrl();
+            this.client.connectHeaders = {};
         }
 
         if (onConnectCallback) {

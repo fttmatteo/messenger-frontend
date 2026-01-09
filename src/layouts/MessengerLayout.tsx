@@ -85,6 +85,10 @@ export default function MessengerLayout() {
                     })
                 } catch (err) {
                     logger.error('Failed to get WS token, falling back to cookie-only', err)
+                    toast.error('Error al obtener ticket de conexión. Intentando vía cookies...', {
+                        id: 'ws-ticket-error',
+                        description: 'Safari Mobile podría tener problemas de conexión.'
+                    })
                     trackingService.connect(undefined, () => {
                         trackingService.sendUpdate({
                             messengerId: userId,
