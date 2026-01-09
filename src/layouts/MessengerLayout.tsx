@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
+import { authService } from "@/services/auth.service"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -70,13 +71,30 @@ export default function MessengerLayout() {
                 // Using document as fallback for messengerId
             }
 
-            trackingService.connect(() => {
-                // Send immediate status update to appear online instantly
-                trackingService.sendUpdate({
-                    messengerId: userId,
-                    status: 'ACTIVE'
-                })
-            })
+
+
+            const startTracking = async () => {
+                try {
+                    const token = await authService.getWsToken()
+                    trackingService.connect(token, () => {
+                        // Send immediate status update to appear online instantly
+                        trackingService.sendUpdate({
+                            messengerId: userId,
+                            status: 'ACTIVE'
+                        })
+                    })
+                } catch (err) {
+                    logger.error('Failed to get WS token, falling back to cookie-only', err)
+                    trackingService.connect(undefined, () => {
+                        trackingService.sendUpdate({
+                            messengerId: userId,
+                            status: 'ACTIVE'
+                        })
+                    })
+                }
+            }
+
+            startTracking()
 
             if ('geolocation' in navigator) {
                 // Initial fast fix to populate map and status immediately

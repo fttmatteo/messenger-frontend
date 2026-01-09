@@ -9,6 +9,7 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
 import { RefreshCw, Wifi, WifiOff } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
+import { authService } from "@/services/auth.service"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { isMessengerOnline } from "@/lib/messenger-utils"
@@ -148,10 +149,23 @@ export default function LiveTracking() {
     useEffect(() => {
         fetchMessengers()
 
-        trackingService.connect(() => {
-            setConnected(true)
-            trackingService.subscribeToAll(handleTrackingUpdate)
-        })
+        const startTracking = async () => {
+            try {
+                const token = await authService.getWsToken()
+                trackingService.connect(token, () => {
+                    setConnected(true)
+                    trackingService.subscribeToAll(handleTrackingUpdate)
+                })
+            } catch (err) {
+                console.error('Failed to get WS token, falling back to cookie-only', err)
+                trackingService.connect(undefined, () => {
+                    setConnected(true)
+                    trackingService.subscribeToAll(handleTrackingUpdate)
+                })
+            }
+        }
+
+        startTracking()
 
         return () => {
             trackingService.disconnect()

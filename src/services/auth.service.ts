@@ -87,6 +87,20 @@ export const authService = {
         return null;
     },
 
+    async getWsToken(): Promise<string> {
+        const response = await fetch(`${API_URL}/ws-token`, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get WebSocket token');
+        }
+
+        const data = await response.json();
+        return data.wsToken;
+    },
+
     getRole() {
         return localStorage.getItem('role') || sessionStorage.getItem('role');
     }

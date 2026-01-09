@@ -136,10 +136,14 @@ class TrackingService {
         });
     }
 
-    public connect(onConnectCallback?: () => void) {
+    public connect(token?: string, onConnectCallback?: () => void) {
         // WebSocket cookies se envían automáticamente (como en HTTP requests)
-        // No necesitamos pasar token manualmente en header
-        // Las cookies HttpOnly están protegidas contra XSS
+        // Pero para Safari Mobile, usamos el token temporal si está disponible
+        if (token) {
+            this.client.connectHeaders = {
+                'Authorization': `Bearer ${token}`
+            };
+        }
 
         if (onConnectCallback) {
             const originalOnConnect = this.client.onConnect;
