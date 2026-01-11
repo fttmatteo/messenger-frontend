@@ -24,6 +24,31 @@ function ThemeColorSync() {
         return () => mediaQuery.removeEventListener('change', handleChange)
     }, [theme, setTheme])
 
+    // Fallback for iOS PWAs: re-evaluate theme when app returns to foreground
+    // iOS doesn't always fire matchMedia change events in PWA mode
+    useEffect(() => {
+        if (theme !== 'system') return
+
+        let lastSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                const currentSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+                // Only update if system theme changed while app was in background
+                if (currentSystemTheme !== lastSystemTheme) {
+                    lastSystemTheme = currentSystemTheme
+                    forceUpdate(prev => prev + 1)
+                    setTheme('light')
+                    setTimeout(() => setTheme('system'), 10)
+                }
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }, [theme, setTheme])
+
     useEffect(() => {
         // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
         const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
