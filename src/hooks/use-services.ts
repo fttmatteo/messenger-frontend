@@ -47,7 +47,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
     const [loading, setLoading] = useState(true)
 
     // Pagination state
-    const [currentPage, setCurrentPage] = useState(0)
+    const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [totalElements, setTotalElements] = useState(0)
     const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -64,7 +64,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
         try {
             setLoading(true)
             const response = await serviceDeliveryService.getAllPaginated({
-                page: currentPage,
+                page: currentPage - 1,
                 size: itemsPerPage,
                 sortBy: sortField,
                 sortDirection: sortDirection,
@@ -96,12 +96,12 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
             setSortDirection("asc")
         }
         // Reset to first page when sorting changes
-        setCurrentPage(0)
+        setCurrentPage(1)
     }, [sortField])
 
     // Custom setCurrentPage that validates the page number
     const handleSetCurrentPage = useCallback((page: number) => {
-        if (page >= 0 && (totalPages === 0 || page < totalPages)) {
+        if (page >= 1 && (totalPages === 0 || page <= totalPages)) {
             setCurrentPage(page)
         }
     }, [totalPages])
@@ -109,7 +109,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
     // Custom setItemsPerPage that resets to first page
     const handleSetItemsPerPage = useCallback((items: number) => {
         setItemsPerPage(items)
-        setCurrentPage(0)
+        setCurrentPage(1)
     }, [])
 
     // Fetch when parameters change
@@ -119,7 +119,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
 
     // Reset to first page when status filter or search query changes
     useEffect(() => {
-        setCurrentPage(0)
+        setCurrentPage(1)
     }, [statusFilter, searchQuery])
 
     return {
