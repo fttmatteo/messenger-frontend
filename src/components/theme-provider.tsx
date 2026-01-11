@@ -2,52 +2,72 @@ import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme 
 import { useEffect, useState } from "react"
 
 function ThemeColorSync() {
-    const { resolvedTheme, theme, setTheme } = useTheme()
+    const { resolvedTheme, theme } = useTheme()
     const [, forceUpdate] = useState(0)
 
     // Listen for system theme changes when in "system" mode
-    // This is needed for PWAs installed on desktop which don't always receive theme change events
+    // This works for both PWAs and regular web browsers
     useEffect(() => {
         if (theme !== 'system') return
 
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
-        const handleChange = () => {
-            // Force a re-render to pick up the new system theme
+        const applySystemTheme = (isDark: boolean) => {
+            const html = document.documentElement
+            // Immediately apply the correct class for instant visual feedback
+            if (isDark) {
+                html.classList.add('dark')
+                html.classList.remove('light')
+                html.style.colorScheme = 'dark'
+            } else {
+                html.classList.remove('dark')
+                html.classList.add('light')
+                html.style.colorScheme = 'light'
+            }
+            // Force React to re-render and sync with next-themes
             forceUpdate(prev => prev + 1)
-            // Temporarily switch away and back to system to force next-themes to re-evaluate
-            setTheme('light')
-            setTimeout(() => setTheme('system'), 10)
+        }
+
+        const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+            applySystemTheme(e.matches)
         }
 
         mediaQuery.addEventListener('change', handleChange)
         return () => mediaQuery.removeEventListener('change', handleChange)
-    }, [theme, setTheme])
+    }, [theme])
 
     // Fallback for iOS PWAs: re-evaluate theme when app returns to foreground
     // iOS doesn't always fire matchMedia change events in PWA mode
     useEffect(() => {
         if (theme !== 'system') return
 
-        let lastSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        let lastSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
-                const currentSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                const currentSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 
                 // Only update if system theme changed while app was in background
                 if (currentSystemTheme !== lastSystemTheme) {
                     lastSystemTheme = currentSystemTheme
+                    const html = document.documentElement
+                    if (currentSystemTheme) {
+                        html.classList.add('dark')
+                        html.classList.remove('light')
+                        html.style.colorScheme = 'dark'
+                    } else {
+                        html.classList.remove('dark')
+                        html.classList.add('light')
+                        html.style.colorScheme = 'light'
+                    }
                     forceUpdate(prev => prev + 1)
-                    setTheme('light')
-                    setTimeout(() => setTheme('system'), 10)
                 }
             }
         }
 
         document.addEventListener('visibilitychange', handleVisibilityChange)
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }, [theme, setTheme])
+    }, [theme])
 
     useEffect(() => {
         // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
