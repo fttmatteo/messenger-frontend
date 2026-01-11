@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { TableRowSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -313,6 +313,9 @@ export default function Concesionarios() {
                             <MapPin className="h-5 w-5 text-green-500" />
                             {locationPopup?.name}
                         </DialogTitle>
+                        <DialogDescription>
+                            Ubicación geográfica del concesionario en el mapa.
+                        </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                         <div className="h-64 rounded-lg overflow-hidden border">
