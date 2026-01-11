@@ -6,7 +6,12 @@ interface FullScreenLoaderProps {
 
 export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScreenLoaderProps) {
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+        <div
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-md animate-in fade-in duration-300"
+            role="alert"
+            aria-busy="true"
+            aria-label={message}
+        >
             <div className="relative flex flex-col items-center">
 
 
@@ -15,7 +20,7 @@ export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScree
                     <div className="relative">
                         <div className="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Package className="h-8 w-8 text-primary animate-bounce-slow" />
+                            <Package className="h-8 w-8 text-primary animate-bounce-slow" aria-hidden="true" />
                         </div>
                     </div>
 

@@ -52,9 +52,10 @@ export function BottomNavigation() {
                                 className="flex flex-col items-center justify-center gap-1 rounded-full text-primary hover:bg-primary/10 transition-all duration-200"
                                 aria-label={item.label}
                                 aria-current={active ? "page" : undefined}
+                                title={item.label}
                             >
                                 <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground">
-                                    <Icon className="h-6 w-6" />
+                                    <Icon className="h-6 w-6" aria-hidden="true" />
                                 </div>
                             </button>
                         )

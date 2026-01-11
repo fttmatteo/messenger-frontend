@@ -79,7 +79,7 @@ export default function Configuracion() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title center, Actions right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 {/* Left: Navigation */}
@@ -123,7 +123,7 @@ export default function Configuracion() {
             {activeSection === null ? (
                 /* Settings Menu */
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                    <CardContent className="p-4 space-y-2">
+                    <CardContent className="p-4 space-y-2 overflow-y-auto">
                         {SETTINGS_SECTIONS.map((section) => {
                             const IconComponent = section.icon
                             return (
@@ -153,7 +153,7 @@ export default function Configuracion() {
                             Selecciona el tema de la aplicación
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4">
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             {themeOptions.map((option) => {
                                 const isSelected = theme === option.value
@@ -203,7 +203,7 @@ export default function Configuracion() {
                             Click en un estado para cambiar su color
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4">
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
                         {/* Color Pickers Grid */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                             {STATUS_ORDER.map(status => (

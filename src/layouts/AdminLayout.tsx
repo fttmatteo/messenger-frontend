@@ -45,7 +45,11 @@ function AdminLayoutContent() {
     const isTrackingPage = location.pathname === '/admin/tracking'
 
     // Detect if we're on pages where search should be hidden
-    const hideSearch = location.pathname === '/admin' || location.pathname.startsWith('/admin/configuracion')
+    const hideSearch =
+        location.pathname === '/admin' ||
+        location.pathname.startsWith('/admin/configuracion') ||
+        location.pathname.includes('/crear') ||
+        location.pathname.includes('/editar')
 
     const handleSearchChange = (value: string) => {
         if (value) {
@@ -69,10 +73,10 @@ function AdminLayoutContent() {
     }
 
     // Scroll to top functionality
-    const mainRef = useRef<HTMLElement>(null)
+    const mainRef = useRef<HTMLDivElement>(null)
 
     return (
-        <SidebarProvider>
+        <SidebarProvider className="h-screen w-screen overflow-hidden">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -212,9 +216,9 @@ function AdminLayoutContent() {
                         )}
                     </header>
                 )}
-                <main id="main-content" ref={mainRef} className={cn("flex-1 overflow-x-hidden overflow-y-auto", isTrackingPage ? "p-0" : "p-2")} role="main">
+                <div id="main-content" ref={mainRef} className={cn("flex-1 overflow-hidden flex flex-col", isTrackingPage ? "p-0" : "p-2")} role="main">
                     <Outlet context={{ searchQuery }} />
-                </main>
+                </div>
             </SidebarInset>
 
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>

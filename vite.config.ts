@@ -54,13 +54,11 @@ export default defineConfig(({ mode }) => {
               src: '/screenshots/desktop.png',
               sizes: '1280x720',
               type: 'image/png',
-              form_factor: 'wide',
             },
             {
               src: '/screenshots/mobile.png',
               sizes: '390x844',
               type: 'image/png',
-              form_factor: 'narrow',
             },
           ],
         },

@@ -63,7 +63,7 @@ export default function Servicios() {
         : undefined
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title+Filters center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -99,24 +99,26 @@ export default function Servicios() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                <CardContent className="flex-1 flex flex-col min-h-0">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">
+                <CardContent className="flex-1 flex flex-col min-h-0 !overflow-hidden">
                     {loading ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Placa</TableHead>
-                                    <TableHead>Concesionario</TableHead>
-                                    <TableHead>Mensajero</TableHead>
-                                    <TableHead>Estado</TableHead>
-                                    <TableHead>Creado</TableHead>
-                                    <TableHead>Acción</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
-                            </TableBody>
-                        </Table>
+                        <div className="flex-1 overflow-auto min-h-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Placa</TableHead>
+                                        <TableHead>Concesionario</TableHead>
+                                        <TableHead>Mensajero</TableHead>
+                                        <TableHead>Estado</TableHead>
+                                        <TableHead>Creado</TableHead>
+                                        <TableHead>Acción</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
+                                </TableBody>
+                            </Table>
+                        </div>
                     ) : (services?.length ?? 0) === 0 ? (
                         <div className="flex-1 flex items-center justify-center h-full">
                             <ListEmptyState

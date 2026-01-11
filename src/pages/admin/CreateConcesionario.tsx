@@ -127,7 +127,7 @@ export default function CreateConcesionario() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -144,7 +144,7 @@ export default function CreateConcesionario() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0">
+            <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0 overflow-y-auto">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>

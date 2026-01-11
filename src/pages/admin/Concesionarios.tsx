@@ -132,7 +132,7 @@ export default function Concesionarios() {
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title+Filters center, Button right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -167,23 +167,25 @@ export default function Concesionarios() {
                 </div>
             </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                <CardContent className="flex-1 flex flex-col min-h-0">
+            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">
+                <CardContent className="flex-1 flex flex-col min-h-0 !overflow-hidden">
                     {loading ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nombre</TableHead>
-                                    <TableHead>Dirección</TableHead>
-                                    <TableHead>Teléfono</TableHead>
-                                    <TableHead>Zona</TableHead>
-                                    <TableHead>GPS</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
-                            </TableBody>
-                        </Table>
+                        <div className="flex-1 overflow-auto min-h-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Nombre</TableHead>
+                                        <TableHead>Dirección</TableHead>
+                                        <TableHead>Teléfono</TableHead>
+                                        <TableHead>Zona</TableHead>
+                                        <TableHead>GPS</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} />)}
+                                </TableBody>
+                            </Table>
+                        </div>
                     ) : filteredAndSortedDealerships.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center">
                             <ListEmptyState
@@ -197,108 +199,110 @@ export default function Concesionarios() {
                         </div>
                     ) : (
                         <>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("name")}>
-                                            <div className="flex items-center gap-2">
-                                                <Store className="h-4 w-4" />Nombre
-                                                <SortIndicator field="name" currentSortField={sortField} sortDirection={sortDirection} />
-                                            </div>
-                                        </TableHead>
-                                        <TableHead>
-                                            <div className="flex items-center gap-2"><MapPinned className="h-4 w-4" />Dirección</div>
-                                        </TableHead>
-                                        <TableHead>
-                                            <div className="flex items-center gap-2"><Smartphone className="h-4 w-4" />Teléfono</div>
-                                        </TableHead>
-                                        <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("zone")}>
-                                            <div className="flex items-center gap-2">
-                                                <Globe className="h-4 w-4" />Zona
-                                                <SortIndicator field="zone" currentSortField={sortField} sortDirection={sortDirection} />
-                                            </div>
-                                        </TableHead>
-                                        <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
-                                            <div className="flex items-center gap-2">
-                                                <Navigation className="h-4 w-4" />GPS
-                                                <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
-                                            </div>
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <AnimatePresence mode="popLayout">
-                                        {paginatedDealerships.map((dealership, index) => (
-                                            <motion.tr
-                                                key={dealership.idDealership}
-                                                variants={listItemVariants}
-                                                initial="hidden"
-                                                animate="visible"
-                                                exit="exit"
-                                                layout
-                                                custom={index}
-                                                className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                                                onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
-                                            >
-                                                <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
-                                                <TableCell className="max-w-xs text-sm">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <span className="cursor-default">
-                                                                {dealership.address.includes(',')
-                                                                    ? dealership.address.split(',')[0]
-                                                                    : dealership.address}
-                                                            </span>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent side="bottom" className="max-w-sm">
-                                                            <p>
-                                                                {dealership.address.includes(',')
-                                                                    ? dealership.address.substring(dealership.address.indexOf(',') + 1).trim()
-                                                                    : dealership.address}
-                                                            </p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TableCell>
-                                                <TableCell className="text-sm">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
-                                                                <PhoneCall className="h-3 w-3" />{dealership.phone}
-                                                            </a>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent><p>Llamar</p></TooltipContent>
-                                                    </Tooltip>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className="text-xs px-2 py-0.5">{dealership.zone}</Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
-                                                        <Badge
-                                                            variant="default"
-                                                            className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                setLocationPopup({
-                                                                    name: dealership.name,
-                                                                    lat: dealership.latitude!,
-                                                                    lng: dealership.longitude!
-                                                                })
-                                                            }}
-                                                        >
-                                                            <MapPin className="h-3 w-3 mr-1" />Ubicación
-                                                        </Badge>
-                                                    ) : dealership.isGeolocated ? (
-                                                        <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
-                                                    ) : (
-                                                        <Badge variant="secondary">Sin ubicación</Badge>
-                                                    )}
-                                                </TableCell>
-                                            </motion.tr>
-                                        ))}
-                                    </AnimatePresence>
-                                </TableBody>
-                            </Table>
+                            <div className="flex-1 overflow-auto min-h-0">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("name")}>
+                                                <div className="flex items-center gap-2">
+                                                    <Store className="h-4 w-4" />Nombre
+                                                    <SortIndicator field="name" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead>
+                                                <div className="flex items-center gap-2"><MapPinned className="h-4 w-4" />Dirección</div>
+                                            </TableHead>
+                                            <TableHead>
+                                                <div className="flex items-center gap-2"><Smartphone className="h-4 w-4" />Teléfono</div>
+                                            </TableHead>
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("zone")}>
+                                                <div className="flex items-center gap-2">
+                                                    <Globe className="h-4 w-4" />Zona
+                                                    <SortIndicator field="zone" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
+                                                <div className="flex items-center gap-2">
+                                                    <Navigation className="h-4 w-4" />GPS
+                                                    <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <AnimatePresence mode="popLayout">
+                                            {paginatedDealerships.map((dealership, index) => (
+                                                <motion.tr
+                                                    key={dealership.idDealership}
+                                                    variants={listItemVariants}
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                    exit="exit"
+                                                    layout
+                                                    custom={index}
+                                                    className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
+                                                >
+                                                    <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
+                                                    <TableCell className="max-w-xs text-sm">
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="cursor-default">
+                                                                    {dealership.address.includes(',')
+                                                                        ? dealership.address.split(',')[0]
+                                                                        : dealership.address}
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="bottom" className="max-w-sm">
+                                                                <p>
+                                                                    {dealership.address.includes(',')
+                                                                        ? dealership.address.substring(dealership.address.indexOf(',') + 1).trim()
+                                                                        : dealership.address}
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell className="text-sm">
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <a href={`tel:${dealership.phone}`} className="hover:underline hover:text-primary transition-colors flex items-center gap-1 w-fit">
+                                                                    <PhoneCall className="h-3 w-3" />{dealership.phone}
+                                                                </a>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent><p>Llamar</p></TooltipContent>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="outline" className="text-xs px-2 py-0.5">{dealership.zone}</Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
+                                                            <Badge
+                                                                variant="default"
+                                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setLocationPopup({
+                                                                        name: dealership.name,
+                                                                        lat: dealership.latitude!,
+                                                                        lng: dealership.longitude!
+                                                                    })
+                                                                }}
+                                                            >
+                                                                <MapPin className="h-3 w-3 mr-1" />Ubicación
+                                                            </Badge>
+                                                        ) : dealership.isGeolocated ? (
+                                                            <Badge variant="default" className="bg-green-500"><MapPin className="h-3 w-3 mr-1" />Ubicado</Badge>
+                                                        ) : (
+                                                            <Badge variant="secondary">Sin ubicación</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                </motion.tr>
+                                            ))}
+                                        </AnimatePresence>
+                                    </TableBody>
+                                </Table>
+                            </div>
                             <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedDealerships.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
                         </>
                     )}
@@ -363,6 +367,6 @@ export default function Concesionarios() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     )
 }

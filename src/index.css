@@ -138,11 +138,13 @@
   }
 
   html {
-    overflow-x: hidden;
+    overflow: hidden !important;
     @apply bg-background text-foreground;
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
     min-height: 100dvh;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   @media (min-width: 768px) {
@@ -158,7 +160,7 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow: hidden !important;
     min-height: 100dvh;
   }
 
@@ -285,7 +287,27 @@ textarea {
   a,
   [role="button"] {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    -webkit-user-select: none;
+    user-select: none;
   }
+}
+
+/* Global compatibility overrides */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+button,
+a,
+[role="button"] {
+  -webkit-user-select: none !important;
+  user-select: none !important;
 }
 
 /* Professional desktop component sizing */
@@ -374,4 +396,49 @@ textarea {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/40;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+    /* Fallback for older browsers */
+    word-break: break-word;
+  }
+
+  /* Safe accordion animations using scaleY/opacity instead of height */
+  @keyframes accordion-down-safe {
+    from {
+      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+
+    to {
+      opacity: 1;
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+  }
+
+  @keyframes accordion-up-safe {
+    from {
+      opacity: 1;
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+
+    to {
+      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+  }
+
+  .animate-accordion-down {
+    animation: accordion-down-safe 0.2s ease-out;
+  }
+
+  .animate-accordion-up {
+    animation: accordion-up-safe 0.2s ease-out;
+  }
 }

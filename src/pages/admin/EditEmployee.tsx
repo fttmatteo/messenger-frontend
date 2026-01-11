@@ -119,7 +119,7 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -140,7 +140,7 @@ export default function EditEmployee() {
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1">
+                <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
                         <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
                             {/* Documento */}

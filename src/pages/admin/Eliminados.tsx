@@ -112,7 +112,7 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -168,7 +168,7 @@ export default function Eliminados() {
                         )}
                     </div>
                 ) : (
-                    <Card className="flex flex-col flex-1 h-full overflow-hidden">
+                    <Card className="flex flex-col flex-1 h-full overflow-hidden !overflow-hidden">
                         <CardHeader className="p-2 pb-0">
                             <CardDescription>
                                 {services.length} elemento(s) en papelera. Los elementos se archivarán permanentemente después de 60 días.
