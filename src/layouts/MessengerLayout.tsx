@@ -246,7 +246,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="relative min-h-[100dvh] bg-background">
+        <div className="flex flex-col h-[100dvh] bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -349,7 +349,7 @@ export default function MessengerLayout() {
                 id="main-content"
                 ref={mainRef}
                 className={cn(
-                    "pt-[calc(48px+env(safe-area-inset-top,0px))] relative",
+                    "flex-1 flex flex-col pt-[calc(48px+env(safe-area-inset-top,0px))] overflow-y-auto",
                     !hideBottomNav
                         ? "pb-[calc(68px+env(safe-area-inset-bottom,0px))]"
                         : "pb-[env(safe-area-inset-bottom,0px)]"

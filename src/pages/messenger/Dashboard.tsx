@@ -37,8 +37,8 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col">
-            <div className={`flex flex-col p-3 gap-3`}>
+        <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex flex-col flex-1 p-3 gap-3 min-h-0">
                 {/* Header with Dealership Filter */}
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -101,7 +101,7 @@ export default function MessengerDashboard() {
                 </div>
 
                 {/* Assigned Services List */}
-                <div className="">
+                <div className="flex-1 min-h-0 overflow-y-auto -mx-3 px-3">
                     <ServiceList
                         services={filteredServices}
                         loading={loading}
