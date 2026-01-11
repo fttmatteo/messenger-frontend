@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import logo from "@/assets/logo.png"
 import { ModeToggle } from "@/components/mode-toggle"
 import { getErrorMessage } from "@/lib/error-utils"
+import { openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
 
 const loginSchema = z.object({
@@ -108,7 +109,14 @@ export default function LoginMobile() {
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                     {/* Help Button - Top Left */}
                     <div className="absolute top-2 left-2 z-10">
-                        <Button variant="ghost" size="icon" className="rounded-lg" type="button">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-lg"
+                            type="button"
+                            aria-label="Ayuda"
+                            onClick={() => openSupportEmail()}
+                        >
                             <HelpCircle className="h-4 w-4" />
                         </Button>
                     </div>
