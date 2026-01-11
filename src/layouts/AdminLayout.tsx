@@ -44,6 +44,9 @@ function AdminLayoutContent() {
     // Detect if we're on the tracking page (fullscreen map)
     const isTrackingPage = location.pathname === '/admin/tracking'
 
+    // Detect if we're on pages where search should be hidden
+    const hideSearch = location.pathname === '/admin' || location.pathname.startsWith('/admin/configuracion')
+
     const handleSearchChange = (value: string) => {
         if (value) {
             setSearchParams({ q: value })
@@ -139,7 +142,7 @@ function AdminLayoutContent() {
                         {isMobile ? (
                             // Mobile header layout
                             <>
-                                {showSearchInput ? (
+                                {showSearchInput && !hideSearch ? (
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
@@ -158,14 +161,16 @@ function AdminLayoutContent() {
                                         <div className="flex-1 text-center">
                                             {/* Mobile Error Display could go here if needed, keeping simple for now */}
                                         </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => setShowSearchInput(true)}
-                                            aria-label="Abrir búsqueda"
-                                        >
-                                            <Search className="h-4 w-4" />
-                                        </Button>
+                                        {!hideSearch && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setShowSearchInput(true)}
+                                                aria-label="Abrir búsqueda"
+                                            >
+                                                <Search className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                         {/* Subtle network offline indicator */}
                                         {!isNetworkOnline && (
                                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
@@ -180,17 +185,19 @@ function AdminLayoutContent() {
                         ) : (
                             // Desktop header layout
                             <>
-                                <div className="relative w-full max-w-md">
-                                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="desktop-search"
-                                        placeholder="Buscar..."
-                                        className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
-                                        value={searchQuery}
-                                        onChange={(e) => handleSearchChange(e.target.value)}
-                                        autoComplete="off"
-                                    />
-                                </div>
+                                {!hideSearch && (
+                                    <div className="relative w-full max-w-md">
+                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="desktop-search"
+                                            placeholder="Buscar..."
+                                            className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
+                                            value={searchQuery}
+                                            onChange={(e) => handleSearchChange(e.target.value)}
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="flex-1" />
                                 {/* Subtle network offline indicator */}

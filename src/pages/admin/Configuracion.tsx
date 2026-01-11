@@ -5,14 +5,53 @@ import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel, getStatusPillBackground } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Palette, RotateCcw, ChevronRight } from "lucide-react"
+import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check } from "lucide-react"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
+import { cn } from "@/lib/utils"
 
 // Status order for display
 const STATUS_ORDER = ['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED', 'DELETED']
 
+// Theme options for appearance section
+type ThemeOption = 'light' | 'dark' | 'system'
+
+interface ThemeOptionItem {
+    value: ThemeOption
+    label: string
+    description: string
+    icon: React.ReactNode
+}
+
+const themeOptions: ThemeOptionItem[] = [
+    {
+        value: 'light',
+        label: 'Claro',
+        description: 'Tema con fondo blanco',
+        icon: <Sun className="h-5 w-5" />
+    },
+    {
+        value: 'dark',
+        label: 'Oscuro',
+        description: 'Tema con fondo oscuro',
+        icon: <Moon className="h-5 w-5" />
+    },
+    {
+        value: 'system',
+        label: 'Sistema',
+        description: 'Usa la preferencia del dispositivo',
+        icon: <Monitor className="h-5 w-5" />
+    }
+]
+
 // Settings sections - add more here in the future
 const SETTINGS_SECTIONS = [
+    {
+        id: 'appearance',
+        title: 'Apariencia',
+        description: 'Configura el tema de la aplicación',
+        icon: Sun
+    },
     {
         id: 'colors',
         title: 'Colores de Estados',
@@ -24,6 +63,15 @@ const SETTINGS_SECTIONS = [
 export default function Configuracion() {
     const [activeSection, setActiveSection] = useState<string | null>(null)
     const { colors, updateColor, resetToDefaults, isModified } = useStatusColors()
+    const { theme, setTheme } = useTheme()
+
+    const getSectionLabel = (sectionId: string | null) => {
+        switch (sectionId) {
+            case 'appearance': return 'Apariencia'
+            case 'colors': return 'Colores'
+            default: return 'Configuración'
+        }
+    }
 
     const handleResetAll = () => {
         resetToDefaults()
@@ -42,7 +90,7 @@ export default function Configuracion() {
                         <AdminBreadcrumb
                             segments={[
                                 { label: "Configuración", onClick: () => setActiveSection(null) },
-                                { label: "Colores" }
+                                { label: getSectionLabel(activeSection) }
                             ]}
                         />
                     )}
@@ -51,7 +99,7 @@ export default function Configuracion() {
                 {/* Center: Title */}
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">
-                        {activeSection === 'colors' ? 'Colores de estados' : 'Configuración'}
+                        {activeSection === 'colors' ? 'Colores de estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
                     </h1>
                 </div>
 
@@ -95,6 +143,56 @@ export default function Configuracion() {
                                 </div>
                             )
                         })}
+                    </CardContent>
+                </Card>
+            ) : activeSection === 'appearance' ? (
+                /* Appearance Section */
+                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                    <CardHeader className="py-2 px-4">
+                        <CardDescription>
+                            Selecciona el tema de la aplicación
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {themeOptions.map((option) => {
+                                const isSelected = theme === option.value
+                                return (
+                                    <button
+                                        key={option.value}
+                                        onClick={() => setTheme(option.value)}
+                                        className={cn(
+                                            "flex items-center gap-4 p-4 rounded-lg border-2 transition-all text-left",
+                                            isSelected
+                                                ? "border-primary bg-primary/5"
+                                                : "border-border/40 bg-card hover:bg-muted/30"
+                                        )}
+                                    >
+                                        <div
+                                            className={cn(
+                                                "p-2.5 rounded-lg transition-colors",
+                                                isSelected ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                                            )}
+                                        >
+                                            {option.icon}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-semibold text-sm text-foreground">
+                                                {option.label}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                                {option.description}
+                                            </p>
+                                        </div>
+                                        {isSelected && (
+                                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                                <Check className="h-3 w-3 text-primary-foreground" />
+                                            </div>
+                                        )}
+                                    </button>
+                                )
+                            })}
+                        </div>
                     </CardContent>
                 </Card>
             ) : activeSection === 'colors' ? (
