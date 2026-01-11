@@ -1,8 +1,28 @@
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme } from "next-themes"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 function ThemeColorSync() {
-    const { resolvedTheme } = useTheme()
+    const { resolvedTheme, theme, setTheme } = useTheme()
+    const [, forceUpdate] = useState(0)
+
+    // Listen for system theme changes when in "system" mode
+    // This is needed for PWAs installed on desktop which don't always receive theme change events
+    useEffect(() => {
+        if (theme !== 'system') return
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+        const handleChange = () => {
+            // Force a re-render to pick up the new system theme
+            forceUpdate(prev => prev + 1)
+            // Temporarily switch away and back to system to force next-themes to re-evaluate
+            setTheme('light')
+            setTimeout(() => setTheme('system'), 10)
+        }
+
+        mediaQuery.addEventListener('change', handleChange)
+        return () => mediaQuery.removeEventListener('change', handleChange)
+    }, [theme, setTheme])
 
     useEffect(() => {
         // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
