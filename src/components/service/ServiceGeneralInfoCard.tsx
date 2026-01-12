@@ -19,11 +19,11 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
     const messengerPhone = service.messenger?.phone
 
     return (
-        <Card className={`h-[calc(100vh-135px)] min-h-[500px] flex flex-col ${className}`}>
+        <Card className={`h-full flex flex-col ${className}`}>
             <CardHeader className="p-2 pb-0">
                 <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 flex-1 overflow-y-auto">
+            <CardContent className="space-y-4 flex-1 overflow-y-auto">
                 {/* Placa */}
                 <div className="flex items-start gap-3">
                     {createElement(getPlateTypeIcon(service.plate.plateType), {

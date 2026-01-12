@@ -57,7 +57,6 @@ function AdminLayoutContent() {
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex items-center gap-2">
                             <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
-                            <span className="font-semibold">PLAK</span>
                         </div>
                         <ModeToggle showLabel={false} />
                     </div>

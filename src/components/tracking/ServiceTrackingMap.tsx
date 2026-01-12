@@ -223,15 +223,13 @@ export function ServiceTrackingMap({
     }
 
     return (
-        <Card className={className}>
-            <CardHeader className="px-2 py-1">
-                <CardTitle className="flex items-center justify-between text-sm text-foreground font-medium">
-                    {/* Left: Title */}
-                    <div className="flex items-center gap-2">
-                        <Route className="h-4 w-4" />
-                        Recorrido del servicio
-                    </div>
-                    {/* Center: Legend - Clickable */}
+        <Card className={className || "h-full flex flex-col"}>
+            <CardHeader className="px-2 py-1 space-y-1">
+                <CardTitle className="text-sm text-foreground font-medium">
+                    Ubicaciones
+                </CardTitle>
+                {/* Location buttons below title */}
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm font-normal">
                         {firstPosition && (
                             <button
@@ -286,11 +284,11 @@ export function ServiceTrackingMap({
                             ) : null}
                         </div>
                     )}
-                </CardTitle>
+                </div>
             </CardHeader>
-            <CardContent className="p-2 pt-1">
+            <CardContent className="p-2 pt-1 flex-1 flex flex-col min-h-0">
                 {/* Map */}
-                <div className="w-full h-[300px] rounded-md overflow-hidden border">
+                <div className="w-full flex-1 min-h-[200px] rounded-md overflow-hidden border">
                     <Map
                         className="w-full h-full"
                         center={lastPosition || mapCenter}

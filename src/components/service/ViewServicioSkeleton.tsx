@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
  */
 export function ViewServicioSkeleton() {
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header skeleton */}
             <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
@@ -22,14 +22,14 @@ export function ViewServicioSkeleton() {
                 </div>
             </div>
 
-            {/* Split Layout: Info (Left), History (Right) & Map (Bottom) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* 3-Column Layout: Info (25%), History (50%), Map (25%) */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 flex-1 min-h-0">
                 {/* General Information */}
-                <Card className="h-[calc(100vh-135px)] min-h-[500px] flex flex-col">
+                <Card className="h-full flex flex-col">
                     <CardHeader className="p-2 pb-0">
                         <Skeleton className="h-6 w-44" />
                     </CardHeader>
-                    <CardContent className="space-y-6 flex-1 overflow-y-auto mt-4 px-4">
+                    <CardContent className="space-y-4 flex-1 overflow-y-auto mt-4 px-4">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="flex items-start gap-3">
                                 <Skeleton className="h-5 w-5 flex-shrink-0" />
@@ -42,8 +42,8 @@ export function ViewServicioSkeleton() {
                     </CardContent>
                 </Card>
 
-                {/* History Timeline */}
-                <Card className="h-[calc(100vh-135px)] min-h-[500px] flex flex-col">
+                {/* History Timeline - 50% width */}
+                <Card className="h-full flex flex-col lg:col-span-2">
                     <CardHeader className="p-2 pb-0">
                         <Skeleton className="h-6 w-40" />
                     </CardHeader>
@@ -61,7 +61,7 @@ export function ViewServicioSkeleton() {
 
                                     {/* Content */}
                                     <div className="flex-1 pl-6 space-y-2">
-                                        <Skeleton className="h-5 w-24 rounded-full" /> {/* Compact Pill */}
+                                        <Skeleton className="h-5 w-24 rounded-full" />
                                         <div className="bg-muted/30 rounded-lg p-2.5 space-y-2 border border-border/50">
                                             <div className="flex justify-between">
                                                 <Skeleton className="h-3 w-24" />
@@ -77,9 +77,23 @@ export function ViewServicioSkeleton() {
                 </Card>
 
                 {/* Map Skeleton */}
-                <Card className="md:col-span-2 h-[400px]">
-                    <CardContent className="p-0 h-full">
-                        <Skeleton className="w-full h-full rounded-lg" />
+                <Card className="h-full flex flex-col">
+                    <CardHeader className="px-2 py-1 space-y-1">
+                        <Skeleton className="h-5 w-24" />
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-4 w-16" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-5 w-16" />
+                                <Skeleton className="h-5 w-14" />
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-2 pt-1 flex-1 flex flex-col min-h-0">
+                        <Skeleton className="w-full flex-1 min-h-[200px] rounded-md" />
                     </CardContent>
                 </Card>
             </div>

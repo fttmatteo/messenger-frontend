@@ -16,7 +16,7 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
     const { colors } = useStatusColors()
 
     return (
-        <Card className={`h-[calc(100vh-135px)] min-h-[500px] flex flex-col ${className}`}>
+        <Card className={`h-full flex flex-col ${className}`}>
             <CardHeader className="p-2 pb-0">
                 <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
             </CardHeader>

@@ -124,20 +124,21 @@ export default function ViewServicio() {
     }
 
     return (
-        <div className="flex flex-col gap-1 pr-1">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
                 deleting={deleting}
             />
 
-            {/* Split Layout: Info (Left), History (Right) & Map (Full Width) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* 3-Column Layout: Info (25%), History (50%), Map (25%) */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 flex-1 min-h-0">
                 <ServiceGeneralInfoCard service={service} />
 
                 <ServiceHistoryTimeline
                     service={service}
                     onImageClick={setSelectedImage}
+                    className="lg:col-span-2"
                 />
 
                 <ServiceTrackingMap
@@ -146,7 +147,6 @@ export default function ViewServicio() {
                     dealershipLng={service.dealership.longitude}
                     dealershipName={service.dealership.name}
                     serviceStatus={service.currentStatus}
-                    className="md:col-span-2"
                 />
             </div>
 
