@@ -47,17 +47,17 @@
 
 | Login | Monitoreo en Vivo |
 |:---:|:---:|
-| ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/15_Admin_Monitoreo.png) |
+| ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/14_Admin_Monitoreo.png) |
 | *Acceso al sistema administrativo* | *Posición de la flota en tiempo real con Google Maps* |
 
 | Gestión de Servicios | Detalles del Servicio |
 |:---:|:---:|
-| ![Services](docs/screenshots/admin/11_Admin_Servicios.png) | ![Service Details](docs/screenshots/admin/12_Admin_Detalles_Servicio_1.1.png) |
+| ![Services](docs/screenshots/admin/11_Admin_Servicios.png) | ![Service Details](docs/screenshots/admin/12_Admin_Detalles_Servicio.png) |
 | *Listado y filtrado de servicios* | *Timeline detallado con evidencias fotográficas* |
 
 | Empleados | Concesionarios |
 |:---:|:---:|
-| ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Concesionarios.png) |
+| ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Gestión del personal* | *Administración de concesionarios* |
 
 </details>
