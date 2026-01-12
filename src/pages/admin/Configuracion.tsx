@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
@@ -61,9 +62,15 @@ const SETTINGS_SECTIONS = [
 ]
 
 export default function Configuracion() {
+    const location = useLocation()
     const [activeSection, setActiveSection] = useState<string | null>(null)
     const { colors, updateColor, resetToDefaults, isModified } = useStatusColors()
     const { theme, setTheme } = useTheme()
+
+    // Reset to main menu when navigating from sidebar (location.key changes)
+    useEffect(() => {
+        setActiveSection(null)
+    }, [location.key])
 
     const getSectionLabel = (sectionId: string | null) => {
         switch (sectionId) {
