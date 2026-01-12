@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useLocation } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -68,9 +68,8 @@ export default function Configuracion() {
     const { theme, setTheme } = useTheme()
 
     // Reset to main menu when navigating from sidebar (location.key changes)
-    useEffect(() => {
-        setActiveSection(null)
-    }, [location.key])
+    // Using key prop on wrapper element forces remount, resetting activeSection state
+    const locationKey = location.key
 
     const getSectionLabel = (sectionId: string | null) => {
         switch (sectionId) {
@@ -86,7 +85,7 @@ export default function Configuracion() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
+        <div key={locationKey} className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title center, Actions right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 {/* Left: Navigation */}

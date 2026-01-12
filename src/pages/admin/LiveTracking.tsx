@@ -172,7 +172,7 @@ export default function LiveTracking() {
             trackingService.disconnect()
             setConnected(false)
         }
-    }, [fetchMessengers, handleTrackingUpdate])
+    }, [fetchMessengers, handleTrackingUpdate, setError])
 
     const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
