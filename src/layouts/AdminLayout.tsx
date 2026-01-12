@@ -1,17 +1,13 @@
-import { Link, Outlet, useNavigate, useSearchParams, useLocation } from "react-router-dom"
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Search, Map, ArrowLeft, Trash2, WifiOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map } from "lucide-react"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { AdminUIProvider } from "@/context/AdminUIContext"
-import { useNetwork } from "@/hooks/use-network"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -27,37 +23,7 @@ function AdminLayoutContent() {
     const { logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-    const [searchParams, setSearchParams] = useSearchParams()
-    const searchQuery = searchParams.get("q") || ""
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-    const [showSearchInput, setShowSearchInput] = useState(false)
-    const isMobile = useIsMobile()
-    const { isOnline: isNetworkOnline } = useNetwork()
-
-    // Detect if we're on a nested page
-    const isNestedPage = location.pathname.includes('/crear') ||
-        location.pathname.includes('/editar') ||
-        location.pathname.includes('/detalles') ||
-        location.pathname.includes('/actualizar') ||
-        /\/servicios\/\d+$/.test(location.pathname)
-
-    // Detect if we're on the tracking page (fullscreen map)
-    const isTrackingPage = location.pathname === '/admin/tracking'
-
-    // Detect if we're on pages where search should be hidden
-    const hideSearch =
-        location.pathname === '/admin' ||
-        location.pathname.startsWith('/admin/configuracion') ||
-        location.pathname.includes('/crear') ||
-        location.pathname.includes('/editar')
-
-    const handleSearchChange = (value: string) => {
-        if (value) {
-            setSearchParams({ q: value })
-        } else {
-            setSearchParams({})
-        }
-    }
 
     const handleLogout = () => {
         setShowLogoutDialog(true)
@@ -67,6 +33,8 @@ function AdminLayoutContent() {
         logout()
         navigate("/login")
     }
+
+    const isTrackingPage = location.pathname === '/admin/tracking'
 
     const handleBack = () => {
         navigate(-1)
@@ -91,6 +59,7 @@ function AdminLayoutContent() {
                             <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
                             <span className="font-semibold">PLAK</span>
                         </div>
+                        <ModeToggle showLabel={false} />
                     </div>
                 </SidebarHeader>
                 <SidebarContent>
@@ -131,93 +100,8 @@ function AdminLayoutContent() {
                 </SidebarFooter>
             </Sidebar>
             <SidebarInset className="overflow-hidden flex flex-col h-screen">
-                {!isTrackingPage && (
-                    <header className="flex-shrink-0 z-40 flex h-12 items-center gap-4 border-b bg-background px-4 shadow-sm">
-                        {isMobile && isNestedPage && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleBack}
-                                aria-label="Volver"
-                            >
-                                <ArrowLeft className="h-5 w-5" />
-                            </Button>
-                        )}
-                        {isMobile ? (
-                            // Mobile header layout
-                            <>
-                                {showSearchInput && !hideSearch ? (
-                                    <div className="relative flex-1">
-                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                        <Input
-                                            id="mobile-search"
-                                            placeholder="Buscar..."
-                                            className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
-                                            value={searchQuery}
-                                            onChange={(e) => handleSearchChange(e.target.value)}
-                                            autoFocus
-                                            onBlur={() => !searchQuery && setShowSearchInput(false)}
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="flex-1 text-center">
-                                            {/* Mobile Error Display could go here if needed, keeping simple for now */}
-                                        </div>
-                                        {!hideSearch && (
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => setShowSearchInput(true)}
-                                                aria-label="Abrir búsqueda"
-                                            >
-                                                <Search className="h-4 w-4" />
-                                            </Button>
-                                        )}
-                                        {/* Subtle network offline indicator */}
-                                        {!isNetworkOnline && (
-                                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-                                                <WifiOff className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs text-amber-700 dark:text-amber-400">Offline</span>
-                                            </div>
-                                        )}
-                                        <ModeToggle />
-                                    </>
-                                )}
-                            </>
-                        ) : (
-                            // Desktop header layout
-                            <>
-                                {!hideSearch && (
-                                    <div className="relative w-full max-w-md">
-                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                        <Input
-                                            id="desktop-search"
-                                            placeholder="Buscar..."
-                                            className="pl-9 h-9 border-none !bg-transparent dark:!bg-transparent shadow-none focus-visible:ring-0 text-sm"
-                                            value={searchQuery}
-                                            onChange={(e) => handleSearchChange(e.target.value)}
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                )}
-
-                                <div className="flex-1" />
-                                {/* Subtle network offline indicator */}
-                                {!isNetworkOnline && (
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-                                        <WifiOff className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                                        <span className="text-xs text-amber-700 dark:text-amber-400">Offline</span>
-                                    </div>
-                                )}
-                                <ModeToggle />
-                            </>
-                        )}
-                    </header>
-                )}
                 <div id="main-content" ref={mainRef} className={cn("flex-1 overflow-hidden flex flex-col", isTrackingPage ? "p-0" : "p-2")} role="main">
-                    <Outlet context={{ searchQuery }} />
+                    <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>
             </SidebarInset>
 

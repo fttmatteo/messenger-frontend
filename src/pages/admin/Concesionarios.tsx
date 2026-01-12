@@ -221,10 +221,9 @@ export default function Concesionarios() {
                                                     <SortIndicator field="zone" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
-                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("isGeolocated")}>
+                                            <TableHead>
                                                 <div className="flex items-center gap-2">
                                                     <Navigation className="h-4 w-4" />GPS
-                                                    <SortIndicator field="isGeolocated" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                         </TableRow>
@@ -253,7 +252,7 @@ export default function Concesionarios() {
                                                                         : dealership.address}
                                                                 </span>
                                                             </TooltipTrigger>
-                                                            <TooltipContent side="bottom" className="max-w-sm">
+                                                            <TooltipContent side="top" className="max-w-sm">
                                                                 <p>
                                                                     {dealership.address.includes(',')
                                                                         ? dealership.address.substring(dealership.address.indexOf(',') + 1).trim()
@@ -318,7 +317,7 @@ export default function Concesionarios() {
                             {locationPopup?.name}
                         </DialogTitle>
                         <DialogDescription>
-                            Ubicación geográfica del concesionario en el mapa.
+                            Ubicación geográfica del concesionario en el mapa
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
