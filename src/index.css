@@ -246,6 +246,19 @@ textarea {
   /* Prevents iOS zoom on focus */
 }
 
+/* Hide native browser password reveal icons (Edge, Chrome) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
 /* Card mobile spacing */
 [data-slot="card"] {
   padding: 1rem;
