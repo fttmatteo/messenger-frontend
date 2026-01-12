@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
@@ -13,10 +13,11 @@ import { ImageViewer } from "@/components/ui/image-viewer"
 import { ArrowLeft, Trash2, Loader2 } from "lucide-react"
 import { getErrorMessage } from "@/lib/error-utils"
 
-// New extracted components
+// Extracted components
 import { ServiceHeader } from "@/components/service/ServiceHeader"
 import { ServiceGeneralInfoCard } from "@/components/service/ServiceGeneralInfoCard"
 import { ServiceHistoryTimeline } from "@/components/service/ServiceHistoryTimeline"
+import { UpdateStatusModal } from "@/components/service/UpdateStatusModal"
 
 export default function ViewServicio() {
     // Router & Auth
@@ -31,6 +32,7 @@ export default function ViewServicio() {
 
     // UI State
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -38,42 +40,31 @@ export default function ViewServicio() {
     // Derived State
     const isAdmin = user?.role === 'ADMIN'
 
-    useEffect(() => {
-        const fetchService = async () => {
-            if (!id) {
-                setError("ID de servicio no proporcionado")
-                setLoading(false)
-                return
-            }
-
-            try {
-                setLoading(true)
-                // Timeout failsafe
-                const timeoutId = setTimeout(() => {
-                    setLoading((current) => {
-                        if (current) {
-                            setError("Tiempo de espera agotado al cargar el servicio")
-                            return false
-                        }
-                        return current
-                    })
-                }, 10000)
-
-                const data = await serviceDeliveryService.getById(Number(id))
-                clearTimeout(timeoutId)
-                setService(data)
-            } catch (error) {
-                console.error("Error fetching service:", error)
-                const message = getErrorMessage(error)
-                setError(message)
-                setGlobalError(message)
-            } finally {
-                setLoading(false)
-            }
+    const fetchService = useCallback(async () => {
+        if (!id) {
+            setError("ID de servicio no proporcionado")
+            setLoading(false)
+            return
         }
 
+        try {
+            setLoading(true)
+            const data = await serviceDeliveryService.getById(Number(id))
+            setService(data)
+            setError(null)
+        } catch (error) {
+            console.error("Error fetching service:", error)
+            const message = getErrorMessage(error)
+            setError(message)
+            setGlobalError(message)
+        } finally {
+            setLoading(false)
+        }
+    }, [id, setGlobalError])
+
+    useEffect(() => {
         fetchService()
-    }, [id, navigate, setGlobalError])
+    }, [fetchService])
 
     const handleDelete = async () => {
         if (!id) return
@@ -89,6 +80,10 @@ export default function ViewServicio() {
             setDeleting(false)
             setDeleteDialogOpen(false)
         }
+    }
+
+    const handleUpdateSuccess = () => {
+        fetchService() // Refresh service data after update
     }
 
     if (loading) {
@@ -128,6 +123,7 @@ export default function ViewServicio() {
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
+                onUpdate={() => setUpdateDialogOpen(true)}
                 deleting={deleting}
             />
 
@@ -149,6 +145,14 @@ export default function ViewServicio() {
                     serviceStatus={service.currentStatus}
                 />
             </div>
+
+            {/* Update Status Modal */}
+            <UpdateStatusModal
+                open={updateDialogOpen}
+                onOpenChange={setUpdateDialogOpen}
+                service={service}
+                onSuccess={handleUpdateSuccess}
+            />
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

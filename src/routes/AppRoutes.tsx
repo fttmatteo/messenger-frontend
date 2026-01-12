@@ -27,7 +27,6 @@ const Concesionarios = React.lazy(() => import('@/pages/admin/Concesionarios'));
 const CreateConcesionario = React.lazy(() => import('@/pages/admin/CreateConcesionario'));
 const EditConcesionario = React.lazy(() => import('@/pages/admin/EditConcesionario'));
 const Servicios = React.lazy(() => import('@/pages/admin/Servicios'));
-const UpdateServiceStatus = React.lazy(() => import('@/pages/admin/UpdateServiceStatus'));
 const ViewServicio = React.lazy(() => import('@/pages/admin/ViewServicio'));
 const Eliminados = React.lazy(() => import('@/pages/admin/Eliminados'));
 const LiveTracking = React.lazy(() => import('@/pages/admin/LiveTracking'));
@@ -133,8 +132,6 @@ export function AppRoutes() {
                     <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
                     {/* Services routes */}
                     <Route path="servicios" element={<Servicios />} />
-                    {/* <Route path="servicios/crear" element={<CreateServicio />} /> */}
-                    <Route path="servicios/actualizar/:id" element={<UpdateServiceStatus />} />
                     <Route path="servicios/:id" element={<ViewServicio />} />
                     {/* Other routes */}
                     <Route path="eliminados" element={<Eliminados />} />

@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
@@ -10,11 +9,11 @@ import { useAuth } from "@/context/AuthContext"
 interface ServiceHeaderProps {
     service: ServiceDelivery
     onDelete?: () => void
+    onUpdate?: () => void
     deleting?: boolean
 }
 
-export function ServiceHeader({ service, onDelete, deleting }: ServiceHeaderProps) {
-    const navigate = useNavigate()
+export function ServiceHeader({ service, onDelete, onUpdate, deleting }: ServiceHeaderProps) {
     const { colors } = useStatusColors()
     const { user } = useAuth()
     const isAdmin = user?.role === 'ADMIN'
@@ -49,10 +48,10 @@ export function ServiceHeader({ service, onDelete, deleting }: ServiceHeaderProp
 
             {/* Right: Actions */}
             <div className="flex-1 flex justify-end gap-3">
-                {canEdit && (
+                {canEdit && onUpdate && (
                     <Button
                         variant="outline"
-                        onClick={() => navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)}
+                        onClick={onUpdate}
                         size="sm"
                         className="h-9 px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium"
                     >
