@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
@@ -62,14 +61,18 @@ const SETTINGS_SECTIONS = [
 ]
 
 export default function Configuracion() {
-    const location = useLocation()
-    const [activeSection, setActiveSection] = useState<string | null>(null)
+    const [searchParams, setSearchParams] = useSearchParams()
+    const activeSection = searchParams.get('section')
     const { colors, updateColor, resetToDefaults, isModified } = useStatusColors()
     const { theme, setTheme } = useTheme()
 
-    // Reset to main menu when navigating from sidebar (location.key changes)
-    // Using key prop on wrapper element forces remount, resetting activeSection state
-    const locationKey = location.key
+    const setActiveSection = (section: string | null) => {
+        if (section) {
+            setSearchParams({ section })
+        } else {
+            setSearchParams({})
+        }
+    }
 
     const getSectionLabel = (sectionId: string | null) => {
         switch (sectionId) {
@@ -85,7 +88,7 @@ export default function Configuracion() {
     }
 
     return (
-        <div key={locationKey} className="flex flex-col h-full gap-1 overflow-hidden">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header: Breadcrumb left, Title center, Actions right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 {/* Left: Navigation */}
