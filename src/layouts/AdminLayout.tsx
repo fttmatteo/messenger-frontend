@@ -100,7 +100,7 @@ function AdminLayoutContent() {
                 </SidebarFooter>
             </Sidebar>
             <SidebarInset className="overflow-hidden flex flex-col h-screen">
-                <div id="main-content" ref={mainRef} className={cn("flex-1 overflow-hidden flex flex-col", isTrackingPage ? "p-0" : "p-2")} role="main">
+                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>
             </SidebarInset>

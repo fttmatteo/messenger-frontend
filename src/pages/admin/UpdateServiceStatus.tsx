@@ -133,7 +133,7 @@ export default function UpdateServiceStatus() {
     if (!service) return null
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col gap-1 pr-1">
             {/* Header with Navigation and Centered Title */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">

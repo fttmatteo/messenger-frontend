@@ -25,7 +25,7 @@ interface UseServicesReturn {
     setItemsPerPage: (items: number) => void
 
     // Sorting
-    sortField: string
+    sortField: string | null
     sortDirection: SortDirection
     handleSort: (field: string) => void
 
@@ -53,7 +53,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
     const [itemsPerPage, setItemsPerPage] = useState(10)
 
     // Sorting state
-    const [sortField, setSortField] = useState<string>("createdAt")
+    const [sortField, setSortField] = useState<string | null>("createdAt")
     const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
 
     // Filtering state
@@ -66,7 +66,7 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
             const response = await serviceDeliveryService.getAllPaginated({
                 page: currentPage - 1,
                 size: itemsPerPage,
-                sortBy: sortField,
+                sortBy: sortField ?? undefined,
                 sortDirection: sortDirection,
                 status: statusFilter.length > 0 ? statusFilter : undefined,
                 search: searchQuery
@@ -88,16 +88,22 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
     // Handle sorting
     const handleSort = useCallback((field: string) => {
         if (sortField === field) {
-            // Toggle direction if same field
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc")
+            // Cycle: asc -> desc -> reset (null)
+            if (sortDirection === "asc") {
+                setSortDirection("desc")
+            } else {
+                // Was desc, now reset
+                setSortField(null)
+                setSortDirection("desc") // Default direction for reset
+            }
         } else {
-            // New field, default to ascending
+            // New field - start with ascending
             setSortField(field)
             setSortDirection("asc")
         }
         // Reset to first page when sorting changes
         setCurrentPage(1)
-    }, [sortField])
+    }, [sortField, sortDirection])
 
     // Custom setCurrentPage that validates the page number
     const handleSetCurrentPage = useCallback((page: number) => {

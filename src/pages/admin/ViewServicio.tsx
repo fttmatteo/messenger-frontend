@@ -124,7 +124,7 @@ export default function ViewServicio() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col gap-1 pr-1">
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
