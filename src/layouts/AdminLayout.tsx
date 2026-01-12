@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
 import { AdminUIProvider } from "@/context/AdminUIContext"
+import { SidebarToggleTab } from "@/components/SidebarToggleTab"
 
 const menuItems = [
     { title: "Panel", icon: LayoutDashboard, url: "/admin" },
@@ -52,7 +53,7 @@ function AdminLayoutContent() {
             >
                 Saltar al contenido principal
             </a>
-            <Sidebar collapsible="none" className="h-screen">
+            <Sidebar collapsible="offcanvas" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex items-center gap-2">
@@ -101,6 +102,7 @@ function AdminLayoutContent() {
                     </SidebarMenu>
                 </SidebarFooter>
             </Sidebar>
+            <SidebarToggleTab />
             <SidebarInset className="overflow-hidden flex flex-col h-screen">
                 <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
