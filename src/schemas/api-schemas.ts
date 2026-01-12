@@ -90,7 +90,8 @@ export const ServiceDeliverySchema = z.object({
     signature: SignatureInfoSchema.optional(),
     photos: z.array(PhotoInfoSchema).default([]),
     history: z.array(StatusHistoryInfoSchema).default([]),
-    createdAt: z.string()
+    createdAt: z.string(),
+    deletedAt: z.string().optional()
 })
 
 // ---------- Pagination ----------
