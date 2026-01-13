@@ -132,9 +132,17 @@
   --sidebar-ring: hsl(0 0% 83.1%);
 }
 
+html,
+body {
+  background-color: hsl(var(--background));
+  height: 100%;
+  min-height: -webkit-fill-available;
+}
+
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: var(--ring);
   }
 
   html {

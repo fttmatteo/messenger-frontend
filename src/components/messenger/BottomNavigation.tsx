@@ -89,7 +89,14 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
+
+            {/* Safe Area Background Fill */}
+            {safeAreaBottom > 0 && (
+                <div
+                    className="absolute top-full left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-transparent"
+                    style={{ height: safeAreaBottom + 100 }}
+                />
+            )}
         </nav>
     )
 }
-
