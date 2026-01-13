@@ -88,8 +88,7 @@ export function BottomNavigation() {
             </div>
             {/* Safe area bottom fill - extends background to very bottom of screen */}
             <div
-                className="w-full bg-background/80 backdrop-blur-md"
-                style={{ height: 'env(safe-area-inset-bottom, 0px)' }}
+                className="w-full bg-background/80 backdrop-blur-md safe-area-bottom-fill"
                 aria-hidden="true"
             />
         </nav>

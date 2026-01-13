@@ -351,8 +351,8 @@ export default function MessengerLayout() {
                 className={cn(
                     "flex-1 flex flex-col pt-[calc(48px+env(safe-area-inset-top,0px))] overflow-y-auto",
                     !hideBottomNav
-                        ? "pb-[calc(68px+env(safe-area-inset-bottom,0px))]"
-                        : "pb-[env(safe-area-inset-bottom,0px)]"
+                        ? "pb-[calc(68px+max(env(safe-area-inset-bottom,0px),34px))]"
+                        : "pb-[max(env(safe-area-inset-bottom,0px),34px)]"
                 )}
                 role="main"
             >

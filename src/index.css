@@ -458,4 +458,19 @@ a,
   .animate-accordion-up {
     animation: accordion-up-safe 0.2s ease-out;
   }
+
+  /* Safe area bottom fill for iOS devices with home indicator */
+  .safe-area-bottom-fill {
+    /* Fallback for iOS 11.0-11.2 */
+    height: constant(safe-area-inset-bottom, 34px);
+    /* iOS 11.2+ */
+    height: env(safe-area-inset-bottom, 34px);
+  }
+
+  /* For standalone PWA mode, ensure safe area is always visible */
+  @supports (padding: max(0px)) {
+    .safe-area-bottom-fill {
+      height: max(env(safe-area-inset-bottom, 0px), 34px);
+    }
+  }
 }
