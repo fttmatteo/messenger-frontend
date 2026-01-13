@@ -34,7 +34,6 @@ export function BottomNavigation() {
             className={cn(
                 "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40"
             )}
-            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
             role="navigation"
             aria-label="Navegación principal"
         >
@@ -87,6 +86,12 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
+            {/* Safe area bottom fill - extends background to very bottom of screen */}
+            <div
+                className="w-full bg-background/80 backdrop-blur-md"
+                style={{ height: 'env(safe-area-inset-bottom, 0px)' }}
+                aria-hidden="true"
+            />
         </nav>
     )
 }

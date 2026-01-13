@@ -143,6 +143,8 @@
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
     min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    height: 100%;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -162,6 +164,8 @@
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden !important;
     min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    height: 100%;
   }
 
   /* Desktop typography scaling */
