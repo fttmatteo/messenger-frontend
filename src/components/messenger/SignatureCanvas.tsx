@@ -258,11 +258,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             paddingBottom: `calc(1rem + ${safeArea.bottom}px)`,
                             paddingLeft: `calc(1rem + ${safeArea.left}px)`,
                             paddingRight: `calc(1rem + ${safeArea.right}px)`,
-                            // Target the close button position via CSS variables if possible,
-                            // or just use a className that we'll define in index.css if needed.
-                            // For now, let's try to handle the close button via className with inline vars
-                            ["--sa-top" as any]: `${safeArea.top}px`,
-                            ["--sa-right" as any]: `${safeArea.right}px`
+                            "--sa-top": `${safeArea.top}px`,
+                            "--sa-right": `${safeArea.right}px`
                         } as React.CSSProperties}
                         // Use the CSS variables in the className
                         className={cn(
