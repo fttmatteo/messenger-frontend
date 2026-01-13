@@ -68,7 +68,6 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     return (
         <div className={className || 'w-full h-full'}>
             <GoogleMap
-                key={resolvedTheme}
                 mapContainerStyle={containerStyle}
                 center={center}
                 zoom={zoom}
