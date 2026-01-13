@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => {
           name: env.VITE_APP_NAME || 'PLAK',
           short_name: 'PLAK',
           description: env.VITE_APP_DESCRIPTION || 'Sistema de gestión de mensajería PLAK',
-          theme_color: '#ffffff',
-          background_color: '#ffffff',
+          theme_color: '#141414',
+          background_color: '#141414',
           display: 'standalone',
           start_url: '/',
           icons: [

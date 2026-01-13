@@ -247,7 +247,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-background">
+        <div className="flex flex-col min-h-full bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"

@@ -132,9 +132,12 @@
   --sidebar-ring: hsl(0 0% 83.1%);
 }
 
-html,
-body {
+html {
   background-color: hsl(var(--background));
+  height: 100%;
+}
+
+body {
   height: 100%;
   min-height: -webkit-fill-available;
 }
@@ -146,12 +149,9 @@ body {
   }
 
   html {
-    overflow: hidden !important;
     @apply bg-background text-foreground;
     /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
     font-size: 105%;
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
     height: 100%;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -170,9 +170,6 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden !important;
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
     height: 100%;
   }
 
