@@ -1,8 +1,10 @@
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { useSafeArea } from '@/hooks/use-safe-area'
 
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
@@ -25,6 +27,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const [tempHasDrawn, setTempHasDrawn] = useState(false)
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
+        const safeArea = useSafeArea()
 
         // Setup saved canvas (hidden, stores the signature)
         useEffect(() => {
@@ -249,7 +252,26 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 </div>
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                    <DialogContent className="max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] px-[calc(1rem+env(safe-area-inset-left,0px))] flex flex-col gap-3 sm:gap-4 rounded-none [&>button]:top-[calc(1rem+env(safe-area-inset-top,0px))] [&>button]:right-[calc(1rem+env(safe-area-inset-right,0px))]" aria-describedby={undefined}>
+                    <DialogContent
+                        style={{
+                            paddingTop: `calc(1rem + ${safeArea.top}px)`,
+                            paddingBottom: `calc(1rem + ${safeArea.bottom}px)`,
+                            paddingLeft: `calc(1rem + ${safeArea.left}px)`,
+                            paddingRight: `calc(1rem + ${safeArea.right}px)`,
+                            // Target the close button position via CSS variables if possible,
+                            // or just use a className that we'll define in index.css if needed.
+                            // For now, let's try to handle the close button via className with inline vars
+                            ["--sa-top" as any]: `${safeArea.top}px`,
+                            ["--sa-right" as any]: `${safeArea.right}px`
+                        } as React.CSSProperties}
+                        // Use the CSS variables in the className
+                        className={cn(
+                            "max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 flex flex-col gap-3 sm:gap-4 rounded-none",
+                            "[&>button]:top-[calc(1rem+var(--sa-top))]",
+                            "[&>button]:right-[calc(1rem+var(--sa-right))]"
+                        )}
+                        aria-describedby={undefined}
+                    >
                         <DialogHeader className="flex-shrink-0">
                             <DialogTitle className="text-lg sm:text-xl">Firma del asesor</DialogTitle>
                             <VisuallyHidden>

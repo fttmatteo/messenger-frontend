@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { Inbox, History, Plus, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 
 
 interface NavItem {
@@ -20,6 +21,7 @@ const navItems: NavItem[] = [
 export function BottomNavigation() {
     const navigate = useNavigate()
     const location = useLocation()
+    const safeAreaBottom = useSafeAreaBottom()
 
 
     const isActive = (path: string) => {
@@ -34,6 +36,7 @@ export function BottomNavigation() {
             className={cn(
                 "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40"
             )}
+            style={{ paddingBottom: safeAreaBottom > 0 ? safeAreaBottom : undefined }}
             role="navigation"
             aria-label="Navegación principal"
         >
@@ -86,11 +89,7 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
-            {/* Safe area bottom fill - extends background to very bottom of screen */}
-            <div
-                className="w-full bg-background/80 backdrop-blur-md safe-area-bottom-fill"
-                aria-hidden="true"
-            />
         </nav>
     )
 }
+

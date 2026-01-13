@@ -1,5 +1,4 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
-import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
@@ -14,6 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
+import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
 
 const logger = createLogger('MessengerLayout')
@@ -27,6 +27,7 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
+    const safeArea = useSafeArea()
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -348,12 +349,13 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className={cn(
-                    "flex-1 flex flex-col pt-[calc(48px+env(safe-area-inset-top,0px))] overflow-y-auto",
-                    !hideBottomNav
-                        ? "pb-[calc(68px+max(env(safe-area-inset-bottom,0px),34px))]"
-                        : "pb-[max(env(safe-area-inset-bottom,0px),34px)]"
-                )}
+                className="flex-1 flex flex-col overflow-y-auto"
+                style={{
+                    paddingTop: `calc(48px + ${safeArea.top}px)`,
+                    paddingBottom: !hideBottomNav
+                        ? `calc(68px + ${safeArea.bottom}px)`
+                        : `${safeArea.bottom}px`
+                }}
                 role="main"
             >
                 <Outlet />

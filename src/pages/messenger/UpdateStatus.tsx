@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
 
 import { useSmartLocation } from "@/hooks/use-smart-location"
+import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 import { STATUS_OPTIONS } from "@/config/status-options"
 
 // Helper to convert hex to rgba for backgrounds
@@ -35,6 +36,7 @@ export default function UpdateStatus() {
     const navigate = useNavigate()
     const { colors } = useStatusColors()
     const { getCurrentLocation } = useSmartLocation()
+    const safeAreaBottom = useSafeAreaBottom()
 
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
@@ -188,7 +190,10 @@ export default function UpdateStatus() {
                 </div>
 
                 {/* Fixed Bottom Action Skeleton */}
-                <div className="p-4 border-t bg-background/95">
+                <div
+                    className="p-4 border-t bg-background/95"
+                    style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
+                >
                     <Skeleton className="w-full h-12 rounded-xl" />
                 </div>
             </div>
@@ -387,7 +392,10 @@ export default function UpdateStatus() {
             </div>
 
             {/* Fixed Bottom Action */}
-            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/40 bg-background/80 backdrop-blur-xl">
+            <div
+                className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/40 bg-background/80 backdrop-blur-xl"
+                style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
+            >
                 <Button
                     className="w-full h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
                     style={{
