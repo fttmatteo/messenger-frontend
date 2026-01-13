@@ -229,7 +229,7 @@ export function ServiceTrackingMap({
                     Ubicaciones
                 </CardTitle>
                 {/* Location buttons below title */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-4 text-sm font-normal">
                         {firstPosition && (
                             <button
@@ -262,7 +262,7 @@ export function ServiceTrackingMap({
                             </button>
                         )}
                     </div>
-                    {/* Right: Distance info */}
+                    {/* Distance info below location points */}
                     {lastPosition && dealershipLat && dealershipLng && (
                         <div className="flex items-center gap-2">
                             {loadingDistance ? (

@@ -16,7 +16,7 @@ export default function ConfiguracionPage() {
     const { theme } = useTheme()
     const navigate = useNavigate()
     return (
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col flex-1 min-h-0 gap-4 p-4">
             <Card className="border-border/50 overflow-hidden">
                 {/* Appearance Option */}
                 <button
