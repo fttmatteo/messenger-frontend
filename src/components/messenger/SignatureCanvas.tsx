@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { useSafeArea } from '@/hooks/use-safe-area'
 
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
@@ -27,7 +26,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const [tempHasDrawn, setTempHasDrawn] = useState(false)
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
-        const safeArea = useSafeArea()
 
         // Setup saved canvas (hidden, stores the signature)
         useEffect(() => {
@@ -253,19 +251,11 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent
-                        style={{
-                            paddingTop: `calc(1rem + ${safeArea.top}px)`,
-                            paddingBottom: `calc(1rem + ${safeArea.bottom}px)`,
-                            paddingLeft: `calc(1rem + ${safeArea.left}px)`,
-                            paddingRight: `calc(1rem + ${safeArea.right}px)`,
-                            "--sa-top": `${safeArea.top}px`,
-                            "--sa-right": `${safeArea.right}px`
-                        } as React.CSSProperties}
-                        // Use the CSS variables in the className
                         className={cn(
-                            "max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 flex flex-col gap-3 sm:gap-4 rounded-none",
-                            "[&>button]:top-[calc(1rem+var(--sa-top))]",
-                            "[&>button]:right-[calc(1rem+var(--sa-right))]"
+                            "max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] flex flex-col gap-3 sm:gap-4 rounded-none",
+                            "p-[calc(1rem+env(safe-area-inset-left,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))]",
+                            "[&>button]:top-[calc(1rem+env(safe-area-inset-top,0px))]",
+                            "[&>button]:right-[calc(1rem+env(safe-area-inset-right,0px))]"
                         )}
                         aria-describedby={undefined}
                     >

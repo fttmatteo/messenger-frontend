@@ -20,7 +20,6 @@ import { X, Loader2, Bike, Camera, Building2, Edit3 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
-import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 
 // Form validation schema
 const formSchema = z.object({
@@ -34,7 +33,6 @@ type FormValues = z.infer<typeof formSchema>
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
     const { getCurrentLocation } = useSmartLocation()
-    const safeAreaBottom = useSafeAreaBottom()
 
     // Form state
     const [loading, setLoading] = useState(false)
@@ -201,10 +199,7 @@ export default function MessengerCreateServicio() {
                 </div>
 
                 {/* Fixed Bottom Action Skeleton */}
-                <div
-                    className="p-4 border-t bg-background/95"
-                    style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
-                >
+                <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t bg-background/95">
                     <div className="flex gap-3">
                         <Skeleton className="h-12 w-24 rounded-xl" />
                         <Skeleton className="flex-1 h-12 rounded-xl" />
@@ -375,10 +370,7 @@ export default function MessengerCreateServicio() {
                     </div>
 
                     {/* Fixed Bottom Action */}
-                    <div
-                        className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/40 bg-background/80 backdrop-blur-xl"
-                        style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
-                    >
+                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/40 bg-background/80 backdrop-blur-xl">
                         <div className="flex gap-3">
                             <Button
                                 type="button"
