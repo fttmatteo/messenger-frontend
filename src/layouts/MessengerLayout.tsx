@@ -37,6 +37,29 @@ export default function MessengerLayout() {
         location.pathname.includes('/actualizar') ||
         location.pathname.includes('/configuracion/')
 
+
+    // Lock body scroll to prevent browser chrome resizing (gives native app feel)
+    useEffect(() => {
+        const originalStyle = {
+            position: document.body.style.position,
+            width: document.body.style.width,
+            height: document.body.style.height,
+            overflow: document.body.style.overflow
+        }
+
+        document.body.style.position = 'fixed'
+        document.body.style.width = '100%'
+        document.body.style.height = '100%'
+        document.body.style.overflow = 'hidden'
+
+        return () => {
+            document.body.style.position = originalStyle.position
+            document.body.style.width = originalStyle.width
+            document.body.style.height = originalStyle.height
+            document.body.style.overflow = originalStyle.overflow
+        }
+    }, [])
+
     // Hide bottom nav on create and update pages for cleaner UX
     const hideBottomNav = location.pathname.includes('/crear') || location.pathname.includes('/actualizar')
 
@@ -247,7 +270,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-[100dvh] overflow-hidden bg-background">
+        <div className="flex flex-col h-full w-full bg-background overflow-hidden relative">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
