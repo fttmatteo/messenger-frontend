@@ -2,7 +2,6 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { Inbox, History, Plus, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-
 interface NavItem {
     icon: React.ComponentType<{ className?: string }>
     label: string
@@ -17,10 +16,22 @@ const navItems: NavItem[] = [
     { icon: Settings, label: "Config", path: "/messenger/configuracion" },
 ]
 
+/**
+ * Bottom Navigation Component
+ * 
+ * Structure:
+ * - flex-none: Takes only the space it needs in the parent flex container
+ * - Content area: Fixed 56px height (Apple/Google standard)
+ * - Safe area fill: Dynamic height based on device (env safe-area-inset-bottom)
+ * 
+ * This ensures:
+ * 1. Navigation is always at the bottom of the screen
+ * 2. No black bars appear below it
+ * 3. Works universally on all iOS/Android devices
+ */
 export function BottomNavigation() {
     const navigate = useNavigate()
     const location = useLocation()
-
 
     const isActive = (path: string) => {
         if (path === "/messenger") {
@@ -31,14 +42,12 @@ export function BottomNavigation() {
 
     return (
         <nav
-            className={cn(
-                "flex-none relative bg-background border-t border-border/40"
-            )}
+            className="flex-none flex flex-col bg-background border-t border-border/40"
             role="navigation"
             aria-label="Navegación principal"
         >
-            {/* Content area */}
-            <div className="flex items-center justify-around h-[56px] py-1 px-2">
+            {/* Navigation content - Fixed 56px height */}
+            <div className="h-14 flex items-center justify-around px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
@@ -48,7 +57,7 @@ export function BottomNavigation() {
                             <button
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className="flex flex-col items-center justify-center rounded-full transition-all duration-200"
+                                className="flex items-center justify-center"
                                 aria-label={item.label}
                                 aria-current={active ? "page" : undefined}
                             >
@@ -64,15 +73,15 @@ export function BottomNavigation() {
                             key={item.path}
                             onClick={() => navigate(item.path)}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-1 transition-all duration-200 min-w-[64px]",
+                                "flex flex-col items-center justify-center gap-1 min-w-[64px] py-1",
                                 active
                                     ? "text-primary"
-                                    : "text-muted-foreground hover:text-foreground"
+                                    : "text-muted-foreground active:text-foreground"
                             )}
                             aria-current={active ? "page" : undefined}
                         >
                             <Icon className={cn(
-                                "h-5 w-5 transition-transform",
+                                "h-5 w-5",
                                 active && "scale-110"
                             )} />
                             <span className={cn(
@@ -85,7 +94,8 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
-            {/* Safe area fill - extends background to physical bottom edge */}
+
+            {/* Safe area fill - Covers the home indicator area with background color */}
             <div className="h-[env(safe-area-inset-bottom,0px)] bg-background" />
         </nav>
     )
