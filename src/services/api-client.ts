@@ -17,16 +17,17 @@ if (typeof window !== 'undefined' && localStorage.getItem('token')) {
     localStorage.removeItem('token');
 }
 
-// Interceptor de petición: añadir token si existe en sessionStorage (fallback para cookies)
+// Interceptor de petición: El frontend prefiere usar cookies.
+// Ya no enviamos el accessToken manualmente si withCredentials: true está activo,
+// para minimizar superficies de ataque y redundancia.
 apiClient.interceptors.request.use(
     (config) => {
-        const token = sessionStorage.getItem('accessToken');
-        if (token && !config.headers.Authorization) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-
         const correlationId = crypto.randomUUID();
         config.headers['X-Correlation-Id'] = correlationId;
+
+        // Nota: Axios ya debería manejar X-XSRF-TOKEN automáticamente 
+        // si la cookie XSRF-TOKEN está presente.
+
         return config;
     },
     (error) => Promise.reject(error)
