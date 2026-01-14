@@ -145,7 +145,7 @@ export default function MessengerLayout() {
                         }
                     },
                     (error) => {
-                        console.warn('Geolocation partial error:', error.message)
+                        logger.warn('Geolocation partial error:', error.message)
 
                         if (error.code === 1) {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })
@@ -247,7 +247,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col min-h-full bg-background">
+        <div className="flex flex-col h-[100dvh] overflow-hidden bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -353,7 +353,7 @@ export default function MessengerLayout() {
                 style={{
                     paddingTop: `calc(48px + ${safeArea.top}px)`,
                     paddingBottom: !hideBottomNav
-                        ? `calc(68px + ${safeArea.bottom}px)`
+                        ? `calc(49px + ${safeArea.bottom}px)`
                         : `${safeArea.bottom}px`
                 }}
                 role="main"

@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, Upload, X } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('CameraCapture')
 
 interface CameraCaptureProps {
     onCapture: (file: File, preview: string) => void
@@ -75,13 +78,13 @@ export function CameraCapture({
                             toast.success("Cámara lista", { duration: 1500 })
                         })
                         .catch(err => {
-                            console.error('Video play error:', err)
+                            logger.error('Video play error:', err)
                             setCameraError('Error al reproducir video')
                         })
                 }
             }
         } catch (error) {
-            console.error('Camera error:', error)
+            logger.error('Camera access error:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {

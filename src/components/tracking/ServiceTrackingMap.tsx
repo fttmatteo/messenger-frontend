@@ -12,6 +12,7 @@ import { MapPin, Route, Loader2 } from "lucide-react"
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { logger } from "@/utils/logger"
 
 interface ServiceTrackingMapProps {
     serviceId: number
@@ -110,7 +111,7 @@ export function ServiceTrackingMap({
                 const data = await trackingApiService.getHistoryByService(serviceId)
                 setTrackingData(data || [])
             } catch (error) {
-                console.error("Error fetching service tracking:", error)
+                logger.error("Error fetching service tracking in ServiceTrackingMap:", error)
                 setTrackingData([])
             } finally {
                 setLoading(false)

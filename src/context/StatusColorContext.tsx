@@ -8,6 +8,7 @@ import {
 } from '@/lib/status-colors'
 import { configService } from '@/services/config.service'
 import { authService } from '@/services/auth.service'
+import { logger } from '@/utils/logger'
 
 interface StatusColorProviderProps {
     children: ReactNode
@@ -39,7 +40,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
                     saveCustomColors(differences, userId)
                 }
             } catch (error) {
-                console.error('Error fetching status colors from backend:', error)
+                logger.error('Error fetching status colors from backend:', error)
             }
         }
 
@@ -70,7 +71,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
             const role = authService.getRole()
             if (role === 'ADMIN') {
                 configService.updateStatusColors(newColors).catch(err => {
-                    console.error('Error syncing colors to backend:', err)
+                    logger.error('Error syncing colors to backend:', err)
                 })
             }
 
@@ -86,7 +87,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         const role = authService.getRole()
         if (role === 'ADMIN') {
             configService.updateStatusColors(DEFAULT_STATUS_COLORS).catch(err => {
-                console.error('Error resetting colors on backend:', err)
+                logger.error('Error resetting colors on backend:', err)
             })
         }
     }, [userId])

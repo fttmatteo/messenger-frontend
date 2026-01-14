@@ -54,7 +54,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
             const timeoutId = setTimeout(() => {
                 if (videoRef.current?.paused !== false) {
-                    console.warn('Camera initialization timeout')
+                    logger.warn('Camera initialization timeout')
                     setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
                     stopCamera()
                 }
@@ -89,7 +89,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                             })
                             .catch(err => {
                                 clearTimeout(timeoutId)
-                                console.error('Video play error:', err)
+                                logger.error('Video play error:', err)
                                 setCameraError('Error al reproducir video. Intenta de nuevo.')
                                 stopCamera()
                             })
@@ -109,7 +109,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                 streamRef.current = null
             }
         } catch (error) {
-            console.error('Camera error:', error)
+            logger.error('Camera error:', error)
             setCameraActive(false)
 
             let errorMessage = 'No se pudo acceder a la cámara.'

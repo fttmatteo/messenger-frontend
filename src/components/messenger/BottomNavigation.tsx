@@ -40,7 +40,7 @@ export function BottomNavigation() {
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-[68px] py-2 px-2">
+            <div className="flex items-center justify-around h-[49px] px-2 pb-1">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
@@ -51,12 +51,12 @@ export function BottomNavigation() {
                             <button
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className="flex flex-col items-center justify-center gap-1 rounded-full text-primary hover:bg-primary/10 transition-all duration-200"
+                                className="flex flex-col items-center justify-center gap-1 rounded-full text-primary hover:bg-primary/10 transition-all duration-200 -mt-4 bg-background border-4 border-background"
                                 aria-label={item.label}
                                 aria-current={active ? "page" : undefined}
                                 title={item.label}
                             >
-                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground">
+                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg">
                                     <Icon className="h-6 w-6" aria-hidden="true" />
                                 </div>
                             </button>
@@ -68,7 +68,7 @@ export function BottomNavigation() {
                             key={item.path}
                             onClick={() => navigate(item.path)}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 min-w-[60px] relative",
+                                "flex flex-col items-center justify-center gap-0.5 px-3 rounded-lg transition-all duration-200 min-w-[60px] relative mt-1",
                                 active
                                     ? "text-primary"
                                     : "text-muted-foreground hover:text-foreground"
@@ -76,11 +76,11 @@ export function BottomNavigation() {
                             aria-current={active ? "page" : undefined}
                         >
                             <Icon className={cn(
-                                "h-5 w-5 transition-transform",
-                                active && "scale-110"
+                                "h-6 w-6 transition-transform",
+                                active && "scale-100"
                             )} />
                             <span className={cn(
-                                "text-[10px] font-medium",
+                                "text-[10px] font-medium leading-none",
                                 active && "font-semibold"
                             )}>
                                 {item.label}

@@ -3,6 +3,7 @@ import { NetworkContext } from './NetworkContextDef'
 import { toast } from 'sonner'
 import { Wifi, WifiOff, RefreshCw, CloudOff } from 'lucide-react'
 import { offlineSyncService } from '@/services/offline-sync.service'
+import { logger } from '@/utils/logger'
 
 interface NetworkProviderProps {
     children: ReactNode
@@ -36,7 +37,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
             setPendingActionsCount(0)
         } catch (error) {
-            console.error('Error syncing pending actions:', error)
+            logger.error('Error syncing pending actions in NetworkContext:', error)
             toast.error('Error al sincronizar algunas acciones', {
                 description: 'Se reintentará automáticamente',
                 duration: 4000,

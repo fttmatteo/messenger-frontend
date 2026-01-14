@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { authService } from '@/services/auth.service'
+import { logger } from '@/utils/logger'
 import type { LoginCredentials, User } from '@/types'
 import { AuthContext } from './AuthContextDef'
 
@@ -10,7 +11,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
                 return JSON.parse(storedUser);
             } catch (e) {
-                console.error("Error parsing stored user", e);
+                logger.error("Error parsing stored user", e);
                 return null;
             }
         }

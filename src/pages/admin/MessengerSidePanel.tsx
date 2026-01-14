@@ -16,6 +16,7 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import type { DailyStats, ServiceStatus } from "@/types/service.types"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import type { Employee } from "@/types/employee.types"
+import { logger } from "@/utils/logger"
 import {
     MessengerProductivity,
     MessengerActivityTimeline,
@@ -52,7 +53,7 @@ export function MessengerSidePanel({
             const emp = await employeeService.getById(messengerId)
             setEmployee(emp)
         } catch (error) {
-            console.error("Error fetching messenger details:", error)
+            logger.error("Error fetching messenger details in MessengerSidePanel:", error)
         }
     }, [messengerId])
 
@@ -106,7 +107,7 @@ export function MessengerSidePanel({
             setHistory(milestones)
 
         } catch (error) {
-            console.error("Error fetching activity:", error)
+            logger.error("Error fetching activity in MessengerSidePanel:", error)
             setHistoryError("No se pudo cargar la actividad")
         } finally {
             setLoadingHistory(false)

@@ -13,6 +13,7 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { openMaps } from "@/lib/navigation-utils"
+import { logger } from "@/utils/logger"
 
 
 export default function ServiceDetails() {
@@ -74,14 +75,14 @@ export default function ServiceDetails() {
                     triggerNavigation(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
-                    console.warn("High accuracy error", error)
+                    logger.warn("High accuracy geolocation error", error)
                     toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
                             triggerNavigation(pos.coords.latitude, pos.coords.longitude)
                         },
                         (err) => {
-                            console.warn("Low accuracy error", err)
+                            logger.warn("Low accuracy geolocation error", err)
                             toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
                             triggerNavigation()
                         },
