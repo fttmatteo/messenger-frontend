@@ -13,6 +13,12 @@ class Logger {
         return `${timestamp} [${this.prefix}]${cid} ${message}`;
     }
 
+    public debug(message: string, ...args: unknown[]) {
+        if (isDev) {
+            console.debug(this.formatMessage(message), ...args);
+        }
+    }
+
     public info(message: string, ...args: unknown[]) {
         if (isDev) {
             console.info(this.formatMessage(message), ...args);

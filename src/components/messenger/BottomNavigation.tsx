@@ -46,7 +46,7 @@ export function BottomNavigation() {
                         return (
                             <button
                                 key={item.path}
-                                onClick={() => navigate(item.path)}
+                                onClick={() => navigate(item.path, { replace: true })}
                                 className="flex flex-col items-center justify-center gap-1 rounded-full text-primary hover:bg-primary/10 transition-all duration-200 -mt-4 bg-background border-4 border-background"
                                 aria-label={item.label}
                                 aria-current={active ? "page" : undefined}
@@ -62,7 +62,7 @@ export function BottomNavigation() {
                     return (
                         <button
                             key={item.path}
-                            onClick={() => navigate(item.path)}
+                            onClick={() => navigate(item.path, { replace: true })}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-0.5 px-3 rounded-lg transition-all duration-200 min-w-[60px] relative mt-1",
                                 active

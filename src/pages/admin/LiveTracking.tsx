@@ -151,6 +151,12 @@ export default function LiveTracking() {
         fetchMessengers()
 
         const startTracking = async () => {
+            // Skip if already connected
+            if (trackingService.isCurrentlyConnected()) {
+                setConnected(true)
+                return
+            }
+
             try {
                 const token = await authService.getWsToken()
                 trackingService.connect(token, () => {
@@ -158,8 +164,8 @@ export default function LiveTracking() {
                     trackingService.subscribeToAll(handleTrackingUpdate)
                 })
             } catch (err) {
-                logger.warn('Failed to get WS token, falling back to cookie-only', err)
-                setError('Error al obtener ticket de conexión WebSocket. Podría haber redundancia en cookies.')
+                // Silent fallback - normal on Safari Mobile
+                logger.debug('WS token unavailable for Admin, using cookie fallback', err)
                 trackingService.connect(undefined, () => {
                     setConnected(true)
                     trackingService.subscribeToAll(handleTrackingUpdate)
