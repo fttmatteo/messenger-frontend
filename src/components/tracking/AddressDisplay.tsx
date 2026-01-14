@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { logger } from "@/utils/logger"
 
 // Address cache to avoid repeated API calls
 const addressCache = new Map<string, string>()
@@ -66,7 +67,7 @@ export function AddressDisplay({ lat, lng, className }: { lat: number; lng: numb
                     setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
                 }
             } catch (err) {
-                console.error('Reverse geocode error:', err)
+                logger.warn('Reverse geocode error in AddressDisplay:', err)
                 setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
             } finally {
                 setLoading(false)

@@ -16,6 +16,7 @@ import { isMessengerOnline } from "@/lib/messenger-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
+import { logger } from "@/utils/logger"
 
 /** Helper para validar coordenadas finitas antes de usar en el mapa */
 const isValidCoords = (lat?: number, lng?: number): boolean => {
@@ -71,7 +72,7 @@ export default function LiveTracking() {
                     }
                 } catch (e) {
                     if (isAxiosError(e) && e.response?.status !== 404) {
-                        console.error(`Error fetching last location for messenger ${emp.idEmployee}:`, e)
+                        logger.apiError(`Error fetching last location for messenger ${emp.idEmployee}`, e)
                     }
                 }
 
@@ -108,7 +109,7 @@ export default function LiveTracking() {
                 setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
             }
         } catch (error) {
-            console.error("Error fetching messengers:", error)
+            logger.error("Error fetching messengers in LiveTracking:", error)
             if (isAxiosError(error) && error.response?.status !== 404) {
                 setError(getErrorMessage(error))
             }
@@ -157,7 +158,7 @@ export default function LiveTracking() {
                     trackingService.subscribeToAll(handleTrackingUpdate)
                 })
             } catch (err) {
-                console.error('Failed to get WS token, falling back to cookie-only', err)
+                logger.warn('Failed to get WS token, falling back to cookie-only', err)
                 setError('Error al obtener ticket de conexión WebSocket. Podría haber redundancia en cookies.')
                 trackingService.connect(undefined, () => {
                     setConnected(true)

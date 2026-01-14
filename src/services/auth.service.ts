@@ -1,6 +1,7 @@
 import type { LoginCredentials, LoginResponse } from '@/types';
 import { LoginResponseSchema } from '@/schemas/api-schemas';
 import apiClient from './api-client';
+import { logger } from '@/utils/logger';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
@@ -12,7 +13,7 @@ export const authService = {
             const validatedData = LoginResponseSchema.parse(rawData);
             return validatedData;
         } catch (error) {
-            console.error('Validation error:', error);
+            logger.error('Validation error in auth.login:', error);
             throw new Error('Invalid server response format');
         }
     },
@@ -27,7 +28,7 @@ export const authService = {
             // Llamar endpoint de logout para limpiar cookies del servidor
             await apiClient.post('/auth/logout');
         } catch (error) {
-            console.warn('Logout error:', error);
+            logger.warn('Logout error (non-critical):', error);
         }
 
         // Limpiar metadata local

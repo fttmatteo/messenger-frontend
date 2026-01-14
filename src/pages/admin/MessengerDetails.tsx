@@ -16,6 +16,7 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import type { TrackingHistoryItem } from "@/types/tracking.types"
+import { logger } from "@/utils/logger"
 
 // New components
 import { MessengerInfoCard } from "@/components/tracking/MessengerInfoCard"
@@ -81,7 +82,7 @@ export default function MessengerDetails() {
                 setIsActive(false)
             }
         } catch (error) {
-            console.error("Error fetching messenger data:", error)
+            logger.error("Error fetching messenger data in MessengerDetails:", error)
         } finally {
             setLoading(false)
         }
@@ -104,7 +105,7 @@ export default function MessengerDetails() {
                 setShowHistoryRoute(false)
             }
         } catch (error) {
-            console.error("Error fetching history:", error)
+            logger.error("Error fetching history in MessengerDetails:", error)
             setHistoryData([])
         } finally {
             setLoadingHistory(false)

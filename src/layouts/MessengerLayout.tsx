@@ -145,7 +145,7 @@ export default function MessengerLayout() {
                         }
                     },
                     (error) => {
-                        console.warn('Geolocation partial error:', error.message)
+                        logger.warn('Geolocation partial error:', error.message)
 
                         if (error.code === 1) {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })

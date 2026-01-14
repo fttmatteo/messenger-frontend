@@ -12,6 +12,7 @@ import { ServiceTrackingMap } from "@/components/tracking/ServiceTrackingMap"
 import { ImageViewer } from "@/components/ui/image-viewer"
 import { ArrowLeft, Trash2, Loader2 } from "lucide-react"
 import { getErrorMessage } from "@/lib/error-utils"
+import { logger } from "@/utils/logger"
 
 // Extracted components
 import { ServiceHeader } from "@/components/service/ServiceHeader"
@@ -53,7 +54,7 @@ export default function ViewServicio() {
             setService(data)
             setError(null)
         } catch (error) {
-            console.error("Error fetching service:", error)
+            logger.apiError("Error fetching service in ViewServicio", error)
             const message = getErrorMessage(error)
             setError(message)
             setGlobalError(message)

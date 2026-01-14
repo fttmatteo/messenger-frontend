@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/lib/error-utils'
+import { createLogger } from '@/utils/logger'
+
+const logger = createLogger('EvidenceCapture')
 
 interface EvidenceCaptureProps {
     maxPhotos?: number
@@ -56,13 +59,13 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                     videoRef.current?.play()
                         .then(() => setCameraReady(true))
                         .catch(err => {
-                            console.error('Video play error:', err)
+                            logger.error('Video play error:', err)
                             stopCamera()
                         })
                 }
             }
         } catch (error) {
-            console.error('Camera error:', error)
+            logger.error('Camera error:', error)
             setCameraActive(false)
             toast.error('Error de cámara', {
                 description: getErrorMessage(error)

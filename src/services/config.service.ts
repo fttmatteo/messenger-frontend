@@ -1,4 +1,5 @@
 import { apiClient } from './api-client'
+import { logger } from '@/utils/logger'
 
 export const configService = {
     getStatusColors: async (): Promise<Record<string, string>> => {
@@ -11,7 +12,7 @@ export const configService = {
             try {
                 return JSON.parse(data)
             } catch (e) {
-                console.error('Error parsing status colors:', e)
+                logger.error('Error parsing status colors:', e)
                 return {}
             }
         }

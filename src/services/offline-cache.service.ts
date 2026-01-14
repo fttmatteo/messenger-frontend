@@ -1,5 +1,6 @@
 import { get, set, del } from 'idb-keyval'
 import type { ServiceDelivery } from '@/types/service.types'
+import { logger } from '@/utils/logger'
 
 const KEYS = {
     MESSENGER_SERVICES: 'messenger_services',
@@ -39,7 +40,7 @@ class OfflineCacheService {
             const services = await get<ServiceDelivery[]>(KEYS.MESSENGER_SERVICES)
             return services || []
         } catch (error) {
-            console.error('Error reading cached services:', error)
+            logger.error('Error reading cached services:', error)
             return []
         }
     }
