@@ -376,7 +376,7 @@ export default function MessengerLayout() {
                 style={{
                     paddingTop: `calc(48px + ${safeArea.top}px)`,
                     paddingBottom: !hideBottomNav
-                        ? `var(--bottom-nav-height)`
+                        ? `calc(var(--bottom-nav-height) + env(safe-area-inset-bottom))`
                         : `env(safe-area-inset-bottom)`
                 }}
                 role="main"
