@@ -13,7 +13,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/MobileOnlyGuard"
 import { BottomNavigation } from "@/components/messenger/BottomNavigation"
 import { useNetwork } from "@/hooks/use-network"
-import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
 
 const logger = createLogger('MessengerLayout')
@@ -27,7 +26,6 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
-    const safeArea = useSafeArea()
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -247,7 +245,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col min-h-full bg-background">
+        <div className="flex flex-col h-[100dvh] bg-background">
             {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
@@ -255,18 +253,17 @@ export default function MessengerLayout() {
             >
                 Saltar al contenido principal
             </a>
-            {/* Simplified Header */}
-            <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background/80 backdrop-blur-md" role="banner">
+            {/* Simplified Header - Now in flow */}
+            <header className="flex-none flex flex-col border-b bg-background/80 backdrop-blur-md" role="banner">
                 {/* Safe Area Spacer for PWA/Notch */}
                 <div className="h-[env(safe-area-inset-top,0px)] w-full" />
 
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
-                    {/* Center: Page title or Status - Absolutely Centered within the h-12 area */}
+                    {/* ... (resto del header igual pero sin fixed) ... */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                         {pageTitle ? (
                             <div className="flex items-center justify-center gap-2">
                                 <span className="font-semibold text-sm">{pageTitle}</span>
-                                {/* Subtle network offline indicator */}
                                 {!isNetworkOnline && (
                                     <Badge
                                         variant="outline"
@@ -288,7 +285,6 @@ export default function MessengerLayout() {
                                 >
                                     {isOnline ? 'ACTIVO' : 'OFFLINE'}
                                 </Badge>
-                                {/* Subtle network offline indicator */}
                                 {!isNetworkOnline && (
                                     <Badge
                                         variant="outline"
@@ -297,7 +293,6 @@ export default function MessengerLayout() {
                                         <WifiOff className="h-2.5 w-2.5" />
                                     </Badge>
                                 )}
-                                {/* Pending sync actions indicator */}
                                 {pendingActionsCount > 0 && isNetworkOnline && (
                                     <Badge
                                         variant="outline"
@@ -311,7 +306,6 @@ export default function MessengerLayout() {
                         )}
                     </div>
 
-                    {/* Left: Back button or Logo */}
                     <div className="flex-1 flex justify-start z-10">
                         {isSubPage ? (
                             <Button
@@ -328,9 +322,6 @@ export default function MessengerLayout() {
                         )}
                     </div>
 
-
-
-                    {/* Right: Logout */}
                     <div className="flex-1 flex justify-end items-center gap-1 z-10">
                         <Button
                             variant="ghost"
@@ -345,17 +336,11 @@ export default function MessengerLayout() {
                 </div>
             </header>
 
-            {/* Main Content Area - with bottom padding for nav */}
+            {/* Main Content Area - Scroll occurs here */}
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto"
-                style={{
-                    paddingTop: `calc(48px + ${safeArea.top}px)`,
-                    paddingBottom: !hideBottomNav
-                        ? `calc(68px + ${safeArea.bottom}px)`
-                        : `${safeArea.bottom}px`
-                }}
+                className="flex-1 overflow-y-auto"
                 role="main"
             >
                 <Outlet />
