@@ -31,7 +31,8 @@ export function BottomNavigation() {
     return (
         <nav
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40"
+                "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40",
+                "pb-[env(safe-area-inset-bottom)]"
             )}
             role="navigation"
             aria-label="Navegación principal"
