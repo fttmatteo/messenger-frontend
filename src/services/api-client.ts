@@ -25,6 +25,13 @@ apiClient.interceptors.request.use(
         const correlationId = crypto.randomUUID();
         config.headers['X-Correlation-Id'] = correlationId;
 
+        // Fallback: Si el entorno ha guardado un token (porque las cookies fallaron o es Safari),
+        // lo enviamos explícitamente en el header.
+        const token = sessionStorage.getItem('accessToken');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+
         // Nota: Axios ya debería manejar X-XSRF-TOKEN automáticamente 
         // si la cookie XSRF-TOKEN está presente.
 
@@ -36,9 +43,19 @@ apiClient.interceptors.request.use(
 // Interceptor de respuesta: capturar token del body si llega
 apiClient.interceptors.response.use(
     (response) => {
-        // Si la respuesta trae un accessToken en el body, lo guardamos como fallback
-        if (response.data && response.data.accessToken) {
-            sessionStorage.setItem('accessToken', response.data.accessToken);
+        // Log para debug
+        if (response.config.url?.includes('/auth/')) {
+            // logger.debug('Auth response received', { url: response.config.url });
+        }
+
+        // Si la respuesta trae tokens en el body, lo guardamos como fallback
+        if (response.data) {
+            if (response.data.accessToken) {
+                sessionStorage.setItem('accessToken', response.data.accessToken);
+            }
+            if (response.data.refreshToken) {
+                sessionStorage.setItem('refreshToken', response.data.refreshToken);
+            }
         }
         return response;
     },
@@ -87,6 +104,12 @@ apiClient.interceptors.response.use(
         }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
+            // Ignorar reintento si el endpoint es login
+            // (evita bucles infinitos: login falla -> 401 -> refresh -> retry login -> loop)
+            if (originalRequest.url?.includes('auth/login')) {
+                return Promise.reject(error)
+            }
+
             if (isRefreshing) {
                 return new Promise(function (resolve, reject) {
                     failedQueue.push({ resolve, reject })

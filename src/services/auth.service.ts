@@ -19,8 +19,9 @@ export const authService = {
     },
 
     async refreshToken(): Promise<void> {
-        // El interceptor de Axios ya maneja withCredentials: true
-        await apiClient.post('/auth/refresh');
+        // Enviar refresh token en body como fallback si existe en storage (cookies bloqueadas)
+        const fallbackToken = sessionStorage.getItem('refreshToken');
+        await apiClient.post('/auth/refresh', fallbackToken ? { refreshToken: fallbackToken } : {});
     },
 
     async logout() {
@@ -40,6 +41,7 @@ export const authService = {
 
         // Limpiar token fallback
         sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
     },
 
     getCurrentUser() {
