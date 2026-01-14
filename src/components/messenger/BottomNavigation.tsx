@@ -42,7 +42,7 @@ export function BottomNavigation() {
 
     return (
         <nav
-            className="flex-none flex flex-col bg-background border-t border-border/40"
+            className="flex-none flex flex-col bg-background border-t border-border/40 pb-[env(safe-area-inset-bottom,0px)]"
             role="navigation"
             aria-label="Navegación principal"
         >
@@ -94,9 +94,6 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
-
-            {/* Safe area fill - Covers the home indicator area with background color */}
-            <div className="h-[env(safe-area-inset-bottom,0px)] bg-background" />
         </nav>
     )
 }
