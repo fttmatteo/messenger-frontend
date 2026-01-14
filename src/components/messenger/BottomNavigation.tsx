@@ -32,11 +32,12 @@ export function BottomNavigation() {
     return (
         <nav
             className={cn(
-                "flex-none bg-background/80 backdrop-blur-md border-t border-border/40 pb-[env(safe-area-inset-bottom,0px)]"
+                "flex-none relative bg-background border-t border-border/40"
             )}
             role="navigation"
             aria-label="Navegación principal"
         >
+            {/* Content area */}
             <div className="flex items-center justify-around h-[56px] py-1 px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
@@ -84,6 +85,8 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
+            {/* Safe area fill - extends background to physical bottom edge */}
+            <div className="h-[env(safe-area-inset-bottom,0px)] bg-background" />
         </nav>
     )
 }
