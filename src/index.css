@@ -80,6 +80,9 @@
   --sidebar-accent-foreground: hsl(0 0% 9%);
   --sidebar-border: hsl(0 0% 89.8%);
   --sidebar-ring: hsl(0 0% 3.9%);
+
+  /* Global Layout Constants */
+  --bottom-nav-height: 49px;
 }
 
 .dark {
@@ -140,6 +143,11 @@ html {
 body {
   height: 100%;
   min-height: -webkit-fill-available;
+}
+
+#root {
+  height: 100%;
+  isolation: isolate;
 }
 
 @layer base {

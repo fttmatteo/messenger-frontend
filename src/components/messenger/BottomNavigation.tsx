@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { Inbox, History, Plus, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 
 
 interface NavItem {
@@ -21,8 +20,6 @@ const navItems: NavItem[] = [
 export function BottomNavigation() {
     const navigate = useNavigate()
     const location = useLocation()
-    const safeAreaBottom = useSafeAreaBottom()
-
 
     const isActive = (path: string) => {
         if (path === "/messenger") {
@@ -34,13 +31,13 @@ export function BottomNavigation() {
     return (
         <nav
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40"
+                "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40",
+                "pb-[env(safe-area-inset-bottom)]"
             )}
-            style={{ paddingBottom: safeAreaBottom > 0 ? safeAreaBottom : undefined }}
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-[49px] px-2 pb-1">
+            <div className="flex items-center justify-around h-[var(--bottom-nav-height)] px-2 pb-1">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
@@ -89,14 +86,6 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
-
-            {/* Safe Area Background Fill */}
-            {safeAreaBottom > 0 && (
-                <div
-                    className="absolute top-full left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-transparent"
-                    style={{ height: safeAreaBottom + 100 }}
-                />
-            )}
         </nav>
     )
 }
