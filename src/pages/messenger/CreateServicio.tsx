@@ -19,7 +19,6 @@ import { X, Loader2, Bike, Camera, Building2, Edit3 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
-import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 import { CreateServiceSkeleton } from "@/components/service/ServiceSkeletons"
 
 
@@ -35,7 +34,7 @@ type FormValues = z.infer<typeof formSchema>
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
     const { getCurrentLocation } = useSmartLocation()
-    const safeAreaBottom = useSafeAreaBottom()
+
 
     // Form state
     const [loading, setLoading] = useState(false)
@@ -330,7 +329,7 @@ export default function MessengerCreateServicio() {
                     {/* Fixed Bottom Action */}
                     <div
                         className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
-                        style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
+                        style={{ paddingBottom: `calc(1rem + env(safe-area-inset-bottom))` }}
                     >
                         <div className="flex gap-3">
                             <Button
