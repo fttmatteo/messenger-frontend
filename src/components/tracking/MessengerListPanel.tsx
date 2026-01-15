@@ -1,6 +1,5 @@
 import { memo } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, Navigation, Clock, ChevronRight, ChevronLeft, Wifi, MapPin } from "lucide-react"
@@ -10,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { isMessengerOnline } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
+import { MessengerListSkeleton } from "./TrackingSkeletons"
 
 
 
@@ -17,19 +17,12 @@ import type { LiveTrackingUpdate } from "@/services/tracking.service"
 
 export interface MessengerListPanelProps {
     messengers: LiveTrackingUpdate[]
-    /** Currently selected messenger */
     selectedMessengerId: number | null
-    /** Messenger being followed (for visual indicator) */
     followingMessengerId: number | null
-    /** Whether data is loading */
     loading: boolean
-    /** Whether panel is collapsed */
     isCollapsed: boolean
-    /** Toggle collapsed state */
     onToggleCollapse: () => void
-    /** Called when a messenger is selected */
     onSelect: (messenger: LiveTrackingUpdate) => void
-    /** Unified timestamp for synchronization */
     now: number
 }
 
@@ -75,11 +68,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
             {!isCollapsed && (
                 <ScrollArea className="flex-1">
                     {loading && messengers.length === 0 ? (
-                        <div className="space-y-2 p-3">
-                            {[1, 2, 3].map(i => (
-                                <Skeleton key={i} className="h-16 w-full" />
-                            ))}
-                        </div>
+                        <MessengerListSkeleton count={8} />
                     ) : messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
                             No hay mensajeros disponibles

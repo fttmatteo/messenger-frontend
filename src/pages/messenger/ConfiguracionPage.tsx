@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { useTheme } from "next-themes"
 import { Card } from "@/components/ui/card"
 import { Palette, ChevronRight } from "lucide-react"
+import { APP_CONFIG } from "@/lib/app-config"
 
 function getThemeLabel(theme: string | undefined) {
     switch (theme) {
@@ -23,7 +24,7 @@ export default function ConfiguracionPage() {
                     General
                 </p>
 
-                <Card className="border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden rounded-2xl shadow-sm">
+                <Card className="border-border/40 bg-card overflow-hidden rounded-2xl shadow-sm">
                     {/* Appearance Option */}
                     <button
                         onClick={() => navigate('/messenger/configuracion/apariencia')}
@@ -40,7 +41,7 @@ export default function ConfiguracionPage() {
                             </p>
                         </div>
 
-                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted/30 group-hover:bg-muted/50 transition-colors">
+                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
                     </button>
@@ -52,7 +53,7 @@ export default function ConfiguracionPage() {
             {/* Additional info or version footer */}
             <div className="mt-auto py-6 text-center">
                 <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
-                    PLAK Messenger v1.2.0
+                    {APP_CONFIG.name} v{APP_CONFIG.version}
                 </p>
             </div>
         </div>

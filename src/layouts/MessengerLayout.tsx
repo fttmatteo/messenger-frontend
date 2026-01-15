@@ -16,7 +16,8 @@ import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { openSupportEmail } from "@/lib/app-config"
+import { openSupportEmail, APP_CONFIG } from "@/lib/app-config"
+import { cn } from "@/lib/utils"
 
 const logger = createLogger('MessengerLayout')
 
@@ -326,7 +327,7 @@ export default function MessengerLayout() {
                 Saltar al contenido principal
             </a>
             {/* Simplified Header */}
-            <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background/80 backdrop-blur-md" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm" role="banner">
                 {/* Safe Area Spacer for PWA/Notch */}
                 <div className="h-[env(safe-area-inset-top,0px)] w-full" />
 
@@ -350,9 +351,9 @@ export default function MessengerLayout() {
                         ) : (
                             <div className="flex items-center justify-center gap-2 pointer-events-auto">
                                 <div
-                                    className={`inline-flex items-center gap-2.5 px-3 py-1 rounded-full border shadow-sm transition-all duration-300 ${!isNetworkOnline ? "bg-amber-500/[0.05] border-amber-500/20" :
-                                            isOnline ? "bg-green-500/[0.05] border-green-500/20" :
-                                                "bg-muted/30 border-border/20"
+                                    className={`inline-flex items-center gap-2.5 px-3 py-1 rounded-full border shadow-sm transition-all duration-300 ${!isNetworkOnline ? "bg-amber-50 dark:bg-amber-950/20 border-amber-500/20" :
+                                        isOnline ? "bg-green-50 dark:bg-green-950/20 border-green-500/20" :
+                                            "bg-muted border-border/20"
                                         }`}
                                 >
                                     {!isNetworkOnline ? (
@@ -423,17 +424,22 @@ export default function MessengerLayout() {
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="left" className="w-[280px] p-0 border-r bg-background/95 backdrop-blur-xl flex flex-col">
+                                <SheetContent side="left" className="w-[280px] p-0 border-r bg-background flex flex-col">
                                     <SheetHeader className="p-4 pb-1 text-left">
                                         <div className="flex items-center gap-3 mb-4">
                                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
                                             <div>
-                                                <SheetTitle className="text-lg font-bold tracking-tight">PLAK</SheetTitle>
-                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">Messenger v1.2.0</SheetDescription>
+                                                <SheetTitle className="text-lg font-bold tracking-tight">{APP_CONFIG.name}</SheetTitle>
+                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">v{APP_CONFIG.version}</SheetDescription>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col p-4 rounded-2xl bg-muted/30 border border-border/20 shadow-sm">
+                                        <div className={cn(
+                                            "flex flex-col p-4 rounded-2xl border shadow-sm transition-all duration-300",
+                                            !isNetworkOnline ? "bg-amber-50 dark:bg-amber-950/20 border-amber-500/20" :
+                                                isOnline ? "bg-green-50 dark:bg-green-950/20 border-green-500/20" :
+                                                    "bg-muted border-border/20"
+                                        )}>
                                             <div className="flex flex-col min-w-0">
                                                 <span className="text-base font-bold truncate tracking-tight mb-2.5">{user?.name || 'Mensajero'}</span>
                                                 <div className="flex items-center gap-2.5">
@@ -549,7 +555,7 @@ export default function MessengerLayout() {
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background/80 backdrop-blur-md">
+                <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background">
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>

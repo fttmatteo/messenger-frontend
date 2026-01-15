@@ -1,7 +1,7 @@
 import { ServiceCard } from "./ServiceCard"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Package } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
+import { ServiceListSkeleton } from "@/components/service/ServiceSkeletons"
 
 interface ServiceListProps {
     services: ServiceDelivery[]
@@ -10,35 +10,8 @@ interface ServiceListProps {
 }
 
 export function ServiceList({ services, loading, emptyMessage = "No hay servicios" }: ServiceListProps) {
-    // Loading skeletons - matches ServiceCard layout
     if (loading) {
-        return (
-            <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                    <div
-                        key={i}
-                        className="relative flex items-center bg-card border border-border/50 rounded-lg overflow-hidden shadow-sm"
-                    >
-                        {/* Status Strip Skeleton */}
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-muted animate-pulse" />
-
-                        <div className="flex items-center w-full pl-4 pr-3 py-3 gap-3">
-                            {/* Plate Badge Skeleton */}
-                            <Skeleton className="h-9 w-24 rounded-md" />
-
-                            {/* Spacer */}
-                            <div className="flex-1" />
-
-                            {/* Action Buttons Skeleton */}
-                            <div className="flex items-center gap-2">
-                                <Skeleton className="h-8 w-8 rounded-full" />
-                                <Skeleton className="h-8 w-8 rounded-full" />
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )
+        return <ServiceListSkeleton count={3} />
     }
 
     // Empty state

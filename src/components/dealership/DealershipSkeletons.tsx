@@ -8,29 +8,29 @@ import { TableRow, TableCell } from "@/components/ui/table"
  */
 export function TableRowSkeleton() {
     return (
-        <TableRow>
+        <TableRow className="hover:bg-transparent border-b border-border/50">
             {/* Nombre */}
-            <TableCell>
-                <Skeleton className="h-4 w-36" />
+            <TableCell className="py-4">
+                <Skeleton className="h-4 w-40 rounded bg-muted/20" />
             </TableCell>
             {/* Dirección - truncated */}
-            <TableCell className="max-w-xs">
-                <Skeleton className="h-4 w-48" />
+            <TableCell className="max-w-xs py-4">
+                <Skeleton className="h-4 w-56 rounded bg-muted/10" />
             </TableCell>
             {/* Teléfono */}
-            <TableCell>
-                <div className="flex items-center gap-1">
-                    <Skeleton className="h-3 w-3 rounded-full" />
-                    <Skeleton className="h-4 w-24" />
+            <TableCell className="py-4">
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full bg-muted/20" />
+                    <Skeleton className="h-4 w-28 rounded bg-muted/20" />
                 </div>
             </TableCell>
             {/* Zona - badge */}
-            <TableCell>
-                <Skeleton className="h-6 w-16 rounded-full" />
+            <TableCell className="py-4">
+                <Skeleton className="h-6 w-20 rounded-full bg-muted/20" />
             </TableCell>
             {/* Ubicación - badge */}
-            <TableCell>
-                <Skeleton className="h-6 w-24 rounded-full" />
+            <TableCell className="py-4">
+                <Skeleton className="h-6 w-28 rounded-full bg-muted/20" />
             </TableCell>
         </TableRow>
     )
@@ -42,28 +42,28 @@ export function TableRowSkeleton() {
  */
 export function CardSkeleton() {
     return (
-        <Card className="mb-3">
+        <Card className="mb-3 border-border/50 bg-background/40">
             <CardContent className="pt-4">
                 <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-2">
-                        <div className="flex flex-col items-start gap-1">
-                            <Skeleton className="h-5 w-40" />
-                            <Skeleton className="h-5 w-24 rounded-full" />
+                    <div className="flex-1 space-y-3">
+                        <div className="flex flex-col items-start gap-1.5">
+                            <Skeleton className="h-5 w-56 rounded bg-muted/20" />
+                            <Skeleton className="h-5 w-28 rounded-full bg-muted/10" />
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             <div className="flex items-start gap-2">
-                                <Skeleton className="h-3.5 w-3.5 rounded-full mt-0.5" />
-                                <Skeleton className="h-4 w-full max-w-xs" />
+                                <Skeleton className="h-4 w-4 rounded-full bg-muted/10 mt-0.5" />
+                                <Skeleton className="h-4 w-full max-w-xs rounded bg-muted/10" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
+                                <Skeleton className="h-4 w-40 rounded bg-muted/20" />
                             </div>
                         </div>
                     </div>
                     {/* Action buttons placeholder */}
-                    <div className="flex flex-col gap-2 opacity-50">
-                        <Skeleton className="h-9 w-9 rounded-md" />
+                    <div className="flex flex-col gap-2">
+                        <Skeleton className="h-9 w-9 rounded-lg bg-muted/20" />
                     </div>
                 </div>
             </CardContent>
@@ -78,61 +78,72 @@ export function DealershipFormSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">
             {/* Header Skeleton */}
-            <div className="mb-4 space-y-2">
-                <Skeleton className="h-8 w-64" />
+            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+                <div className="flex-1">
+                    <Skeleton className="h-4 w-48 rounded bg-muted/20" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                    <Skeleton className="h-8 w-64 rounded-md bg-muted/20" />
+                </div>
+                <div className="flex-1 flex justify-end">
+                    <Skeleton className="h-8 w-32 rounded-md bg-muted/20" />
+                </div>
             </div>
 
-            <div className="flex-1 grid gap-4 lg:grid-cols-3">
+            <div className="flex-1 grid gap-4 lg:grid-cols-3 min-h-0">
                 {/* Main Form Information Card */}
-                <Card className="lg:col-span-2 flex flex-col">
-                    <CardContent className="pt-6 flex-1">
+                <Card className="lg:col-span-2 flex flex-col border-border/50">
+                    <CardContent className="pt-6 flex-1 overflow-y-auto">
                         <div className="h-full flex flex-col">
-                            <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
+                            <div className="flex-1 grid gap-6 md:grid-cols-2 content-start">
                                 {/* Name Field */}
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-40" />
-                                    <Skeleton className="h-10 w-full" />
+                                <div className="space-y-2.5">
+                                    <Skeleton className="h-4 w-40 rounded bg-muted/10" />
+                                    <Skeleton className="h-10 w-full rounded-md bg-muted/20" />
                                 </div>
 
                                 {/* Phone Field */}
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-24" />
-                                    <Skeleton className="h-10 w-full" />
+                                <div className="space-y-2.5">
+                                    <Skeleton className="h-4 w-28 rounded bg-muted/10" />
+                                    <Skeleton className="h-10 w-full rounded-md bg-muted/20" />
                                 </div>
 
                                 {/* Address Field - Spans 2 cols */}
-                                <div className="space-y-2 md:col-span-2">
-                                    <Skeleton className="h-4 w-32" />
-                                    <Skeleton className="h-20 w-full" />
+                                <div className="space-y-2.5 md:col-span-2">
+                                    <Skeleton className="h-4 w-32 rounded bg-muted/10" />
+                                    <Skeleton className="h-20 w-full rounded-md bg-muted/20" />
                                 </div>
 
                                 {/* Zone Field */}
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-16" />
-                                    <Skeleton className="h-10 w-full" />
+                                <div className="space-y-2.5">
+                                    <Skeleton className="h-4 w-20 rounded bg-muted/10" />
+                                    <Skeleton className="h-10 w-full rounded-md bg-muted/20" />
                                 </div>
                             </div>
 
                             {/* Buttons Footer */}
-                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
-                                <Skeleton className="h-10 w-24" />
-                                <Skeleton className="h-10 w-36" />
-                                <Skeleton className="h-10 w-24 ml-auto" />
+                            <div className="flex flex-wrap gap-4 pt-6 mt-auto border-t border-border/50">
+                                <Skeleton className="h-9 w-24 rounded-md bg-muted/20" />
+                                <Skeleton className="h-9 w-36 rounded-md bg-muted/20" />
+                                <Skeleton className="h-9 w-24 rounded-md bg-muted/20 ml-auto" />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Location/Map Card Skeleton */}
-                <Card className="flex flex-col h-fit">
-                    <CardContent className="pt-6 flex flex-col gap-4">
+                <Card className="flex flex-col h-fit border-border/50">
+                    <CardContent className="pt-6 flex flex-col gap-5">
                         <div className="flex items-center gap-2 mb-2">
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-5 w-5 rounded-full bg-muted/20" />
+                            <Skeleton className="h-6 w-40 rounded bg-muted/20" />
                         </div>
-                        <Skeleton className="h-[200px] w-full rounded-lg" />
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                        <Skeleton className="h-9 w-full" />
+                        <Skeleton className="h-[220px] w-full rounded-xl bg-muted/10 bordre border-border/40" />
+                        <Skeleton className="h-6 w-32 rounded-full bg-muted/20" />
+                        <div className="flex gap-2">
+                            <Skeleton className="h-9 flex-1 rounded-md bg-muted/20" />
+                            <Skeleton className="h-9 flex-1 rounded-md bg-muted/20" />
+                        </div>
                     </CardContent>
                 </Card>
             </div>

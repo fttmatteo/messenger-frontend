@@ -54,8 +54,8 @@ export default function AppearancePage() {
                                     className={cn(
                                         "relative w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left touch-manipulation active:scale-[0.98] border",
                                         isSelected
-                                            ? "border-primary/20 bg-primary/[0.03] shadow-[0_0_20px_-12px_rgba(0,0,0,0.2)] dark:bg-primary/[0.05]"
-                                            : "border-border/40 bg-card/50 hover:bg-muted/30"
+                                            ? "border-primary/40 bg-primary/10 shadow-sm"
+                                            : "border-border/40 bg-card hover:bg-muted"
                                     )}
                                 >
                                     <div

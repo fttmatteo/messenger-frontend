@@ -6,7 +6,6 @@ import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
 import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
@@ -21,6 +20,7 @@ import { useStatusColors } from "@/hooks/use-status-colors"
 import { useSmartLocation } from "@/hooks/use-smart-location"
 import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 import { STATUS_OPTIONS } from "@/config/status-options"
+import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
 
 // Helper to convert hex to rgba for backgrounds
 function hexToRgba(hex: string, alpha: number): string {
@@ -155,49 +155,7 @@ export default function UpdateStatus() {
     }
 
     if (loading) {
-        return (
-            <div className="">
-                <div className="">
-                    {/* Hero Card Skeleton */}
-                    <div className="p-4 pb-2">
-                        <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
-                            <div className="flex flex-col items-center gap-3">
-                                <Skeleton className="h-12 w-32 rounded-md" />
-                                <Skeleton className="h-4 w-36" />
-                                <Skeleton className="h-7 w-24 rounded-full" />
-                            </div>
-                        </Card>
-                    </div>
-
-                    {/* Status Selection Skeleton */}
-                    <div className="px-4 py-3">
-                        <Skeleton className="h-3 w-28 mb-3" />
-                        <div className="space-y-3">
-                            {[1, 2, 3].map((i) => (
-                                <div
-                                    key={i}
-                                    className="flex items-center gap-4 p-4 rounded-xl border-2 border-border/40 bg-card"
-                                >
-                                    <Skeleton className="h-12 w-12 rounded-xl" />
-                                    <div className="flex-1 space-y-2">
-                                        <Skeleton className="h-5 w-24" />
-                                        <Skeleton className="h-3 w-44" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Fixed Bottom Action Skeleton */}
-                <div
-                    className="p-4 border-t bg-background/95"
-                    style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
-                >
-                    <Skeleton className="w-full h-12 rounded-xl" />
-                </div>
-            </div>
-        )
+        return <UpdateServiceStatusSkeleton />
     }
 
     if (error || !service) {
@@ -393,7 +351,7 @@ export default function UpdateStatus() {
 
             {/* Fixed Bottom Action */}
             <div
-                className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/40 bg-background/80 backdrop-blur-xl"
+                className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
                 style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
             >
                 <Button

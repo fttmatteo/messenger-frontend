@@ -3,9 +3,10 @@
  * Agrupa variables de entorno y valores por defecto en un solo lugar.
  */
 export const APP_CONFIG = {
-    name: import.meta.env.VITE_APP_NAME || 'PLAK',
-    description: import.meta.env.VITE_APP_DESCRIPTION || 'Sistema de gestión de mensajería',
-    supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || 'soporte@plak.digital',
+    name: 'PLAK',
+    version: '1.2.0',
+    description: 'Sistema de gestión de entrega de placas',
+    supportEmail: 'soporte@plak.digital',
 } as const
 
 /**
@@ -14,6 +15,6 @@ export const APP_CONFIG = {
  */
 export function openSupportEmail(subject?: string): void {
     const email = APP_CONFIG.supportEmail
-    const defaultSubject = subject || 'Solicitud de ayuda - PLAK'
+    const defaultSubject = subject || 'Soporte - PLAK'
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(defaultSubject)}`
 }

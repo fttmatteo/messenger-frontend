@@ -39,6 +39,9 @@ export default function LoginMobile() {
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
+        defaultValues: {
+            rememberMe: false
+        }
     })
 
     const onSubmit = async (data: LoginFormValues) => {
