@@ -23,7 +23,7 @@ export default function ConfiguracionPage() {
                     General
                 </p>
 
-                <Card className="border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden rounded-2xl shadow-sm">
+                <Card className="border-border/40 bg-card overflow-hidden rounded-2xl shadow-sm">
                     {/* Appearance Option */}
                     <button
                         onClick={() => navigate('/messenger/configuracion/apariencia')}
@@ -40,7 +40,7 @@ export default function ConfiguracionPage() {
                             </p>
                         </div>
 
-                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted/30 group-hover:bg-muted/50 transition-colors">
+                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
                     </button>

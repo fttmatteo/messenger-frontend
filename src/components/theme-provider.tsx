@@ -75,29 +75,36 @@ function ThemeColorSync() {
         // 2. Selector for iOS status bar style
         const metaAppleStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
 
-        const body = document.body
         const html = document.documentElement
 
-        // Define colors matching index.css
-        const darkColor = '#141414'
-        const lightColor = '#ffffff'
+        // Professional way to get the computed background color without hardcoding
+        // We Use a temporary element to resolve the CSS variable 'var(--background)'
+        const tempDiv = document.createElement('div')
+        tempDiv.style.visibility = 'hidden'
+        tempDiv.style.position = 'absolute'
+        tempDiv.style.backgroundColor = 'var(--background)'
+        document.body.appendChild(tempDiv)
+
+        const computedColor = getComputedStyle(tempDiv).backgroundColor
+        document.body.removeChild(tempDiv)
 
         const isDark = resolvedTheme === 'dark'
-        const color = isDark ? darkColor : lightColor
 
         // Update ALL theme-color tags
         if (metaThemeColors.length > 0) {
             metaThemeColors.forEach(meta => {
-                meta.setAttribute('content', color)
+                meta.setAttribute('content', computedColor)
             })
         } else {
             const meta = document.createElement('meta')
             meta.name = 'theme-color'
-            meta.content = color
+            meta.content = computedColor
             document.head.appendChild(meta)
         }
 
         // Update iOS specific status bar style
+        // 'black-translucent' ensures white icons in dark mode
+        // 'default' ensures dark icons in light mode
         if (metaAppleStatus) {
             metaAppleStatus.setAttribute('content', isDark ? 'black-translucent' : 'default')
         } else {
@@ -107,9 +114,9 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // Force background color checks
-        body.style.backgroundColor = color
-        html.style.backgroundColor = color
+        // Ensure html element has the correct color scheme for system UI
+        html.style.backgroundColor = computedColor
+        html.style.colorScheme = isDark ? 'dark' : 'light'
 
     }, [resolvedTheme])
 

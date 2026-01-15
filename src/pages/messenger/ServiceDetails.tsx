@@ -194,7 +194,7 @@ export default function ServiceDetails() {
             <div className="">
                 {/* Hero Card - Plate, Status & Actions */}
                 <div className="p-4 pb-2">
-                    <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
+                    <Card className="p-5 bg-gradient-to-br from-card to-muted border-border/50">
                         <div className="flex flex-col items-center gap-3">
                             <PlacaBadge
                                 plateNumber={service.plate.plateNumber}

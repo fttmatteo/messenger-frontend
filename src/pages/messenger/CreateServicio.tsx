@@ -376,7 +376,7 @@ export default function MessengerCreateServicio() {
 
                     {/* Fixed Bottom Action */}
                     <div
-                        className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/40 bg-background/80 backdrop-blur-xl"
+                        className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
                         style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
                     >
                         <div className="flex gap-3">

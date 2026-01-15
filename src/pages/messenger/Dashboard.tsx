@@ -46,7 +46,7 @@ export default function MessengerDashboard() {
                     <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
                         <SelectTrigger
                             id="dealership-filter"
-                            className="w-full h-11 px-3 bg-card/80 backdrop-blur-xl border-border/30 rounded-2xl shadow-sm hover:bg-card/90 transition-all duration-200 outline-none ring-0 focus:ring-1 focus:ring-primary/20"
+                            className="w-full h-11 px-3 bg-card border-border/60 rounded-2xl shadow-sm hover:bg-accent/10 transition-all duration-200 outline-none ring-0 focus:ring-1 focus:ring-primary/20"
                         >
                             <div className="flex items-center gap-2.5 w-full min-w-0">
                                 <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
@@ -57,7 +57,7 @@ export default function MessengerDashboard() {
                                 </div>
                             </div>
                         </SelectTrigger>
-                        <SelectContent align="start" className="w-[280px] rounded-2xl border-border/30 bg-card/95 backdrop-blur-xl shadow-2xl p-1">
+                        <SelectContent align="start" className="w-[280px] rounded-2xl border-border/60 bg-card shadow-2xl p-1">
                             <SelectItem value="all" className="rounded-xl font-semibold my-0.5">
                                 <div className="flex items-center justify-between w-full gap-4">
                                     <span className="truncate">Todos los concesionarios</span>
@@ -88,7 +88,7 @@ export default function MessengerDashboard() {
                     size="icon"
                     onClick={handleRefresh}
                     disabled={isRefreshing || !isOnline}
-                    className="h-11 w-11 shrink-0 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/30 shadow-sm hover:bg-muted/50 active:scale-95 transition-all"
+                    className="h-11 w-11 shrink-0 rounded-2xl bg-card border border-border/60 shadow-sm hover:bg-accent/10 active:scale-95 transition-all"
                 >
                     <RefreshCw className={`h-4 w-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
                 </Button>
