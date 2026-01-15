@@ -160,7 +160,7 @@ export function AppRoutes() {
                 </Route>
 
                 {/* Catch all */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/" replace={true} />} />
             </Routes>
         </Suspense>
     );

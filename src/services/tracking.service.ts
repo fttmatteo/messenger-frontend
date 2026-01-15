@@ -172,6 +172,14 @@ class TrackingService {
         this.isConnected = false;
     }
 
+    /**
+     * Checks if WebSocket is currently connected.
+     * Used to prevent duplicate connection attempts.
+     */
+    public isCurrentlyConnected(): boolean {
+        return this.isConnected && this.client.connected;
+    }
+
     public sendUpdate(update: Partial<LiveTrackingUpdate>) {
         // Always ensure we have a timestamp for the capture time
         const updateWithTime = {

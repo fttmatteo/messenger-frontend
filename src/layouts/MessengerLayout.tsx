@@ -98,6 +98,12 @@ export default function MessengerLayout() {
 
 
             const startTracking = async () => {
+                // Skip if already connected to prevent duplicate connections
+                if (trackingService.isCurrentlyConnected()) {
+                    logger.debug('WebSocket already connected, skipping reconnection')
+                    return
+                }
+
                 try {
                     const token = await authService.getWsToken()
                     trackingService.connect(token, () => {
@@ -107,12 +113,9 @@ export default function MessengerLayout() {
                             status: 'ACTIVE'
                         })
                     })
-                } catch (err) {
-                    logger.error('Failed to get WS token, falling back to cookie-only', err)
-                    toast.error('Error al obtener ticket de conexión. Intentando vía cookies...', {
-                        id: 'ws-ticket-error',
-                        description: 'Safari Mobile podría tener problemas de conexión.'
-                    })
+                } catch {
+                    // Silent fallback - normal behavior on Safari Mobile
+                    logger.debug('WS token unavailable, using cookie fallback (normal on Safari)')
                     trackingService.connect(undefined, () => {
                         trackingService.sendUpdate({
                             messengerId: userId,
@@ -235,11 +238,54 @@ export default function MessengerLayout() {
         return () => clearInterval(heartbeatInterval)
     }, [isOnline, user?.id])
 
+    // Visibility change: send heartbeat when returning to app instead of full reconnect
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isOnline) {
+                const userId = user?.id || user?.document
+                // Only send heartbeat if already connected, don't trigger full reconnection
+                if (userId && trackingService.isCurrentlyConnected()) {
+                    trackingService.sendHeartbeat(userId)
+                }
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }, [isOnline, user])
+
     const handleLogout = () => {
         setShowLogoutDialog(true)
     }
 
 
+
+    // Native Navigation Guard: Handle back gesture to protect hierarchy
+    useEffect(() => {
+        const handlePopState = () => {
+            const path = window.location.pathname;
+
+            // 1. If in a secondary root tab (Historial, Config) or sub-path, 
+            // and trying to go "back" (which would exit or go to previous tab),
+            // redirect to Home (/messenger) if we are at the top of their stack.
+
+            const isSecondaryRoot = path === '/messenger/servicios' || path === '/messenger/configuracion';
+            const isSubPath = path.includes('/servicio/') || path === '/messenger/crear' || path === '/messenger/historial-recorrido';
+            const isDeepConfig = path === '/messenger/configuracion/apariencia';
+
+            if (isDeepConfig) {
+                // From Appearance back to Config
+                navigate('/messenger/configuracion', { replace: true });
+            } else if (isSecondaryRoot || isSubPath) {
+                // From secondary roots or any sub-path back to Home
+                navigate('/messenger', { replace: true });
+            }
+            // If already in /messenger, let the default behavior (exit app) happen
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [navigate]);
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
