@@ -11,7 +11,6 @@ import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -21,6 +20,8 @@ import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
 import { useSafeAreaBottom } from "@/hooks/use-safe-area"
+import { CreateServiceSkeleton } from "@/components/service/ServiceSkeletons"
+
 
 // Form validation schema
 const formSchema = z.object({
@@ -107,17 +108,6 @@ export default function MessengerCreateServicio() {
         setShowCamera(true)
     }, [form])
 
-
-
-
-
-
-    // ... other state ...
-
-    // ... (keep handlePhotoCapture, handleImageSelect, clearImage) ...
-
-    // REMOVED: getLocation function (logic moved to hook)
-
     // Form submit handler
     const onSubmit = async (values: FormValues) => {
         try {
@@ -174,44 +164,7 @@ export default function MessengerCreateServicio() {
 
     // Loading skeleton while fetching dealerships
     if (loadingData) {
-        return (
-            <div className="pb-24">
-                <div className="">
-                    {/* Photo Section Skeleton */}
-                    <div className="p-4 pb-2">
-                        <Card className="p-4 border-border/50">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Skeleton className="h-7 w-7 rounded-lg" />
-                                <Skeleton className="h-4 w-28" />
-                            </div>
-                            <Skeleton className="w-full aspect-[4/3] rounded-lg" />
-                        </Card>
-                    </div>
-
-                    {/* Dealership Card Skeleton */}
-                    <div className="px-4 pb-2">
-                        <Card className="p-4 border-border/50">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Skeleton className="h-7 w-7 rounded-lg" />
-                                <Skeleton className="h-4 w-40" />
-                            </div>
-                            <Skeleton className="h-11 w-full rounded-md" />
-                        </Card>
-                    </div>
-                </div>
-
-                {/* Fixed Bottom Action Skeleton */}
-                <div
-                    className="p-4 border-t bg-background/95"
-                    style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
-                >
-                    <div className="flex gap-3">
-                        <Skeleton className="h-12 w-24 rounded-xl" />
-                        <Skeleton className="flex-1 h-12 rounded-xl" />
-                    </div>
-                </div>
-            </div>
-        )
+        return <CreateServiceSkeleton />
     }
 
     return (

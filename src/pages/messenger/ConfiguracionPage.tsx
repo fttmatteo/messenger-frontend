@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { useTheme } from "next-themes"
 import { Card } from "@/components/ui/card"
 import { Palette, ChevronRight } from "lucide-react"
+import { APP_CONFIG } from "@/lib/app-config"
 
 function getThemeLabel(theme: string | undefined) {
     switch (theme) {
@@ -52,7 +53,7 @@ export default function ConfiguracionPage() {
             {/* Additional info or version footer */}
             <div className="mt-auto py-6 text-center">
                 <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
-                    PLAK Messenger v1.2.0
+                    {APP_CONFIG.name} v{APP_CONFIG.version}
                 </p>
             </div>
         </div>

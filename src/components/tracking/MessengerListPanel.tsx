@@ -17,19 +17,12 @@ import type { LiveTrackingUpdate } from "@/services/tracking.service"
 
 export interface MessengerListPanelProps {
     messengers: LiveTrackingUpdate[]
-    /** Currently selected messenger */
     selectedMessengerId: number | null
-    /** Messenger being followed (for visual indicator) */
     followingMessengerId: number | null
-    /** Whether data is loading */
     loading: boolean
-    /** Whether panel is collapsed */
     isCollapsed: boolean
-    /** Toggle collapsed state */
     onToggleCollapse: () => void
-    /** Called when a messenger is selected */
     onSelect: (messenger: LiveTrackingUpdate) => void
-    /** Unified timestamp for synchronization */
     now: number
 }
 

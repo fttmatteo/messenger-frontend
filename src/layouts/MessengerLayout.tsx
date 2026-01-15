@@ -16,7 +16,7 @@ import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { openSupportEmail } from "@/lib/app-config"
+import { openSupportEmail, APP_CONFIG } from "@/lib/app-config"
 import { cn } from "@/lib/utils"
 
 const logger = createLogger('MessengerLayout')
@@ -429,8 +429,8 @@ export default function MessengerLayout() {
                                         <div className="flex items-center gap-3 mb-4">
                                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
                                             <div>
-                                                <SheetTitle className="text-lg font-bold tracking-tight">PLAK</SheetTitle>
-                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">Messenger v1.2.0</SheetDescription>
+                                                <SheetTitle className="text-lg font-bold tracking-tight">{APP_CONFIG.name}</SheetTitle>
+                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">v{APP_CONFIG.version}</SheetDescription>
                                             </div>
                                         </div>
 
