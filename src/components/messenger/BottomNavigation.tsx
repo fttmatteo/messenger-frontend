@@ -85,6 +85,9 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
+
+            {/* Safe Area Spacer for PWA/Bottom indicator - Keeps nav background extending to bottom */}
+            <div className="h-[env(safe-area-inset-bottom,0px)] w-full" />
         </nav>
     )
 }
