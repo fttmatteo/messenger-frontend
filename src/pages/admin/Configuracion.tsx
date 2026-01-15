@@ -9,6 +9,8 @@ import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check } from "luc
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
+import { APP_CONFIG } from "@/lib/app-config"
+
 
 // Status order for display
 const STATUS_ORDER = ['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED', 'DELETED']
@@ -132,13 +134,13 @@ export default function Configuracion() {
             {activeSection === null ? (
                 /* Settings Menu */
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                    <CardContent className="p-4 space-y-2 overflow-y-auto">
+                    <CardContent className="p-0 space-y-2 overflow-y-auto">
                         {SETTINGS_SECTIONS.map((section) => {
                             const IconComponent = section.icon
                             return (
                                 <div
                                     key={section.id}
-                                    className="flex items-center gap-4 p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                                    className="flex items-center gap-4 p-4 rounded-lg border bg-card cursor-pointer hover:bg-muted/50 transition-colors"
                                     onClick={() => setActiveSection(section.id)}
                                 >
                                     <div className="rounded-lg bg-primary/10 p-3 text-primary">
@@ -153,6 +155,13 @@ export default function Configuracion() {
                             )
                         })}
                     </CardContent>
+
+                    {/* Additional info or version footer like in Messenger */}
+                    <div className="mt-auto py-6 text-center">
+                        <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
+                            {APP_CONFIG.name} v{APP_CONFIG.version}
+                        </p>
+                    </div>
                 </Card>
             ) : activeSection === 'appearance' ? (
                 /* Appearance Section */

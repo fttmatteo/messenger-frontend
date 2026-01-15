@@ -3,11 +3,12 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map } from "lucide-react"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
 import { AdminUIProvider } from "@/context/AdminUIContext"
+import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { SidebarToggleTab } from "@/components/SidebarToggleTab"
 
 const menuItems = [
@@ -56,8 +57,11 @@ function AdminLayoutContent() {
             <Sidebar collapsible="offcanvas" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
-                        <div className="flex items-center gap-2">
-                            <img src={logo} alt="PLAK" className="h-8 w-8 object-contain" />
+                        <div className="flex items-center gap-3">
+                            <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
+                            <div>
+                                <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
+                            </div>
                         </div>
                         <ModeToggle showLabel={false} />
                     </div>
@@ -89,6 +93,16 @@ function AdminLayoutContent() {
                 </SidebarContent>
                 <SidebarFooter className="pb-4">
                     <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                onClick={() => openSupportEmail()}
+                                tooltip="Soporte"
+                                className="text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                            >
+                                <HelpCircle className="h-4 w-4" />
+                                <span className="text-xs font-medium">Soporte</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 onClick={handleLogout}
