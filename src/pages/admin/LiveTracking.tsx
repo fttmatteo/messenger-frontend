@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { Map as MapComponent } from "@/components/Map"
 import { OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
@@ -34,13 +34,6 @@ export default function LiveTracking() {
     const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
-
-    // Force re-render periodically to update relative times
-    const [now, setNow] = useState(Date.now())
-    useEffect(() => {
-        const timer = setInterval(() => setNow(Date.now()), 60000)
-        return () => clearInterval(timer)
-    }, [])
 
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
@@ -207,6 +200,12 @@ export default function LiveTracking() {
         }
     }, [followingMessengerId, messengers])
 
+    // Memoize visible markers to prevent unnecessary recalculations
+    const visibleMarkers = useMemo(() =>
+        messengers.filter(m => isValidCoords(m.latitude, m.longitude)),
+        [messengers]
+    )
+
     return (
         <div className="h-full w-full relative overflow-hidden">
             {/* Fullscreen Map */}
@@ -215,17 +214,15 @@ export default function LiveTracking() {
                     <Skeleton className="w-full h-full" />
                 ) : (
                     <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
-                        {messengers.map((messenger) => (
-                            messenger.latitude && messenger.longitude && messenger.latitude !== 0 && (
-                                <PulsingMarker
-                                    key={messenger.messengerId}
-                                    position={{ lat: messenger.latitude, lng: messenger.longitude }}
-                                    onClick={() => selectMessenger(messenger)}
-                                    title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
-                                    color={isMessengerOnline(messenger.status, messenger.lastUpdate) ? '#10b981' : '#6b7280'}
-                                    isActive={isMessengerOnline(messenger.status, messenger.lastUpdate)}
-                                />
-                            )
+                        {visibleMarkers.map((messenger) => (
+                            <PulsingMarker
+                                key={messenger.messengerId}
+                                position={{ lat: messenger.latitude, lng: messenger.longitude }}
+                                onClick={() => selectMessenger(messenger)}
+                                title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
+                                color={isMessengerOnline(messenger.status, messenger.lastUpdate) ? '#10b981' : '#6b7280'}
+                                isActive={isMessengerOnline(messenger.status, messenger.lastUpdate)}
+                            />
                         ))}
 
                         {/* Custom popup overlay at marker position */}
@@ -306,7 +303,6 @@ export default function LiveTracking() {
                     loading={loading}
                     isCollapsed={isPanelCollapsed}
                     onToggleCollapse={() => setIsPanelCollapsed(!isPanelCollapsed)}
-                    now={now}
                     onSelect={selectMessenger}
                 />
             </div>
