@@ -1,0 +1,67 @@
+/**
+ * Utility Styles
+ * 
+ * Custom utilities, scrollbars, and animations.
+ */
+
+/* Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+        /* Fallback for older browsers */
+        word-break: break-word;
+    }
+
+    /* Safe accordion animations using scaleY/opacity instead of height */
+    @keyframes accordion-down-safe {
+        from {
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top;
+        }
+
+        to {
+            opacity: 1;
+            transform: scaleY(1);
+            transform-origin: top;
+        }
+    }
+
+    @keyframes accordion-up-safe {
+        from {
+            opacity: 1;
+            transform: scaleY(1);
+            transform-origin: top;
+        }
+
+        to {
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top;
+        }
+    }
+
+    .animate-accordion-down {
+        animation: accordion-down-safe 0.2s ease-out;
+    }
+
+    .animate-accordion-up {
+        animation: accordion-up-safe 0.2s ease-out;
+    }
+}
