@@ -24,6 +24,7 @@ import {
     MessengerActivityTimeline,
     type TimelineEvent
 } from "@/components/admin/MessengerActivity"
+import { MessengerSidePanelSkeleton } from "@/components/tracking/TrackingSkeletons"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -152,11 +153,23 @@ export function MessengerSidePanel({
 
     if (!isOpen) return null
 
+    // Show skeleton while loading initial data (messenger info or employee info)
+    // or if we have no messenger data yet
+    if (!messenger || (loadingHistory && history.length === 0)) {
+        return (
+            <div className={cn(
+                "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
+                "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full"
+            )}>
+                <MessengerSidePanelSkeleton />
+            </div>
+        )
+    }
+
     return (
         <div className={cn(
             "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
-            "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full",
-            !messenger && "hidden"
+            "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full"
         )}>
             {/* Header */}
             <div className="p-3 border-b bg-background/40 flex items-center justify-between gap-2">

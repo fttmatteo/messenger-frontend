@@ -8,35 +8,37 @@ import { TableRow, TableCell } from "@/components/ui/table"
  */
 export function DeletedServiceRowSkeleton() {
     return (
-        <TableRow>
+        <TableRow className="hover:bg-transparent border-b border-border/50">
             {/* Placa */}
-            <TableCell>
-                <Skeleton className="h-6 w-16 rounded-md" />
+            <TableCell className="py-4">
+                <Skeleton className="h-7 w-20 rounded-md bg-muted/20" />
             </TableCell>
             {/* Concesionario */}
-            <TableCell>
-                <Skeleton className="h-4 w-32" />
+            <TableCell className="py-4">
+                <Skeleton className="h-4 w-40 rounded bg-muted/20" />
             </TableCell>
             {/* Mensajero */}
-            <TableCell>
-                <Skeleton className="h-4 w-32" />
+            <TableCell className="py-4">
+                <Skeleton className="h-4 w-36 rounded bg-muted/10" />
             </TableCell>
             {/* Eliminado (Date) */}
-            <TableCell>
+            <TableCell className="py-4">
                 <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
+                    <Skeleton className="h-4 w-28 rounded bg-muted/20" />
                 </div>
             </TableCell>
             {/* Tiempo restante (Badge) */}
-            <TableCell>
-                <Skeleton className="h-5 w-20 rounded-full" />
+            <TableCell className="py-4">
+                <div className="px-2 py-1 rounded-full bg-muted/10 border border-border/40 w-fit">
+                    <Skeleton className="h-3.5 w-16 rounded bg-muted/20" />
+                </div>
             </TableCell>
             {/* Acción (Buttons) */}
-            <TableCell className="text-right">
+            <TableCell className="text-right py-4">
                 <div className="flex gap-2 justify-end">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-7 w-7 rounded-md bg-muted/20" />
+                    <Skeleton className="h-7 w-7 rounded-md bg-muted/20" />
                 </div>
             </TableCell>
         </TableRow>
@@ -49,33 +51,35 @@ export function DeletedServiceRowSkeleton() {
  */
 export function DeletedServiceCardSkeleton() {
     return (
-        <Card className="mb-3">
+        <Card className="mb-3 border-border/50 bg-background/40">
             <CardContent className="pt-4">
                 <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex-1 min-w-0 space-y-3">
                         {/* Placa */}
-                        <Skeleton className="h-6 w-16 rounded-md" />
+                        <Skeleton className="h-7 w-20 rounded-md bg-muted/20" />
 
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             {/* Concesionario */}
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
+                                <Skeleton className="h-4 w-40 rounded bg-muted/10" />
                             </div>
                             {/* Mensajero */}
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
+                                <Skeleton className="h-4 w-36 rounded bg-muted/10" />
                             </div>
                             {/* Tiempo restante */}
-                            <div className="flex items-center gap-2">
-                                <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                                <Skeleton className="h-5 w-24 rounded-full" />
+                            <div className="flex items-center gap-2 pt-1">
+                                <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
+                                <div className="px-2 py-0.5 rounded-full bg-muted/10 border border-border/40">
+                                    <Skeleton className="h-3.5 w-24 rounded bg-muted/20" />
+                                </div>
                             </div>
                         </div>
                     </div>
                     {/* Restore Button */}
-                    <Skeleton className="h-10 w-12 rounded-md" />
+                    <Skeleton className="h-10 w-12 rounded-lg bg-muted/20" />
                 </div>
             </CardContent>
         </Card>

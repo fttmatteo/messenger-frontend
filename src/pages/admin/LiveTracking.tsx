@@ -224,7 +224,7 @@ export default function LiveTracking() {
             {/* Fullscreen Map */}
             <div className="absolute inset-0">
                 {loading && messengers.length === 0 ? (
-                    <Skeleton className="w-full h-full" />
+                    <Skeleton className="w-full h-full bg-muted/10 animate-in fade-in duration-500" />
                 ) : (
                     <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
                         {visibleMarkers.map((marker) => (
