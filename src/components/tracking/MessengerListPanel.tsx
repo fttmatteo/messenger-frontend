@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,7 @@ export interface MessengerListPanelProps {
 /**
  * Collapsible side panel showing list of messengers with status.
  */
-export function MessengerListPanel({
+export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
     followingMessengerId,
@@ -163,5 +163,5 @@ export function MessengerListPanel({
             )}
         </div>
     )
-}
+})
 
