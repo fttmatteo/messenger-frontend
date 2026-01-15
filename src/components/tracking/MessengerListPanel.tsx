@@ -8,17 +8,12 @@ import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
+import { isMessengerOnline } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 
-/** Tiempo máximo para considerar "reciente" (2 minutos) */
-const RECENT_THRESHOLD_MS = 2 * 60 * 1000
 
-/** Helper para verificar si un timestamp es reciente */
-const isRecent = (timestamp: string | undefined, now: number): boolean => {
-    if (!timestamp) return false
-    const date = new Date(timestamp).getTime()
-    return !isNaN(date) && (now - date) < RECENT_THRESHOLD_MS
-}
+
+
 
 export interface MessengerListPanelProps {
     /** List of messengers to display */
@@ -49,10 +44,11 @@ export const MessengerListPanel = memo(function MessengerListPanel({
     onToggleCollapse,
     onSelect
 }: MessengerListPanelProps) {
-    // Internal timer for relative times - only this component re-renders
+    // Internal timer for relative times and online status updates
+    // 30s interval matches the map's statusTick for consistent online/offline detection
     const [now, setNow] = useState(() => Date.now())
     useEffect(() => {
-        const timer = setInterval(() => setNow(Date.now()), 60000)
+        const timer = setInterval(() => setNow(Date.now()), 30000)
         return () => clearInterval(timer)
     }, [])
     return (
@@ -98,9 +94,10 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                                 const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
                                 const hasRecentUpdate = lastUpdateDate && (now - lastUpdateDate.getTime() < 60000)
 
-                                // Indicadores separados: Conectado (heartbeat) vs GPS (lastUpdate)
-                                const isConnected = isRecent(messenger.lastHeartbeat, now) || isRecent(messenger.lastUpdate, now)
-                                const hasGps = isRecent(messenger.lastUpdate, now)
+                                // Indicadores instantáneos: Verifican tanto el estado del servidor como la obsolescencia de los datos
+                                // Usamos Date.now() para que en cualquier re-render por WebSocket se vea el cambio inmediatamente
+                                const isConnected = isMessengerOnline(messenger.status, messenger.lastHeartbeat || messenger.lastUpdate, 2)
+                                const hasGps = isMessengerOnline(messenger.status, messenger.lastUpdate, 2)
 
                                 return (
                                     <button

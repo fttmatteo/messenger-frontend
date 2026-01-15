@@ -1,30 +1,29 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, memo } from "react"
+import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import { useGoogleMap } from "@react-google-maps/api"
 
 export interface PulsingMarkerProps {
-    /** Position of the marker on the map */
-    position: google.maps.LatLngLiteral
+    /** The messenger data */
+    messenger: LiveTrackingUpdate
     /** Click handler for the marker */
-    onClick?: () => void
-    /** Title for the marker (shown on hover) */
-    title?: string
-    /** Color of the marker pin (default: '#4f46e5') */
-    color?: string
-    /** Whether to show pulse animation (for active markers) */
-    isActive?: boolean
+    onClick: (messenger: LiveTrackingUpdate) => void
+    /** Whether the messenger is online */
+    isOnline: boolean
 }
 
 /**
  * A marker component with optional pulse animation for indicating active state.
  * Uses Google Maps Advanced Marker API.
  */
-export function PulsingMarker({
-    position,
+export const PulsingMarker = memo(function PulsingMarker({
+    messenger,
     onClick,
-    title,
-    color = '#4f46e5',
-    isActive = false
+    isOnline
 }: PulsingMarkerProps) {
+    const position = { lat: messenger.latitude, lng: messenger.longitude }
+    const title = messenger.messengerName || `Mensajero #${messenger.messengerId}`
+    const color = isOnline ? '#10b981' : '#6b7280'
+    const isActive = isOnline
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
 
@@ -81,7 +80,7 @@ export function PulsingMarker({
         })
 
         marker.addListener('click', () => {
-            if (onClick) onClick()
+            onClick(messenger)
         })
 
         markerRef.current = marker
@@ -101,4 +100,4 @@ export function PulsingMarker({
     }, [position])
 
     return null
-}
+})
