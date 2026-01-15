@@ -11,7 +11,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
-import { BottomNav } from "@/components/navigation/BottomNav"
 import { useNetwork } from "@/hooks/use-network"
 import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
@@ -59,9 +58,6 @@ export default function MessengerLayout() {
             document.body.style.overflow = originalStyle.overflow
         }
     }, [])
-
-    // Hide bottom nav on create and update pages for cleaner UX
-    const hideBottomNav = location.pathname.includes('/crear') || location.pathname.includes('/actualizar')
 
     // Get page title based on path
     const getPageTitle = () => {
@@ -422,17 +418,17 @@ export default function MessengerLayout() {
                 className="flex-1 flex flex-col overflow-y-auto"
                 style={{
                     paddingTop: `calc(48px + ${safeArea.top}px)`,
-                    paddingBottom: !hideBottomNav
-                        ? `calc(var(--bottom-nav-height) + env(safe-area-inset-bottom))`
-                        : `env(safe-area-inset-bottom)`
+                    /* 
+                     * Content only clears the interactive nav area (49px).
+                     * This allows content to scroll BEHIND the safe-area glass bridge 
+                     * for a professional, seamless look.
+                     */
+                    paddingBottom: `env(safe-area-inset-bottom)`
                 }}
                 role="main"
             >
                 <Outlet />
             </main>
-
-            {/* Bottom Navigation */}
-            {!hideBottomNav && <BottomNav />}
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
