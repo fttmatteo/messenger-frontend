@@ -31,12 +31,12 @@ export function BottomNavigation() {
     return (
         <nav
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40"
+                "fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background/80 backdrop-blur-md transition-all duration-300 border-t border-border/40 pb-[env(safe-area-inset-bottom,0px)]"
             )}
             role="navigation"
             aria-label="Navegación principal"
         >
-            <div className="flex items-center justify-around h-[var(--bottom-nav-height)] px-2 pb-1">
+            <div className="flex items-center justify-around h-[var(--bottom-nav-height)] px-2">
                 {navItems.map((item) => {
                     const active = isActive(item.path)
                     const Icon = item.icon
@@ -64,7 +64,7 @@ export function BottomNavigation() {
                             key={item.path}
                             onClick={() => navigate(item.path, { replace: true })}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-0.5 px-3 rounded-lg transition-all duration-200 min-w-[60px] relative mt-1",
+                                "flex flex-col items-center justify-center gap-0.5 px-3 rounded-lg transition-all duration-200 min-w-[60px] relative",
                                 active
                                     ? "text-primary"
                                     : "text-muted-foreground hover:text-foreground"
@@ -85,9 +85,6 @@ export function BottomNavigation() {
                     )
                 })}
             </div>
-
-            {/* Safe Area Spacer for PWA/Bottom indicator - Keeps nav background extending to bottom */}
-            <div className="h-[env(safe-area-inset-bottom,0px)] w-full" />
         </nav>
     )
 }
