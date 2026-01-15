@@ -1,4 +1,5 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { useServices } from "@/hooks/use-services"
@@ -20,6 +21,7 @@ import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
+import { UpdateStatusModal } from "@/components/service/UpdateStatusModal"
 
 // Available statuses for selection
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -52,10 +54,20 @@ export default function Servicios() {
         handleSort,
         statusFilter,
         setStatusFilter,
+        fetchServices,
     } = useServices({ searchQuery })
 
+    // Modal state
+    const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+
     const handleUpdateStatus = (service: ServiceDelivery) => {
-        navigate(`/admin/servicios/actualizar/${service.idServiceDelivery}`)
+        setSelectedService(service)
+        setIsUpdateModalOpen(true)
+    }
+
+    const handleUpdateSuccess = () => {
+        fetchServices() // Refresh the list
     }
 
     const filterLabel = (statusFilter?.length ?? 0) > 0
@@ -238,6 +250,16 @@ export default function Servicios() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Update Status Modal */}
+            {selectedService && (
+                <UpdateStatusModal
+                    open={isUpdateModalOpen}
+                    onOpenChange={setIsUpdateModalOpen}
+                    service={selectedService}
+                    onSuccess={handleUpdateSuccess}
+                />
+            )}
         </div>
     )
 }
