@@ -16,20 +16,20 @@ const themeOptions: ThemeOptionItem[] = [
     {
         value: 'light',
         label: 'Claro',
-        description: 'Tema con fondo blanco',
-        icon: <Sun className="h-6 w-6" />
+        description: 'Fondo blanco',
+        icon: <Sun className="h-6 w-6" strokeWidth={2.5} />
     },
     {
         value: 'dark',
         label: 'Oscuro',
-        description: 'Tema con fondo oscuro',
-        icon: <Moon className="h-6 w-6" />
+        description: 'Fondo oscuro',
+        icon: <Moon className="h-6 w-6" strokeWidth={2.5} />
     },
     {
         value: 'system',
         label: 'Sistema',
-        description: 'Usa la preferencia del dispositivo',
-        icon: <Monitor className="h-6 w-6" />
+        description: 'Automático',
+        icon: <Monitor className="h-6 w-6" strokeWidth={2.5} />
     }
 ]
 
@@ -37,55 +37,71 @@ export default function AppearancePage() {
     const { theme, setTheme } = useTheme()
 
     return (
-        <div className="">
-            <div className="">
-                <div className="p-4">
-                    <Card className="p-4 border-border/50">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-3">
-                            Tema
-                        </p>
+        <div className="flex flex-col flex-1 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-6">
+                <div>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 mb-4">
+                        Modo de interfaz
+                    </p>
 
-                        <div className="space-y-2">
-                            {themeOptions.map((option) => {
-                                const isSelected = theme === option.value
-                                return (
-                                    <button
-                                        key={option.value}
-                                        onClick={() => setTheme(option.value)}
+                    <div className="grid gap-3">
+                        {themeOptions.map((option) => {
+                            const isSelected = theme === option.value
+                            return (
+                                <button
+                                    key={option.value}
+                                    onClick={() => setTheme(option.value)}
+                                    className={cn(
+                                        "relative w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left touch-manipulation active:scale-[0.98] border",
+                                        isSelected
+                                            ? "border-primary/20 bg-primary/[0.03] shadow-[0_0_20px_-12px_rgba(0,0,0,0.2)] dark:bg-primary/[0.05]"
+                                            : "border-border/40 bg-card/50 hover:bg-muted/30"
+                                    )}
+                                >
+                                    <div
                                         className={cn(
-                                            "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left touch-manipulation",
+                                            "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300",
                                             isSelected
-                                                ? "border-primary bg-primary/5"
-                                                : "border-border/40 bg-card hover:bg-muted/30"
+                                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
+                                                : "bg-muted text-muted-foreground"
                                         )}
                                     >
-                                        <div
-                                            className={cn(
-                                                "p-2.5 rounded-xl transition-colors",
-                                                isSelected ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-                                            )}
-                                        >
-                                            {option.icon}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-base text-foreground">
-                                                {option.label}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground mt-0.5">
-                                                {option.description}
-                                            </p>
-                                        </div>
+                                        {option.icon}
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <p className={cn(
+                                            "font-semibold text-sm tracking-tight transition-colors",
+                                            isSelected ? "text-primary" : "text-foreground"
+                                        )}>
+                                            {option.label}
+                                        </p>
+                                        <p className="text-[11px] font-medium text-muted-foreground mt-0.5">
+                                            {option.description}
+                                        </p>
+                                    </div>
+
+                                    <div className={cn(
+                                        "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                                        isSelected
+                                            ? "border-primary bg-primary"
+                                            : "border-muted-foreground/20 bg-transparent"
+                                    )}>
                                         {isSelected && (
-                                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                                <Check className="h-3 w-3 text-primary-foreground" />
-                                            </div>
+                                            <Check className="h-3.5 w-3.5 text-primary-foreground stroke-[3px]" />
                                         )}
-                                    </button>
-                                )
-                            })}
-                        </div>
-                    </Card>
+                                    </div>
+                                </button>
+                            )
+                        })}
+                    </div>
                 </div>
+
+                <Card className="p-4 border-dashed border-2 border-muted bg-transparent rounded-2xl">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed text-center font-medium italic">
+                        La apariencia se guardará automáticamente y se sincronizará entre tus dispositivos.
+                    </p>
+                </Card>
             </div>
         </div>
     )

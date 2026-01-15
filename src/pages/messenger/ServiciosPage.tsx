@@ -68,7 +68,7 @@ export default function ServiciosPage() {
             {/* Search Bar + Filters */}
             <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={2.5} />
                     <Input
                         id="search-services"
                         name="search"
@@ -91,7 +91,7 @@ export default function ServiciosPage() {
                                 statusFilter !== 'all' && "text-primary border-primary bg-primary/5 shadow-sm"
                             )}
                         >
-                            <Filter className="h-4 w-4" />
+                            <Filter className="h-4 w-4" strokeWidth={2.5} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-56 p-2" align="end">
@@ -137,7 +137,7 @@ export default function ServiciosPage() {
                             size="icon"
                             className="h-10 w-10 shrink-0 border-input/60"
                         >
-                            <CalendarIcon className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" strokeWidth={2.5} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="end">
@@ -159,27 +159,27 @@ export default function ServiciosPage() {
 
             {/* Date indicator + Results count */}
             <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5 overflow-hidden">
+                <p className="text-[11px] font-black text-muted-foreground/80 flex items-center gap-1.5 overflow-hidden uppercase tracking-[0.18em]">
                     {statusFilter !== 'all' && (
-                        <span className="font-semibold text-primary shrink-0">
+                        <span className="text-primary shrink-0">
                             {getStatusLabel(statusFilter)}
                         </span>
                     )}
-                    {statusFilter !== 'all' && <span className="shrink-0">·</span>}
+                    {statusFilter !== 'all' && <span className="shrink-0 opacity-40">·</span>}
                     <span className="truncate">
                         {searchTerm.trim() || statusFilter !== "all"
                             ? "Historial global"
                             : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))
                         }
                     </span>
-                    <span className="shrink-0">·</span>
-                    <span className="font-medium shrink-0">{filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''}</span>
+                    <span className="shrink-0 opacity-40">·</span>
+                    <span className="shrink-0">{filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''}</span>
                 </p>
                 {!isToday && !searchTerm.trim() && (
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 text-[10px] px-2 text-primary font-semibold hover:bg-primary/5"
+                        className="h-6 text-[10px] px-2 text-primary font-bold uppercase tracking-wider hover:bg-primary/5 active:scale-95"
                         onClick={() => setSelectedDate(new Date())}
                     >
                         Volver a hoy

@@ -231,8 +231,8 @@ export default function UpdateStatus() {
                                 size="xl"
                             />
                             <div className="flex items-center gap-2 text-muted-foreground">
-                                <Building2 className="h-4 w-4" />
-                                <span className="text-sm font-medium">{service.dealership.name}</span>
+                                <Building2 className="h-4 w-4" strokeWidth={2.5} />
+                                <span className="text-sm font-bold">{service.dealership.name}</span>
                             </div>
                             {/* Current Status Badge */}
                             <div
@@ -240,7 +240,7 @@ export default function UpdateStatus() {
                                 style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
                             >
                                 <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                                <span className="text-sm font-semibold">
+                                <span className="text-sm font-bold">
                                     {getStatusIconConfig(service.currentStatus, colors).label}
                                 </span>
                             </div>
@@ -250,7 +250,7 @@ export default function UpdateStatus() {
 
                 {/* Status Selection */}
                 <div className="px-4 py-3">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] mb-3 px-1">
                         Seleccionar estado
                     </p>
                     <div className="space-y-3">
@@ -283,7 +283,7 @@ export default function UpdateStatus() {
                                         </span>
                                     </div>
                                     <div className="flex-1">
-                                        <p className="font-semibold text-base text-foreground">
+                                        <p className="font-bold text-base text-foreground tracking-tight">
                                             {option.label}
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -322,10 +322,10 @@ export default function UpdateStatus() {
                                 <Card className="p-4 border-border/50">
                                     <div className="flex items-center gap-2 mb-3">
                                         <div className="p-1.5 rounded-lg bg-primary/10">
-                                            <PenLine className="h-4 w-4 text-primary" />
+                                            <PenLine className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-semibold">Firma del asesor</h3>
-                                        <span className="text-xs text-red-500">*</span>
+                                        <h3 className="text-sm font-bold tracking-tight">Firma del asesor</h3>
+                                        <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <SignatureCanvas
                                         ref={signatureRef}
@@ -339,10 +339,10 @@ export default function UpdateStatus() {
                                 <Card className="p-4 border-border/50">
                                     <div className="flex items-center gap-2 mb-3">
                                         <div className="p-1.5 rounded-lg bg-primary/10">
-                                            <Camera className="h-4 w-4 text-primary" />
+                                            <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-semibold">Foto de evidencia</h3>
-                                        <span className="text-xs text-red-500">*</span>
+                                        <h3 className="text-sm font-bold tracking-tight">Foto de evidencia</h3>
+                                        <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <EvidenceCapture
                                         maxPhotos={1}
@@ -356,11 +356,11 @@ export default function UpdateStatus() {
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-1.5 rounded-lg bg-primary/10">
-                                        <MessageSquare className="h-4 w-4 text-primary" />
+                                        <MessageSquare className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-sm font-semibold">Observaciones</h3>
+                                    <h3 className="text-sm font-bold tracking-tight">Observaciones</h3>
                                     {selectedOption.requiresObservation && (
-                                        <span className="text-xs text-red-500">*</span>
+                                        <span className="text-xs text-red-500 font-bold">*</span>
                                     )}
                                     {!selectedOption.requiresObservation && (
                                         <span className="text-xs text-muted-foreground">(opcional)</span>
@@ -397,7 +397,7 @@ export default function UpdateStatus() {
                 style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
             >
                 <Button
-                    className="w-full h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
+                    className="w-full h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                     style={{
                         backgroundColor: selectedOption?.color || 'hsl(var(--primary))',
                         color: 'white'

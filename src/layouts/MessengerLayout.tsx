@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, ChevronLeft, WifiOff, CloudOff } from "lucide-react"
+import { LogOut, ChevronLeft, WifiOff, CloudOff, Menu, History, Settings, ClipboardList, HelpCircle } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { authService } from "@/services/auth.service"
 import { toast } from "sonner"
@@ -14,6 +14,9 @@ import { MobileOnlyGuard } from "@/components/guards"
 import { useNetwork } from "@/hooks/use-network"
 import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
+import { openSupportEmail } from "@/lib/app-config"
 
 const logger = createLogger('MessengerLayout')
 
@@ -23,6 +26,7 @@ export default function MessengerLayout() {
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -345,24 +349,42 @@ export default function MessengerLayout() {
                             </div>
                         ) : (
                             <div className="flex items-center justify-center gap-2 pointer-events-auto">
-                                <Badge
-                                    variant="secondary"
-                                    className={`text-xs px-3 py-0.5 font-medium border-0 ${isOnline
-                                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                        : "bg-muted text-muted-foreground"
+                                <div
+                                    className={`inline-flex items-center gap-2.5 px-3 py-1 rounded-full border shadow-sm transition-all duration-300 ${!isNetworkOnline ? "bg-amber-500/[0.05] border-amber-500/20" :
+                                            isOnline ? "bg-green-500/[0.05] border-green-500/20" :
+                                                "bg-muted/30 border-border/20"
                                         }`}
                                 >
-                                    {isOnline ? 'ACTIVO' : 'OFFLINE'}
-                                </Badge>
-                                {/* Subtle network offline indicator */}
-                                {!isNetworkOnline && (
-                                    <Badge
-                                        variant="outline"
-                                        className="text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 dark:text-amber-400 animate-pulse"
-                                    >
-                                        <WifiOff className="h-2.5 w-2.5" />
-                                    </Badge>
-                                )}
+                                    {!isNetworkOnline ? (
+                                        <>
+                                            <div className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                            </div>
+                                            <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.18em]">
+                                                Sin conexión
+                                            </span>
+                                        </>
+                                    ) : isOnline ? (
+                                        <>
+                                            <div className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                            </div>
+                                            <span className="text-[11px] font-black text-green-600 dark:text-green-400 uppercase tracking-[0.18em]">
+                                                En Línea
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
+                                            <span className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-[0.18em]">
+                                                Offline
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+                                {/* Pending sync actions indicator */}
                                 {/* Pending sync actions indicator */}
                                 {pendingActionsCount > 0 && isNetworkOnline && (
                                     <Badge
@@ -390,24 +412,119 @@ export default function MessengerLayout() {
                                 <ChevronLeft className="h-5 w-5" />
                             </Button>
                         ) : (
-                            <img src={logo} alt="PLAK" className="h-8 w-auto object-contain" />
+                            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+                                <SheetTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-9 w-9 -ml-2 rounded-full hover:bg-muted transition-all active:scale-95"
+                                        aria-label="Abrir menú"
+                                    >
+                                        <Menu className="h-5 w-5" />
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="w-[280px] p-0 border-r bg-background/95 backdrop-blur-xl flex flex-col">
+                                    <SheetHeader className="p-4 pb-1 text-left">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
+                                            <div>
+                                                <SheetTitle className="text-lg font-bold tracking-tight">PLAK</SheetTitle>
+                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">Messenger v1.2.0</SheetDescription>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col p-4 rounded-2xl bg-muted/30 border border-border/20 shadow-sm">
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-base font-bold truncate tracking-tight mb-2.5">{user?.name || 'Mensajero'}</span>
+                                                <div className="flex items-center gap-2.5">
+                                                    {!isNetworkOnline ? (
+                                                        <>
+                                                            <div className="relative flex h-2 w-2">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                                            </div>
+                                                            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-[0.15em]">
+                                                                Sin conexión
+                                                            </span>
+                                                        </>
+                                                    ) : isOnline ? (
+                                                        <>
+                                                            <div className="relative flex h-2 w-2">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                                            </div>
+                                                            <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-[0.15em]">
+                                                                En línea
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
+                                                            <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em]">
+                                                                Desconectado
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </SheetHeader>
+
+                                    <div className="flex-1 px-2 py-2 space-y-0.5">
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
+                                            onClick={() => { navigate('/messenger'); setIsSidebarOpen(false); }}
+                                        >
+                                            <ClipboardList className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <span className="font-medium text-sm">Asignados</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
+                                            onClick={() => { navigate('/messenger/servicios'); setIsSidebarOpen(false); }}
+                                        >
+                                            <History className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <span className="font-medium text-sm">Historial</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
+                                            onClick={() => { navigate('/messenger/configuracion'); setIsSidebarOpen(false); }}
+                                        >
+                                            <Settings className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <span className="font-medium text-sm">Configuración</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
+                                            onClick={() => { openSupportEmail(); setIsSidebarOpen(false); }}
+                                        >
+                                            <HelpCircle className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <span className="font-medium text-sm">Soporte</span>
+                                        </Button>
+                                    </div>
+
+                                    <div className="p-4 mt-auto">
+                                        <Separator className="mb-4 opacity-50" />
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all font-medium"
+                                            onClick={() => { handleLogout(); setIsSidebarOpen(false); }}
+                                        >
+                                            <LogOut className="h-5 w-5" />
+                                            <span className="text-sm">Cerrar sesión</span>
+                                        </Button>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
                         )}
                     </div>
 
 
 
-                    {/* Right: Logout */}
-                    <div className="flex-1 flex justify-end items-center gap-1 z-10">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleLogout}
-                            className="h-9 w-9 -mr-2 rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
-                            aria-label="Cerrar sesión"
-                        >
-                            <LogOut className="h-4 w-4" />
-                        </Button>
-                    </div>
+                    {/* Right: Spacer to maintain layout balance */}
+                    <div className="flex-1 flex justify-end items-center gap-1 z-10" />
                 </div>
             </header>
 

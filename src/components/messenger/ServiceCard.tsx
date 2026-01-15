@@ -110,7 +110,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         onClick={handleNavigate}
                         title="Navegar"
                     >
-                        <Navigation className="h-3.5 w-3.5" />
+                        <Navigation className="h-5 w-5" strokeWidth={2.5} />
                     </Button>
 
                     {(service.currentStatus === 'ASSIGNED' ||
@@ -123,7 +123,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                                 onClick={handleUpdate}
                                 title="Actualizar"
                             >
-                                <Edit className="h-4 w-4" />
+                                <Edit className="h-5 w-5" strokeWidth={2.5} />
                             </Button>
                         )}
                 </div>

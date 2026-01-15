@@ -207,7 +207,7 @@ export default function ServiceDetails() {
                                 style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
                             >
                                 <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                                <span className="text-sm font-semibold">
+                                <span className="text-sm font-bold">
                                     {getStatusIconConfig(service.currentStatus, colors).label}
                                 </span>
                             </div>
@@ -215,20 +215,20 @@ export default function ServiceDetails() {
                             {/* Action Buttons - Side by Side */}
                             <div className="flex items-center gap-2 w-full mt-2">
                                 <Button
-                                    className="flex-1 h-11 gap-2"
+                                    className="flex-1 h-11 gap-2 font-bold shadow-lg active:scale-[0.98]"
                                     onClick={handleNavigate}
                                 >
-                                    <Navigation className="h-4 w-4" />
+                                    <Navigation className="h-4 w-4" strokeWidth={2.5} />
                                     Navegar
                                 </Button>
 
                                 {(service.currentStatus === 'ASSIGNED' || service.currentStatus === 'PENDING' || service.currentStatus === 'RETURNED') && (
                                     <Button
                                         variant="outline"
-                                        className="flex-1 h-11 gap-2"
+                                        className="flex-1 h-11 gap-2 font-bold border-border/60 hover:bg-primary/5 active:scale-[0.98]"
                                         onClick={handleUpdateStatus}
                                     >
-                                        <Edit className="h-4 w-4" />
+                                        <Edit className="h-4 w-4" strokeWidth={2.5} />
                                         Actualizar
                                     </Button>
                                 )}
@@ -242,29 +242,29 @@ export default function ServiceDetails() {
                     <Card className="p-4 border-border/50">
                         <div className="flex items-center gap-2 mb-3">
                             <div className="p-1.5 rounded-lg bg-primary/10">
-                                <Building2 className="h-4 w-4 text-primary" />
+                                <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-sm font-semibold">Concesionario destino</h3>
+                            <h3 className="text-sm font-bold tracking-tight">Concesionario destino</h3>
                         </div>
                         <div className="space-y-2">
                             <div>
-                                <p className="font-semibold text-base">{service.dealership.name}</p>
-                                <p className="text-sm text-muted-foreground">{service.dealership.zone}</p>
+                                <p className="font-bold text-base tracking-tight">{service.dealership.name}</p>
+                                <p className="text-sm text-muted-foreground font-medium">{service.dealership.zone}</p>
                             </div>
 
                             {service.dealership.address && (
                                 <div className="flex items-start gap-2 text-sm">
-                                    <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                                    <span>{service.dealership.address}</span>
+                                    <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" strokeWidth={2.5} />
+                                    <span className="font-medium">{service.dealership.address}</span>
                                 </div>
                             )}
 
                             {service.dealership.phone && (
                                 <div className="flex items-center gap-2 text-sm">
-                                    <Phone className="h-4 w-4 text-muted-foreground" />
+                                    <Phone className="h-4 w-4 text-muted-foreground" strokeWidth={2.5} />
                                     <a
                                         href={`tel:${service.dealership.phone}`}
-                                        className="text-primary underline"
+                                        className="text-primary font-bold underline underline-offset-4"
                                     >
                                         {service.dealership.phone}
                                     </a>
@@ -279,9 +279,9 @@ export default function ServiceDetails() {
                     <Card className="p-4 border-border/50">
                         <div className="flex items-center gap-2 mb-3">
                             <div className="p-1.5 rounded-lg bg-primary/10">
-                                <Clock className="h-4 w-4 text-primary" />
+                                <Clock className="h-4 w-4 text-primary" strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-sm font-semibold">Información del servicio</h3>
+                            <h3 className="text-sm font-bold tracking-tight">Información del servicio</h3>
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center gap-2 text-sm">
@@ -304,11 +304,11 @@ export default function ServiceDetails() {
                         <Card className="p-4 border-border/50">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="p-1.5 rounded-lg bg-primary/10">
-                                    <MessageSquareText className="h-4 w-4 text-primary" />
+                                    <MessageSquareText className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                 </div>
-                                <h3 className="text-sm font-semibold">Observaciones</h3>
+                                <h3 className="text-sm font-bold tracking-tight">Observaciones</h3>
                             </div>
-                            <p className="text-sm text-muted-foreground">{service.observation}</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed italic">{service.observation}</p>
                         </Card>
                     </div>
                 )}
@@ -319,9 +319,9 @@ export default function ServiceDetails() {
                         <Card className="p-4 border-border/50">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="p-1.5 rounded-lg bg-primary/10">
-                                    <FileImage className="h-4 w-4 text-primary" />
+                                    <FileImage className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                 </div>
-                                <h3 className="text-sm font-semibold">Lectura de la placa</h3>
+                                <h3 className="text-sm font-bold tracking-tight">Evidencia visual</h3>
                             </div>
                             <img
                                 src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}

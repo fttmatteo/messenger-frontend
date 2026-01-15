@@ -15,29 +15,46 @@ function getThemeLabel(theme: string | undefined) {
 export default function ConfiguracionPage() {
     const { theme } = useTheme()
     const navigate = useNavigate()
-    return (
-        <div className="flex flex-col flex-1 min-h-0 gap-4 p-4">
-            <Card className="border-border/50 overflow-hidden">
-                {/* Appearance Option */}
-                <button
-                    onClick={() => navigate('/messenger/configuracion/apariencia')}
-                    className="w-full flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors text-left touch-manipulation border-b border-border/30 last:border-b-0"
-                >
-                    <div className="p-2 rounded-lg bg-primary/10">
-                        <Palette className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                        <p className="font-medium text-sm">Apariencia</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                            {getThemeLabel(theme)}
-                        </p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </button>
 
-                {/* Future settings can be added here */}
-                {/* Example: Notifications, Profile, etc. */}
-            </Card>
+    return (
+        <div className="flex flex-col flex-1 min-h-0 gap-6 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-4">
+                <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] px-1">
+                    General
+                </p>
+
+                <Card className="border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden rounded-2xl shadow-sm">
+                    {/* Appearance Option */}
+                    <button
+                        onClick={() => navigate('/messenger/configuracion/apariencia')}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-muted/40 active:scale-[0.98] transition-all text-left touch-manipulation group"
+                    >
+                        <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-primary/5 text-primary group-hover:bg-primary/10 transition-colors">
+                            <Palette className="h-5 w-5" strokeWidth={2.5} />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Apariencia</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5 font-bold uppercase tracking-wide">
+                                Tema: {getThemeLabel(theme)}
+                            </p>
+                        </div>
+
+                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted/30 group-hover:bg-muted/50 transition-colors">
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                    </button>
+
+                    {/* Placeholder for more settings can be added with a Separator between them */}
+                </Card>
+            </div>
+
+            {/* Additional info or version footer */}
+            <div className="mt-auto py-6 text-center">
+                <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
+                    PLAK Messenger v1.2.0
+                </p>
+            </div>
         </div>
     )
 }
