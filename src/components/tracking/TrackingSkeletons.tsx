@@ -10,7 +10,7 @@ export function MessengerListSkeleton({ count = 5 }: { count?: number }) {
             {Array.from({ length: count }).map((_, i) => (
                 <div key={i} className="p-3.5 border-b border-border/40 flex items-center justify-between gap-4 bg-background/30">
                     <div className="flex-1 min-w-0 space-y-2.5">
-                        <Skeleton className="h-4 w-40 rounded bg-muted/20" />
+                        <Skeleton className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
                         <Skeleton className="h-4 w-24 rounded-full bg-muted/10" />
                     </div>
                     <div className="flex items-center gap-2 shrink-0">

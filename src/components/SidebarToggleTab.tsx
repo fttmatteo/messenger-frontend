@@ -14,29 +14,27 @@ export function SidebarToggleTab() {
         <div
             className={cn(
                 "fixed top-1/2 -translate-y-1/2 z-50 transition-all duration-300 ease-in-out",
-                isCollapsed ? "left-0" : "left-[var(--sidebar-width)]"
+                isCollapsed ? "left-[-14px]" : "left-[calc(var(--sidebar-width)-14px)]"
             )}
         >
             <Button
                 variant="ghost"
+                size="icon"
                 onClick={toggleSidebar}
                 className={cn(
-                    "h-96 w-1 hover:w-8 rounded-r-3xl rounded-l-none border border-l-0 bg-sidebar shadow-lg group p-0 min-w-0 flex items-center justify-center transition-all duration-500 ease-in-out overflow-hidden border-sidebar-border/50",
-                    "hover:bg-sidebar hover:text-sidebar-foreground", // Force same color on hover
-                    "opacity-100"
+                    "h-7 w-7 rounded-full !bg-sidebar text-sidebar-foreground border border-sidebar-border shadow-md",
+                    "hover:!bg-sidebar hover:text-primary hover:!border-sidebar-border",
+                    "transition-all duration-200 opacity-100 flex items-center justify-center",
+                    "focus-visible:ring-0 focus-visible:ring-offset-0 outline-none",
+                    "group p-0"
                 )}
                 title={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
             >
-                <div className={cn(
-                    "flex items-center justify-center transition-all duration-300 transform",
-                    "opacity-0 group-hover:opacity-100 translate-x-[-20px] group-hover:translate-x-0"
-                )}>
-                    {isCollapsed ? (
-                        <ChevronRight className="h-6 w-6 text-sidebar-foreground" />
-                    ) : (
-                        <ChevronLeft className="h-6 w-6 text-sidebar-foreground" />
-                    )}
-                </div>
+                {isCollapsed ? (
+                    <ChevronRight className="h-4 w-4 transition-transform group-hover:scale-110" />
+                ) : (
+                    <ChevronLeft className="h-4 w-4 transition-transform group-hover:scale-110" />
+                )}
             </Button>
         </div>
     )

@@ -11,26 +11,26 @@ export function TableRowSkeleton() {
         <TableRow className="hover:bg-transparent border-b border-border/50">
             {/* Nombre */}
             <TableCell className="py-4">
-                <Skeleton className="h-4 w-40 rounded bg-muted/20" />
+                <Skeleton className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
             </TableCell>
             {/* Dirección - truncated */}
             <TableCell className="max-w-xs py-4">
-                <Skeleton className="h-4 w-56 rounded bg-muted/10" />
+                <Skeleton className="h-4 w-full max-w-[224px] rounded bg-muted/10" />
             </TableCell>
             {/* Teléfono */}
             <TableCell className="py-4">
                 <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full bg-muted/20" />
-                    <Skeleton className="h-4 w-28 rounded bg-muted/20" />
+                    <Skeleton className="h-4 w-4 shrink-0 rounded-full bg-muted/20" />
+                    <Skeleton className="h-4 w-full max-w-[112px] rounded bg-muted/20" />
                 </div>
             </TableCell>
             {/* Zona - badge */}
             <TableCell className="py-4">
-                <Skeleton className="h-6 w-20 rounded-full bg-muted/20" />
+                <Skeleton className="h-6 w-full max-w-[80px] rounded-full bg-muted/20" />
             </TableCell>
             {/* Ubicación - badge */}
             <TableCell className="py-4">
-                <Skeleton className="h-6 w-28 rounded-full bg-muted/20" />
+                <Skeleton className="h-6 w-full max-w-[112px] rounded-full bg-muted/20" />
             </TableCell>
         </TableRow>
     )

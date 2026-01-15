@@ -69,53 +69,49 @@ function ThemeColorSync() {
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
     }, [theme])
 
+    // Define explicit theme colors (Design Tokens) to ensure instant updates
+    // avoiding DOM read latency or race conditions with Sidebar/Overlays.
+    // Sync with global.css: Dark (hsl 0 0% 8% -> #141414), Light (#ffffff)
+    const THEME_COLORS = {
+        light: '#ffffff',
+        dark: '#141414'
+    }
+
     useEffect(() => {
-        // 1. Selector for standard theme-color (Get ALL to handle potential duplicates)
-        const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
-        // 2. Selector for iOS status bar style
-        const metaAppleStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-
-        const html = document.documentElement
-
-        // Professional way to get the computed background color without hardcoding
-        // We Use a temporary element to resolve the CSS variable 'var(--background)'
-        const tempDiv = document.createElement('div')
-        tempDiv.style.visibility = 'hidden'
-        tempDiv.style.position = 'absolute'
-        tempDiv.style.backgroundColor = 'var(--background)'
-        document.body.appendChild(tempDiv)
-
-        const computedColor = getComputedStyle(tempDiv).backgroundColor
-        document.body.removeChild(tempDiv)
-
         const isDark = resolvedTheme === 'dark'
+        const themeColor = isDark ? THEME_COLORS.dark : THEME_COLORS.light
 
-        // Update ALL theme-color tags
+        // 1. Update standard theme-color (Android/Desktop)
+        const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
         if (metaThemeColors.length > 0) {
             metaThemeColors.forEach(meta => {
-                meta.setAttribute('content', computedColor)
+                meta.setAttribute('content', themeColor)
             })
         } else {
             const meta = document.createElement('meta')
             meta.name = 'theme-color'
-            meta.content = computedColor
+            meta.content = themeColor
             document.head.appendChild(meta)
         }
 
-        // Update iOS specific status bar style
-        // 'black-translucent' ensures white icons in dark mode
-        // 'default' ensures dark icons in light mode
+        // 2. Update iOS specific status bar style implementation
+        // 'black-translucent' gives light text (for dark background)
+        // 'default' gives dark text (for light background)
+        const metaAppleStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+        const appleStatus = isDark ? 'black-translucent' : 'default'
+
         if (metaAppleStatus) {
-            metaAppleStatus.setAttribute('content', isDark ? 'black-translucent' : 'default')
+            metaAppleStatus.setAttribute('content', appleStatus)
         } else {
             const meta = document.createElement('meta')
             meta.name = 'apple-mobile-web-app-status-bar-style'
-            meta.content = isDark ? 'black-translucent' : 'default'
+            meta.content = appleStatus
             document.head.appendChild(meta)
         }
 
-        // Ensure html element has the correct color scheme for system UI
-        html.style.backgroundColor = computedColor
+        // 3. Ensure HTML element has correct system UI properties
+        const html = document.documentElement
+        html.style.backgroundColor = themeColor
         html.style.colorScheme = isDark ? 'dark' : 'light'
 
     }, [resolvedTheme])

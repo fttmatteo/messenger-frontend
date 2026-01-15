@@ -9,19 +9,19 @@ import { TableRow, TableCell } from "@/components/ui/table"
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
-            {/* Placa - w-[100px] */}
-            <TableCell className="w-[100px] py-4">
+            {/* Placa - w-[100px] -> min-w-[100px] */}
+            <TableCell className="min-w-[100px] py-4">
                 <Skeleton className="h-7 w-[90px] rounded-md bg-muted/20" />
             </TableCell>
             {/* Concesionario - max-w-[200px] */}
             <TableCell className="max-w-[200px] py-4">
-                <Skeleton className="h-4 w-32 rounded bg-muted/20" />
+                <Skeleton className="h-4 w-full max-w-[128px] rounded bg-muted/20" />
             </TableCell>
             {/* Mensajero - max-w-[200px] */}
             <TableCell className="max-w-[200px] py-4">
                 <div className="flex items-center gap-2">
-                    <Skeleton className="h-6 w-6 rounded-full bg-muted/20" />
-                    <Skeleton className="h-4 w-28 rounded bg-muted/20" />
+                    <Skeleton className="h-6 w-6 shrink-0 rounded-full bg-muted/20" />
+                    <Skeleton className="h-4 w-full max-w-[112px] rounded bg-muted/20" />
                 </div>
             </TableCell>
             {/* Estado - w-[140px] */}
@@ -107,8 +107,8 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
                     <div className="flex items-center w-full pl-4 pr-3 py-3 gap-3">
                         {/* Plate Badge Skeleton */}
                         <div className="flex flex-col items-center gap-1">
-                            <Skeleton className="h-8 w-[80px] rounded bg-muted/20" />
-                            <Skeleton className="h-2.5 w-12 rounded bg-muted/10" />
+                            <Skeleton className="h-8 w-full max-w-[80px] rounded bg-muted/20" />
+                            <Skeleton className="h-2.5 w-full max-w-[48px] rounded bg-muted/10" />
                         </div>
 
                         {/* Spacer */}
@@ -139,8 +139,8 @@ export function ServiceDetailsSkeleton() {
                     <Card className="p-5 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex flex-col items-center gap-1.5">
-                                <Skeleton className="h-14 w-36 rounded-lg bg-muted/20" />
-                                <Skeleton className="h-3 w-20 rounded bg-muted/10 mx-auto" />
+                                <Skeleton className="h-14 w-full max-w-[144px] rounded-lg bg-muted/20" />
+                                <Skeleton className="h-3 w-full max-w-[80px] rounded bg-muted/10 mx-auto" />
                             </div>
                             <Skeleton className="h-7 w-28 rounded-full bg-muted/20" />
                             <div className="flex items-center gap-3 w-full mt-2">
@@ -155,12 +155,12 @@ export function ServiceDetailsSkeleton() {
                 <div className="px-4 pb-2">
                     <Card className="p-4 border-border/50 rounded-2xl">
                         <div className="flex items-center gap-2.5 mb-4">
-                            <Skeleton className="h-8 w-8 rounded-xl bg-muted/20" />
-                            <Skeleton className="h-5 w-48 rounded bg-muted/20" />
+                            <Skeleton className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
+                            <Skeleton className="h-5 w-full max-w-[192px] rounded bg-muted/20" />
                         </div>
                         <div className="space-y-3 bg-muted/5 p-3 rounded-xl border border-border/40">
-                            <Skeleton className="h-5 w-56 rounded bg-muted/10" />
-                            <Skeleton className="h-4 w-40 rounded bg-muted/10" />
+                            <Skeleton className="h-5 w-full max-w-[224px] rounded bg-muted/10" />
+                            <Skeleton className="h-4 w-full max-w-[160px] rounded bg-muted/10" />
                             <Skeleton className="h-4 w-full rounded bg-muted/10" />
                         </div>
                     </Card>
@@ -170,12 +170,12 @@ export function ServiceDetailsSkeleton() {
                 <div className="px-4 pb-2">
                     <Card className="p-4 border-border/50 rounded-2xl">
                         <div className="flex items-center gap-2.5 mb-4">
-                            <Skeleton className="h-8 w-8 rounded-xl bg-muted/20" />
-                            <Skeleton className="h-5 w-56 rounded bg-muted/20" />
+                            <Skeleton className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
+                            <Skeleton className="h-5 w-full max-w-[224px] rounded bg-muted/20" />
                         </div>
                         <div className="space-y-3 bg-muted/5 p-3 rounded-xl border border-border/40">
-                            <Skeleton className="h-4 w-64 rounded bg-muted/10" />
-                            <Skeleton className="h-4 w-48 rounded bg-muted/10" />
+                            <Skeleton className="h-4 w-full max-w-[256px] rounded bg-muted/10" />
+                            <Skeleton className="h-4 w-full max-w-[192px] rounded bg-muted/10" />
                         </div>
                     </Card>
                 </div>
@@ -196,11 +196,11 @@ export function UpdateServiceStatusSkeleton() {
                 <Card className="p-6 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
                     <div className="flex flex-col items-center gap-4">
                         <div className="flex flex-col items-center gap-1.5">
-                            <Skeleton className="h-14 w-36 rounded-lg bg-muted/20" />
-                            <Skeleton className="h-3 w-20 rounded bg-muted/10 text-center" />
+                            <Skeleton className="h-14 w-full max-w-[144px] rounded-lg bg-muted/20" />
+                            <Skeleton className="h-3 w-full max-w-[80px] rounded bg-muted/10 text-center" />
                         </div>
-                        <Skeleton className="h-5 w-44 rounded bg-muted/10 mx-auto" />
-                        <Skeleton className="h-8 w-28 rounded-full bg-muted/20" />
+                        <Skeleton className="h-5 w-full max-w-[176px] rounded bg-muted/10 mx-auto" />
+                        <Skeleton className="h-8 w-full max-w-[112px] rounded-full bg-muted/20" />
                     </div>
                 </Card>
             </div>
@@ -214,10 +214,10 @@ export function UpdateServiceStatusSkeleton() {
                             key={i}
                             className="flex items-center gap-4 p-4 rounded-2xl border-2 border-border/40 bg-card/60"
                         >
-                            <Skeleton className="h-14 w-14 rounded-xl bg-muted/20" stroke-width="2" />
+                            <Skeleton className="h-14 w-14 shrink-0 rounded-xl bg-muted/20" stroke-width="2" />
                             <div className="flex-1 space-y-2.5">
-                                <Skeleton className="h-5 w-28 rounded bg-muted/20" />
-                                <Skeleton className="h-3.5 w-56 rounded bg-muted/10" />
+                                <Skeleton className="h-5 w-full max-w-[112px] rounded bg-muted/20" />
+                                <Skeleton className="h-3.5 w-full max-w-[224px] rounded bg-muted/10" />
                             </div>
                         </div>
                     ))}
@@ -242,8 +242,8 @@ export function CreateServiceSkeleton() {
             <div className="p-4 pb-2">
                 <Card className="p-5 border-border/50 rounded-2xl">
                     <div className="flex items-center gap-3 mb-4">
-                        <Skeleton className="h-8 w-8 rounded-xl bg-muted/20" />
-                        <Skeleton className="h-5 w-32 rounded bg-muted/20" />
+                        <Skeleton className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
+                        <Skeleton className="h-5 w-full max-w-[128px] rounded bg-muted/20" />
                     </div>
                     <Skeleton className="w-full aspect-[4/3] rounded-2xl bg-muted/10 border border-border/40 shadow-inner" />
                 </Card>
@@ -253,8 +253,8 @@ export function CreateServiceSkeleton() {
             <div className="px-4 pb-2">
                 <Card className="p-5 border-border/50 rounded-2xl">
                     <div className="flex items-center gap-3 mb-4">
-                        <Skeleton className="h-8 w-8 rounded-xl bg-muted/20" />
-                        <Skeleton className="h-5 w-44 rounded bg-muted/20" />
+                        <Skeleton className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
+                        <Skeleton className="h-5 w-full max-w-[176px] rounded bg-muted/20" />
                     </div>
                     <Skeleton className="h-12 w-full rounded-xl bg-muted/10 border border-border/40" />
                 </Card>
