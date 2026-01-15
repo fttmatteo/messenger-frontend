@@ -15,7 +15,15 @@ export function isAxiosError(error: unknown): error is AxiosError<ApiErrorRespon
  */
 export function getErrorMessage(error: unknown): string {
     if (isAxiosError(error)) {
-        return error.response?.data?.message || error.message
+        // Mensaje específico de la API
+        if (error.response?.data?.message) {
+            return error.response.data.message
+        }
+        // Error de red
+        if (error.code === 'ERR_NETWORK' || !error.response) {
+            return 'Error de conexión. Verifica tu red e intenta nuevamente.'
+        }
+        return error.message
     }
 
     if (error instanceof Error) {
@@ -42,6 +50,18 @@ export function getApiError(error: unknown): ApiErrorResponse | null {
 }
 
 /**
+ * Obtiene el código de estado HTTP del error
+ * @param error - Error de cualquier tipo
+ * @returns Código HTTP o null si no es un error de respuesta
+ */
+export function getHttpStatus(error: unknown): number | null {
+    if (isAxiosError(error)) {
+        return error.response?.status ?? null
+    }
+    return null
+}
+
+/**
  * Verifica si un error es un error de autenticación (401 o 403)
  * @param error - Error de cualquier tipo
  * @returns true si es error de autenticación
@@ -62,6 +82,43 @@ export function isAuthError(error: unknown): boolean {
 export function isValidationError(error: unknown): boolean {
     if (isAxiosError(error)) {
         return error.response?.status === 400
+    }
+    return false
+}
+
+/**
+ * Verifica si un error es un error de recurso no encontrado (404)
+ * @param error - Error de cualquier tipo
+ * @returns true si es error 404
+ */
+export function isNotFoundError(error: unknown): boolean {
+    if (isAxiosError(error)) {
+        return error.response?.status === 404
+    }
+    return false
+}
+
+/**
+ * Verifica si un error es un error del servidor (5xx)
+ * @param error - Error de cualquier tipo
+ * @returns true si es error de servidor
+ */
+export function isServerError(error: unknown): boolean {
+    if (isAxiosError(error)) {
+        const status = error.response?.status
+        return status !== undefined && status >= 500 && status < 600
+    }
+    return false
+}
+
+/**
+ * Verifica si un error es un error de red (sin conexión)
+ * @param error - Error de cualquier tipo
+ * @returns true si es error de red
+ */
+export function isNetworkError(error: unknown): boolean {
+    if (isAxiosError(error)) {
+        return error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED' || !error.response
     }
     return false
 }

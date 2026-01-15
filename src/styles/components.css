@@ -1,0 +1,156 @@
+/**
+ * Component Styles
+ * 
+ * Global styles for UI components using data-slot attributes.
+ * These provide consistent sizing and touch targets across the app.
+ */
+
+/* Mobile-first component improvements (base styles) */
+/* Touch-friendly sizing for mobile - 44px minimum touch targets */
+[data-slot="button"] {
+    min-height: 2.75rem;
+    /* 44px - Apple/Google recommended touch target */
+}
+
+[data-slot="button"][data-size="sm"] {
+    min-height: 2.25rem;
+}
+
+[data-slot="button"][data-size="icon"],
+[data-slot="button"][data-size="icon-sm"],
+[data-slot="button"][data-size="icon-lg"] {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+}
+
+/* Input touch targets */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    min-height: 2.75rem;
+    font-size: 16px;
+    /* Prevents iOS zoom on focus */
+}
+
+/* Hide native browser password reveal icons (Edge, Chrome) */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}
+
+/* Card mobile spacing */
+[data-slot="card"] {
+    padding: 1rem;
+}
+
+[data-slot="card-header"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+[data-slot="card-content"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+[data-slot="card-footer"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Badge mobile readability */
+[data-slot="badge"] {
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.625rem;
+    font-weight: 500;
+}
+
+/* Better tap highlighting */
+@media (hover: none) {
+
+    button,
+    a,
+    [role="button"] {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Professional desktop component sizing */
+@media (min-width: 768px) {
+
+    /* Table cells - better padding and font size */
+    [data-slot="table"] td,
+    [data-slot="table"] th {
+        padding: 0.875rem 1rem;
+        font-size: 0.9375rem;
+    }
+
+    /* Card improvements */
+    [data-slot="card"] {
+        padding: 1.5rem;
+    }
+
+    [data-slot="card-title"] {
+        font-size: 1.125rem;
+    }
+
+    [data-slot="card-description"] {
+        font-size: 0.9375rem;
+    }
+
+    /* Button improvements for desktop */
+    [data-slot="button"][data-size="default"] {
+        height: 2.5rem;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+        font-size: 0.9375rem;
+    }
+
+    [data-slot="button"][data-size="lg"] {
+        height: 2.75rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Badge improvements */
+    [data-slot="badge"] {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    /* Input improvements */
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        font-size: 0.9375rem;
+    }
+}
+
+@media (min-width: 1024px) {
+
+    /* Larger screens - slightly larger sizing */
+    [data-slot="table"] td,
+    [data-slot="table"] th {
+        padding: 1rem 1.125rem;
+        font-size: 0.9375rem;
+    }
+
+    [data-slot="card-title"] {
+        font-size: 1.25rem;
+    }
+
+    /* Icon sizing in tables and lists - use CSS variables for consistency */
+    [data-slot="table"] svg:not([class*="h-"]) {
+        width: 1.125rem;
+    }
+}

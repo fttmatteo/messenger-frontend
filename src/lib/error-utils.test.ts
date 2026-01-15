@@ -4,8 +4,12 @@ import {
     isAxiosError,
     getErrorMessage,
     getApiError,
+    getHttpStatus,
     isAuthError,
-    isValidationError
+    isValidationError,
+    isNotFoundError,
+    isServerError,
+    isNetworkError
 } from './error-utils'
 import type { ApiErrorResponse } from '@/types/error.types'
 
@@ -13,10 +17,12 @@ import type { ApiErrorResponse } from '@/types/error.types'
 function createAxiosError(
     status: number,
     data?: ApiErrorResponse,
-    message = 'Request failed'
+    message = 'Request failed',
+    code?: string
 ): AxiosError<ApiErrorResponse> {
     const error = new Error(message) as AxiosError<ApiErrorResponse>
     error.isAxiosError = true
+    error.code = code
     error.response = {
         status,
         statusText: 'Error',
@@ -24,6 +30,17 @@ function createAxiosError(
         headers: {},
         config: {} as AxiosError['config']
     } as AxiosError<ApiErrorResponse>['response']
+    error.config = {} as AxiosError['config']
+    error.toJSON = () => ({})
+    return error
+}
+
+// Helper to create network error (no response)
+function createNetworkError(code: string): AxiosError<ApiErrorResponse> {
+    const error = new Error('Network Error') as AxiosError<ApiErrorResponse>
+    error.isAxiosError = true
+    error.code = code
+    error.response = undefined
     error.config = {} as AxiosError['config']
     error.toJSON = () => ({})
     return error
@@ -61,6 +78,18 @@ describe('error-utils', () => {
             const axiosError = createAxiosError(400, { message: 'Validation failed' })
             vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
             expect(getErrorMessage(axiosError)).toBe('Validation failed')
+        })
+
+        it('should return network error message for ERR_NETWORK', () => {
+            const networkError = createNetworkError('ERR_NETWORK')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(getErrorMessage(networkError)).toBe('Error de conexión. Verifica tu red e intenta nuevamente.')
+        })
+
+        it('should return network error message when no response', () => {
+            const networkError = createNetworkError('ECONNABORTED')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(getErrorMessage(networkError)).toBe('Error de conexión. Verifica tu red e intenta nuevamente.')
         })
 
         it('should use error.message when API response has no message', () => {
@@ -117,6 +146,25 @@ describe('error-utils', () => {
         })
     })
 
+    describe('getHttpStatus', () => {
+        it('should return status code for Axios errors', () => {
+            const axiosError = createAxiosError(404)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(getHttpStatus(axiosError)).toBe(404)
+        })
+
+        it('should return null for Axios errors without response', () => {
+            const networkError = createNetworkError('ERR_NETWORK')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(getHttpStatus(networkError)).toBeNull()
+        })
+
+        it('should return null for non-Axios errors', () => {
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
+            expect(getHttpStatus(new Error('Regular error'))).toBeNull()
+        })
+    })
+
     describe('isAuthError', () => {
         it('should return true for 401 status', () => {
             const axiosError = createAxiosError(401)
@@ -160,4 +208,80 @@ describe('error-utils', () => {
             expect(isValidationError(new Error('Regular error'))).toBe(false)
         })
     })
+
+    describe('isNotFoundError', () => {
+        it('should return true for 404 status', () => {
+            const axiosError = createAxiosError(404)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNotFoundError(axiosError)).toBe(true)
+        })
+
+        it('should return false for other status codes', () => {
+            const axiosError = createAxiosError(500)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNotFoundError(axiosError)).toBe(false)
+        })
+
+        it('should return false for non-Axios errors', () => {
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
+            expect(isNotFoundError(new Error('Regular error'))).toBe(false)
+        })
+    })
+
+    describe('isServerError', () => {
+        it('should return true for 500 status', () => {
+            const axiosError = createAxiosError(500)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isServerError(axiosError)).toBe(true)
+        })
+
+        it('should return true for 503 status', () => {
+            const axiosError = createAxiosError(503)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isServerError(axiosError)).toBe(true)
+        })
+
+        it('should return false for 4xx status codes', () => {
+            const axiosError = createAxiosError(400)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isServerError(axiosError)).toBe(false)
+        })
+
+        it('should return false for non-Axios errors', () => {
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
+            expect(isServerError(new Error('Regular error'))).toBe(false)
+        })
+    })
+
+    describe('isNetworkError', () => {
+        it('should return true for ERR_NETWORK code', () => {
+            const networkError = createNetworkError('ERR_NETWORK')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNetworkError(networkError)).toBe(true)
+        })
+
+        it('should return true for ECONNABORTED code', () => {
+            const networkError = createNetworkError('ECONNABORTED')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNetworkError(networkError)).toBe(true)
+        })
+
+        it('should return true when no response exists', () => {
+            const networkError = createNetworkError('')
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNetworkError(networkError)).toBe(true)
+        })
+
+        it('should return false when response exists', () => {
+            const axiosError = createAxiosError(500)
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
+            expect(isNetworkError(axiosError)).toBe(false)
+        })
+
+        it('should return false for non-Axios errors', () => {
+            vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
+            expect(isNetworkError(new Error('Regular error'))).toBe(false)
+        })
+    })
 })
+

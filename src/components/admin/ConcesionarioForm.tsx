@@ -46,7 +46,7 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            {/* Dirección - spans full width */}
+            {/* Dirección */}
             <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="address">Dirección completa</Label>
                 <Textarea

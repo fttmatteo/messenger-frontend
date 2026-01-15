@@ -1,0 +1,131 @@
+/**
+ * Base Styles
+ * 
+ * Core HTML elements, typography, and layout foundations.
+ */
+
+html {
+    background-color: var(--background);
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    min-height: -webkit-fill-available;
+}
+
+#root {
+    height: 100%;
+    isolation: isolate;
+}
+
+@layer base {
+    * {
+        border-color: var(--border);
+        outline-color: var(--ring);
+    }
+
+    html {
+        @apply bg-background text-foreground;
+        /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
+        font-size: 105%;
+        height: 100%;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    @media (min-width: 768px) {
+        html {
+            font-size: 110%;
+        }
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        /* Professional base font size for better readability - Increased */
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        height: 100%;
+    }
+
+    /* Desktop typography scaling */
+    @media (min-width: 768px) {
+        body {
+            font-size: 16px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        body {
+            font-size: 17px;
+        }
+    }
+
+    /* Professional heading styles */
+    h1 {
+        @apply text-2xl font-bold tracking-tight;
+    }
+
+    h2 {
+        @apply text-xl font-semibold tracking-tight;
+    }
+
+    h3 {
+        @apply text-lg font-semibold;
+    }
+
+    @media (min-width: 768px) {
+        h1 {
+            @apply text-3xl;
+        }
+
+        h2 {
+            @apply text-2xl;
+        }
+
+        h3 {
+            @apply text-xl;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        h1 {
+            @apply text-4xl;
+        }
+
+        h2 {
+            @apply text-2xl;
+        }
+
+        h3 {
+            @apply text-xl;
+        }
+    }
+}
+
+/* Smooth scrolling for mobile */
+@supports (scroll-behavior: smooth) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Global compatibility overrides */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
+button,
+a,
+[role="button"] {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+}

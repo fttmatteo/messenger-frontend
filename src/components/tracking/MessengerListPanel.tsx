@@ -1,3 +1,4 @@
+import { memo, useEffect, useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -32,8 +33,6 @@ export interface MessengerListPanelProps {
     isCollapsed: boolean
     /** Toggle collapsed state */
     onToggleCollapse: () => void
-    /** Current time in ms for relative time calculations */
-    now: number
     /** Called when a messenger is selected */
     onSelect: (messenger: LiveTrackingUpdate) => void
 }
@@ -41,16 +40,21 @@ export interface MessengerListPanelProps {
 /**
  * Collapsible side panel showing list of messengers with status.
  */
-export function MessengerListPanel({
+export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
     followingMessengerId,
     loading,
     isCollapsed,
     onToggleCollapse,
-    now,
     onSelect
 }: MessengerListPanelProps) {
+    // Internal timer for relative times - only this component re-renders
+    const [now, setNow] = useState(() => Date.now())
+    useEffect(() => {
+        const timer = setInterval(() => setNow(Date.now()), 60000)
+        return () => clearInterval(timer)
+    }, [])
     return (
         <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
             {/* Header */}
@@ -159,5 +163,5 @@ export function MessengerListPanel({
             )}
         </div>
     )
-}
+})
 

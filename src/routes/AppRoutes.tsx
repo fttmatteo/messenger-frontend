@@ -42,8 +42,8 @@ const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/Servic
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
 
-const MobileOnlyGuard = React.lazy(() => import('@/components/MobileOnlyGuard').then(m => ({ default: m.MobileOnlyGuard })));
-const DesktopOnlyGuard = React.lazy(() => import('@/components/DesktopOnlyGuard').then(m => ({ default: m.DesktopOnlyGuard })));
+const MobileOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
+const DesktopOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();

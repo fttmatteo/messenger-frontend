@@ -5,7 +5,7 @@ import { StatusColorProvider } from './context/StatusColorContext';
 import { NetworkProvider } from './context/NetworkContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
-import { SessionExpiredDialog } from './components/SessionExpiredDialog';
+import { SessionExpiredDialog } from './components/dialogs';
 
 // Wrapper component that provides StatusColorProvider with the current user's ID
 // Using key prop to force remount when userId changes, ensuring fresh state initialization

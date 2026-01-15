@@ -24,7 +24,6 @@ export function CameraCapture({
     imagePreview,
     onClear,
 }: CameraCaptureProps) {
-    // Camera states
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
@@ -45,7 +44,6 @@ export function CameraCapture({
         setCameraReady(false)
     }, [])
 
-    // Cleanup camera on unmount
     useEffect(() => {
         return () => {
             stopCamera()
@@ -150,7 +148,6 @@ export function CameraCapture({
         if (fileInput) fileInput.value = ''
     }
 
-    // Has image preview - show it
     if (imagePreview) {
         return (
             <div className="relative">
@@ -172,7 +169,6 @@ export function CameraCapture({
         )
     }
 
-    // Camera active - show live view
     if (cameraActive) {
         return (
             <div className="space-y-3">
@@ -236,7 +232,6 @@ export function CameraCapture({
         )
     }
 
-    // Default: show camera button and file upload
     return (
         <div className="w-full space-y-3">
             <canvas ref={canvasRef} style={{ display: 'none' }} />

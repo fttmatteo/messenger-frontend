@@ -7,11 +7,8 @@ import { createLogger } from "@/utils/logger"
 const logger = createLogger('PlateCamera')
 
 export interface PlateCameraProps {
-    /** Called when a photo is captured with the File and preview URL */
     onCapture: (file: File, previewUrl: string) => void
-    /** Called when the camera is stopped/cancelled */
     onCancel?: () => void
-    /** Whether to auto-start camera on mount */
     autoStart?: boolean
 }
 
@@ -176,7 +173,6 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
         onCancel?.()
     }, [stopCamera, onCancel])
 
-    // Auto-start camera on mount if enabled
     useEffect(() => {
         if (autoStart && !initialStartRef.current) {
             const timer = setTimeout(() => {
@@ -187,7 +183,6 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
         }
     }, [autoStart, startCamera])
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopCamera()
@@ -277,7 +272,6 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 }
 
 export interface ImageUploadFallbackProps {
-    /** Called when a file is selected with File and preview URL */
     onSelect: (file: File, previewUrl: string) => void
 }
 

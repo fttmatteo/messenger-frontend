@@ -114,11 +114,48 @@ export default defineConfig(({ mode }) => {
       // Rollup options
       rollupOptions: {
         output: {
-          // Manual chunking for better caching
+          // Manual chunking for better caching and loading performance
           manualChunks: {
+            // Core React libraries - cached long-term
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+            // Radix UI Primitives - dialogs, dropdowns, popovers
+            'ui-primitives': [
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-select',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-tooltip',
+              '@radix-ui/react-alert-dialog',
+              '@radix-ui/react-context-menu',
+              '@radix-ui/react-hover-card',
+            ],
+            // Radix UI Layout - tabs, accordion, navigation
+            'ui-layout': [
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-accordion',
+              '@radix-ui/react-collapsible',
+              '@radix-ui/react-navigation-menu',
+              '@radix-ui/react-menubar',
+              '@radix-ui/react-scroll-area',
+            ],
+            // Radix UI Inputs - form controls
+            'ui-inputs': [
+              '@radix-ui/react-checkbox',
+              '@radix-ui/react-radio-group',
+              '@radix-ui/react-switch',
+              '@radix-ui/react-slider',
+              '@radix-ui/react-label',
+              '@radix-ui/react-toggle',
+              '@radix-ui/react-toggle-group',
+            ],
+            // Form handling libraries
             'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+            // Charts - large library, separate chunk
+            'charts-vendor': ['recharts'],
+            // Maps - loaded on demand
+            'maps-vendor': ['@react-google-maps/api'],
+            // Animations - framer-motion is large
+            'animation-vendor': ['framer-motion'],
           },
         },
       },
