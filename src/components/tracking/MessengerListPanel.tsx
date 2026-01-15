@@ -50,7 +50,7 @@ export function MessengerListPanel({
     onSelect
 }: MessengerListPanelProps) {
     // Internal timer for relative times - only this component re-renders
-    const [now, setNow] = useState(Date.now())
+    const [now, setNow] = useState(() => Date.now())
     useEffect(() => {
         const timer = setInterval(() => setNow(Date.now()), 60000)
         return () => clearInterval(timer)
