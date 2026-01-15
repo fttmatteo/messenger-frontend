@@ -15,17 +15,17 @@ export function DeletedServiceRowSkeleton() {
             </TableCell>
             {/* Concesionario */}
             <TableCell className="py-4">
-                <Skeleton className="h-4 w-40 rounded bg-muted/20" />
+                <Skeleton className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
             </TableCell>
             {/* Mensajero */}
             <TableCell className="py-4">
-                <Skeleton className="h-4 w-36 rounded bg-muted/10" />
+                <Skeleton className="h-4 w-full max-w-[144px] rounded bg-muted/10" />
             </TableCell>
             {/* Eliminado (Date) */}
             <TableCell className="py-4">
                 <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4 rounded-full bg-muted/10" />
-                    <Skeleton className="h-4 w-28 rounded bg-muted/20" />
+                    <Skeleton className="h-4 w-4 shrink-0 rounded-full bg-muted/10" />
+                    <Skeleton className="h-4 w-full max-w-[112px] rounded bg-muted/20" />
                 </div>
             </TableCell>
             {/* Tiempo restante (Badge) */}

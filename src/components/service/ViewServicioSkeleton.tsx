@@ -11,14 +11,14 @@ export function ViewServicioSkeleton() {
             {/* Header skeleton */}
             <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
-                    <Skeleton className="h-5 w-64 rounded bg-muted/20" />
+                    <Skeleton className="h-5 w-full max-w-[256px] rounded bg-muted/20" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <Skeleton className="h-9 w-36 rounded-full bg-muted/20" />
+                    <Skeleton className="h-9 w-full max-w-[144px] rounded-full bg-muted/20" />
                 </div>
                 <div className="flex-1 flex justify-end gap-3">
-                    <Skeleton className="h-9 w-28 rounded-lg bg-muted/20" />
-                    <Skeleton className="h-9 w-9 rounded-lg bg-muted/20" />
+                    <Skeleton className="h-9 w-full max-w-[112px] rounded-lg bg-muted/20" />
+                    <Skeleton className="h-9 w-9 shrink-0 rounded-lg bg-muted/20" />
                 </div>
             </div>
 
@@ -27,15 +27,15 @@ export function ViewServicioSkeleton() {
                 {/* General Information */}
                 <Card className="h-full flex flex-col border-border/50 bg-background/40">
                     <CardHeader className="p-5 pb-0">
-                        <Skeleton className="h-5 w-48 rounded bg-muted/20" />
+                        <Skeleton className="h-5 w-full max-w-[192px] rounded bg-muted/20" />
                     </CardHeader>
                     <CardContent className="space-y-5 flex-1 overflow-y-auto mt-6 px-5">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <div key={i} className="flex items-start gap-4">
                                 <Skeleton className="h-9 w-9 flex-shrink-0 rounded-xl bg-muted/20" />
                                 <div className="flex-1 space-y-2">
-                                    <Skeleton className="h-3 w-24 rounded bg-muted/10" />
-                                    <Skeleton className="h-4 w-44 rounded bg-muted/20" />
+                                    <Skeleton className="h-3 w-full max-w-[96px] rounded bg-muted/10" />
+                                    <Skeleton className="h-4 w-full max-w-[176px] rounded bg-muted/20" />
                                 </div>
                             </div>
                         ))}
@@ -45,7 +45,7 @@ export function ViewServicioSkeleton() {
                 {/* History Timeline - 50% width */}
                 <Card className="h-full flex flex-col lg:col-span-2 border-border/50 bg-background/40">
                     <CardHeader className="p-5 pb-0">
-                        <Skeleton className="h-5 w-44 rounded bg-muted/20" />
+                        <Skeleton className="h-5 w-full max-w-[176px] rounded bg-muted/20" />
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto mt-6 px-5">
                         <div className="space-y-0 relative">
