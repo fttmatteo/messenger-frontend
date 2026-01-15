@@ -118,7 +118,7 @@ describe('Login Page', () => {
                 password: 'password123',
                 rememberMe: undefined,
             });
-            expect(mockNavigate).toHaveBeenCalledWith('/');
+            expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
         });
     });
 });

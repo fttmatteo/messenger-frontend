@@ -35,6 +35,14 @@ export default function LiveTracking() {
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
+    // Tick counter to force periodic recalculation of online/offline states
+    // This ensures markers update when messengers disconnect (go past 2-min threshold)
+    const [statusTick, setStatusTick] = useState(0)
+    useEffect(() => {
+        const timer = setInterval(() => setStatusTick(t => t + 1), 30000) // Every 30 seconds
+        return () => clearInterval(timer)
+    }, [])
+
     // Fetch initial data via REST (All messengers + status)
     const fetchMessengers = useCallback(async (manual = false) => {
         try {
@@ -200,11 +208,18 @@ export default function LiveTracking() {
         }
     }, [followingMessengerId, messengers])
 
-    // Memoize visible markers to prevent unnecessary recalculations
-    const visibleMarkers = useMemo(() =>
-        messengers.filter(m => isValidCoords(m.latitude, m.longitude)),
-        [messengers]
-    )
+    // Memoize visible markers with computed online status
+    // statusTick forces recalculation every 30s to detect offline messengers
+    const visibleMarkers = useMemo(() => {
+        // Reference statusTick to trigger recalculation
+        void statusTick
+        return messengers
+            .filter(m => isValidCoords(m.latitude, m.longitude))
+            .map(m => ({
+                ...m,
+                isOnline: isMessengerOnline(m.status, m.lastUpdate)
+            }))
+    }, [messengers, statusTick])
 
     return (
         <div className="h-full w-full relative overflow-hidden">
@@ -214,14 +229,12 @@ export default function LiveTracking() {
                     <Skeleton className="w-full h-full" />
                 ) : (
                     <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
-                        {visibleMarkers.map((messenger) => (
+                        {visibleMarkers.map((marker) => (
                             <PulsingMarker
-                                key={messenger.messengerId}
-                                position={{ lat: messenger.latitude, lng: messenger.longitude }}
-                                onClick={() => selectMessenger(messenger)}
-                                title={messenger.messengerName || `Mensajero #${messenger.messengerId}`}
-                                color={isMessengerOnline(messenger.status, messenger.lastUpdate) ? '#10b981' : '#6b7280'}
-                                isActive={isMessengerOnline(messenger.status, messenger.lastUpdate)}
+                                key={marker.messengerId}
+                                messenger={marker}
+                                onClick={selectMessenger}
+                                isOnline={marker.isOnline}
                             />
                         ))}
 

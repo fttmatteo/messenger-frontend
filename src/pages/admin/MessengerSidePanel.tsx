@@ -46,6 +46,14 @@ export function MessengerSidePanel({
     const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
     const { colors } = useStatusColors()
 
+    // Status tick for periodic UI updates (online status and relative times)
+    const [statusTick, setStatusTick] = useState(0)
+    useEffect(() => {
+        if (!isOpen) return
+        const timer = setInterval(() => setStatusTick(t => t + 1), 30000)
+        return () => clearInterval(timer)
+    }, [isOpen])
+
     const fetchDetails = useCallback(async () => {
         if (!messengerId) return
 
@@ -170,9 +178,11 @@ export function MessengerSidePanel({
                         </h3>
                         <Badge variant="outline" className={cn(
                             "text-[9px] h-3.5 px-1 leading-none uppercase tracking-tighter",
-                            isMessengerOnline(messenger?.status || '', messenger?.lastUpdate) ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
+                            isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate) ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
                         )}>
-                            {isMessengerOnline(messenger?.status || '', messenger?.lastUpdate) ? 'En línea' : 'Offline'}
+                            {/* statusTick forces re-evaluation of isMessengerOnline */}
+                            {void statusTick}
+                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate) ? 'En línea' : 'Offline'}
                         </Badge>
                     </div>
                 </div>
@@ -190,6 +200,8 @@ export function MessengerSidePanel({
                         <div className="flex justify-between items-center">
                             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Última señal</p>
                             <p className="text-xs font-semibold">
+                                {/* statusTick forces re-calculation of relative time */}
+                                {void statusTick}
                                 {safeFormatDistanceToNow(messenger?.lastUpdate)}
                             </p>
                         </div>

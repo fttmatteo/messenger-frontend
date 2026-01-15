@@ -85,6 +85,18 @@
 
   /* Global Layout Constants */
   --bottom-nav-height: 49px;
+
+  /* Navigation System */
+  --nav-touch-target: 44px;
+  /* Apple HIG minimum touch target */
+  --nav-action-size: 52px;
+  /* FAB button size */
+  --nav-icon-size: 24px;
+  /* Icon dimensions */
+  --nav-label-size: 10px;
+  /* Label font size */
+  --nav-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Smooth easing */
 }
 
 .dark {

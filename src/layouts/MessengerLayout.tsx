@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
-import { BottomNavigation } from "@/components/messenger/BottomNavigation"
+import { BottomNav } from "@/components/navigation/BottomNav"
 import { useNetwork } from "@/hooks/use-network"
 import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
@@ -276,8 +276,9 @@ export default function MessengerLayout() {
             if (isDeepConfig) {
                 // From Appearance back to Config
                 navigate('/messenger/configuracion', { replace: true });
-            } else if (isSecondaryRoot || isSubPath) {
-                // From secondary roots or any sub-path back to Home
+            } else if (isSecondaryRoot || isSubPath || path === '/login' || path === '/') {
+                // From secondary roots or any sub-path back to Home, 
+                // or prevent accidental exit to login/root while authenticated
                 navigate('/messenger', { replace: true });
             }
             // If already in /messenger, let the default behavior (exit app) happen
@@ -431,7 +432,7 @@ export default function MessengerLayout() {
             </main>
 
             {/* Bottom Navigation */}
-            {!hideBottomNav && <BottomNavigation />}
+            {!hideBottomNav && <BottomNav />}
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
