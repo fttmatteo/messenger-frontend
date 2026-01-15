@@ -540,13 +540,7 @@ export default function MessengerLayout() {
                 ref={mainRef}
                 className="flex-1 flex flex-col overflow-y-auto"
                 style={{
-                    paddingTop: `calc(48px + ${safeArea.top}px)`,
-                    /* 
-                     * Content only clears the interactive nav area (49px).
-                     * This allows content to scroll BEHIND the safe-area glass bridge 
-                     * for a professional, seamless look.
-                     */
-                    paddingBottom: `env(safe-area-inset-bottom)`
+                    paddingTop: `calc(48px + ${safeArea.top}px)`
                 }}
                 role="main"
             >
