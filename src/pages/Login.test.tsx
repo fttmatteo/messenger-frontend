@@ -116,7 +116,47 @@ describe('Login Page', () => {
             expect(authService.authService.login).toHaveBeenCalledWith({
                 document: 12345678,
                 password: 'password123',
-                rememberMe: undefined,
+                rememberMe: false,
+            });
+            expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+        });
+    });
+
+
+    it('should call login with rememberMe true when checkbox is checked', async () => {
+        const user = userEvent.setup();
+        const mockLoginResponse = {
+            role: 'ADMIN',
+            message: 'ok',
+            user: { id: 1, document: 12345678, role: 'ADMIN' },
+        };
+
+        vi.mocked(authService.authService.login).mockImplementation(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => resolve(mockLoginResponse), 100);
+            });
+        });
+
+        renderWithProviders(<Login />);
+
+        const documentInput = screen.getByPlaceholderText('Ingrese su número de documento');
+        const passwordInput = screen.getByPlaceholderText('Ingrese su contraseña');
+
+        // Find checkbox by label text instead of role to avoid ambiguity if multiple checkables exist or if styling hides it
+        // The label "Recordar contraseña" is associated with the checkbox
+        const rememberMeCheckbox = screen.getByLabelText('Recordar contraseña');
+        const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
+
+        await user.type(documentInput, '12345678');
+        await user.type(passwordInput, 'password123');
+        await user.click(rememberMeCheckbox);
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            expect(authService.authService.login).toHaveBeenCalledWith({
+                document: 12345678,
+                password: 'password123',
+                rememberMe: true,
             });
             expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
         });
