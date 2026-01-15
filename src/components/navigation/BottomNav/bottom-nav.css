@@ -1,0 +1,85 @@
+/**
+ * Bottom Navigation Styles
+ * 
+ * Unified design where nav content and safe area are visually integrated.
+ * The glass effect and background extend seamlessly to the device edge.
+ */
+
+.bottom-nav {
+    /* Positioning */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+
+    /*
+     * INTEGRATED SAFE AREA DESIGN
+     * 
+     * The padding-bottom extends the nav's visual area to cover
+     * the safe area inset. Background and blur apply to the ENTIRE
+     * element, creating a unified appearance from content to edge.
+     */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    /* Glass effect - unified across entire nav including safe area */
+    background: hsl(from var(--background) h s l / 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    /* Subtle top border */
+    border-top: 1px solid hsl(from var(--border) h s l / 0.4);
+
+    /*
+     * GPU Acceleration
+     * 
+     * Forces the element onto its own compositor layer to prevent
+     * repaints during scroll and ensure smooth 60fps performance.
+     */
+    transform: translateZ(0);
+    will-change: transform;
+
+    /* Prevent text selection on nav */
+    user-select: none;
+    -webkit-user-select: none;
+
+    /* Ensure touch events work properly */
+    touch-action: manipulation;
+}
+
+.bottom-nav__content {
+    /* Height matches Apple HIG tab bar standard */
+    height: var(--bottom-nav-height, 49px);
+
+    /* Flexbox layout for even distribution */
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    /* Horizontal padding for edge items */
+    padding: 0 8px;
+}
+
+/* Nav item base styles */
+.bottom-nav-item {
+    /* Ensure minimum touch target (44px Apple HIG) */
+    min-width: var(--nav-touch-target, 44px);
+    min-height: var(--nav-touch-target, 44px);
+}
+
+/* Action button (FAB) positioning adjustment */
+.bottom-nav-action {
+    /* Slight negative margin to align visually with other items */
+    margin-top: -4px;
+}
+
+/*
+ * Dark mode adjustments
+ * 
+ * In dark mode, we use a slightly different background opacity
+ * and border styling for better visual integration.
+ */
+.dark .bottom-nav {
+    background: hsl(from var(--background) h s l / 0.85);
+    border-top-color: hsl(from var(--border) h s l / 0.3);
+}

@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
-import { BottomNavigation } from "@/components/messenger/BottomNavigation"
+import { BottomNav } from "@/components/navigation/BottomNav"
 import { useNetwork } from "@/hooks/use-network"
 import { useSafeArea } from "@/hooks/use-safe-area"
 import { createLogger } from "@/utils/logger"
@@ -431,7 +431,7 @@ export default function MessengerLayout() {
             </main>
 
             {/* Bottom Navigation */}
-            {!hideBottomNav && <BottomNavigation />}
+            {!hideBottomNav && <BottomNav />}
 
             {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
