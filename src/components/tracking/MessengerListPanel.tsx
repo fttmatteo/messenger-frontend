@@ -16,7 +16,6 @@ import type { LiveTrackingUpdate } from "@/services/tracking.service"
 
 
 export interface MessengerListPanelProps {
-    /** List of messengers to display */
     messengers: LiveTrackingUpdate[]
     /** Currently selected messenger */
     selectedMessengerId: number | null

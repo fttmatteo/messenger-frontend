@@ -276,8 +276,9 @@ export default function MessengerLayout() {
             if (isDeepConfig) {
                 // From Appearance back to Config
                 navigate('/messenger/configuracion', { replace: true });
-            } else if (isSecondaryRoot || isSubPath) {
-                // From secondary roots or any sub-path back to Home
+            } else if (isSecondaryRoot || isSubPath || path === '/login' || path === '/') {
+                // From secondary roots or any sub-path back to Home, 
+                // or prevent accidental exit to login/root while authenticated
                 navigate('/messenger', { replace: true });
             }
             // If already in /messenger, let the default behavior (exit app) happen

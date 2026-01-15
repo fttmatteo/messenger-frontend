@@ -53,7 +53,7 @@ export default function Login() {
                 password: data.password,
                 rememberMe: data.rememberMe
             })
-            navigate("/")
+            navigate("/", { replace: true })
         } catch (error) {
             const err = error as { statusCode?: number }
 

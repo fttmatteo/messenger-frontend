@@ -383,7 +383,7 @@ export default function MessengerCreateServicio() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => navigate(-1)}
+                                onClick={() => navigate("/messenger", { replace: true })}
                                 disabled={loading}
                                 className="flex-1 h-12 text-base font-semibold rounded-2xl transition-all border-border/50"
                             >

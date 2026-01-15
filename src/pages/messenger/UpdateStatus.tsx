@@ -210,7 +210,7 @@ export default function UpdateStatus() {
                     <p className="font-medium text-lg mb-1">Error</p>
                     <p className="text-muted-foreground text-sm">{error || 'Servicio no encontrado'}</p>
                 </div>
-                <Button variant="outline" onClick={() => navigate(-1)}>Volver</Button>
+                <Button variant="outline" onClick={() => navigate("/messenger", { replace: true })}>Volver</Button>
             </div>
         )
     }
