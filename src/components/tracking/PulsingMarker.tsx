@@ -1,4 +1,4 @@
-import { useEffect, useRef, memo } from "react"
+import { useEffect, useRef, memo, useMemo } from "react"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import { useGoogleMap } from "@react-google-maps/api"
 
@@ -20,7 +20,10 @@ export const PulsingMarker = memo(function PulsingMarker({
     onClick,
     isOnline
 }: PulsingMarkerProps) {
-    const position = { lat: messenger.latitude, lng: messenger.longitude }
+    const position = useMemo(() => ({
+        lat: messenger.latitude,
+        lng: messenger.longitude
+    }), [messenger.latitude, messenger.longitude])
     const title = messenger.messengerName || `Mensajero #${messenger.messengerId}`
     const color = isOnline ? '#10b981' : '#6b7280'
     const isActive = isOnline
@@ -90,7 +93,7 @@ export const PulsingMarker = memo(function PulsingMarker({
                 markerRef.current.map = null
             }
         }
-    }, [map, color, onClick, position, title, isActive])
+    }, [map, color, onClick, position, title, isActive, messenger])
 
     // Update position when it changes
     useEffect(() => {

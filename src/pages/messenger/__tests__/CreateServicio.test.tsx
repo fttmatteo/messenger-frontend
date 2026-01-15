@@ -8,7 +8,7 @@ import { http, HttpResponse } from 'msw';
 
 // Mock components and hooks
 vi.mock('@/components/camera', () => ({
-    PlateCamera: ({ onCancel }: any) => (
+    PlateCamera: ({ onCancel }: { onCancel: () => void }) => (
         <div data-testid="camera-mock">
             Camera Mock
             <button onClick={onCancel}>Cancel Camera</button>
