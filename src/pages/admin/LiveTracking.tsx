@@ -35,11 +35,11 @@ export default function LiveTracking() {
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
-    // Tick counter to force periodic recalculation of online/offline states
-    // This ensures markers update when messengers disconnect (go past 2-min threshold)
-    const [statusTick, setStatusTick] = useState(0)
+    // Unified timestamp to synchronize status across all UI components (Map, List, SidePanel)
+    // 10s interval ensures quick feedback for disconnections
+    const [now, setNow] = useState(() => Date.now())
     useEffect(() => {
-        const timer = setInterval(() => setStatusTick(t => t + 1), 30000) // Every 30 seconds
+        const timer = setInterval(() => setNow(Date.now()), 10000)
         return () => clearInterval(timer)
     }, [])
 
@@ -209,17 +209,15 @@ export default function LiveTracking() {
     }, [followingMessengerId, messengers])
 
     // Memoize visible markers with computed online status
-    // statusTick forces recalculation every 30s to detect offline messengers
+    // 'now' dependency ensures re-calculation for offline detection
     const visibleMarkers = useMemo(() => {
-        // Reference statusTick to trigger recalculation
-        void statusTick
         return messengers
             .filter(m => isValidCoords(m.latitude, m.longitude))
             .map(m => ({
                 ...m,
-                isOnline: isMessengerOnline(m.status, m.lastUpdate)
+                isOnline: isMessengerOnline(m.status, m.lastHeartbeat || m.lastUpdate, 2, now)
             }))
-    }, [messengers, statusTick])
+    }, [messengers, now])
 
     return (
         <div className="h-full w-full relative overflow-hidden">
@@ -317,6 +315,7 @@ export default function LiveTracking() {
                     isCollapsed={isPanelCollapsed}
                     onToggleCollapse={() => setIsPanelCollapsed(!isPanelCollapsed)}
                     onSelect={selectMessenger}
+                    now={now}
                 />
             </div>
 
@@ -328,6 +327,7 @@ export default function LiveTracking() {
                 onClose={deselectMessenger}
                 onFollow={toggleFollow}
                 isFollowing={followingMessengerId === selectedMessenger?.messengerId}
+                now={now}
             />
         </div>
     )

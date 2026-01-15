@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react"
+import { memo } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -29,6 +29,8 @@ export interface MessengerListPanelProps {
     onToggleCollapse: () => void
     /** Called when a messenger is selected */
     onSelect: (messenger: LiveTrackingUpdate) => void
+    /** Unified timestamp for synchronization */
+    now: number
 }
 
 /**
@@ -41,15 +43,10 @@ export const MessengerListPanel = memo(function MessengerListPanel({
     loading,
     isCollapsed,
     onToggleCollapse,
-    onSelect
+    onSelect,
+    now
 }: MessengerListPanelProps) {
-    // Internal timer for relative times and online status updates
-    // 30s interval matches the map's statusTick for consistent online/offline detection
-    const [now, setNow] = useState(() => Date.now())
-    useEffect(() => {
-        const timer = setInterval(() => setNow(Date.now()), 30000)
-        return () => clearInterval(timer)
-    }, [])
+
     return (
         <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
             {/* Header */}

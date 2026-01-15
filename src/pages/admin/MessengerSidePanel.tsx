@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react"
 import {
     X,
-    Phone
+    Phone,
+    Navigation,
+    MessageSquare
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,13 +32,18 @@ interface MessengerSidePanelProps {
     onClose: () => void
     onFollow: (id: number) => void
     isFollowing: boolean
+    /** Unified timestamp for synchronization */
+    now: number
 }
 
 export function MessengerSidePanel({
     messenger,
     messengerId,
     isOpen,
-    onClose
+    onClose,
+    onFollow,
+    isFollowing,
+    now
 }: MessengerSidePanelProps) {
     const [employee, setEmployee] = useState<Employee | null>(null)
     const [history, setHistory] = useState<TimelineEvent[]>([])
@@ -46,13 +53,7 @@ export function MessengerSidePanel({
     const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
     const { colors } = useStatusColors()
 
-    // Status tick for periodic UI updates (online status and relative times)
-    const [statusTick, setStatusTick] = useState(0)
-    useEffect(() => {
-        if (!isOpen) return
-        const timer = setInterval(() => setStatusTick(t => t + 1), 30000)
-        return () => clearInterval(timer)
-    }, [isOpen])
+
 
     const fetchDetails = useCallback(async () => {
         if (!messengerId) return
@@ -145,6 +146,7 @@ export function MessengerSidePanel({
         if (!dateString) return 'Sin registro'
         const date = new Date(dateString)
         if (isNaN(date.getTime())) return 'Fecha inválida'
+        // Use the passed 'now' for distance calculation to ensure synchronization
         return formatDistanceToNow(date, { addSuffix: true, locale: es })
     }
 
@@ -158,31 +160,68 @@ export function MessengerSidePanel({
         )}>
             {/* Header */}
             <div className="p-3 border-b bg-background/40 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <a
-                        href={`tel:${employee?.phone}`}
-                        className={cn(
-                            "h-8 w-8 rounded-full flex items-center justify-center border shrink-0 transition-colors",
-                            employee?.phone
-                                ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
-                                : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
-                        )}
-                        title={employee?.phone ? `Llamar a ${employee.phone}` : "Sin número"}
-                        onClick={(e) => !employee?.phone && e.preventDefault()}
-                    >
-                        <Phone className="h-4 w-4" />
-                    </a>
-                    <div className="min-w-0 flex-1">
-                        <h3 className="text-xs font-bold truncate">
+                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-1 shrink-0">
+                        {/* Phone Call */}
+                        <a
+                            href={`tel:${employee?.phone}`}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center border transition-all duration-200",
+                                employee?.phone
+                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"
+                                    : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
+                            )}
+                            title={employee?.phone ? `Llamar a ${employee.phone}` : "Sin número"}
+                            onClick={(e) => !employee?.phone && e.preventDefault()}
+                        >
+                            <Phone className="h-3.5 w-3.5" />
+                        </a>
+
+                        {/* WhatsApp/Message */}
+                        <a
+                            href={employee?.phone ? `https://wa.me/${employee.phone.replace(/\D/g, '')}` : '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center border transition-all duration-200",
+                                employee?.phone
+                                    ? "bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20"
+                                    : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
+                            )}
+                            title={employee?.phone ? `Enviar WhatsApp` : "Sin número"}
+                            onClick={(e) => !employee?.phone && e.preventDefault()}
+                        >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                        </a>
+
+                        {/* Follow on Map */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => messengerId && onFollow(messengerId)}
+                            className={cn(
+                                "h-8 w-8 rounded-full border transition-all duration-200",
+                                isFollowing
+                                    ? "bg-primary/20 text-primary border-primary/30 shadow-sm"
+                                    : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted"
+                            )}
+                            title={isFollowing ? "Dejar de seguir" : "Seguir en mapa"}
+                        >
+                            <Navigation className={cn("h-3.5 w-3.5", isFollowing && "fill-current")} />
+                        </Button>
+                    </div>
+
+                    <div className="min-w-0 flex-1 ml-1">
+                        <h3 className="text-[13px] font-bold truncate leading-tight">
                             {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : 'Cargando...'}
                         </h3>
                         <Badge variant="outline" className={cn(
-                            "text-[9px] h-3.5 px-1 leading-none uppercase tracking-tighter",
-                            isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate) ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted text-muted-foreground"
+                            "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold",
+                            isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now)
+                                ? "bg-emerald-500/10 text-emerald-500"
+                                : "bg-muted text-muted-foreground"
                         )}>
-                            {/* statusTick forces re-evaluation of isMessengerOnline */}
-                            {void statusTick}
-                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate) ? 'En línea' : 'Offline'}
+                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? '• En línea' : 'Offline'}
                         </Badge>
                     </div>
                 </div>
@@ -200,8 +239,6 @@ export function MessengerSidePanel({
                         <div className="flex justify-between items-center">
                             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Última señal</p>
                             <p className="text-xs font-semibold">
-                                {/* statusTick forces re-calculation of relative time */}
-                                {void statusTick}
                                 {safeFormatDistanceToNow(messenger?.lastUpdate)}
                             </p>
                         </div>
