@@ -8,7 +8,8 @@
 export function isMessengerOnline(
     status: 'ACTIVE' | 'OFFLINE' | string,
     lastUpdate: string | undefined,
-    thresholdMinutes: number = 2
+    thresholdMinutes: number = 2,
+    now: number = Date.now()
 ): boolean {
     if (status !== 'ACTIVE') return false
     if (!lastUpdate) return false
@@ -16,7 +17,6 @@ export function isMessengerOnline(
     const lastUpdateTime = new Date(lastUpdate).getTime()
     if (isNaN(lastUpdateTime)) return false
 
-    const now = Date.now()
     const thresholdMs = thresholdMinutes * 60 * 1000
 
     return (now - lastUpdateTime) < thresholdMs

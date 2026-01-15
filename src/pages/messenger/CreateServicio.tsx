@@ -225,10 +225,10 @@ export default function MessengerCreateServicio() {
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-1.5 rounded-lg bg-primary/10">
-                                        <Camera className="h-4 w-4 text-primary" />
+                                        <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-sm font-semibold">Foto de la placa</h3>
-                                    <span className="text-xs text-red-500">*</span>
+                                    <h3 className="text-sm font-bold tracking-tight">Foto de la placa</h3>
+                                    <span className="text-xs text-red-500 font-bold">*</span>
                                 </div>
                                 <FormField
                                     control={form.control}
@@ -286,10 +286,10 @@ export default function MessengerCreateServicio() {
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-1.5 rounded-lg bg-primary/10">
-                                        <Building2 className="h-4 w-4 text-primary" />
+                                        <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-sm font-semibold">Concesionario destino</h3>
-                                    <span className="text-xs text-red-500">*</span>
+                                    <h3 className="text-sm font-bold tracking-tight">Concesionario destino</h3>
+                                    <span className="text-xs text-red-500 font-bold">*</span>
                                 </div>
                                 <FormField
                                     control={form.control}
@@ -339,10 +339,10 @@ export default function MessengerCreateServicio() {
                                 <Card className="p-4 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
                                     <div className="flex items-center gap-2 mb-3">
                                         <div className="p-1.5 rounded-lg bg-amber-500/10">
-                                            <Edit3 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                            <Edit3 className="h-4 w-4 text-amber-600 dark:text-amber-400" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-semibold">Ingreso manual de placa</h3>
-                                        <span className="text-xs text-red-500">*</span>
+                                        <h3 className="text-sm font-bold tracking-tight">Ingreso manual de placa</h3>
+                                        <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <p className="text-xs text-amber-600 dark:text-amber-400 mb-3">
                                         No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
@@ -385,14 +385,14 @@ export default function MessengerCreateServicio() {
                                 variant="outline"
                                 onClick={() => navigate("/messenger", { replace: true })}
                                 disabled={loading}
-                                className="flex-1 h-12 text-base font-semibold rounded-2xl transition-all border-border/50"
+                                className="flex-1 h-12 text-base font-bold rounded-2xl transition-all border-border/50 active:scale-[0.98]"
                             >
                                 Cancelar
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={loading || loadingData || showCamera}
-                                className="flex-1 h-12 text-base font-semibold rounded-2xl transition-all shadow-lg"
+                                className="flex-1 h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98]"
                             >
                                 {loading ? (
                                     <>
