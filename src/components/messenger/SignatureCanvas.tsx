@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { useSafeArea } from '@/hooks/use-safe-area'
+
 
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
@@ -27,7 +27,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const [tempHasDrawn, setTempHasDrawn] = useState(false)
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
-        const safeArea = useSafeArea()
+
 
         // Setup saved canvas (hidden, stores the signature)
         useEffect(() => {
@@ -254,12 +254,12 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent
                         style={{
-                            paddingTop: `calc(1rem + ${safeArea.top}px)`,
-                            paddingBottom: `calc(1rem + ${safeArea.bottom}px)`,
-                            paddingLeft: `calc(1rem + ${safeArea.left}px)`,
-                            paddingRight: `calc(1rem + ${safeArea.right}px)`,
-                            "--sa-top": `${safeArea.top}px`,
-                            "--sa-right": `${safeArea.right}px`
+                            paddingTop: `calc(1rem + env(safe-area-inset-top))`,
+                            paddingBottom: `calc(1rem + env(safe-area-inset-bottom))`,
+                            paddingLeft: `calc(1rem + env(safe-area-inset-left))`,
+                            paddingRight: `calc(1rem + env(safe-area-inset-right))`,
+                            "--sa-top": `env(safe-area-inset-top)`,
+                            "--sa-right": `env(safe-area-inset-right)`
                         } as React.CSSProperties}
                         // Use the CSS variables in the className
                         className={cn(

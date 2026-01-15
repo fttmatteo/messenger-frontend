@@ -18,7 +18,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
 
 import { useSmartLocation } from "@/hooks/use-smart-location"
-import { useSafeAreaBottom } from "@/hooks/use-safe-area"
 import { STATUS_OPTIONS } from "@/config/status-options"
 import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
 
@@ -36,7 +35,7 @@ export default function UpdateStatus() {
     const navigate = useNavigate()
     const { colors } = useStatusColors()
     const { getCurrentLocation } = useSmartLocation()
-    const safeAreaBottom = useSafeAreaBottom()
+
 
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
@@ -352,7 +351,7 @@ export default function UpdateStatus() {
             {/* Fixed Bottom Action */}
             <div
                 className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
-                style={{ paddingBottom: `calc(1rem + ${safeAreaBottom}px)` }}
+                style={{ paddingBottom: `calc(1rem + env(safe-area-inset-bottom))` }}
             >
                 <Button
                     className="w-full h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"

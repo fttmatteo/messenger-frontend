@@ -12,7 +12,7 @@ import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
 import { useNetwork } from "@/hooks/use-network"
-import { useSafeArea } from "@/hooks/use-safe-area"
+
 import { createLogger } from "@/utils/logger"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
@@ -31,7 +31,7 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
-    const safeArea = useSafeArea()
+
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -540,7 +540,8 @@ export default function MessengerLayout() {
                 ref={mainRef}
                 className="flex-1 flex flex-col overflow-y-auto"
                 style={{
-                    paddingTop: `calc(48px + ${safeArea.top}px)`
+                    paddingTop: `calc(48px + env(safe-area-inset-top))`,
+                    paddingBottom: `env(safe-area-inset-bottom)`
                 }}
                 role="main"
             >
