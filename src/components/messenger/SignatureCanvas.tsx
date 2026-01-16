@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
@@ -253,20 +252,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent
-                        style={{
-                            paddingTop: `calc(1rem + env(safe-area-inset-top))`,
-                            paddingBottom: `calc(1rem + env(safe-area-inset-bottom))`,
-                            paddingLeft: `calc(1rem + env(safe-area-inset-left))`,
-                            paddingRight: `calc(1rem + env(safe-area-inset-right))`,
-                            "--sa-top": `env(safe-area-inset-top)`,
-                            "--sa-right": `env(safe-area-inset-right)`
-                        } as React.CSSProperties}
-                        // Use the CSS variables in the className
-                        className={cn(
-                            "max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 flex flex-col gap-3 sm:gap-4 rounded-none",
-                            "[&>button]:top-[calc(1rem+var(--sa-top))]",
-                            "[&>button]:right-[calc(1rem+var(--sa-right))]"
-                        )}
+                        className="max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 flex flex-col gap-3 sm:gap-4 rounded-none"
                         aria-describedby={undefined}
                     >
                         <DialogHeader className="flex-shrink-0">

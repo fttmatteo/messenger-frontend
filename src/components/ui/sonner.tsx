@@ -26,7 +26,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast: cn(
             "group toast !bg-background/95 !backdrop-blur-xl !border-border/50",
             "!shadow-lg !rounded-xl !p-4 !gap-3 !border-l-4",
-            "!mt-[max(1rem,env(safe-area-inset-top))] sm:!mt-0",
             "!flex !items-center !justify-between !leading-relaxed"
           ),
           title: "!font-semibold !text-sm !text-foreground !flex-1",
