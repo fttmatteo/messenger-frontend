@@ -26,8 +26,8 @@ export function ViewServicioSkeleton() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 flex-1 min-h-0">
                 {/* General Information */}
                 <Card className="h-full flex flex-col border-border/50 bg-background/40">
-                    <CardHeader className="p-5 pb-0">
-                        <Skeleton className="h-5 w-full max-w-[192px] rounded bg-muted/20" />
+                    <CardHeader className="p-2 pb-0">
+                        <h3 className="text-base text-foreground font-semibold px-3">Información general</h3>
                     </CardHeader>
                     <CardContent className="space-y-5 flex-1 overflow-y-auto mt-6 px-5">
                         {[1, 2, 3, 4, 5].map((i) => (
@@ -44,10 +44,10 @@ export function ViewServicioSkeleton() {
 
                 {/* History Timeline - 50% width */}
                 <Card className="h-full flex flex-col lg:col-span-2 border-border/50 bg-background/40">
-                    <CardHeader className="p-5 pb-0">
-                        <Skeleton className="h-5 w-full max-w-[176px] rounded bg-muted/20" />
+                    <CardHeader className="p-2 pb-0">
+                        <h3 className="text-base text-foreground font-semibold px-3">Historial de estados</h3>
                     </CardHeader>
-                    <CardContent className="flex-1 overflow-y-auto mt-6 px-5">
+                    <CardContent className="flex-1 overflow-hidden mt-6 px-5">
                         <div className="space-y-0 relative">
                             {[1, 2, 3].map((i, index) => (
                                 <div key={i} className="flex gap-4 relative pb-8 last:pb-0">
@@ -80,7 +80,7 @@ export function ViewServicioSkeleton() {
                 {/* Map Skeleton */}
                 <Card className="h-full flex flex-col border-border/50 bg-background/40">
                     <CardHeader className="px-5 py-4 space-y-3">
-                        <Skeleton className="h-4 w-32 rounded bg-muted/10" />
+                        <h3 className="text-sm text-foreground font-medium">Ubicaciones</h3>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Skeleton className="h-3.5 w-14 rounded bg-muted/10" />
