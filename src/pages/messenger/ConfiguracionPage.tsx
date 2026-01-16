@@ -18,7 +18,7 @@ export default function ConfiguracionPage() {
     const navigate = useNavigate()
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 gap-6 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex flex-col flex-1 min-h-0 gap-6 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300 overflow-x-hidden">
             <div className="space-y-4">
                 <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] px-1">
                     General

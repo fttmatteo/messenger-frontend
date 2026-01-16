@@ -30,6 +30,7 @@ export default function MessengerLayout() {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const sidebarBlockedRef = useRef(false) // Blocks sidebar opening briefly after navigation
+    const previousPathnameRef = useRef(location.pathname) // Track previous route for sidebar closing
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -267,11 +268,10 @@ export default function MessengerLayout() {
     // This is now handled by the useNavigationGuard hook
     useNavigationGuard();
 
-    // Close sidebar and block it temporarily when route changes
+    // Block sidebar opening temporarily when route changes
     // This prevents the back gesture from accidentally triggering the menu button
     // when transitioning from a subpage (ChevronLeft) to the main page (Menu button)
     useEffect(() => {
-        setIsSidebarOpen(false);
         sidebarBlockedRef.current = true;
 
         // Unblock after a short delay to allow touch events to complete
@@ -282,8 +282,18 @@ export default function MessengerLayout() {
         return () => clearTimeout(timer);
     }, [location.pathname]);
 
-    // Safe sidebar opener that respects the block
+    // Safe sidebar opener that respects the block and closes on route change
     const handleSidebarOpenChange = (open: boolean) => {
+        // Detect route change and force close
+        if (previousPathnameRef.current !== location.pathname) {
+            previousPathnameRef.current = location.pathname;
+            // Force sidebar closed on route change
+            if (isSidebarOpen) {
+                setIsSidebarOpen(false);
+            }
+            return;
+        }
+
         // Only allow opening if not blocked
         if (open && sidebarBlockedRef.current) {
             return; // Block opening during navigation transition
@@ -540,7 +550,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto"
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden"
                 style={{
                     paddingTop: `calc(48px + env(safe-area-inset-top))`,
                     paddingBottom: `env(safe-area-inset-bottom)`
