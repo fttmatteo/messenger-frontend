@@ -67,7 +67,7 @@ export default function MessengerLayout() {
     // Get page title based on path
     const getPageTitle = () => {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
-        if (location.pathname.includes('historial-recorrido')) return 'Historial ruta'
+
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
@@ -271,7 +271,7 @@ export default function MessengerLayout() {
             // redirect to Home (/messenger) if we are at the top of their stack.
 
             const isSecondaryRoot = path === '/messenger/servicios' || path === '/messenger/configuracion';
-            const isSubPath = path.includes('/servicio/') || path === '/messenger/crear' || path === '/messenger/historial-recorrido';
+            const isSubPath = path.includes('/servicio/') || path === '/messenger/crear';
             const isDeepConfig = path === '/messenger/configuracion/apariencia';
 
             if (isDeepConfig) {
