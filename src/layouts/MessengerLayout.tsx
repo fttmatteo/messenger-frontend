@@ -13,7 +13,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
 import { useNetwork } from "@/hooks/use-network"
 import { useNavigationGuard } from "@/hooks/useNavigationGuard"
-
 import { createLogger } from "@/utils/logger"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
@@ -276,8 +275,8 @@ export default function MessengerLayout() {
         const previousPath = previousPathnameRef.current;
         const currentPath = location.pathname;
 
-        // Always close sidebar on route change
-        setIsSidebarOpen(false);
+        // Always close sidebar on route change (deferred to avoid cascading renders)
+        queueMicrotask(() => setIsSidebarOpen(false));
 
         // Check if we came from a subpage (where ChevronLeft was shown)
         const cameFromSubPage = previousPath.includes('/servicio/') ||
