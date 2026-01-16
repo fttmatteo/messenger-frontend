@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
+import { navigateAfterLogin } from "@/hooks/useNavigationGuard"
 import { Eye, EyeOff, HelpCircle, Package } from "lucide-react"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -51,7 +52,9 @@ export default function LoginMobile() {
                 password: data.password,
                 rememberMe: data.rememberMe
             })
-            navigate("/")
+            // Clear history and navigate to messenger home
+            // This prevents back gesture from returning to login
+            navigateAfterLogin(navigate)
         } catch (error) {
             const err = error as { statusCode?: number }
 

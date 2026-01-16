@@ -12,6 +12,7 @@ import logo from "@/assets/logo.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
 import { useNetwork } from "@/hooks/use-network"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 
 import { createLogger } from "@/utils/logger"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
@@ -28,6 +29,8 @@ export default function MessengerLayout() {
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const sidebarBlockedRef = useRef(false) // Blocks sidebar opening briefly after navigation
+    const previousPathnameRef = useRef(location.pathname) // Track previous route for sidebar closing
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -67,7 +70,7 @@ export default function MessengerLayout() {
     // Get page title based on path
     const getPageTitle = () => {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
-        if (location.pathname.includes('historial-recorrido')) return 'Historial ruta'
+
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
@@ -261,33 +264,42 @@ export default function MessengerLayout() {
 
 
 
-    // Native Navigation Guard: Handle back gesture to protect hierarchy
+    // Native Navigation Guard: Handle back gesture with hierarchy
+    // This is now handled by the useNavigationGuard hook
+    useNavigationGuard();
+
+    // Block sidebar opening temporarily when route changes
+    // This prevents the back gesture from accidentally triggering the menu button
+    // when transitioning from a subpage (ChevronLeft) to the main page (Menu button)
     useEffect(() => {
-        const handlePopState = () => {
-            const path = window.location.pathname;
+        sidebarBlockedRef.current = true;
 
-            // 1. If in a secondary root tab (Historial, Config) or sub-path, 
-            // and trying to go "back" (which would exit or go to previous tab),
-            // redirect to Home (/messenger) if we are at the top of their stack.
+        // Unblock after a short delay to allow touch events to complete
+        const timer = setTimeout(() => {
+            sidebarBlockedRef.current = false;
+        }, 300); // 300ms is enough to clear any residual touch events
 
-            const isSecondaryRoot = path === '/messenger/servicios' || path === '/messenger/configuracion';
-            const isSubPath = path.includes('/servicio/') || path === '/messenger/crear' || path === '/messenger/historial-recorrido';
-            const isDeepConfig = path === '/messenger/configuracion/apariencia';
+        return () => clearTimeout(timer);
+    }, [location.pathname]);
 
-            if (isDeepConfig) {
-                // From Appearance back to Config
-                navigate('/messenger/configuracion', { replace: true });
-            } else if (isSecondaryRoot || isSubPath || path === '/login' || path === '/') {
-                // From secondary roots or any sub-path back to Home, 
-                // or prevent accidental exit to login/root while authenticated
-                navigate('/messenger', { replace: true });
+    // Safe sidebar opener that respects the block and closes on route change
+    const handleSidebarOpenChange = (open: boolean) => {
+        // Detect route change and force close
+        if (previousPathnameRef.current !== location.pathname) {
+            previousPathnameRef.current = location.pathname;
+            // Force sidebar closed on route change
+            if (isSidebarOpen) {
+                setIsSidebarOpen(false);
             }
-            // If already in /messenger, let the default behavior (exit app) happen
-        };
+            return;
+        }
 
-        window.addEventListener('popstate', handlePopState);
-        return () => window.removeEventListener('popstate', handlePopState);
-    }, [navigate]);
+        // Only allow opening if not blocked
+        if (open && sidebarBlockedRef.current) {
+            return; // Block opening during navigation transition
+        }
+        setIsSidebarOpen(open);
+    };
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
@@ -413,7 +425,7 @@ export default function MessengerLayout() {
                                 <ChevronLeft className="h-5 w-5" />
                             </Button>
                         ) : (
-                            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+                            <Sheet open={isSidebarOpen} onOpenChange={handleSidebarOpenChange}>
                                 <SheetTrigger asChild>
                                     <Button
                                         variant="ghost"
@@ -538,7 +550,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto"
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden"
                 style={{
                     paddingTop: `calc(48px + env(safe-area-inset-top))`,
                     paddingBottom: `env(safe-area-inset-bottom)`

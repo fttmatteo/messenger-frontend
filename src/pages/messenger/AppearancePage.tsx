@@ -37,7 +37,7 @@ export default function AppearancePage() {
     const { theme, setTheme } = useTheme()
 
     return (
-        <div className="flex flex-col flex-1 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex flex-col flex-1 p-4 animate-in fade-in slide-in-from-bottom-2 duration-300 overflow-x-hidden">
             <div className="space-y-6">
                 <div>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 mb-4">

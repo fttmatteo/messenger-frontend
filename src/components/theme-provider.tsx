@@ -1,6 +1,14 @@
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
+// Define explicit theme colors (Design Tokens) at module level for stable reference
+// avoiding DOM read latency or race conditions with Sidebar/Overlays.
+// Sync with global.css: Dark (hsl 0 0% 8% -> #141414), Light (#ffffff)
+const THEME_COLORS = {
+    light: '#ffffff',
+    dark: '#141414'
+} as const
+
 function ThemeColorSync() {
     const { resolvedTheme, theme } = useTheme()
     const [, forceUpdate] = useState(0)
@@ -69,13 +77,6 @@ function ThemeColorSync() {
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
     }, [theme])
 
-    // Define explicit theme colors (Design Tokens) to ensure instant updates
-    // avoiding DOM read latency or race conditions with Sidebar/Overlays.
-    // Sync with global.css: Dark (hsl 0 0% 8% -> #141414), Light (#ffffff)
-    const THEME_COLORS = {
-        light: '#ffffff',
-        dark: '#141414'
-    }
 
     useEffect(() => {
         const isDark = resolvedTheme === 'dark'

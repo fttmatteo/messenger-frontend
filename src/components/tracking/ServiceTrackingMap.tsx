@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
-import { MapPin, Route, Loader2 } from "lucide-react"
+import { MapPin, Loader2 } from "lucide-react"
 
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
@@ -192,10 +192,9 @@ export function ServiceTrackingMap({
     if (loading) {
         return (
             <Card className={className}>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Route className="h-5 w-5" />
-                        Recorrido del servicio
+                <CardHeader className="px-5 py-4">
+                    <CardTitle className="text-sm text-foreground font-medium">
+                        Ubicaciones
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -208,10 +207,9 @@ export function ServiceTrackingMap({
     if (trackingData.length === 0 && !dealershipLat) {
         return (
             <Card className={className}>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Route className="h-5 w-5" />
-                        Recorrido del servicio
+                <CardHeader className="px-5 py-4">
+                    <CardTitle className="text-sm text-foreground font-medium">
+                        Ubicaciones
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

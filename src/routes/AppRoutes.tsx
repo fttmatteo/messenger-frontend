@@ -37,7 +37,7 @@ const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'
 const MessengerCreateServicio = React.lazy(() => import('@/pages/messenger/CreateServicio'));
 const MessengerServiceDetails = React.lazy(() => import('@/pages/messenger/ServiceDetails'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
-const MessengerRouteHistoryPage = React.lazy(() => import('@/pages/messenger/RouteHistoryPage'));
+
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
@@ -153,7 +153,7 @@ export function AppRoutes() {
                     <Route path="crear" element={<MessengerCreateServicio />} />
                     <Route path="servicio/:id" element={<MessengerServiceDetails />} />
                     <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
-                    <Route path="historial-recorrido" element={<MessengerRouteHistoryPage />} />
+
                     <Route path="servicios" element={<MessengerServiciosPage />} />
                     <Route path="configuracion" element={<MessengerConfiguracionPage />} />
                     <Route path="configuracion/apariencia" element={<MessengerAppearancePage />} />
