@@ -128,14 +128,13 @@ export default function ViewServicio() {
                 deleting={deleting}
             />
 
-            {/* 3-Column Layout: Info (25%), History (50%), Map (25%) */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 flex-1 min-h-0">
+            {/* 3-Column Layout: Equal distribution (33% each) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0">
                 <ServiceGeneralInfoCard service={service} />
 
                 <ServiceHistoryTimeline
                     service={service}
                     onImageClick={setSelectedImage}
-                    className="lg:col-span-2"
                 />
 
                 <ServiceTrackingMap

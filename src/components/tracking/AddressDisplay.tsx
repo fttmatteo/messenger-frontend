@@ -79,7 +79,7 @@ export function AddressDisplay({ lat, lng, className }: { lat: number; lng: numb
     }, [lat, lng, cacheKey])
 
     if (loading) {
-        return <Skeleton className="h-4 w-32" />
+        return <Skeleton static className="h-4 w-32" />
     }
 
     return <span className={className || "truncate max-w-[180px]"} title={address || ''}>{address}</span>

@@ -198,7 +198,7 @@ export function ServiceTrackingMap({
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Skeleton className="w-full h-[300px] rounded-md" />
+                    <Skeleton static className="w-full h-[300px] rounded-md" />
                 </CardContent>
             </Card>
         )
