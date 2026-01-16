@@ -31,6 +31,7 @@ export default function MessengerLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const sidebarBlockedRef = useRef(false) // Blocks sidebar opening briefly after navigation
     const previousPathnameRef = useRef(location.pathname) // Track previous route for sidebar closing
+    const wasSubPageRef = useRef(false) // Track if we came from a subpage to add longer block
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -272,31 +273,49 @@ export default function MessengerLayout() {
     // This prevents the back gesture from accidentally triggering the menu button
     // when transitioning from a subpage (ChevronLeft) to the main page (Menu button)
     useEffect(() => {
+        const previousPath = previousPathnameRef.current;
+        const currentPath = location.pathname;
+
+        // Always close sidebar on route change
+        setIsSidebarOpen(false);
+
+        // Check if we came from a subpage (where ChevronLeft was shown)
+        const cameFromSubPage = previousPath.includes('/servicio/') ||
+            previousPath.includes('/historial') ||
+            previousPath.includes('/actualizar') ||
+            previousPath.includes('/configuracion/');
+
+        // Check if we're now on a main page (where Menu button is shown)
+        const isNowMainPage = !currentPath.includes('/servicio/') &&
+            !currentPath.includes('/historial') &&
+            !currentPath.includes('/actualizar') &&
+            !currentPath.includes('/configuracion/');
+
+        // If transitioning from subpage to main page, apply longer block
+        // This is crucial because the Menu button appears where ChevronLeft was
+        wasSubPageRef.current = cameFromSubPage && isNowMainPage;
+
         sidebarBlockedRef.current = true;
 
-        // Unblock after a short delay to allow touch events to complete
+        // Use longer delay when coming from subpage to ensure touch events are cleared
+        const blockDuration = wasSubPageRef.current ? 500 : 300;
+
         const timer = setTimeout(() => {
             sidebarBlockedRef.current = false;
-        }, 300); // 300ms is enough to clear any residual touch events
+            wasSubPageRef.current = false;
+        }, blockDuration);
+
+        // Update previousPathnameRef for the next navigation
+        previousPathnameRef.current = currentPath;
 
         return () => clearTimeout(timer);
     }, [location.pathname]);
 
-    // Safe sidebar opener that respects the block and closes on route change
+    // Safe sidebar opener that respects the block
     const handleSidebarOpenChange = (open: boolean) => {
-        // Detect route change and force close
-        if (previousPathnameRef.current !== location.pathname) {
-            previousPathnameRef.current = location.pathname;
-            // Force sidebar closed on route change
-            if (isSidebarOpen) {
-                setIsSidebarOpen(false);
-            }
-            return;
-        }
-
-        // Only allow opening if not blocked
+        // Block opening during navigation transition (especially after back gesture)
         if (open && sidebarBlockedRef.current) {
-            return; // Block opening during navigation transition
+            return;
         }
         setIsSidebarOpen(open);
     };
