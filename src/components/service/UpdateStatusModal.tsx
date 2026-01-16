@@ -9,7 +9,6 @@ import type { Employee } from "@/types/employee.types"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
 import { getAvailableStatusesForUser, getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
-
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -28,13 +27,9 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
     const { colors } = useStatusColors()
-
-    // Form states
     const [newStatus, setNewStatus] = useState<ServiceStatus>(service.currentStatus)
     const [observation, setObservation] = useState('')
     const [updating, setUpdating] = useState(false)
-
-    // Reassign states (only for CANCELED services)
     const [messengers, setMessengers] = useState<Employee[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<string>('')
     const [reassigning, setReassigning] = useState(false)
@@ -42,14 +37,12 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
 
     const showReassign = service.currentStatus === 'CANCELED' && user?.role === 'ADMIN'
 
-    // Reset form when modal opens
     useEffect(() => {
         if (open) {
             setNewStatus(service.currentStatus)
             setObservation('')
             setSelectedMessenger('')
 
-            // Fetch messengers for reassignment if needed
             if (showReassign) {
                 setLoadingMessengers(true)
                 employeeService.getAll()
@@ -64,7 +57,6 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
         }
     }, [open, service.currentStatus, showReassign])
 
-    // Handle update status submission
     const handleUpdateStatus = async () => {
         try {
             setUpdating(true)
@@ -83,7 +75,6 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
         }
     }
 
-    // Handle reassign messenger
     const handleReassign = async () => {
         if (!selectedMessenger) return
 

@@ -18,10 +18,6 @@ interface ServiceCardProps {
     onViewDetails: (serviceId: number) => void
 }
 
-/**
- * Mobile card component for displaying a service in list view.
- * Shows plate, status, dealership, messenger, and date with action buttons.
- */
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
     const messengerName = formatDisplayName(service.messenger?.fullName ?? 'No asignado')

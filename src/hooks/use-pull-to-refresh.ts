@@ -25,7 +25,6 @@ export function usePullToRefresh({
         const container = containerRef.current
         if (!container) return
 
-        // Only activate if scrolled to top
         if (container.scrollTop > 0) return
 
         startY.current = e.touches[0].clientY
@@ -38,13 +37,11 @@ export function usePullToRefresh({
         currentY.current = e.touches[0].clientY
         const delta = Math.max(0, currentY.current - startY.current)
 
-        // Apply resistance
         const resistance = 0.5
         const distance = Math.min(delta * resistance, threshold * 1.5)
 
         setPullDistance(distance)
 
-        // Prevent default scroll if pulling
         if (distance > 0) {
             e.preventDefault()
         }

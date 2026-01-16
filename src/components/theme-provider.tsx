@@ -1,20 +1,37 @@
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps, useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
-// Define explicit theme colors (Design Tokens) at module level for stable reference
-// avoiding DOM read latency or race conditions with Sidebar/Overlays.
-// Sync with global.css: Dark (hsl 0 0% 8% -> #141414), Light (#ffffff)
 const THEME_COLORS = {
     light: '#ffffff',
     dark: '#141414'
 } as const
 
+function forceStatusBarUpdate(isDark: boolean) {
+    const themeColor = isDark ? THEME_COLORS.dark : THEME_COLORS.light
+
+    const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
+    metaThemeColors.forEach(meta => {
+        meta.setAttribute('content', themeColor)
+    })
+
+    const html = document.documentElement
+    html.style.backgroundColor = themeColor
+    html.style.colorScheme = isDark ? 'dark' : 'light'
+    document.body.style.backgroundColor = themeColor
+    document.body.style.colorScheme = isDark ? 'dark' : 'light'
+
+    requestAnimationFrame(() => {
+        html.style.transform = 'translateZ(0)'
+        requestAnimationFrame(() => {
+            html.style.transform = ''
+        })
+    })
+}
+
 function ThemeColorSync() {
     const { resolvedTheme, theme } = useTheme()
     const [, forceUpdate] = useState(0)
 
-    // Listen for system theme changes when in "system" mode
-    // This works for both PWAs and regular web browsers
     useEffect(() => {
         if (theme !== 'system') return
 
@@ -22,7 +39,6 @@ function ThemeColorSync() {
 
         const applySystemTheme = (isDark: boolean) => {
             const html = document.documentElement
-            // Immediately apply the correct class for instant visual feedback
             if (isDark) {
                 html.classList.add('dark')
                 html.classList.remove('light')
@@ -32,7 +48,9 @@ function ThemeColorSync() {
                 html.classList.add('light')
                 html.style.colorScheme = 'light'
             }
-            // Force React to re-render and sync with next-themes
+
+            forceStatusBarUpdate(isDark)
+
             forceUpdate(prev => prev + 1)
         }
 
@@ -44,8 +62,6 @@ function ThemeColorSync() {
         return () => mediaQuery.removeEventListener('change', handleChange)
     }, [theme])
 
-    // Fallback for iOS PWAs: re-evaluate theme when app returns to foreground
-    // iOS doesn't always fire matchMedia change events in PWA mode
     useEffect(() => {
         if (theme !== 'system') return
 
@@ -55,7 +71,6 @@ function ThemeColorSync() {
             if (document.visibilityState === 'visible') {
                 const currentSystemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-                // Only update if system theme changed while app was in background
                 if (currentSystemTheme !== lastSystemTheme) {
                     lastSystemTheme = currentSystemTheme
                     const html = document.documentElement
@@ -68,6 +83,9 @@ function ThemeColorSync() {
                         html.classList.add('light')
                         html.style.colorScheme = 'light'
                     }
+
+                    forceStatusBarUpdate(currentSystemTheme)
+
                     forceUpdate(prev => prev + 1)
                 }
             }
@@ -82,7 +100,6 @@ function ThemeColorSync() {
         const isDark = resolvedTheme === 'dark'
         const themeColor = isDark ? THEME_COLORS.dark : THEME_COLORS.light
 
-        // 1. Update standard theme-color (Android/Desktop)
         const metaThemeColors = document.querySelectorAll('meta[name="theme-color"]')
         if (metaThemeColors.length > 0) {
             metaThemeColors.forEach(meta => {
@@ -95,9 +112,6 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // 2. Update iOS specific status bar style implementation
-        // 'black-translucent' gives light text (for dark background)
-        // 'default' gives dark text (for light background)
         const metaAppleStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
         const appleStatus = isDark ? 'black-translucent' : 'default'
 
@@ -110,16 +124,12 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // 3. Ensure HTML and body elements have correct system UI properties
-        // This affects the navigation bar color on Android
         const html = document.documentElement
         html.style.backgroundColor = themeColor
         html.style.colorScheme = isDark ? 'dark' : 'light'
 
-        // Also set body background for navigation bar consistency
         document.body.style.backgroundColor = themeColor
 
-        // 4. Update msapplication-navbutton-color for Windows/Edge support
         const metaNavButton = document.querySelector('meta[name="msapplication-navbutton-color"]')
         if (metaNavButton) {
             metaNavButton.setAttribute('content', themeColor)
@@ -130,9 +140,6 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // 5. Update apple-mobile-web-app-status-bar-style for iOS bottom bar
-        // The color-scheme CSS property helps iOS Safari match the navigation bar
-        // Setting it on both html and body ensures maximum compatibility
         document.body.style.colorScheme = isDark ? 'dark' : 'light'
 
     }, [resolvedTheme])

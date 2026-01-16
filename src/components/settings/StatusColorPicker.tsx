@@ -16,7 +16,6 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
     const isModified = color !== defaultColor
 
     const handleCardClick = () => {
-        // Directly open the native color picker
         inputRef.current?.click()
     }
 

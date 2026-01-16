@@ -12,10 +12,6 @@ interface HistoryEntryCardProps {
     onImageClick?: (url: string) => void
 }
 
-/**
- * Renders the content card for a history entry.
- * Used in both desktop and mobile timeline views.
- */
 export function HistoryEntryCard({
     entry,
     platePhotos,

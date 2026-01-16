@@ -5,7 +5,7 @@ export interface StatusConfig {
     id: ServiceStatus
     label: string
     description: string
-    icon: typeof Clock // Type of Lucide icon component
+    icon: typeof Clock
     requiresSignature: boolean
     requiresPhotos: boolean
     requiresObservation: boolean
@@ -35,7 +35,7 @@ export const STATUS_OPTIONS: StatusConfig[] = [
         label: "Devuelto",
         description: "La placa no pudo ser entregada",
         icon: CornerDownLeft,
-        requiresSignature: false, // Changed to false as per UpdateStatus.tsx
+        requiresSignature: false,
         requiresPhotos: true,
         requiresObservation: true
     }

@@ -32,7 +32,6 @@ export function TrackingHistoryList({
     setCalendarOpen
 }: TrackingHistoryListProps) {
 
-    // Grouping logic extracted for internal use
     const getGroupedHistory = () => {
         const grouped: Array<{
             startTime: string;
@@ -43,7 +42,6 @@ export function TrackingHistoryList({
             maxSpeed: number;
         }> = [];
 
-        // Sort by time ascending for grouping
         const sorted = [...historyData].sort((a, b) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );

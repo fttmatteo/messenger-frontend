@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './AuthContext'
 import { authService } from '@/services/auth.service'
 import type { ReactNode } from 'react'
 
-// Mock the auth service
 vi.mock('../services/auth.service', () => ({
     authService: {
         login: vi.fn(),
@@ -18,7 +17,6 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 describe('AuthContext', () => {
     beforeEach(() => {
-        // Clear storage before each test
         localStorage.clear()
         sessionStorage.clear()
         vi.clearAllMocks()
@@ -122,7 +120,6 @@ describe('AuthContext', () => {
         })
 
         it('should login without rememberMe and store in sessionStorage', async () => {
-            // Ensure clean state
             localStorage.clear()
             sessionStorage.clear()
 
@@ -148,9 +145,8 @@ describe('AuthContext', () => {
 
             expect(sessionStorage.getItem('role')).toBe('MESSENGER')
             expect(sessionStorage.getItem('user')).toContain('"id":456')
-            // En jsdom los mocks de localStorage/sessionStorage comparten backing store; validamos que se haya guardado en el store activo
             expect(result.current.user?.role).toBe('MESSENGER')
-            expect(result.current.user?.isOnline).toBe(true) // Messenger should be online
+            expect(result.current.user?.isOnline).toBe(true)
         })
     })
 
@@ -204,8 +200,6 @@ describe('AuthContext', () => {
 
             expect(result.current.user?.isOnline).toBe(true)
             expect(result.current.user?.document).toBe('12345')
-
-            // Should also update localStorage
             const updatedStored = JSON.parse(localStorage.getItem('user') || '{}')
             expect(updatedStored.isOnline).toBe(true)
         })

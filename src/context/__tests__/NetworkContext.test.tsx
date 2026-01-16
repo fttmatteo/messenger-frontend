@@ -7,7 +7,6 @@ import type { OfflineAction } from '@/services/offline-sync.service'
 import { toast } from 'sonner'
 import type { ReactNode } from 'react'
 
-// Mock dependencies
 vi.mock('@/services/offline-sync.service', () => ({
     offlineSyncService: {
         getPendingActions: vi.fn().mockResolvedValue([]),
@@ -30,7 +29,6 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 describe('NetworkContext', () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        // Mock navigator.onLine
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,
             value: true,
@@ -57,19 +55,15 @@ describe('NetworkContext', () => {
     it('should sync actions and show toast when coming back online', async () => {
         const { result } = renderHook(() => useNetwork(), { wrapper })
 
-        // Go offline first
         await act(async () => {
             window.dispatchEvent(new Event('offline'))
         })
 
-        // Assert offline state first
         expect(result.current.isOnline).toBe(false)
         expect(result.current.wasOffline).toBe(true)
 
-        // Mock a pending action so syncAll is actually called
         vi.mocked(offlineSyncService.getPendingActions).mockResolvedValue([{ id: '1' } as unknown as OfflineAction])
 
-        // Back online
         await act(async () => {
             window.dispatchEvent(new Event('online'))
         })

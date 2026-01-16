@@ -95,7 +95,7 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
         return () => { isMounted = false }
     }, [lat, lng])
 
-    if (loading) return <Skeleton className="h-4 w-48" />
+    if (loading) return <Skeleton static className="h-4 w-48" />
 
     return (
         <span className="text-sm text-muted-foreground font-medium flex items-center gap-1">

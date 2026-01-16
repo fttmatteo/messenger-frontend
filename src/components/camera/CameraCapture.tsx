@@ -14,10 +14,6 @@ interface CameraCaptureProps {
     onClear: () => void
 }
 
-/**
- * Camera capture component for taking photos or selecting from gallery.
- * Shows camera view, capture button, file upload, and image preview.
- */
 export function CameraCapture({
     onCapture,
     onFileSelect,

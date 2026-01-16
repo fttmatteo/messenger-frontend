@@ -8,7 +8,6 @@ import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
 import { MapPin, Loader2 } from "lucide-react"
-
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
@@ -23,7 +22,6 @@ interface ServiceTrackingMapProps {
     className?: string
 }
 
-// Componente para manejar AdvancedMarkerElement
 function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
     position: google.maps.LatLngLiteral,
     title?: string,
@@ -76,15 +74,11 @@ export function ServiceTrackingMap({
     serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
-    // Get colors from context
     const { colors } = useStatusColors()
-
-    // Helper to get HEX color from status
     const getStatusHexColor = (status?: ServiceStatus | string): string => {
         return colors[status || ''] || '#6b7280'
     }
 
-    // ... state hooks ...
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
     const [loading, setLoading] = useState(true)
     const [distance, setDistance] = useState<{ meters: number | null, seconds: number | null } | null>(null)
@@ -95,7 +89,6 @@ export function ServiceTrackingMap({
         ? { lat: dealershipLat, lng: dealershipLng }
         : { lat: 6.2442, lng: -75.5812 }
 
-    // Pan to a specific position on the map
     const panTo = (position: google.maps.LatLngLiteral) => {
         if (mapInstance) {
             mapInstance.panTo(position)
@@ -103,7 +96,6 @@ export function ServiceTrackingMap({
         }
     }
 
-    // ... useEffect for data fetching ...
     useEffect(() => {
         const fetchTrackingData = async () => {
             try {
@@ -121,7 +113,6 @@ export function ServiceTrackingMap({
         fetchTrackingData()
     }, [serviceId])
 
-    // Auto-calculate distance when tracking data is loaded
     useEffect(() => {
         const autoCalculateDistance = async () => {
             if (trackingData.length === 0 || !dealershipLat || !dealershipLng) return
@@ -146,8 +137,6 @@ export function ServiceTrackingMap({
                     seconds: result.durationSeconds
                 })
             } catch {
-                // Silently fail - distance calculation may not be possible 
-                // (e.g., intercontinental distances, no driving route available)
                 setDistance(null)
             } finally {
                 setLoadingDistance(false)
@@ -163,8 +152,6 @@ export function ServiceTrackingMap({
 
     const lastPosition = trackingPath.length > 0 ? trackingPath[trackingPath.length - 1] : null
     const firstPosition = trackingPath.length > 0 ? trackingPath[0] : null
-
-    // Determine colors and labels based on status
     const startColor = getStatusHexColor('ASSIGNED')
     const endColor = serviceStatus ? getStatusHexColor(serviceStatus) : getStatusHexColor('PENDING')
     const endLabel = serviceStatus ? getStatusBadge(serviceStatus, colors).label : 'Última ubicación'
@@ -188,7 +175,6 @@ export function ServiceTrackingMap({
         return `${mins} min`
     }
 
-    // ... loading and empty states ...
     if (loading) {
         return (
             <Card className={className}>
@@ -198,7 +184,7 @@ export function ServiceTrackingMap({
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Skeleton className="w-full h-[300px] rounded-md" />
+                    <Skeleton static className="w-full h-[300px] rounded-md" />
                 </CardContent>
             </Card>
         )
@@ -299,7 +285,7 @@ export function ServiceTrackingMap({
                             <Polyline
                                 path={trackingPath}
                                 options={{
-                                    strokeColor: endColor, // Route matches current status color
+                                    strokeColor: endColor,
                                     strokeOpacity: 0.8,
                                     strokeWeight: 4,
                                 }}
@@ -332,7 +318,6 @@ export function ServiceTrackingMap({
                                 position={{ lat: dealershipLat, lng: dealershipLng }}
                                 title={dealershipName || "Concesionario"}
                                 color="#f97316"
-                            // Customize icon or label if needed
                             />
                         )}
                     </Map>

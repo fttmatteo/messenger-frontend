@@ -18,7 +18,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
 
 
-    // Sync pending actions when coming back online
     const syncPendingActions = useCallback(async () => {
         const actions = await offlineSyncService.getPendingActions()
 
@@ -47,19 +46,16 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     }, [])
 
     const updateServiceWorker = useCallback(() => {
-        // Call the global update function set by main.tsx
         if (window.__updateSW) {
             window.__updateSW(true)
         }
         setNeedRefresh(false)
     }, [])
 
-    // Handle online/offline events
     useEffect(() => {
         const handleOnline = () => {
             setIsOnline(true)
 
-            // Show reconnection toast if was offline
             if (wasOffline) {
                 toast.success('Conexión restaurada', {
                     description: 'Sincronizando datos...',
@@ -68,7 +64,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     id: 'network-online',
                 })
 
-                // Trigger sync of pending actions
                 syncPendingActions()
             }
 
@@ -96,7 +91,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         }
     }, [wasOffline, syncPendingActions])
 
-    // Listen for Service Worker events
     useEffect(() => {
         const handleOfflineReady = () => {
             setOfflineReady(true)
@@ -126,7 +120,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         }
     }, [updateServiceWorker])
 
-    // Update pending actions count periodically
     useEffect(() => {
         const updateCount = async () => {
             const actions = await offlineSyncService.getPendingActions()
@@ -135,7 +128,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
         updateCount()
 
-        // Listen for changes
         const interval = setInterval(updateCount, 5000)
 
         return () => clearInterval(interval)
@@ -162,7 +154,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     )
 }
 
-// Add type declaration for the global update function
 declare global {
     interface Window {
         __updateSW?: (reloadPage?: boolean) => void

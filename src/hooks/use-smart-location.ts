@@ -16,7 +16,6 @@ export function useSmartLocation() {
     const getCurrentLocation = useCallback(async (): Promise<LocationResult> => {
         setLoading(true)
         try {
-            // 1. Check cached location first (within last 5 mins)
             const lastKnown = trackingService.getLastKnownLocation()
             const isRecent = lastKnown && (Date.now() - lastKnown.timestamp < 5 * 60 * 1000)
 
@@ -24,7 +23,6 @@ export function useSmartLocation() {
                 return { latitude: lastKnown.latitude, longitude: lastKnown.longitude }
             }
 
-            // 2. Fallback to fresh Geolocation API
             return await new Promise<LocationResult>((resolve, reject) => {
                 if (!navigator.geolocation) {
                     reject(new Error("La geolocalización no es soportada por este navegador."))
@@ -61,13 +59,6 @@ export function useSmartLocation() {
                 description: `${msg}. Se continuará sin ubicación precisa.`,
                 duration: 4000
             })
-            // Return empty object or handle as needed by consumer, 
-            // but strongly typed return suggests we might want to throw or return null.
-            // For now, consistent with previous behavior, we might return empty or null.
-            // Since the original code returned partials or threw, let's throw to let consumer decide,
-            // OR return undefined values if that fits the flow.
-            // The original CreateServicio returned {} which is { undefined, undefined }.
-            // UpdateStatus handled it by catching or setting undefined.
 
             throw error;
         } finally {

@@ -14,7 +14,6 @@ export function ServiceList({ services, loading, emptyMessage = "No hay servicio
         return <ServiceListSkeleton count={3} />
     }
 
-    // Empty state
     if (services.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -26,7 +25,6 @@ export function ServiceList({ services, loading, emptyMessage = "No hay servicio
         )
     }
 
-    // Service list - Compact List Container with subtle spacing
     return (
         <div className="space-y-2">
             {services.map((service) => (

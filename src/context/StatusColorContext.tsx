@@ -17,12 +17,10 @@ interface StatusColorProviderProps {
 
 export function StatusColorProvider({ children, userId }: StatusColorProviderProps) {
     const [colors, setColors] = useState<Record<string, string>>(() => {
-        // Initialize with merged colors (defaults + custom for this user)
         const customColors = loadCustomColors(userId)
         return { ...DEFAULT_STATUS_COLORS, ...customColors }
     })
 
-    // Fetch colors from backend on mount
     useEffect(() => {
         const fetchColors = async () => {
             try {
@@ -30,7 +28,6 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
                 if (backendColors && Object.keys(backendColors).length > 0) {
                     const merged = { ...DEFAULT_STATUS_COLORS, ...backendColors }
                     setColors(merged)
-                    // Update cache
                     const differences: Record<string, string> = {}
                     Object.keys(merged).forEach(key => {
                         if (merged[key] !== DEFAULT_STATUS_COLORS[key]) {
@@ -47,7 +44,6 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         fetchColors()
     }, [userId])
 
-    // Calculate isModified using useMemo instead of useEffect + setState
     const isModified = useMemo(() => {
         return Object.keys(DEFAULT_STATUS_COLORS).some(
             status => colors[status] !== DEFAULT_STATUS_COLORS[status]
@@ -58,7 +54,6 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         setColors(prev => {
             const newColors = { ...prev, [status]: color }
 
-            // Save only the differences from defaults
             const customColors: Record<string, string> = {}
             Object.keys(newColors).forEach(key => {
                 if (newColors[key] !== DEFAULT_STATUS_COLORS[key]) {
@@ -67,7 +62,6 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
             })
             saveCustomColors(customColors, userId)
 
-            // If user is admin, sync to backend
             const role = authService.getRole()
             if (role === 'ADMIN') {
                 configService.updateStatusColors(newColors).catch(err => {
@@ -83,7 +77,6 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         clearCustomColors(userId)
         setColors({ ...DEFAULT_STATUS_COLORS })
 
-        // If user is admin, sync to backend
         const role = authService.getRole()
         if (role === 'ADMIN') {
             configService.updateStatusColors(DEFAULT_STATUS_COLORS).catch(err => {

@@ -21,11 +21,9 @@ describe('AuthIntegration (MSW)', () => {
     it('should login successfully using real service and MSW', async () => {
         const { result } = renderHook(() => useAuth(), { wrapper })
 
-        // 1. Initial state
         expect(result.current.isAuthenticated).toBe(false)
         expect(result.current.user).toBeNull()
 
-        // 2. Perform Login
         await act(async () => {
             await result.current.login({
                 document: 12345,
@@ -34,7 +32,6 @@ describe('AuthIntegration (MSW)', () => {
             })
         })
 
-        // 3. Verify state after login
         expect(result.current.isAuthenticated).toBe(true)
         expect(result.current.user).toMatchObject({
             document: 12345,
@@ -42,7 +39,6 @@ describe('AuthIntegration (MSW)', () => {
             id: 123
         })
 
-        // 4. Verify persistence
         expect(localStorage.getItem('role')).toBe('ADMIN')
         expect(localStorage.getItem('user')).toContain('"id":123')
         expect(localStorage.getItem('token')).toBeNull()
@@ -51,7 +47,6 @@ describe('AuthIntegration (MSW)', () => {
     it('should logout and clear storage', async () => {
         const { result } = renderHook(() => useAuth(), { wrapper })
 
-        // Pre-fill login state
         await act(async () => {
             await result.current.login({
                 document: 12345,
@@ -61,7 +56,6 @@ describe('AuthIntegration (MSW)', () => {
         })
         expect(result.current.isAuthenticated).toBe(true)
 
-        // Logout
         act(() => {
             result.current.logout()
         })

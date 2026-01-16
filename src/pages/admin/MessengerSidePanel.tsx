@@ -153,9 +153,8 @@ export function MessengerSidePanel({
 
     if (!isOpen) return null
 
-    // Show skeleton while loading initial data (messenger info or employee info)
-    // or if we have no messenger data yet
-    if (!messenger || (loadingHistory && history.length === 0)) {
+    // Show skeleton only if we have no messenger data at all
+    if (!messenger) {
         return (
             <div className={cn(
                 "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
