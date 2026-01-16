@@ -24,7 +24,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: cn(
-            "group toast !bg-background/95 !backdrop-blur-xl !border-border/50",
+            "group toast !bg-background !border-border",
             "!shadow-lg !rounded-xl !p-4 !gap-3 !border-l-4",
             "!flex !items-center !justify-between !leading-relaxed"
           ),
@@ -32,11 +32,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: "!text-muted-foreground !text-xs !mt-0.5 !flex-1",
           actionButton: "!bg-primary !text-primary-foreground !rounded-lg !px-3 sm:!px-4 !py-2 !h-auto !text-xs sm:!text-sm !font-medium !ml-2 !flex-shrink-0 hover:!opacity-90 transition-opacity",
           cancelButton: "!bg-muted hover:!bg-muted/80 !text-muted-foreground !rounded-lg !px-3 sm:!px-4 !py-2 !h-auto !text-xs sm:!text-sm !font-medium !flex-shrink-0 transition-colors",
-          error: "!border-l-red-500/80 !bg-red-50/50 dark:!bg-red-950/20",
-          success: "!border-l-green-500/80 !bg-green-50/50 dark:!bg-green-950/20",
-          info: "!border-l-blue-500/80 !bg-blue-50/50 dark:!bg-blue-950/20",
-          warning: "!border-l-amber-500/80 !bg-amber-50/50 dark:!bg-amber-950/20",
-          loading: "!border-l-primary/80 !bg-primary/5",
+          error: "!border-l-red-500 !bg-red-50 dark:!bg-red-950",
+          success: "!border-l-green-500 !bg-green-50 dark:!bg-green-950",
+          info: "!border-l-blue-500 !bg-blue-50 dark:!bg-blue-950",
+          warning: "!border-l-amber-500 !bg-amber-50 dark:!bg-amber-950",
+          loading: "!border-l-primary !bg-primary/10",
         },
         style: {
           fontFamily: "inherit",
