@@ -5,7 +5,6 @@ import { toast } from "sonner"
 import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
-// Type Definitions
 type SortDirection = "asc" | "desc"
 type RoleFilter = "all" | "ADMIN" | "MESSENGER"
 
@@ -14,43 +13,31 @@ interface UseEmployeesOptions {
 }
 
 interface UseEmployeesReturn {
-    // Data
     employees: Employee[]
     loading: boolean
     filteredAndSortedEmployees: Employee[]
     paginatedEmployees: Employee[]
-
-    // Pagination
     currentPage: number
     totalPages: number
     itemsPerPage: number
     setCurrentPage: (page: number) => void
     setItemsPerPage: (items: number) => void
 
-    // Sorting
     sortField: string | null
     sortDirection: SortDirection
     handleSort: (field: string) => void
 
-    // Filtering
     roleFilter: RoleFilter
     setRoleFilter: (filter: RoleFilter) => void
 
-    // Actions
     fetchEmployees: () => Promise<void>
 }
 
-/**
- * Custom hook for managing employees list state, filtering, sorting, and pagination.
- * Centralizes all data management logic from the Empleados page.
- */
 export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployeesReturn {
-    // Core state
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
     const [roleFilter, setRoleFilter] = useState<RoleFilter>("all")
 
-    // Search Filter Logic
     const searchFilter = useCallback((employee: Employee, query: string) => {
         return (
             employee.fullName.toLowerCase().includes(query) ||
@@ -60,7 +47,6 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         )
     }, [])
 
-    // Custom Filter Logic (Role)
     const customFilter = useCallback((employee: Employee) => {
         if (roleFilter !== "all" && employee.role !== roleFilter) {
             return false
@@ -68,14 +54,12 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         return true
     }, [roleFilter])
 
-    // Sort Resolvers
     const sortValueResolvers = {
         "fullName": (e: Employee) => e.fullName,
         "role": (e: Employee) => e.role,
         "document": (e: Employee) => String(e.document)
     }
 
-    // Use Generic Hook
     const {
         filteredAndSortedData,
         paginatedData,
@@ -97,7 +81,6 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         initialItemsPerPage: 10
     })
 
-    // Fetch employees
     const fetchEmployees = async () => {
         try {
             setLoading(true)
@@ -113,35 +96,29 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         }
     }
 
-    // Initial fetch
     useEffect(() => {
         fetchEmployees()
     }, [])
 
     return {
-        // Data
         employees,
         loading,
         filteredAndSortedEmployees: filteredAndSortedData,
         paginatedEmployees: paginatedData,
 
-        // Pagination
         currentPage,
         totalPages,
         itemsPerPage,
         setCurrentPage,
         setItemsPerPage,
 
-        // Sorting
         sortField,
         sortDirection,
         handleSort,
 
-        // Filtering  
         roleFilter,
         setRoleFilter,
 
-        // Actions
         fetchEmployees,
     }
 }

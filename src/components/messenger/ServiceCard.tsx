@@ -20,10 +20,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         navigate(`/messenger/servicio/${service.idServiceDelivery}`)
     }
 
-    // Get status color from centralized system
     const statusColor = colors[service.currentStatus] || '#6b7280'
-
-    // ...
 
     const handleNavigate = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -43,14 +40,12 @@ export function ServiceCard({ service }: ServiceCardProps) {
             )
         }
 
-        // 1. Try cache
         const cached = trackingService.getLastKnownLocation()
         if (cached && (Date.now() - cached.timestamp < 120000)) {
             triggerNavigation(cached.latitude, cached.longitude)
             return
         }
 
-        // 2. Try GPS
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {

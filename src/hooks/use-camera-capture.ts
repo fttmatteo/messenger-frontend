@@ -3,17 +3,13 @@ import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 
 interface UseCameraCaptureReturn {
-    // State
     cameraActive: boolean
     cameraReady: boolean
     cameraError: string | null
     imagePreview: string | null
-
-    // Refs
     videoRef: React.RefObject<HTMLVideoElement | null>
     canvasRef: React.RefObject<HTMLCanvasElement | null>
 
-    // Actions
     startCamera: () => Promise<void>
     stopCamera: () => void
     capturePhoto: () => File | null
@@ -21,23 +17,14 @@ interface UseCameraCaptureReturn {
     clearImage: () => void
 }
 
-/**
- * Custom hook for camera capture functionality.
- * Handles camera stream, photo capture, and image preview.
- */
 export function useCameraCapture(): UseCameraCaptureReturn {
-    // Camera states
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
     const [cameraError, setCameraError] = useState<string | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
-
-    // Refs
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
-
-    // Stop camera
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop())
@@ -50,7 +37,6 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         setCameraReady(false)
     }, [])
 
-    // Start camera
     const startCamera = useCallback(async () => {
         try {
             setCameraError(null)
@@ -94,7 +80,6 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         }
     }, [])
 
-    // Capture photo from camera
     const capturePhoto = useCallback((): File | null => {
         const video = videoRef.current
         const canvas = canvasRef.current
@@ -109,7 +94,6 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             return null
         }
 
-        // Set canvas size to video size
         canvas.width = video.videoWidth
         canvas.height = video.videoHeight
 
@@ -119,17 +103,14 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             return null
         }
 
-        // Draw video frame to canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-        // Create file from blob synchronously isn't possible, but we can convert
         let capturedFile: File | null = null
 
         canvas.toBlob((blob) => {
             if (blob) {
                 capturedFile = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
 
-                // Create preview from canvas
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
                 setImagePreview(dataUrl)
 
@@ -143,9 +124,7 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         return capturedFile
     }, [stopCamera])
 
-    // Set image from file input
     const setImageFromFile = useCallback((file: File) => {
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             toast.error("Archivo inválido", {
                 description: "Por favor selecciona una imagen",
@@ -154,7 +133,6 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             return
         }
 
-        // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             toast.error("Archivo muy grande", {
                 description: "El tamaño máximo es 5MB",
@@ -163,7 +141,6 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             return
         }
 
-        // Create preview
         const reader = new FileReader()
         reader.onloadend = () => {
             setImagePreview(reader.result as string)
@@ -171,24 +148,20 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         reader.readAsDataURL(file)
     }, [])
 
-    // Clear image
     const clearImage = useCallback(() => {
         setImagePreview(null)
         stopCamera()
     }, [stopCamera])
 
     return {
-        // State
         cameraActive,
         cameraReady,
         cameraError,
         imagePreview,
 
-        // Refs
         videoRef,
         canvasRef,
 
-        // Actions
         startCamera,
         stopCamera,
         capturePhoto,

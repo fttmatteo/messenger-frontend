@@ -3,18 +3,11 @@ import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import { useGoogleMap } from "@react-google-maps/api"
 
 export interface PulsingMarkerProps {
-    /** The messenger data */
     messenger: LiveTrackingUpdate
-    /** Click handler for the marker */
     onClick: (messenger: LiveTrackingUpdate) => void
-    /** Whether the messenger is online */
     isOnline: boolean
 }
 
-/**
- * A marker component with optional pulse animation for indicating active state.
- * Uses Google Maps Advanced Marker API.
- */
 export const PulsingMarker = memo(function PulsingMarker({
     messenger,
     onClick,
@@ -33,12 +26,10 @@ export const PulsingMarker = memo(function PulsingMarker({
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return
 
-        // Create container with pulse effect for active markers
         const container = document.createElement('div')
         container.style.position = 'relative'
 
         if (isActive) {
-            // Pulse effect
             const pulse = document.createElement('div')
             pulse.style.cssText = `
                 position: absolute;
@@ -53,7 +44,6 @@ export const PulsingMarker = memo(function PulsingMarker({
             `
             container.appendChild(pulse)
 
-            // Add keyframes if they don't exist
             if (!document.getElementById('pulse-keyframes')) {
                 const style = document.createElement('style')
                 style.id = 'pulse-keyframes'
@@ -95,7 +85,6 @@ export const PulsingMarker = memo(function PulsingMarker({
         }
     }, [map, color, onClick, position, title, isActive, messenger])
 
-    // Update position when it changes
     useEffect(() => {
         if (markerRef.current) {
             markerRef.current.position = position

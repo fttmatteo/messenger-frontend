@@ -65,7 +65,6 @@ export function StatusBadge({ status, size = 'md', className, showLabel = false 
         </Badge>
     )
 
-    // If no label shown, wrap with tooltip for accessibility
     if (!showLabel) {
         return (
             <Tooltip>

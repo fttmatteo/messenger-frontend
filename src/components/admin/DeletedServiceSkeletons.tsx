@@ -2,10 +2,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
-/**
- * Skeleton component for a deleted service table row.
- * Matches the structure in DeletedServiceTable.tsx
- */
 export function DeletedServiceRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -45,10 +41,6 @@ export function DeletedServiceRowSkeleton() {
     )
 }
 
-/**
- * Skeleton component for a deleted service card (mobile).
- * Matches the structure in DeletedServiceCard.tsx
- */
 export function DeletedServiceCardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">

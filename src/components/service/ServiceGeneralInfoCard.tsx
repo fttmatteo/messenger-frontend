@@ -14,7 +14,6 @@ interface ServiceGeneralInfoCardProps {
 }
 
 export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInfoCardProps) {
-    // Removed const PlateIcon = ...
     const messengerName = service.messenger?.fullName ?? 'No asignado'
     const messengerPhone = service.messenger?.phone
 

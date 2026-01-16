@@ -24,7 +24,6 @@ export function SignaturePad({
     const [isDrawing, setIsDrawing] = useState(false)
     const [isEmpty, setIsEmpty] = useState(true)
 
-    // Initialize canvas
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
@@ -32,17 +31,14 @@ export function SignaturePad({
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        // Set canvas size
         canvas.width = width
         canvas.height = height
 
-        // Set drawing style
         ctx.strokeStyle = '#000000'
         ctx.lineWidth = 2
         ctx.lineCap = 'round'
         ctx.lineJoin = 'round'
 
-        // Fill white background
         ctx.fillStyle = '#ffffff'
         ctx.fillRect(0, 0, width, height)
     }, [width, height])
@@ -110,7 +106,6 @@ export function SignaturePad({
     const stopDrawing = useCallback(() => {
         if (isDrawing) {
             setIsDrawing(false)
-            // Generate file when drawing stops (mouse up / touch end)
             generateFile()
         }
     }, [isDrawing, generateFile])

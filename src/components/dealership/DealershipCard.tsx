@@ -17,10 +17,6 @@ interface DealershipCardProps {
     geocoding: number | null
 }
 
-/**
- * Mobile card component for displaying a dealership in list view.
- * Shows name, location status, address, zone, and phone with action buttons.
- */
 export function DealershipCard({
     dealership,
     onEdit,

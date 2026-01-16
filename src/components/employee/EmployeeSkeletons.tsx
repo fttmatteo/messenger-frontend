@@ -2,10 +2,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
-/**
- * Skeleton component for an employee table row.
- * Matches the actual table structure in Empleados.tsx
- */
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -32,9 +28,6 @@ export function TableRowSkeleton() {
     )
 }
 
-/**
- * Skeleton component for an employee card (mobile list view).
- */
 export function CardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">
@@ -62,9 +55,6 @@ export function CardSkeleton() {
     )
 }
 
-/**
- * Skeleton for Employee Form (Create/Edit)
- */
 export function EmployeeFormSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">

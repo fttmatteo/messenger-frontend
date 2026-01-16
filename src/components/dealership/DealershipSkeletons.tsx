@@ -2,10 +2,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
-/**
- * Skeleton component for a dealership table row.
- * Matches the actual table structure in Concesionarios.tsx
- */
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -36,10 +32,6 @@ export function TableRowSkeleton() {
     )
 }
 
-/**
- * Skeleton component for a dealership card.
- * Used in mobile view while loading.
- */
 export function CardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">
@@ -71,9 +63,6 @@ export function CardSkeleton() {
     )
 }
 
-/**
- * Skeleton for Dealership Form (Create/Edit)
- */
 export function DealershipFormSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">

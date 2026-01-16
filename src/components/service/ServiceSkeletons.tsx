@@ -2,10 +2,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
-/**
- * Skeleton component for a service table row.
- * Matches the actual table structure in Servicios.tsx
- */
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -45,10 +41,6 @@ export function TableRowSkeleton() {
     )
 }
 
-/**
- * Skeleton component for a service card.
- * Used in mobile view while loading.
- */
 export function CardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">
@@ -89,11 +81,6 @@ export function CardSkeleton() {
     )
 }
 
-
-/**
- * Skeleton for the ServiceList component.
- * Matches the layout of messenger/ServiceCard.tsx
- */
 export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     return (
         <div className="space-y-2 animate-in fade-in duration-500">
@@ -127,10 +114,6 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     )
 }
 
-/**
- * Skeleton for the ServiceDetails page.
- * Matches the layout of messenger/ServiceDetails.tsx
- */
 export function ServiceDetailsSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">
@@ -185,10 +168,6 @@ export function ServiceDetailsSkeleton() {
     )
 }
 
-/**
- * Skeleton for Update Status page in messenger view.
- * Matches messenger/UpdateStatus.tsx layout.
- */
 export function UpdateServiceStatusSkeleton() {
     return (
         <div className="animate-in fade-in duration-500 pb-24">
@@ -233,9 +212,6 @@ export function UpdateServiceStatusSkeleton() {
     )
 }
 
-/**
- * Skeleton for Create Service page in messenger view.
- */
 export function CreateServiceSkeleton() {
     return (
         <div className="pb-24 animate-in fade-in duration-500">

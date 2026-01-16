@@ -28,7 +28,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const canvasInitializedRef = useRef(false)
 
 
-        // Setup saved canvas (hidden, stores the signature)
         useEffect(() => {
             const canvas = savedCanvasRef.current
             if (!canvas) return
@@ -75,14 +74,12 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             setTempHasDrawn(false)
         }, [])
 
-        // Initialize canvas when dialog opens
         useEffect(() => {
             if (!isOpen) {
                 canvasInitializedRef.current = false
                 return
             }
 
-            // Multiple attempts to ensure canvas is ready
             const attempts = [50, 150, 300]
             const timers = attempts.map(delay =>
                 setTimeout(initFullscreenCanvas, delay)
@@ -91,7 +88,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             return () => timers.forEach(t => clearTimeout(t))
         }, [isOpen, initFullscreenCanvas])
 
-        // Drawing handlers
         const getCoords = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             const canvas = fullscreenCanvasRef.current
             if (!canvas) return null

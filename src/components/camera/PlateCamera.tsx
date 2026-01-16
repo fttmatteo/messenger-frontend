@@ -12,15 +12,10 @@ export interface PlateCameraProps {
     autoStart?: boolean
 }
 
-/**
- * Component for capturing plate photos using device camera.
- * Handles camera permissions, video stream, and photo capture.
- */
 export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCameraProps) {
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
     const [cameraError, setCameraError] = useState<string | null>(null)
-
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
@@ -275,9 +270,6 @@ export interface ImageUploadFallbackProps {
     onSelect: (file: File, previewUrl: string) => void
 }
 
-/**
- * Fallback component for selecting images from gallery/file system.
- */
 export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

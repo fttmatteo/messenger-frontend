@@ -11,10 +11,6 @@ import { isMessengerOnline } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 import { MessengerListSkeleton } from "./TrackingSkeletons"
 
-
-
-
-
 export interface MessengerListPanelProps {
     messengers: LiveTrackingUpdate[]
     selectedMessengerId: number | null
@@ -26,9 +22,6 @@ export interface MessengerListPanelProps {
     now: number
 }
 
-/**
- * Collapsible side panel showing list of messengers with status.
- */
 export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
@@ -78,9 +71,6 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                             {messengers.map((messenger) => {
                                 const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
                                 const hasRecentUpdate = lastUpdateDate && (now - lastUpdateDate.getTime() < 60000)
-
-                                // Indicadores instantáneos: Verifican tanto el estado del servidor como la obsolescencia de los datos
-                                // Usamos Date.now() para que en cualquier re-render por WebSocket se vea el cambio inmediatamente
                                 const isConnected = isMessengerOnline(messenger.status, messenger.lastHeartbeat || messenger.lastUpdate, 2)
                                 const hasGps = isMessengerOnline(messenger.status, messenger.lastUpdate, 2)
 

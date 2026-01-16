@@ -17,7 +17,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         return null;
     });
-    // Initial loading is handled synchronously by lazy initialization of user
     const [isLoading] = useState(false);
 
     const login = async (credentials: LoginCredentials) => {
@@ -25,7 +24,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
 
-        // Limpiar el otro storage para evitar fugas de rol/usuario
         const oppositeStorage = credentials.rememberMe ? sessionStorage : localStorage;
         oppositeStorage.removeItem('role');
         oppositeStorage.removeItem('user');
@@ -51,7 +49,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const updatedUser = { ...user, ...data };
         setUser(updatedUser);
 
-        // Update in both just in case, or detect which one was used
         if (localStorage.getItem('user')) {
             localStorage.setItem('user', JSON.stringify(updatedUser));
         }
@@ -83,7 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

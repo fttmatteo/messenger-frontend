@@ -5,7 +5,6 @@ import { toast } from "sonner"
 import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
-// Type Definitions
 type SortDirection = "asc" | "desc"
 
 interface UseDealershipsOptions {
@@ -13,50 +12,37 @@ interface UseDealershipsOptions {
 }
 
 interface UseDealershipsReturn {
-    // Data
     dealerships: Dealership[]
     loading: boolean
     filteredAndSortedDealerships: Dealership[]
     paginatedDealerships: Dealership[]
     uniqueZones: string[]
 
-    // Pagination
     currentPage: number
     totalPages: number
     itemsPerPage: number
     setCurrentPage: (page: number) => void
     setItemsPerPage: (items: number) => void
 
-    // Sorting
     sortField: string | null
     sortDirection: SortDirection
     handleSort: (field: string) => void
 
-    // Filtering
     zoneFilter: string
     setZoneFilter: (filter: string) => void
 
-    // Actions
     fetchDealerships: () => Promise<void>
 }
 
-/**
- * Custom hook for managing dealerships list state, filtering, sorting, and pagination.
- * Centralizes all data management logic from the Concesionarios page.
- */
 export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDealershipsReturn {
-    // Core state
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loading, setLoading] = useState(true)
     const [zoneFilter, setZoneFilter] = useState<string>("all")
-
-    // Get unique zones from dealerships
     const uniqueZones = useMemo(() => {
         const zones = new Set(dealerships.map(d => d.zone))
         return Array.from(zones).sort()
     }, [dealerships])
 
-    // Search Filter Logic
     const searchFilter = useCallback((dealership: Dealership, query: string) => {
         return (
             String(dealership.idDealership).includes(query) ||
@@ -67,7 +53,6 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         )
     }, [])
 
-    // Custom Filter Logic (Zone)
     const customFilter = useCallback((dealership: Dealership) => {
         if (zoneFilter !== "all" && dealership.zone !== zoneFilter) {
             return false
@@ -75,14 +60,12 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         return true
     }, [zoneFilter])
 
-    // Sort Resolvers
     const sortValueResolvers = {
         "name": (d: Dealership) => d.name,
         "zone": (d: Dealership) => d.zone,
         "isGeolocated": (d: Dealership) => d.isGeolocated
     }
 
-    // Use Generic Hook
     const {
         filteredAndSortedData,
         paginatedData,
@@ -104,7 +87,6 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         initialItemsPerPage: 10
     })
 
-    // Fetch dealerships
     const fetchDealerships = async () => {
         try {
             setLoading(true)
@@ -120,7 +102,6 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         }
     }
 
-    // Initial fetch
     useEffect(() => {
         fetchDealerships()
     }, [])
@@ -133,23 +114,19 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
         paginatedDealerships: paginatedData,
         uniqueZones,
 
-        // Pagination
         currentPage,
         totalPages,
         itemsPerPage,
         setCurrentPage,
         setItemsPerPage,
 
-        // Sorting
         sortField,
         sortDirection,
         handleSort,
 
-        // Filtering  
         zoneFilter,
         setZoneFilter,
 
-        // Actions
         fetchDealerships,
     }
 }

@@ -117,7 +117,6 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
             onPhotosChange([...photos, ...newPhotos])
         }
 
-        // Reset input
         e.target.value = ''
     }
 
@@ -126,7 +125,6 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         onPhotosChange(newPhotos)
     }
 
-    // Camera view
     if (cameraActive) {
         return (
             <div className="space-y-2">

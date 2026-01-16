@@ -1,10 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
-/**
- * Loading skeleton for the ViewServicio page.
- * Displays placeholder content while service data is being fetched.
- */
 export function ViewServicioSkeleton() {
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden animate-in fade-in duration-500">

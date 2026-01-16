@@ -12,10 +12,7 @@ const defaultCenter = {
     lng: -75.5812
 }
 
-// Type-safe libraries array
 const LIBRARIES: Libraries = ["marker"];
-
-// Google Maps color scheme types
 type ColorScheme = 'DARK' | 'LIGHT' | 'FOLLOW_SYSTEM';
 
 interface MapProps {
@@ -47,12 +44,10 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
         if (onUnmount) onUnmount(mapInstance)
     }, [onUnmount])
 
-    // Get color scheme based on theme
     const getColorScheme = useCallback((): ColorScheme => {
         return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
     }, [resolvedTheme])
 
-    // Update map options when theme changes or map instance is ready
     useEffect(() => {
         if (map) {
             map.setOptions({
@@ -75,9 +70,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                 onUnmount={handleUnmount}
                 options={{
                     mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
-                    // Disable ALL default controls first
                     disableDefaultUI: true,
-                    // Then enable only the ones we want
                     zoomControl: true,
                     zoomControlOptions: {
                         position: google.maps.ControlPosition.LEFT_BOTTOM
@@ -86,11 +79,9 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                     fullscreenControlOptions: {
                         position: google.maps.ControlPosition.LEFT_BOTTOM
                     },
-                    // Explicitly disable orientation controls
                     rotateControl: false,
                     tilt: 0,
                     heading: 0,
-                    // Other settings
                     clickableIcons: false,
                     keyboardShortcuts: true,
                     colorScheme: getColorScheme(),

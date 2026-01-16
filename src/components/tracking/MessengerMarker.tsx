@@ -2,18 +2,11 @@ import { useEffect, useRef } from "react"
 import { useGoogleMap } from "@react-google-maps/api"
 
 export interface MessengerMarkerProps {
-    /** Position of the marker on the map */
     position: google.maps.LatLngLiteral
-    /** Color of the marker pin (default: green '#10b981') */
     color?: string
-    /** Title for the marker (shown on hover) */
     title?: string
 }
 
-/**
- * A marker component for displaying messenger location on a Google Map.
- * Uses the Advanced Marker API with customizable pin colors.
- */
 export function MessengerMarker({
     position,
     color = '#10b981',

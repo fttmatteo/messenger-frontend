@@ -14,10 +14,6 @@ interface EmployeeCardProps {
     deleting: number | null
 }
 
-/**
- * Mobile card component for displaying an employee in list view.
- * Shows name, role, username, document, and phone with action buttons.
- */
 export function EmployeeCard({
     employee,
     onEdit,

@@ -18,22 +18,15 @@ interface UseMessengerServicesReturn {
         delivered: number
         returned: number
     }
-    /** Whether the data is from cache (offline mode) */
     isFromCache: boolean
 }
 
-/**
- * Hook para gestionar servicios del mensajero.
- * Filtra automáticamente por pendientes/completados y calcula estadísticas.
- * Implementa offline-first: carga del cache primero, luego sincroniza con el servidor.
- */
 export function useMessengerServices(): UseMessengerServicesReturn {
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [isFromCache, setIsFromCache] = useState(false)
 
-    // Load cached data on mount (before network request)
     useEffect(() => {
         const loadCachedData = async () => {
             try {
@@ -43,7 +36,6 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                     setIsFromCache(true)
                 }
             } catch {
-                // Failed to load cached services, continuing anyway
             }
         }
         loadCachedData()
@@ -54,19 +46,16 @@ export function useMessengerServices(): UseMessengerServicesReturn {
             setLoading(true)
             setError(null)
             const data = await serviceDeliveryService.getAll()
-            // Sort by creation date (newest first)
             const sorted = data.sort((a, b) =>
                 new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             )
             setServices(sorted)
             setIsFromCache(false)
 
-            // Cache the fresh data for offline use
             await offlineCacheService.cacheServices(sorted)
         } catch (err) {
             const message = getErrorMessage(err)
 
-            // If offline and we have cached data, don't show error
             if (!navigator.onLine) {
                 const cached = await offlineCacheService.getCachedServices()
                 if (cached.length > 0) {
@@ -91,7 +80,6 @@ export function useMessengerServices(): UseMessengerServicesReturn {
         fetchServices()
     }, [fetchServices])
 
-    // Filter services by status - memoized for performance
     const pendingServices = useMemo(() =>
         services.filter(s =>
             s.currentStatus === 'ASSIGNED'
@@ -110,7 +98,6 @@ export function useMessengerServices(): UseMessengerServicesReturn {
         [services]
     )
 
-    // Calculate stats
     const stats = useMemo(() => ({
         total: services.length,
         pending: services.filter(s => s.currentStatus === 'ASSIGNED').length,

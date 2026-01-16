@@ -129,16 +129,13 @@ describe('useDataList', () => {
                 })
             )
 
-            // Initial: asc
             expect(result.current.sortDirection).toBe('asc')
 
-            // Click same field: should become desc
             act(() => {
                 result.current.handleSort('value')
             })
             expect(result.current.sortDirection).toBe('desc')
 
-            // Click again: should clear sort
             act(() => {
                 result.current.handleSort('value')
             })
@@ -215,17 +212,14 @@ describe('useDataList', () => {
                 })
             )
 
-            // Go to page 2
             act(() => {
                 result.current.setCurrentPage(2)
             })
             expect(result.current.currentPage).toBe(2)
 
-            // Change search query
             searchQuery = 'a'
             rerender()
 
-            // Should reset to page 1
             expect(result.current.currentPage).toBe(1)
         })
 
@@ -268,16 +262,13 @@ describe('useDataList', () => {
                 }
             )
 
-            // Go to page 2
             act(() => {
                 result.current.setCurrentPage(2)
             })
             expect(result.current.currentPage).toBe(2)
 
-            // Change custom filter
             rerender({ filterVal: 25 })
 
-            // Should reset to page 1
             expect(result.current.currentPage).toBe(1)
         })
     })

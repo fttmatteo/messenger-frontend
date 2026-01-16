@@ -1,19 +1,11 @@
 import { toast } from 'sonner'
 import type { ExternalToast } from 'sonner'
 
-/**
- * Configuración global y centralizada para notificaciones
- * Proporciona métodos consistentes para todas las notificaciones en la aplicación
- */
-
 const defaultOptions: ExternalToast = {
   duration: 4000,
 }
 
 export const showToast = {
-  /**
-   * Notificación de éxito
-   */
   success: (message: string, options?: ExternalToast) => {
     toast.success(message, {
       ...defaultOptions,
@@ -22,9 +14,6 @@ export const showToast = {
     })
   },
 
-  /**
-   * Notificación de error
-   */
   error: (message: string, options?: ExternalToast) => {
     toast.error(message, {
       ...defaultOptions,
@@ -33,9 +22,6 @@ export const showToast = {
     })
   },
 
-  /**
-   * Notificación informativa
-   */
   info: (message: string, options?: ExternalToast) => {
     toast.info(message, {
       ...defaultOptions,
@@ -44,9 +30,6 @@ export const showToast = {
     })
   },
 
-  /**
-   * Notificación de advertencia
-   */
   warning: (message: string, options?: ExternalToast) => {
     toast.warning(message, {
       ...defaultOptions,
@@ -55,9 +38,6 @@ export const showToast = {
     })
   },
 
-  /**
-   * Notificación de carga
-   */
   loading: (message: string, options?: ExternalToast) => {
     return toast.loading(message, {
       ...defaultOptions,
@@ -65,9 +45,6 @@ export const showToast = {
     })
   },
 
-  /**
-   * Notificación personalizada
-   */
   custom: (message: string, options?: ExternalToast) => {
     toast(message, {
       ...defaultOptions,
@@ -76,16 +53,10 @@ export const showToast = {
     })
   },
 
-  /**
-   * Actualizar una notificación existente
-   */
   update: (toastId: string | number, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
     toast[type](message, { id: toastId })
   },
 
-  /**
-   * Cerrar una notificación específica
-   */
   dismiss: (toastId?: string | number) => {
     if (toastId) {
       toast.dismiss(toastId)
@@ -95,8 +66,4 @@ export const showToast = {
   }
 }
 
-/**
- * Hook para usar las notificaciones en componentes
- * Alternativa a importar directamente showToast
- */
 export const useToast = () => showToast

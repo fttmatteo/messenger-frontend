@@ -102,7 +102,7 @@ export function MessengerActivityTimeline({
                             selected={selectedDate}
                             onSelect={(date) => date && onDateSelect(date)}
                             disabled={(date) => date > new Date() || date < new Date("2024-01-01")}
-                            initialFocus
+                            autoFocus
                             locale={es}
                         />
                     </PopoverContent>

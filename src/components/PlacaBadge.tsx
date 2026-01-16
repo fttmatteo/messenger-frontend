@@ -14,11 +14,9 @@ export function PlacaBadge({
     size = 'md',
     className
 }: PlacaBadgeProps) {
-    // Split plate number for formatting (e.g., "IVC86G" -> "IVC" + "86G")
     const formatPlate = (plate: string) => {
         const clean = plate.toUpperCase().replace(/[^A-Z0-9]/g, '')
         if (clean.length === 6) {
-            // Format: ABC 123 or ABC 12D
             return { letters: clean.slice(0, 3), numbers: clean.slice(3, 6) }
         }
         return { letters: clean, numbers: '' }
@@ -39,9 +37,7 @@ export function PlacaBadge({
         <span
             className={cn(
                 "inline-flex items-center font-bold tracking-wider border-2 border-black shadow-sm",
-                // Dark mode: white outer border with black inner ring
                 "dark:border-white dark:ring-2 dark:ring-inset dark:ring-black",
-                // Colombian plate colors: yellow background, black text (white in dark mode)
                 "bg-yellow-400 dark:bg-yellow-500 text-black dark:text-white",
                 sizeClasses[size],
                 className

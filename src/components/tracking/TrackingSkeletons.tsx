@@ -1,10 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
-/**
- * Skeleton for an individual messenger item in the Live Tracking list.
- * Matches the layout of MessengerListPanel items.
- */
 export function MessengerListSkeleton({ count = 5 }: { count?: number }) {
     return (
         <div className="divide-y animate-in fade-in duration-500">
@@ -26,10 +22,6 @@ export function MessengerListSkeleton({ count = 5 }: { count?: number }) {
     )
 }
 
-/**
- * Skeleton for the Messenger Side Panel (Monitoreo en Vivo selection).
- * Matches the exact layout of MessengerSidePanel.
- */
 export function MessengerSidePanelSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500 bg-background/20">
@@ -95,9 +87,6 @@ export function MessengerSidePanelSkeleton() {
     )
 }
 
-/**
- * Skeleton for the Messenger Details full page.
- */
 export function MessengerDetailsSkeleton() {
     return (
         <div className="space-y-5 animate-in fade-in duration-500 h-full flex flex-col">
