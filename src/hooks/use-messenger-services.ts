@@ -36,6 +36,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                     setIsFromCache(true)
                 }
             } catch {
+                // Failed to load cached services, continuing without cache
             }
         }
         loadCachedData()

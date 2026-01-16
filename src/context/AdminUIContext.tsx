@@ -21,13 +21,13 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const setError = (msg: string | null, id?: string) => {
         if (!msg) return;
-        
+
         const toastId = id || generateUniqueId('admin-error');
-        
+
         if (lastErrorIdRef.current) {
             toast.dismiss(lastErrorIdRef.current);
         }
-        
+
         toast.error(msg, {
             id: toastId,
             position: 'top-center',
@@ -35,19 +35,19 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
             className: 'bg-red-500 text-white border-red-600',
             descriptionClassName: 'text-white/90'
         });
-        
+
         lastErrorIdRef.current = toastId;
     };
 
     const setSuccess = (msg: string | null, id?: string) => {
         if (!msg) return;
-        
+
         const toastId = id || generateUniqueId('admin-success');
-        
+
         if (lastSuccessIdRef.current) {
             toast.dismiss(lastSuccessIdRef.current);
         }
-        
+
         toast.success(msg, {
             id: toastId,
             position: 'top-center',
@@ -55,7 +55,7 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
             className: 'bg-green-500 text-white border-green-600',
             descriptionClassName: 'text-white/90'
         });
-        
+
         lastSuccessIdRef.current = toastId;
     };
 
@@ -76,6 +76,7 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAdminUI = () => {
     const context = useContext(AdminUIContext);
     if (context === undefined) {
