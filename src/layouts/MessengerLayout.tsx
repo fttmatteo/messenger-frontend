@@ -324,7 +324,6 @@ export default function MessengerLayout() {
         );
     }
 
-    // Block desktop users from accessing the messenger
     if (!isMobile) {
         return <MobileOnlyGuard />
     }
@@ -340,9 +339,6 @@ export default function MessengerLayout() {
             </a>
             {/* Simplified Header */}
             <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm" role="banner">
-                {/* Safe Area Spacer for PWA/Notch */}
-                <div className="h-[env(safe-area-inset-top,0px)] w-full" />
-
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
                     {/* Center: Page title or Status - Absolutely Centered within the h-12 area */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
@@ -550,11 +546,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden"
-                style={{
-                    paddingTop: `calc(48px + env(safe-area-inset-top))`,
-                    paddingBottom: `env(safe-area-inset-bottom)`
-                }}
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden pt-12"
                 role="main"
             >
                 <Outlet />

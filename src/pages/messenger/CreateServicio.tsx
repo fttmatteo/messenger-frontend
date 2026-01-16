@@ -327,10 +327,7 @@ export default function MessengerCreateServicio() {
                     </div>
 
                     {/* Fixed Bottom Action */}
-                    <div
-                        className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
-                        style={{ paddingBottom: `calc(1rem + env(safe-area-inset-bottom))` }}
-                    >
+                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
                         <div className="flex gap-3">
                             <Button
                                 type="button"

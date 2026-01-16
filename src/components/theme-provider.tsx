@@ -110,10 +110,30 @@ function ThemeColorSync() {
             document.head.appendChild(meta)
         }
 
-        // 3. Ensure HTML element has correct system UI properties
+        // 3. Ensure HTML and body elements have correct system UI properties
+        // This affects the navigation bar color on Android
         const html = document.documentElement
         html.style.backgroundColor = themeColor
         html.style.colorScheme = isDark ? 'dark' : 'light'
+
+        // Also set body background for navigation bar consistency
+        document.body.style.backgroundColor = themeColor
+
+        // 4. Update msapplication-navbutton-color for Windows/Edge support
+        const metaNavButton = document.querySelector('meta[name="msapplication-navbutton-color"]')
+        if (metaNavButton) {
+            metaNavButton.setAttribute('content', themeColor)
+        } else {
+            const meta = document.createElement('meta')
+            meta.name = 'msapplication-navbutton-color'
+            meta.content = themeColor
+            document.head.appendChild(meta)
+        }
+
+        // 5. Update apple-mobile-web-app-status-bar-style for iOS bottom bar
+        // The color-scheme CSS property helps iOS Safari match the navigation bar
+        // Setting it on both html and body ensures maximum compatibility
+        document.body.style.colorScheme = isDark ? 'dark' : 'light'
 
     }, [resolvedTheme])
 

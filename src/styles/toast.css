@@ -13,11 +13,10 @@
   position: fixed;
   z-index: 9999;
   pointer-events: none;
-  /* Respetar zonas seguras */
-  top: max(1rem, env(safe-area-inset-top, 0px));
+  top: 1rem;
   left: 0;
   right: 0;
-  padding: 0 max(1rem, env(safe-area-inset-left, 0px));
+  padding: 0 1rem;
 }
 
 .sonner-toaster * {
