@@ -2,6 +2,7 @@ import type { LoginCredentials, LoginResponse } from '@/types';
 import { LoginResponseSchema } from '@/schemas/api-schemas';
 import apiClient from './api-client';
 import { logger } from '@/utils/logger';
+import { offlineCacheService } from './offline-cache.service';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
@@ -26,6 +27,9 @@ export const authService = {
 
     async logout() {
         try {
+            // Limpiar caché offline antes de nada
+            await offlineCacheService.clearAll();
+
             // Llamar endpoint de logout para limpiar cookies del servidor
             await apiClient.post('/auth/logout');
         } catch (error) {

@@ -6,6 +6,7 @@ const MAX_RETRY_COUNT = 3
 export type OfflineActionType =
     | 'CREATE_SERVICE'
     | 'UPDATE_STATUS'
+    | 'UPDATE_STATUS_WITH_FILES'
     | 'UPLOAD_PHOTO'
 
 export interface OfflineAction {
@@ -16,6 +17,21 @@ export interface OfflineAction {
     retryCount: number
     endpoint?: string
     method?: 'POST' | 'PUT' | 'PATCH'
+}
+
+/**
+ * Payload for UPDATE_STATUS_WITH_FILES action.
+ * Files are stored as base64 strings for IndexedDB compatibility.
+ */
+export interface UpdateStatusWithFilesPayload {
+    serviceId: number
+    status: string
+    observation?: string
+    signatureBase64?: string
+    signatureGifBase64?: string
+    photosBase64?: string[]
+    latitude?: number
+    longitude?: number
 }
 
 type ActionHandler = (action: OfflineAction) => Promise<boolean>
