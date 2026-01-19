@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { logger } from "@/utils/logger"
 
 const addressCache = new Map<string, string>()
@@ -67,7 +66,7 @@ export function AddressDisplay({ lat, lng, className }: { lat: number; lng: numb
     }, [lat, lng, cacheKey])
 
     if (loading) {
-        return <Skeleton static className="h-4 w-32" />
+        return <span className={className || "truncate max-w-[180px] text-muted-foreground animate-pulse"}>...</span>
     }
 
     return <span className={className || "truncate max-w-[180px]"} title={address || ''}>{address}</span>

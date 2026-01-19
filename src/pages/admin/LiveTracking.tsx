@@ -3,7 +3,6 @@ import { Map as MapComponent } from "@/components/Map"
 import { OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PulsingMarker, MessengerListPanel } from "@/components/tracking"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
@@ -224,7 +223,9 @@ export default function LiveTracking() {
             {/* Fullscreen Map */}
             <div className="absolute inset-0">
                 {loading && messengers.length === 0 ? (
-                    <Skeleton static className="w-full h-full bg-muted/10 animate-in fade-in duration-500" />
+                    <div className="w-full h-full bg-muted/10 animate-pulse flex items-center justify-center">
+                        <p className="text-muted-foreground text-sm">Cargando mapa...</p>
+                    </div>
                 ) : (
                     <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
                         {visibleMarkers.map((marker) => (
