@@ -1,5 +1,5 @@
 import { GoogleMap, useJsApiLoader, type Libraries } from '@react-google-maps/api'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useTheme } from "next-themes"
 
 const containerStyle = {
@@ -26,12 +26,14 @@ interface MapProps {
 
 function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onUnmount, className }: MapProps) {
     const { resolvedTheme } = useTheme()
-    const [map, setMap] = useState<google.maps.Map | null>(null)
+    // map state is kept for onLoad reference but local access is no longer needed for effect
+    const [, setMap] = useState<google.maps.Map | null>(null)
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: LIBRARIES
+        libraries: LIBRARIES,
+        version: 'weekly'
     })
 
     const handleLoad = useCallback((mapInstance: google.maps.Map) => {
@@ -45,16 +47,9 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     }, [onUnmount])
 
     const getColorScheme = useCallback((): ColorScheme => {
+        // Always force explicit mode based on resolvedTheme to ensure reactivity
         return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
     }, [resolvedTheme])
-
-    useEffect(() => {
-        if (map) {
-            map.setOptions({
-                colorScheme: getColorScheme()
-            })
-        }
-    }, [map, getColorScheme])
 
     if (!isLoaded) {
         return <div className={`w-full h-full bg-muted animate-pulse rounded-lg ${className || ''}`} />
@@ -63,6 +58,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     return (
         <div className={className || 'w-full h-full'}>
             <GoogleMap
+                key={resolvedTheme}
                 mapContainerStyle={containerStyle}
                 center={center}
                 zoom={zoom}
