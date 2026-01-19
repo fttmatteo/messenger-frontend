@@ -11,6 +11,7 @@ vi.mock('@/services/offline-sync.service', () => ({
     offlineSyncService: {
         getPendingActions: vi.fn().mockResolvedValue([]),
         syncAll: vi.fn().mockResolvedValue(0),
+        registerHandler: vi.fn(),
     },
 }))
 

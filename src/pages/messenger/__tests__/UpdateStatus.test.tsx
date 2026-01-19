@@ -8,12 +8,69 @@ import { AuthProvider } from '@/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 
+
 // Mock useSmartLocation to avoid real GPS prompts in tests
 vi.mock('@/hooks/use-smart-location', () => ({
     useSmartLocation: () => ({
         getCurrentLocation: vi.fn().mockResolvedValue({ latitude: 10, longitude: 20 })
     })
 }))
+
+vi.mock('@/hooks/use-network', () => ({
+    useNetwork: () => ({
+        isOnline: true,
+        wasOffline: false,
+        pendingActionsCount: 0
+    })
+}))
+
+vi.mock('@/services/offline-sync.service', () => ({
+    offlineSyncService: {
+        registerHandler: vi.fn(),
+        queueAction: vi.fn(),
+        getPendingActions: vi.fn().mockResolvedValue([]),
+    }
+}))
+
+vi.mock('@/components/messenger/SignatureCanvas', async () => {
+    const { forwardRef, useImperativeHandle } = await import('react')
+
+    const MockSignatureCanvas = forwardRef((props: { onSignatureChange: (v: boolean) => void, onGifGenerated?: (v: Blob | null) => void, enableCamera?: boolean }, ref: React.ForwardedRef<unknown>) => {
+        useImperativeHandle(ref, () => ({
+            getSignature: async () => new File(['signature'], 'signature.png', { type: 'image/png' }),
+            getGifFile: async () => new File(['gif'], 'capture.gif', { type: 'image/gif' }),
+            clear: () => {
+                props.onSignatureChange(false)
+                if (props.onGifGenerated) props.onGifGenerated(null)
+            },
+            hasSignature: () => true,
+            hasGif: () => true,
+            isReady: () => true
+        }));
+
+        return (
+            <div data-testid="mock-signature-canvas" className="mock-signature-canvas">
+                <p>Signature Canvas Mock</p>
+                <button
+                    type="button"
+                    onClick={() => props.onSignatureChange(true)}
+                >
+                    Simular Firma
+                </button>
+                {props.enableCamera && (
+                    <button
+                        type="button"
+                        onClick={() => props.onGifGenerated && props.onGifGenerated(new Blob(['gif'], { type: 'image/gif' }))}
+                    >
+                        Simular GIF
+                    </button>
+                )}
+            </div>
+        )
+    })
+
+    return { SignatureCanvas: MockSignatureCanvas }
+})
 
 describe('UpdateStatus Page Integration', () => {
     beforeEach(() => {
@@ -57,50 +114,60 @@ describe('UpdateStatus Page Integration', () => {
     it('should load service data and display current status', async () => {
         renderWithRouter('123')
 
-        // Wait for skeleton to disappear and content to load
-        // Match part of the plate since it's split with a dot in PlacaBadge
         expect(await screen.findByText(/ABC/i)).toBeInTheDocument()
         expect(screen.getByText(/123/i)).toBeInTheDocument()
         expect(screen.getByText(/Test Dealership/i)).toBeInTheDocument()
         expect(screen.getByText(/Pendiente/i)).toBeInTheDocument()
     })
 
-    it('should validate form and enable submit button when requirements met', async () => {
+    it('should require signature and GIF for DELIVERED status', async () => {
         renderWithRouter('123')
         await screen.findByText(/ABC/i)
 
         const submitBtn = screen.getByRole('button', { name: /selecciona un estado/i })
         expect(submitBtn).toBeDisabled()
 
-        // Select "DELIVERED" (Entregado) - Typically requires signature
+        // Select "DELIVERED" (Entregado)
         const deliveredOption = screen.getByText('Entregado')
         await userEvent.click(deliveredOption)
 
-        // It should still be disabled because Entregado requires signature
-        expect(screen.getByRole('button', { name: /confirmar entregado/i })).toBeDisabled()
+        // Mock canvas should be visible
+        expect(screen.getByTestId('mock-signature-canvas')).toBeInTheDocument()
 
-        // Note: Mocking signature interaction is complex because it's a canvas
-        // For integration tests we might focus on statuses that only require observations
+        // Confirm button should be disabled initially
+        const confirmBtn = screen.getByRole('button', { name: /confirmar entregado/i })
+        expect(confirmBtn).toBeDisabled()
+
+        // 1. Simulate Drawing Signature
+        await userEvent.click(screen.getByText('Simular Firma'))
+
+        // Should STILL be disabled because DELIVERED requires GIF now
+        expect(confirmBtn).toBeDisabled()
+
+        // 2. Simulate GIF Capture
+        // The button "Simular GIF" should be visible because enableCamera is true for DELIVERED
+        const gifBtn = screen.getByText('Simular GIF')
+        expect(gifBtn).toBeInTheDocument()
+        await userEvent.click(gifBtn)
+
+        // NOW it should be enabled
+        expect(confirmBtn).toBeEnabled()
     })
 
-    it('should allow submitting a status update without signature if not required', async () => {
+    it('should reset validation when changing status', async () => {
         renderWithRouter('123')
         await screen.findByText(/ABC/i)
 
-        // Select "RETURNED" (Devuelto) - Requires photos but we'll see if we can trigger confirm
-        const returnedOption = screen.getByText('Devuelto')
-        await userEvent.click(returnedOption)
+        // 1. Select DELIVERED and fulfill requirements
+        await userEvent.click(screen.getByText('Entregado'))
+        await userEvent.click(screen.getByText('Simular Firma'))
+        await userEvent.click(screen.getByText('Simular GIF'))
 
-        // For this test, we assume the component allows clicking confirm if we mocked the photos
-        // or we just test the button state toggle
-        const submitBtn = screen.getByRole('button', { name: /confirmar devuelto/i })
-        // Note: It might still be disabled if photos are required.
-        // Let's just verify the text change for now to confirm interaction worked.
-        expect(submitBtn).toBeInTheDocument()
+        const confirmBtn = screen.getByRole('button', { name: /confirmar entregado/i })
+        expect(confirmBtn).toBeEnabled()
     })
 
     it('should show error state and navigate back when service is not found', async () => {
-        // Force 404 for this test
         server.use(
             http.get('http://localhost:8080/services/findByServiceId/999', () => {
                 return new HttpResponse(null, { status: 404 });
@@ -112,9 +179,5 @@ describe('UpdateStatus Page Integration', () => {
         expect(await screen.findByText(/Error/i)).toBeInTheDocument()
         const volverBtn = screen.getByRole('button', { name: /volver/i })
         expect(volverBtn).toBeInTheDocument()
-
-        // Note: mockNavigate is not available here because we are using MemoryRouter 
-        // with real internal navigation, but we could mock useNavigate if we wanted to verify the call.
-        // For now, confirming it renders the button is a good step.
     })
 })

@@ -4,6 +4,7 @@ import {
     useImperativeHandle,
     useRef,
     useState,
+    useCallback,
 } from 'react'
 import { createLogger } from '@/utils/logger'
 import { toast } from 'sonner'
@@ -105,47 +106,7 @@ const SignatureCameraCapture = forwardRef<
         }
     }
 
-    async function startCapture() {
-        if (!videoRef.current || !canvasRef.current || isCapturing) return
-
-        setIsCapturing(true)
-        setGifBlob(null)
-        setGifUrl(null)
-        setCameraError(null)
-
-        const video = videoRef.current
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext('2d')
-
-        if (!ctx) {
-            setCameraError('Error al inicializar canvas')
-            setIsCapturing(false)
-            return
-        }
-
-        canvas.width = GIF_WIDTH
-        canvas.height = GIF_HEIGHT
-
-        const capturedFrames: ImageData[] = []
-
-        logger.info('gif_capture_started', { frameCount: FRAME_COUNT })
-
-        // Capture frames at intervals
-        for (let i = 0; i < FRAME_COUNT; i++) {
-            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : CAPTURE_INTERVAL_MS))
-
-            ctx.drawImage(video, 0, 0, GIF_WIDTH, GIF_HEIGHT)
-            const imageData = ctx.getImageData(0, 0, GIF_WIDTH, GIF_HEIGHT)
-            capturedFrames.push(imageData)
-        }
-
-        setIsCapturing(false)
-
-        // Generate GIF
-        await generateGif(capturedFrames)
-    }
-
-    async function generateGif(capturedFrames: ImageData[]) {
+    const generateGif = useCallback(async (capturedFrames: ImageData[]) => {
         setIsGenerating(true)
         const startTime = performance.now()
 
@@ -163,7 +124,7 @@ const SignatureCameraCapture = forwardRef<
                 })
 
                 capturedFrames.forEach(frame => {
-                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS })
+                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS * 4 }) // 4x speed adjustment
                 })
 
                 gif.on('finished', (blob: Blob) => {
@@ -208,7 +169,47 @@ const SignatureCameraCapture = forwardRef<
         } finally {
             setIsGenerating(false)
         }
-    }
+    }, [onGifGenerated])
+
+    const startCapture = useCallback(async () => {
+        if (!videoRef.current || !canvasRef.current || isCapturing) return
+
+        setIsCapturing(true)
+        setGifBlob(null)
+        setGifUrl(null)
+        setCameraError(null)
+
+        const video = videoRef.current
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+
+        if (!ctx) {
+            setCameraError('Error al inicializar canvas')
+            setIsCapturing(false)
+            return
+        }
+
+        canvas.width = GIF_WIDTH
+        canvas.height = GIF_HEIGHT
+
+        const capturedFrames: ImageData[] = []
+
+        logger.info('gif_capture_started', { frameCount: FRAME_COUNT })
+
+        // Capture frames at intervals
+        for (let i = 0; i < FRAME_COUNT; i++) {
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : CAPTURE_INTERVAL_MS))
+
+            ctx.drawImage(video, 0, 0, GIF_WIDTH, GIF_HEIGHT)
+            const imageData = ctx.getImageData(0, 0, GIF_WIDTH, GIF_HEIGHT)
+            capturedFrames.push(imageData)
+        }
+
+        setIsCapturing(false)
+
+        // Generate GIF
+        await generateGif(capturedFrames)
+    }, [isCapturing, generateGif])
 
     function handleRetry() {
         if (gifUrl) {
@@ -226,7 +227,7 @@ const SignatureCameraCapture = forwardRef<
             // Small delay to ensure video element is ready before starting capture
             setTimeout(() => startCapture(), 500)
         }
-    }, [gifUrl])
+    }, [gifUrl, startCapture])
 
     if (cameraError) {
         return (

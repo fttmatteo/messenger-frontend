@@ -196,7 +196,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             setIsOpen(false)
         }
 
-        const clear = () => {
+        const clear = useCallback(() => {
             const canvas = savedCanvasRef.current
             if (!canvas) return
             const ctx = canvas.getContext('2d')
@@ -205,9 +205,9 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             setHasDrawn(false)
             onSignatureChange?.(false)
-        }
+        }, [onSignatureChange])
 
-        const getSignature = async (): Promise<File | null> => {
+        const getSignature = useCallback(async (): Promise<File | null> => {
             const canvas = savedCanvasRef.current
             if (!canvas || !hasDrawn) return null
 
@@ -220,7 +220,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     }
                 }, 'image/png')
             })
-        }
+        }, [hasDrawn])
 
         useImperativeHandle(ref, () => ({
             clear,
