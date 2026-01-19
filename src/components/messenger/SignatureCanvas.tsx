@@ -128,7 +128,12 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             isDrawingRef.current = true
             ctx.beginPath()
             ctx.moveTo(coords.x, coords.y)
-        }, [getCoords])
+
+            // Trigger camera capture on first stroke
+            if (enableCamera && cameraRef.current) {
+                cameraRef.current.startCapture()
+            }
+        }, [getCoords, enableCamera])
 
         const handleMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             if (!isDrawingRef.current) return

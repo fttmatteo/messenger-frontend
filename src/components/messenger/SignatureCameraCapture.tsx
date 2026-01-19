@@ -8,7 +8,7 @@ import {
 import { createLogger } from '@/utils/logger'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Check, Camera } from 'lucide-react'
+import { RefreshCw, Camera } from 'lucide-react'
 
 const logger = createLogger('SignatureCapture')
 
@@ -22,6 +22,7 @@ const GIF_GENERATION_TIMEOUT_MS = 5000
 export interface SignatureCameraCaptureRef {
     getGif: () => Promise<Blob | null>
     isReady: () => boolean
+    startCapture: () => void
 }
 
 interface SignatureCameraCaptureProps {
@@ -47,6 +48,11 @@ const SignatureCameraCapture = forwardRef<
     useImperativeHandle(ref, () => ({
         getGif: async () => gifBlob,
         isReady: () => gifBlob !== null,
+        startCapture: () => {
+            if (!isCapturing && !gifUrl) {
+                startCapture()
+            }
+        }
     }))
 
     // Initialize camera on mount
@@ -89,9 +95,6 @@ const SignatureCameraCapture = forwardRef<
                 description: 'La cámara se activará mientras firma',
                 duration: 3000,
             })
-
-            // Auto-start capture after camera initializes
-            setTimeout(() => startCapture(), 1500)
 
         } catch (error) {
             logger.error('Camera initialization failed', error)
@@ -213,13 +216,17 @@ const SignatureCameraCapture = forwardRef<
         }
         setGifBlob(null)
         setGifUrl(null)
-        startCapture()
+        // Camera will be re-attached by the useEffect below when gifUrl becomes null
     }
 
-    function handleAccept() {
-        // GIF is already set, just confirm
-        toast.success('Captura confirmada')
-    }
+    // Effect to re-attach stream to video when switching back from GIF preview
+    useEffect(() => {
+        if (!gifUrl && videoRef.current && streamRef.current) {
+            videoRef.current.srcObject = streamRef.current
+            // Small delay to ensure video element is ready before starting capture
+            setTimeout(() => startCapture(), 500)
+        }
+    }, [gifUrl])
 
     if (cameraError) {
         return (
@@ -256,56 +263,48 @@ const SignatureCameraCapture = forwardRef<
 
                 {/* Capturing indicator */}
                 {isCapturing && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="bg-white/90 rounded-full px-3 py-1 text-sm font-medium">
-                            Capturando...
-                        </div>
+                    <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5 animate-pulse shadow-sm backdrop-blur-sm z-10">
+                        <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                        REC
                     </div>
                 )}
 
                 {/* Generating indicator */}
                 {isGenerating && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="bg-white/90 rounded-full px-3 py-1 text-sm font-medium flex items-center gap-2">
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            Generando GIF...
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] z-20">
+                        <div className="bg-background/95 dark:bg-zinc-900/95 text-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-3 border border-border/50">
+                            <RefreshCw className="h-4 w-4 animate-spin text-primary" />
+                            <span className="text-sm font-medium">Procesando GIF...</span>
                         </div>
                     </div>
                 )}
 
                 {/* GIF badge */}
                 {gifUrl && (
-                    <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                    <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded border border-white/10 shadow-sm">
                         GIF
                     </div>
+                )}
+                {/* Retry button */}
+                {gifUrl && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            handleRetry()
+                        }}
+                        disabled={isCapturing || isGenerating}
+                        className="absolute top-2 left-2 h-8 w-8 bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm rounded-full z-10"
+                        title="Repetir captura"
+                    >
+                        <RefreshCw className="h-4 w-4" />
+                    </Button>
                 )}
             </div>
 
             {/* Hidden canvas for capture */}
             <canvas ref={canvasRef} className="hidden" />
-
-            {/* Action buttons (only show after GIF is generated) */}
-            {gifUrl && (
-                <div className="flex gap-2 justify-center">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRetry}
-                        disabled={isCapturing || isGenerating}
-                    >
-                        <RefreshCw className="h-4 w-4 mr-1" />
-                        Repetir
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={handleAccept}
-                        disabled={isCapturing || isGenerating}
-                    >
-                        <Check className="h-4 w-4 mr-1" />
-                        Aceptar
-                    </Button>
-                </div>
-            )}
         </div>
     )
 })
