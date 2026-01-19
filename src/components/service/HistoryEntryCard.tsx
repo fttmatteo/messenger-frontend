@@ -63,7 +63,7 @@ export function HistoryEntryCard({
                                 <img
                                     src={getImageUrl(photo.photoPath)}
                                     alt="Lectura de placa"
-                                    className="w-12 h-12 object-cover rounded border border-border/50"
+                                    className="w-16 h-16 object-cover rounded border border-border/50"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <div className="bg-black/60 rounded-full p-1">
@@ -82,7 +82,7 @@ export function HistoryEntryCard({
                     {/* Signature + GIF Collage */}
                     {(entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath) && (
                         <div className="flex flex-col items-center">
-                            <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Firma + Captura</p>
+                            <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Captura + Firma</p>
                             <div className="flex rounded border border-border/50 overflow-hidden bg-white">
                                 {/* GIF - 60% */}
                                 {entry.signature?.gifPath && (
@@ -137,7 +137,7 @@ export function HistoryEntryCard({
                                         <img
                                             src={getImageUrl(photo.photoPath)}
                                             alt="Evidencia"
-                                            className="w-12 h-12 object-cover rounded border border-border/50"
+                                            className="w-16 h-16 object-cover rounded border border-border/50"
                                         />
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                             <div className="bg-black/60 rounded-full p-1">
