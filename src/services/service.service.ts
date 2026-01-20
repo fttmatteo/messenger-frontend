@@ -94,6 +94,10 @@ class ServiceDeliveryService {
             formData.append('signature', request.signature)
         }
 
+        if (request.signatureGif) {
+            formData.append('signatureGif', request.signatureGif)
+        }
+
         if (request.photos && request.photos.length > 0) {
             request.photos.forEach(photo => {
                 formData.append('photos', photo)

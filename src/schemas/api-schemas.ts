@@ -39,7 +39,8 @@ export const PlateInfoSchema = z.object({
 
 export const SignatureInfoSchema = z.object({
     idSignature: z.number(),
-    signaturePath: z.string()
+    signaturePath: z.string(),
+    gifPath: z.string().optional()
 })
 
 export const PhotoInfoSchema = z.object({

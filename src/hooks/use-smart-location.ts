@@ -31,7 +31,7 @@ export function useSmartLocation() {
 
                 const timeoutId = setTimeout(() => {
                     reject(new Error("Tiempo de espera agotado (Timeout)"))
-                }, 10000)
+                }, 20000)
 
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
@@ -49,7 +49,11 @@ export function useSmartLocation() {
                         else if (err.code === 3) msg = "Tiempo de espera agotado"
                         reject(new Error(msg))
                     },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 30000
+                    }
                 )
             })
         } catch (error) {

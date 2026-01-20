@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
 import { isMessengerOnline } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
-import { MessengerListSkeleton } from "./TrackingSkeletons"
 
 export interface MessengerListPanelProps {
     messengers: LiveTrackingUpdate[]
@@ -26,7 +25,6 @@ export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
     followingMessengerId,
-    loading,
     isCollapsed,
     onToggleCollapse,
     onSelect,
@@ -60,9 +58,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
             {/* Content */}
             {!isCollapsed && (
                 <ScrollArea className="flex-1">
-                    {loading && messengers.length === 0 ? (
-                        <MessengerListSkeleton count={8} />
-                    ) : messengers.length === 0 ? (
+                    {messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
                             No hay mensajeros disponibles
                         </div>

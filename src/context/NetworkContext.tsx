@@ -2,8 +2,11 @@ import { useState, useEffect, useCallback, type ReactNode } from 'react'
 import { NetworkContext } from './NetworkContextDef'
 import { toast } from 'sonner'
 import { Wifi, WifiOff, RefreshCw, CloudOff } from 'lucide-react'
-import { offlineSyncService } from '@/services/offline-sync.service'
+import { offlineSyncService, type UpdateStatusWithFilesPayload } from '@/services/offline-sync.service'
 import { logger } from '@/utils/logger'
+import { serviceDeliveryService } from '@/services/service.service'
+import { base64ToFile } from '@/lib/file-utils'
+import type { ServiceStatus } from '@/types/service.types'
 
 interface NetworkProviderProps {
     children: ReactNode
@@ -15,6 +18,49 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     const [offlineReady, setOfflineReady] = useState(false)
     const [needRefresh, setNeedRefresh] = useState(false)
     const [pendingActionsCount, setPendingActionsCount] = useState(0)
+
+    // Register handler for UPDATE_STATUS_WITH_FILES
+    useEffect(() => {
+        offlineSyncService.registerHandler('UPDATE_STATUS_WITH_FILES', async (action) => {
+            try {
+                const payload = action.payload as UpdateStatusWithFilesPayload
+
+                // Convert base64 back to Files
+                let signature: File | undefined
+                if (payload.signatureBase64) {
+                    signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')
+                }
+
+                let signatureGif: File | undefined
+                if (payload.signatureGifBase64) {
+                    signatureGif = await base64ToFile(payload.signatureGifBase64, 'capture.gif', 'image/gif')
+                }
+
+                let photos: File[] | undefined
+                if (payload.photosBase64 && payload.photosBase64.length > 0) {
+                    photos = await Promise.all(
+                        payload.photosBase64.map((b64, i) => base64ToFile(b64, `photo_${i}.jpg`, 'image/jpeg'))
+                    )
+                }
+
+                await serviceDeliveryService.updateStatus(payload.serviceId, {
+                    status: payload.status as ServiceStatus,
+                    observation: payload.observation,
+                    signature,
+                    signatureGif,
+                    photos,
+                    latitude: payload.latitude,
+                    longitude: payload.longitude,
+                })
+
+                logger.info('Offline action synced: UPDATE_STATUS_WITH_FILES', { serviceId: payload.serviceId })
+                return true
+            } catch (error) {
+                logger.error('Failed to sync UPDATE_STATUS_WITH_FILES', error)
+                return false
+            }
+        })
+    }, [])
 
 
 

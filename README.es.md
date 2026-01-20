@@ -103,7 +103,7 @@
 |:---|:---|
 | **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4. |
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
-| **Captura de Evidencia** | Compresión de imágenes del lado del cliente y soporte para firma digital vectorial. |
+| **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
 
 ---
 

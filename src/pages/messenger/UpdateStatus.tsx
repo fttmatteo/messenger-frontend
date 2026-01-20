@@ -11,7 +11,7 @@ import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
@@ -20,6 +20,12 @@ import { useStatusColors } from "@/hooks/use-status-colors"
 import { useSmartLocation } from "@/hooks/use-smart-location"
 import { STATUS_OPTIONS } from "@/config/status-options"
 import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
+import { useNetwork } from "@/hooks/use-network"
+import { offlineSyncService, type UpdateStatusWithFilesPayload } from "@/services/offline-sync.service"
+import { fileToBase64 } from "@/lib/file-utils"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('UpdateStatus')
 
 // Helper to convert hex to rgba for backgrounds
 function hexToRgba(hex: string, alpha: number): string {
@@ -35,6 +41,7 @@ export default function UpdateStatus() {
     const navigate = useNavigate()
     const { colors } = useStatusColors()
     const { getCurrentLocation } = useSmartLocation()
+    const { isOnline } = useNetwork()
 
 
     const [service, setService] = useState<ServiceDelivery | null>(null)
@@ -45,6 +52,7 @@ export default function UpdateStatus() {
     const [observation, setObservation] = useState('')
     const [photos, setPhotos] = useState<File[]>([])
     const [hasSignature, setHasSignature] = useState(false)
+    const [hasGif, setHasGif] = useState(false)
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
@@ -93,6 +101,11 @@ export default function UpdateStatus() {
             return false
         }
 
+        // GIF is required for DELIVERED and PENDING
+        if (option.requiresSignature && (option.value === 'DELIVERED' || option.value === 'PENDING') && !hasGif) {
+            return false
+        }
+
         if (option.requiresPhotos && photos.length === 0) {
             return false
         }
@@ -115,9 +128,22 @@ export default function UpdateStatus() {
 
             // Get signature file if required
             let signatureFile: File | undefined
+            let signatureGifFile: File | undefined
             if (option.requiresSignature && signatureRef.current) {
                 const sig = await signatureRef.current.getSignature()
                 if (sig) signatureFile = sig
+                if (sig) signatureFile = sig
+
+                // Get GIF for DELIVERED/PENDING
+                if (option.value === 'DELIVERED' || option.value === 'PENDING') {
+                    const gif = await signatureRef.current.getGifFile()
+                    if (gif) {
+                        signatureGifFile = gif
+                        logger.info('gif_ready_for_upload', { size: gif.size })
+                    } else {
+                        logger.warn('gif_not_obtained', { status: option.value })
+                    }
+                }
             }
 
             // Capture Location using hook
@@ -132,10 +158,37 @@ export default function UpdateStatus() {
                 // Already toasted by hook
             }
 
+            // Check if online - if not, queue for offline sync
+            if (!isOnline) {
+                // Convert files to base64 for IndexedDB storage
+                const payload: UpdateStatusWithFilesPayload = {
+                    serviceId: Number(id),
+                    status: selectedStatus,
+                    observation: observation.trim() || undefined,
+                    signatureBase64: signatureFile ? await fileToBase64(signatureFile) : undefined,
+                    signatureGifBase64: signatureGifFile ? await fileToBase64(signatureGifFile) : undefined,
+                    photosBase64: photos.length > 0 ? await Promise.all(photos.map(p => fileToBase64(p))) : undefined,
+                    latitude,
+                    longitude,
+                }
+
+                await offlineSyncService.queueAction('UPDATE_STATUS_WITH_FILES', payload)
+
+                toast.success('Guardado para sincronizar', {
+                    description: 'Se enviará cuando haya conexión',
+                    icon: <WifiOff className="h-4 w-4" />,
+                    duration: 4000,
+                })
+
+                navigate('/messenger')
+                return
+            }
+
             await serviceDeliveryService.updateStatus(Number(id), {
                 status: selectedStatus as ServiceStatus,
                 observation: observation.trim() || undefined,
                 signature: signatureFile,
+                signatureGif: signatureGifFile,
                 photos: photos.length > 0 ? photos : undefined,
                 latitude,
                 longitude
@@ -287,6 +340,8 @@ export default function UpdateStatus() {
                                     <SignatureCanvas
                                         ref={signatureRef}
                                         onSignatureChange={setHasSignature}
+                                        enableCamera={selectedStatus === 'DELIVERED' || selectedStatus === 'PENDING'}
+                                        onGifGenerated={(gif) => setHasGif(!!gif)}
                                     />
                                 </Card>
                             )}

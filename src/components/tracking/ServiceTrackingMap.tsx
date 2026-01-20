@@ -3,11 +3,10 @@ import { Map } from "@/components/Map"
 import { useGoogleMap, Polyline } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
-import { MapPin, Loader2 } from "lucide-react"
+import { MapPin } from "lucide-react"
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
@@ -82,7 +81,6 @@ export function ServiceTrackingMap({
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
     const [loading, setLoading] = useState(true)
     const [distance, setDistance] = useState<{ meters: number | null, seconds: number | null } | null>(null)
-    const [loadingDistance, setLoadingDistance] = useState(false)
     const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
 
     const mapCenter = dealershipLat && dealershipLng
@@ -125,7 +123,6 @@ export function ServiceTrackingMap({
             if (!lastPos) return
 
             try {
-                setLoadingDistance(true)
                 const result = await locationService.calculateDistance(
                     lastPos.lat,
                     lastPos.lng,
@@ -138,8 +135,6 @@ export function ServiceTrackingMap({
                 })
             } catch {
                 setDistance(null)
-            } finally {
-                setLoadingDistance(false)
             }
         }
 
@@ -184,7 +179,6 @@ export function ServiceTrackingMap({
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Skeleton static className="w-full h-[300px] rounded-md" />
                 </CardContent>
             </Card>
         )
@@ -250,11 +244,7 @@ export function ServiceTrackingMap({
                     {/* Distance info below location points */}
                     {lastPosition && dealershipLat && dealershipLng && (
                         <div className="flex items-center gap-2">
-                            {loadingDistance ? (
-                                <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                </div>
-                            ) : distance && distance.meters !== null ? (
+                            {distance && distance.meters !== null ? (
                                 <>
                                     <Badge variant="secondary" className="text-xs font-normal">
                                         <MapPin className="h-3 w-3 mr-1" />

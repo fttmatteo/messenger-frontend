@@ -1,9 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react"
 import { Map as MapComponent } from "@/components/Map"
-import { OverlayView } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PulsingMarker, MessengerListPanel } from "@/components/tracking"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
@@ -29,7 +27,8 @@ export default function LiveTracking() {
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
-    const [mapCenter, setMapCenter] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
+    const [mapCenter,] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín - Initial only
+    const [map, setMap] = useState<google.maps.Map | null>(null)
     const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
     const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
@@ -104,11 +103,16 @@ export default function LiveTracking() {
                 setSuccess(`Monitoreo actualizado`)
             }
 
-            // Center map on first active messenger if available
-            const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
-            if (!manual && firstActive && isValidCoords(firstActive.latitude, firstActive.longitude)) {
-                setMapCenter({ lat: firstActive.latitude, lng: firstActive.longitude })
+            // Center map on first active messenger if available AND manual refresh (or first load if mapped)
+            // Note: On first load map might be null, so standard center prop handles it.
+            // On manual refresh, we pan.
+            if (!manual && updatedMessengers.length > 0) {
+                const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
+                if (firstActive && map) {
+                    map.panTo({ lat: firstActive.latitude, lng: firstActive.longitude })
+                }
             }
+
         } catch (error) {
             logger.error("Error fetching messengers in LiveTracking:", error)
             if (isAxiosError(error) && error.response?.status !== 404) {
@@ -117,7 +121,7 @@ export default function LiveTracking() {
         } finally {
             setLoading(false)
         }
-    }, [setSuccess, setError])
+    }, [setSuccess, setError, map])
 
     // Handle real-time updates
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
@@ -142,10 +146,10 @@ export default function LiveTracking() {
         })
 
         // Follow mode: update map center when following a messenger
-        if (followingMessengerId === update.messengerId && isValidCoords(update.latitude, update.longitude)) {
-            setMapCenter({ lat: update.latitude, lng: update.longitude })
+        if (followingMessengerId === update.messengerId && isValidCoords(update.latitude, update.longitude) && map) {
+            map.panTo({ lat: update.latitude, lng: update.longitude })
         }
-    }, [followingMessengerId])
+    }, [followingMessengerId, map])
 
     // Connect to WebSocket on mount
     useEffect(() => {
@@ -185,10 +189,11 @@ export default function LiveTracking() {
     const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
         setShowMessengerDetails(true)
-        if (isValidCoords(messenger.latitude, messenger.longitude)) {
-            setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+        if (isValidCoords(messenger.latitude, messenger.longitude) && map) {
+            map.panTo({ lat: messenger.latitude, lng: messenger.longitude })
+            map.setZoom(15)
         }
-    }, [])
+    }, [map])
 
     const deselectMessenger = useCallback(() => {
         setSelectedMessenger(null)
@@ -202,11 +207,11 @@ export default function LiveTracking() {
         } else {
             setFollowingMessengerId(messengerId)
             const messenger = messengers.find(m => m.messengerId === messengerId)
-            if (messenger && isValidCoords(messenger.latitude, messenger.longitude)) {
-                setMapCenter({ lat: messenger.latitude, lng: messenger.longitude })
+            if (messenger && isValidCoords(messenger.latitude, messenger.longitude) && map) {
+                map.panTo({ lat: messenger.latitude, lng: messenger.longitude })
             }
         }
-    }, [followingMessengerId, messengers])
+    }, [followingMessengerId, messengers, map])
 
     // Memoize visible markers with computed online status
     // 'now' dependency ensures re-calculation for offline detection
@@ -223,52 +228,19 @@ export default function LiveTracking() {
         <div className="h-full w-full relative overflow-hidden">
             {/* Fullscreen Map */}
             <div className="absolute inset-0">
-                {loading && messengers.length === 0 ? (
-                    <Skeleton static className="w-full h-full bg-muted/10 animate-in fade-in duration-500" />
-                ) : (
-                    <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
-                        {visibleMarkers.map((marker) => (
-                            <PulsingMarker
-                                key={marker.messengerId}
-                                messenger={marker}
-                                onClick={selectMessenger}
-                                isOnline={marker.isOnline}
-                            />
-                        ))}
+                <MapComponent className="w-full h-full" center={mapCenter} zoom={13} onLoad={setMap}>
+                    {visibleMarkers.map((marker) => (
+                        <PulsingMarker
+                            key={marker.messengerId}
+                            messenger={marker}
+                            onClick={selectMessenger}
+                            onDeselect={deselectMessenger}
+                            isOnline={marker.isOnline}
+                            isSelected={selectedMessenger?.messengerId === marker.messengerId}
+                        />
+                    ))}
+                </MapComponent>
 
-                        {/* Custom popup overlay at marker position */}
-                        {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
-                            <OverlayView
-                                position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
-                                mapPaneName={OverlayView.FLOAT_PANE}
-                            >
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        transform: 'translate(-50%, -100%)',
-                                        marginTop: '-50px'
-                                    }}
-                                >
-                                    <div className="bg-background/60 backdrop-blur-xl rounded-md shadow-md border px-2 py-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-semibold text-xs whitespace-nowrap">
-                                                {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
-                                            </p>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={deselectMessenger}
-                                                className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground shrink-0"
-                                            >
-                                                ✕
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </OverlayView>
-                        )}
-                    </MapComponent>
-                )}
             </div>
 
             {/* Floating Header */}

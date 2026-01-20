@@ -24,7 +24,6 @@ import {
     MessengerActivityTimeline,
     type TimelineEvent
 } from "@/components/admin/MessengerActivity"
-import { MessengerSidePanelSkeleton } from "@/components/tracking/TrackingSkeletons"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -155,14 +154,7 @@ export function MessengerSidePanel({
 
     // Show skeleton only if we have no messenger data at all
     if (!messenger) {
-        return (
-            <div className={cn(
-                "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
-                "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full"
-            )}>
-                <MessengerSidePanelSkeleton />
-            </div>
-        )
+        return null
     }
 
     return (
@@ -225,7 +217,7 @@ export function MessengerSidePanel({
 
                     <div className="min-w-0 flex-1 ml-1">
                         <h3 className="text-[13px] font-bold truncate leading-tight">
-                            {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : 'Cargando...'}
+                            {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : ''}
                         </h3>
                         <Badge variant="outline" className={cn(
                             "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold",
