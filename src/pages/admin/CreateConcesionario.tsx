@@ -16,7 +16,12 @@ import { Badge } from "@/components/ui/badge"
 import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
 import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
 
-// Marker component for the dealership location
+/**
+ * Marcador personalizado para mostrar la ubicación previa del concesionario en el mapa.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {google.maps.LatLngLiteral} props.position - Posición GPS del marcador.
+ */
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
@@ -47,6 +52,11 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     return null
 }
 
+/**
+ * Página para la creación de un nuevo concesionario.
+ * Incluye un formulario validado y una funcionalidad de previsualización 
+ * en el mapa mediante la geocodificación de la dirección ingresada.
+ */
 export default function CreateConcesionario() {
     const navigate = useNavigate()
     const { setSuccess, setError } = useAdminUI()
@@ -103,7 +113,6 @@ export default function CreateConcesionario() {
 
     const onSubmit = async (data: DealershipFormValues) => {
         try {
-            // 1. Create Dealership
             const created = await dealershipService.create({
                 name: capitalizeWords(data.name.trim()),
                 address: capitalizeWords(data.address.trim()),
@@ -111,7 +120,6 @@ export default function CreateConcesionario() {
                 zone: data.zone,
             })
 
-            // 2. Trigger Backend Geocoding (Persist)
             try {
                 await dealershipService.geocode(created.idDealership)
                 setSuccess("Concesionario creado y ubicado exitosamente")
@@ -128,7 +136,6 @@ export default function CreateConcesionario() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
@@ -154,7 +161,6 @@ export default function CreateConcesionario() {
 
                             <ConcesionarioForm form={form} />
 
-                            {/* Submit Buttons */}
                             <div className="flex gap-4 pt-6 mt-auto border-t">
                                 <Button
                                     type="button"
@@ -173,7 +179,6 @@ export default function CreateConcesionario() {
                     </CardContent>
                 </Card>
 
-                {/* Geolocation Preivew Card */}
                 <Card className="flex flex-col gap-1 py-1">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="flex items-center gap-2 text-base text-foreground font-semibold">

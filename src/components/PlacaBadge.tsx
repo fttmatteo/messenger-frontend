@@ -8,6 +8,10 @@ interface PlacaBadgeProps {
     className?: string
 }
 
+/**
+ * Insignia visual que representa una placa de vehículo según el estándar colombiano.
+ * Soporta diferentes tamaños, tipos de vehículo (carro/moto) y modo oscuro.
+ */
 export function PlacaBadge({
     plateNumber,
     plateType = 'CARRO',

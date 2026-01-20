@@ -34,6 +34,10 @@ interface UseDealershipsReturn {
     fetchDealerships: () => Promise<void>
 }
 
+/**
+ * Hook para gestionar y filtrar la lista de concesionarios.
+ * Incluye lógica de búsqueda, filtrado por zona y ordenación.
+ */
 export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDealershipsReturn {
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loading, setLoading] = useState(true)
@@ -107,7 +111,6 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
     }, [])
 
     return {
-        // Data
         dealerships,
         loading,
         filteredAndSortedDealerships: filteredAndSortedData,

@@ -11,6 +11,10 @@ interface StatsBarProps {
     loading?: boolean
 }
 
+/**
+ * Barra de estadísticas resumidas para el mensajero.
+ * Muestra contadores de servicios pendientes, entregados, devueltos y totales.
+ */
 export function StatsBar({ stats, loading }: StatsBarProps) {
     const statItems = [
         {

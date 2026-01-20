@@ -15,11 +15,9 @@ export function isAxiosError(error: unknown): error is AxiosError<ApiErrorRespon
  */
 export function getErrorMessage(error: unknown): string {
     if (isAxiosError(error)) {
-        // Mensaje específico de la API
         if (error.response?.data?.message) {
             return error.response.data.message
         }
-        // Error de red
         if (error.code === 'ERR_NETWORK' || !error.response) {
             return 'Error de conexión. Verifica tu red e intenta nuevamente.'
         }

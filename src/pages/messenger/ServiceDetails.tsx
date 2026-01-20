@@ -16,6 +16,12 @@ import { logger } from "@/utils/logger"
 import { ServiceDetailsSkeleton } from "@/components/service/ServiceSkeletons"
 
 
+/**
+ * Vista detallada de un servicio (entrega) desde la perspectiva del mensajero.
+ * Muestra información del vehículo (placa), el concesionario de destino,
+ * datos de contacto y observaciones. Permite iniciar la navegación hacia
+ * el destino y acceder a la actualización de estado del servicio.
+ */
 export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -143,9 +149,7 @@ export default function ServiceDetails() {
 
     return (
         <div className="flex flex-col">
-            {/* Scrollable Content */}
             <div className="">
-                {/* Hero Card - Plate, Status & Actions */}
                 <div className="p-4 pb-2">
                     <Card className="p-5 bg-gradient-to-br from-card to-muted border-border/50">
                         <div className="flex flex-col items-center gap-3">
@@ -165,7 +169,6 @@ export default function ServiceDetails() {
                                 </span>
                             </div>
 
-                            {/* Action Buttons - Side by Side */}
                             <div className="flex items-center gap-2 w-full mt-2">
                                 <Button
                                     className="flex-1 h-11 gap-2 font-bold shadow-lg active:scale-[0.98]"
@@ -190,7 +193,6 @@ export default function ServiceDetails() {
                     </Card>
                 </div>
 
-                {/* Dealership Card */}
                 <div className="px-4 pb-2">
                     <Card className="p-4 border-border/50">
                         <div className="flex items-center gap-2 mb-3">
@@ -227,7 +229,6 @@ export default function ServiceDetails() {
                     </Card>
                 </div>
 
-                {/* Service Info Card */}
                 <div className="px-4 pb-2">
                     <Card className="p-4 border-border/50">
                         <div className="flex items-center gap-2 mb-3">
@@ -251,7 +252,6 @@ export default function ServiceDetails() {
                     </Card>
                 </div>
 
-                {/* Observation Card */}
                 {service.observation && (
                     <div className="px-4 pb-2">
                         <Card className="p-4 border-border/50">
@@ -266,7 +266,6 @@ export default function ServiceDetails() {
                     </div>
                 )}
 
-                {/* Plate Image Card */}
                 {service.photos.find(p => p.photoType === 'PLATE_DETECTION') && (
                     <div className="px-4 pb-4">
                         <Card className="p-4 border-border/50">

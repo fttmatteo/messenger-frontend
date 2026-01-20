@@ -1,21 +1,24 @@
 /**
- * Utility for handling map navigation across all devices and contexts.
- * Uses the same configuration for both PWA and Web - opens Google Maps in a new tab.
+ * Utilidad para manejar navegación de mapas en todos los dispositivos y contextos.
+ * Usa la misma configuración para PWA y Web - abre Google Maps en una nueva pestaña.
  */
 
+/** Información geográfica o descriptiva para navegación. */
 interface Location {
+    /** Latitud decimal. */
     latitude?: number;
+    /** Longitud decimal. */
     longitude?: number;
+    /** Dirección física (fallback si no hay lat/lng). */
     address?: string;
 }
 
 /**
- * Opens Google Maps in a new tab with the specified destination.
+ * Abre Google Maps en una nueva pestaña con el destino especificado.
  * 
- * @param destination The destination location (lat/lng or address).
- * @param isIOS Boolean indicating if the current device is iOS (kept for backwards compatibility, not used).
- * @param originLat Optional origin latitude.
- * @param originLng Optional origin longitude.
+ * @param destination La ubicación de destino (lat/lng o dirección).
+ * @param originLat Latitud de origen opcional.
+ * @param originLng Longitud de origen opcional.
  */
 export const openMaps = (
     destination: Location,
@@ -28,7 +31,6 @@ export const openMaps = (
         return;
     }
 
-    // Build web URL - same configuration for both PWA and Web
     let webUrl = '';
     if (latitude && longitude) {
         webUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
@@ -39,6 +41,5 @@ export const openMaps = (
         webUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     }
 
-    // Both PWA and Web use the same configuration - Open in new tab
     window.open(webUrl, '_blank', 'noopener,noreferrer');
 };

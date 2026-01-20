@@ -15,6 +15,10 @@ interface StatusColorProviderProps {
     userId?: number | string
 }
 
+/**
+ * Proveedor de contexto para colores de estado.
+ * Gestiona la personalización de colores por usuario y su sincronización con el backend.
+ */
 export function StatusColorProvider({ children, userId }: StatusColorProviderProps) {
     const [colors, setColors] = useState<Record<string, string>>(() => {
         const customColors = loadCustomColors(userId)
@@ -37,7 +41,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
                     saveCustomColors(differences, userId)
                 }
             } catch (error) {
-                logger.error('Error fetching status colors from backend:', error)
+                logger.error('Error al obtener colores de estado del backend:', error)
             }
         }
 
@@ -65,7 +69,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
             const role = authService.getRole()
             if (role === 'ADMIN') {
                 configService.updateStatusColors(newColors).catch(err => {
-                    logger.error('Error syncing colors to backend:', err)
+                    logger.error('Error al sincronizar colores al backend:', err)
                 })
             }
 
@@ -80,7 +84,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         const role = authService.getRole()
         if (role === 'ADMIN') {
             configService.updateStatusColors(DEFAULT_STATUS_COLORS).catch(err => {
-                logger.error('Error resetting colors on backend:', err)
+                logger.error('Error al restablecer colores en el backend:', err)
             })
         }
     }, [userId])

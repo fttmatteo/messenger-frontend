@@ -16,12 +16,24 @@ import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
 import { logger } from "@/utils/logger"
 
-/** Helper para validar coordenadas finitas antes de usar en el mapa */
+/**
+ * Valida si un par de coordenadas son números finitos y válidos para su uso en el mapa.
+ * 
+ * @param {number} [lat] - Latitud a validar.
+ * @param {number} [lng] - Longitud a validar.
+ * @returns {boolean} True si las coordenadas son válidas.
+ */
 const isValidCoords = (lat?: number, lng?: number): boolean => {
     return typeof lat === 'number' && typeof lng === 'number' &&
         isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0
 }
 
+/**
+ * Componente principal de monitoreo y rastreo en tiempo real para administradores.
+ * Muestra un mapa interactivo con la ubicación de todos los mensajeros activos.
+ * Se integra con WebSockets para recibir actualizaciones de ubicación y estado de presencia.
+ * Permite seleccionar mensajeros, seguirlos en el mapa y ver detalles de sus servicios actuales.
+ */
 export default function LiveTracking() {
     const [messengers, setMessengers] = useState<LiveTrackingUpdate[]>([])
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
@@ -34,37 +46,37 @@ export default function LiveTracking() {
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
-    // Unified timestamp to synchronize status across all UI components (Map, List, SidePanel)
-    // 10s interval ensures quick feedback for disconnections
+    // Timestamp unificado para sincronizar estado en todos los componentes UI (Map, List, SidePanel)
+    // Intervalo de 10s asegura respuesta rápida para desconexiones
     const [now, setNow] = useState(() => Date.now())
     useEffect(() => {
         const timer = setInterval(() => setNow(Date.now()), 10000)
         return () => clearInterval(timer)
     }, [])
 
-    // Fetch initial data via REST (All messengers + status)
+    // Obtener datos iniciales via REST (Todos los mensajeros + estado)
     const fetchMessengers = useCallback(async (manual = false) => {
         try {
             setLoading(true)
 
-            // 1. Get all messengers
+            // 1. Obtener todos los mensajeros
             const allEmployees = await employeeService.getAll()
             const messengerEmployees = allEmployees.filter(e => e.role === 'MESSENGER')
 
-            // 2. Get active sessions
+            // 2. Obtener sesiones activas
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
 
-            // 3. Merge data
+            // 3. Fusionar datos
             const combinedRequests = messengerEmployees.map(async (emp) => {
                 const formattedName = formatDisplayName(emp.fullName)
 
-                // If active, use active data
+                // Si está activo, usar datos activos
                 if (activeMap.has(emp.idEmployee)) {
                     return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName }
                 }
 
-                // If offline, try to get last location
+                // Si está offline, intentar obtener última ubicación
                 try {
                     const lastLoc = await trackingApiService.getLastLocation(emp.idEmployee)
                     if (lastLoc) {
@@ -76,7 +88,7 @@ export default function LiveTracking() {
                     }
                 }
 
-                // Default offline structure without location
+                // Estructura offline por defecto sin ubicación
                 return {
                     messengerId: emp.idEmployee,
                     messengerName: formattedName,
@@ -92,7 +104,7 @@ export default function LiveTracking() {
             const updatedMessengers = await Promise.all(combinedRequests)
             setMessengers(updatedMessengers)
 
-            // Update selected messenger if exists in new data
+            // Actualizar mensajero seleccionado si existe en nuevos datos
             setSelectedMessenger(current => {
                 if (!current) return null
                 const refreshed = updatedMessengers.find(m => m.messengerId === current.messengerId)
@@ -103,9 +115,7 @@ export default function LiveTracking() {
                 setSuccess(`Monitoreo actualizado`)
             }
 
-            // Center map on first active messenger if available AND manual refresh (or first load if mapped)
-            // Note: On first load map might be null, so standard center prop handles it.
-            // On manual refresh, we pan.
+            // Centrar mapa en primer mensajero activo si está disponible Y refresco manual
             if (!manual && updatedMessengers.length > 0) {
                 const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
                 if (firstActive && map) {
@@ -123,7 +133,7 @@ export default function LiveTracking() {
         }
     }, [setSuccess, setError, map])
 
-    // Handle real-time updates
+    // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
         setMessengers(prev => {
             const existingIndex = prev.findIndex(m => m.messengerId === update.messengerId)
@@ -145,18 +155,18 @@ export default function LiveTracking() {
             return prev
         })
 
-        // Follow mode: update map center when following a messenger
+        // Modo seguimiento: actualizar centro del mapa al seguir un mensajero
         if (followingMessengerId === update.messengerId && isValidCoords(update.latitude, update.longitude) && map) {
             map.panTo({ lat: update.latitude, lng: update.longitude })
         }
     }, [followingMessengerId, map])
 
-    // Connect to WebSocket on mount
+    // Conectar a WebSocket al montar
     useEffect(() => {
         fetchMessengers()
 
         const startTracking = async () => {
-            // Skip if already connected
+            // Omitir si ya está conectado
             if (trackingService.isCurrentlyConnected()) {
                 setConnected(true)
                 return
@@ -170,7 +180,7 @@ export default function LiveTracking() {
                     trackingService.subscribeToPresence(handleTrackingUpdate)
                 })
             } catch (err) {
-                // Silent fallback - normal on Safari Mobile
+                // Fallback silencioso - normal en Safari Mobile
                 logger.debug('WS token unavailable for Admin, using cookie fallback', err)
                 trackingService.connect(undefined, () => {
                     setConnected(true)
@@ -215,8 +225,8 @@ export default function LiveTracking() {
         }
     }, [followingMessengerId, messengers, map])
 
-    // Memoize visible markers with computed online status
-    // 'now' dependency ensures re-calculation for offline detection
+    // Memorizar marcadores visibles con estado online calculado
+    // Dependencia 'now' asegura recálculo para detección de offline
     const visibleMarkers = useMemo(() => {
         return messengers
             .filter(m => isValidCoords(m.latitude, m.longitude))
@@ -228,7 +238,6 @@ export default function LiveTracking() {
 
     return (
         <div className="h-full w-full relative overflow-hidden">
-            {/* Fullscreen Map */}
             <div className="absolute inset-0">
                 <MapComponent className="w-full h-full" center={mapCenter} zoom={13} onLoad={setMap}>
                     {visibleMarkers.map((marker) => (
@@ -245,7 +254,6 @@ export default function LiveTracking() {
 
             </div>
 
-            {/* Floating Header */}
             <div className="absolute top-4 left-4 z-10 pointer-events-auto">
                 <div className="flex items-center gap-3 bg-background/60 backdrop-blur-xl rounded-lg px-3 shadow-lg border h-10">
                     <h1 className="text-sm font-medium">Monitoreo</h1>
@@ -275,7 +283,6 @@ export default function LiveTracking() {
                 </div>
             </div>
 
-            {/* Collapsible Side Panel - Right Side */}
             <div className={cn(
                 "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
                 isPanelCollapsed ? "w-9" : "w-72",
@@ -293,7 +300,6 @@ export default function LiveTracking() {
                 />
             </div>
 
-            {/* Messenger Detail Panel */}
             <MessengerSidePanel
                 messenger={selectedMessenger}
                 messengerId={selectedMessenger?.messengerId || null}

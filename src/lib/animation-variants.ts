@@ -1,8 +1,8 @@
 import type { Variants } from "framer-motion"
 
 /**
- * Standard animation variants for list items (table rows, cards, etc.)
- * Used across list pages for consistent enter/exit animations.
+ * Variantes de animación estándar para elementos de lista (filas de tabla, tarjetas, etc.)
+ * Usadas en páginas de listados para animaciones consistentes de entrada/salida.
  */
 export const listItemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -23,8 +23,8 @@ export const listItemVariants: Variants = {
 }
 
 /**
- * Animation variants for fade in/out with scale effect.
- * Used for floating buttons and modals.
+ * Variantes de animación para aparecer/desaparecer con efecto de escala.
+ * Usadas para botones flotantes y modales.
  */
 export const fadeScaleVariants: Variants = {
     hidden: { opacity: 0, scale: 0.8 },
@@ -33,8 +33,8 @@ export const fadeScaleVariants: Variants = {
 }
 
 /**
- * Animation variants for slide in from right.
- * Used for sidebars and drawers.
+ * Variantes de animación para deslizar desde la derecha.
+ * Usadas para barras laterales y cajones.
  */
 export const slideInRightVariants: Variants = {
     hidden: { opacity: 0, x: 20 },

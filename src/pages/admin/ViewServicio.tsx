@@ -14,31 +14,37 @@ import { ArrowLeft, Trash2, Loader2 } from "lucide-react"
 import { getErrorMessage } from "@/lib/error-utils"
 import { logger } from "@/utils/logger"
 
-// Extracted components
+// Componentes extraídos
 import { ServiceHeader } from "@/components/service/ServiceHeader"
 import { ServiceGeneralInfoCard } from "@/components/service/ServiceGeneralInfoCard"
 import { ServiceHistoryTimeline } from "@/components/service/ServiceHistoryTimeline"
 import { UpdateStatusModal } from "@/components/service/UpdateStatusModal"
 
+/**
+ * Vista detallada de un servicio de entrega específico para administradores.
+ * Muestra información general, historial de estados con evidencias fotográficas,
+ * y un mapa de rastreo del servicio.
+ * Permite actualizar el estado del servicio o eliminarlo (si es administrador).
+ */
 export default function ViewServicio() {
-    // Router & Auth
+    // Router y Auth
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError: setGlobalError } = useAdminUI()
 
-    // Service Data State
+    // Estado de datos del servicio
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
-    // UI State
+    // Estado de UI
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
-    // Derived State
+    // Estado derivado
     const isAdmin = user?.role === 'ADMIN'
 
     const fetchService = useCallback(async () => {
@@ -84,7 +90,7 @@ export default function ViewServicio() {
     }
 
     const handleUpdateSuccess = () => {
-        fetchService() // Refresh service data after update
+        fetchService() // refresca el servicio
     }
 
     if (loading) {
@@ -128,7 +134,6 @@ export default function ViewServicio() {
                 deleting={deleting}
             />
 
-            {/* 3-Column Layout: Equal distribution (33% each) */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0">
                 <ServiceGeneralInfoCard service={service} />
 
@@ -146,7 +151,6 @@ export default function ViewServicio() {
                 />
             </div>
 
-            {/* Update Status Modal */}
             <UpdateStatusModal
                 open={updateDialogOpen}
                 onOpenChange={setUpdateDialogOpen}
@@ -154,7 +158,6 @@ export default function ViewServicio() {
                 onSuccess={handleUpdateSuccess}
             />
 
-            {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>

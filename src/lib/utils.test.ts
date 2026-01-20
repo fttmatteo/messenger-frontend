@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { cn } from './utils';
 
+/**
+ * Suite de pruebas para las utilidades generales del proyecto.
+ * Se centra principalmente en la validación de la función "cn" para la
+ * concatenación y combinación inteligente de clases de CSS (Tailwind Merge).
+ */
 describe('utils', () => {
     describe('cn', () => {
         it('should merge class names correctly', () => {

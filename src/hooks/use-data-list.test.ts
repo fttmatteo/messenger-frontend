@@ -20,9 +20,14 @@ const createTestData = (): TestItem[] => [
     { id: 5, name: 'Elderberry', value: 50, nested: { property: 'E' } },
 ]
 
+/**
+ * Suite de pruebas para el hook personalizado useDataList.
+ * Evalúa las funcionalidades de filtrado basado en búsqueda, filtros personalizados,
+ * ordenación ascendente/descendente (incluyendo propiedades anidadas) y paginación reactiva.
+ */
 describe('useDataList', () => {
-    describe('filtering', () => {
-        it('should return all data when no search query is provided', () => {
+    describe('filtrado', () => {
+        it('debe devolver todos los datos cuando no se proporciona una consulta de búsqueda', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -35,7 +40,7 @@ describe('useDataList', () => {
             expect(result.current.filteredAndSortedData).toHaveLength(5)
         })
 
-        it('should filter data based on search query', () => {
+        it('debe filtrar los datos basándose en la consulta de búsqueda', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -49,7 +54,7 @@ describe('useDataList', () => {
             expect(result.current.filteredAndSortedData[0].name).toBe('Apple')
         })
 
-        it('should apply custom filter along with search filter', () => {
+        it('debe aplicar el filtro personalizado junto con el filtro de búsqueda', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -65,8 +70,8 @@ describe('useDataList', () => {
         })
     })
 
-    describe('sorting', () => {
-        it('should sort data in ascending order', () => {
+    describe('ordenación', () => {
+        it('debe ordenar los datos en orden ascendente', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -82,7 +87,7 @@ describe('useDataList', () => {
             expect(values).toEqual([10, 20, 30, 40, 50])
         })
 
-        it('should sort data in descending order', () => {
+        it('debe ordenar los datos en orden descendente', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -98,7 +103,7 @@ describe('useDataList', () => {
             expect(values).toEqual([50, 40, 30, 20, 10])
         })
 
-        it('should use custom sort resolver for nested properties', () => {
+        it('debe usar un resolvedor de ordenación personalizado para propiedades anidadas', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -117,7 +122,7 @@ describe('useDataList', () => {
             expect(props).toEqual(['A', 'B', 'C', 'D', 'E'])
         })
 
-        it('should toggle sort direction when same field is clicked', () => {
+        it('debe alternar la dirección de ordenación cuando se hace clic en el mismo campo', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -142,7 +147,7 @@ describe('useDataList', () => {
             expect(result.current.sortField).toBeNull()
         })
 
-        it('should reset to asc when sorting by a new field', () => {
+        it('debe reiniciar a asc cuando se ordena por un nuevo campo', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -163,8 +168,8 @@ describe('useDataList', () => {
         })
     })
 
-    describe('pagination', () => {
-        it('should paginate data correctly', () => {
+    describe('paginación', () => {
+        it('debe paginar los datos correctamente', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -180,7 +185,7 @@ describe('useDataList', () => {
             expect(result.current.currentPage).toBe(1)
         })
 
-        it('should change page correctly', () => {
+        it('debe cambiar de página correctamente', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -199,7 +204,7 @@ describe('useDataList', () => {
             expect(result.current.paginatedData).toHaveLength(2)
         })
 
-        it('should reset to page 1 when search query changes', () => {
+        it('debe reiniciar a la página 1 cuando cambia la consulta de búsqueda', () => {
             const data = createTestData()
             let searchQuery = ''
 
@@ -223,7 +228,7 @@ describe('useDataList', () => {
             expect(result.current.currentPage).toBe(1)
         })
 
-        it('should update items per page', () => {
+        it('debe actualizar los ítems por página', () => {
             const data = createTestData()
             const { result } = renderHook(() =>
                 useDataList({
@@ -243,7 +248,7 @@ describe('useDataList', () => {
             expect(result.current.totalPages).toBe(1)
         })
 
-        it('should reset to page 1 when customFilter change', () => {
+        it('debe reiniciar a la página 1 cuando cambia customFilter', () => {
             const data = createTestData()
 
             const { result, rerender } = renderHook(

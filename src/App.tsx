@@ -7,8 +7,13 @@ import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
 import { SessionExpiredDialog } from './components/dialogs';
 
-// Wrapper component that provides StatusColorProvider with the current user's ID
-// Using key prop to force remount when userId changes, ensuring fresh state initialization
+/**
+ * Componente envoltorio que proporciona StatusColorProvider con el ID del usuario actual.
+ * Usa la propiedad key para forzar el remontaje cuando userId cambia, asegurando la 
+ * inicialización del estado con datos frescos.
+ * @param {Object} props - Propiedades del componente
+ * @param {React.ReactNode} props.children - Elementos hijos
+ */
 function StatusColorWrapper({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const userId = user?.id;
@@ -19,6 +24,10 @@ function StatusColorWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Componente principal de la aplicación.
+ * Configura los proveedores de contexto (Tema, Red, Autenticación, Colores) y las rutas.
+ */
 export function App() {
   return (
     <BrowserRouter>

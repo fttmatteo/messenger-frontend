@@ -18,8 +18,11 @@ import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
 import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
 
 /**
- * Capitalizes the first letter of each word
- * Example: "MUNDO YAMAHA" → "Mundo Yamaha"
+ * Capitaliza la primera letra de cada palabra en una cadena de texto.
+ * Ejemplo: "MUNDO YAMAHA" → "Mundo Yamaha"
+ * 
+ * @param {string} str - Cadena de texto a capitalizar.
+ * @returns {string} Cadena de texto capitalizada.
  */
 function capitalizeWords(str: string): string {
     return str
@@ -29,7 +32,12 @@ function capitalizeWords(str: string): string {
         .join(' ')
 }
 
-// Marker component for the dealership location
+/**
+ * Marcador personalizado para mostrar la ubicación actual o actualizada del concesionario.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {google.maps.LatLngLiteral} props.position - Posición GPS del marcador.
+ */
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
@@ -60,6 +68,11 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     return null
 }
 
+/**
+ * Página para editar la información de un concesionario existente.
+ * Permite actualizar datos básicos, gestionar la ubicación geográfica
+ * (geocodificación) y eliminar el registro.
+ */
 export default function EditConcesionario() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -172,7 +185,6 @@ export default function EditConcesionario() {
 
     return (
         <div className="flex flex-col h-full gap-1">
-            {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
@@ -198,7 +210,6 @@ export default function EditConcesionario() {
 
                             <ConcesionarioForm form={form} />
 
-                            {/* Submit Buttons */}
                             <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
                                 <Button
                                     type="button"
@@ -259,7 +270,6 @@ export default function EditConcesionario() {
                     </CardContent>
                 </Card>
 
-                {/* Geolocation Card */}
                 <Card className="flex flex-col gap-1 py-1">
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="flex items-center gap-2 text-base text-foreground font-semibold">

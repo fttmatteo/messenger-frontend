@@ -1,3 +1,6 @@
+/**
+ * Representa la información básica de un usuario autenticado en el sistema.
+ */
 export interface User {
     id?: number;
     document?: number;
@@ -7,16 +10,22 @@ export interface User {
     isOnline?: boolean;
 }
 
+/**
+ * Respuesta del servidor tras un login exitoso (formato técnico de tokens).
+ */
 export interface AuthResponse {
     token: string;
     refreshToken: string;
     role: string;
 }
 
+/**
+ * Respuesta completa tras un intento de inicio de sesión, incluyendo metadatos de usuario.
+ */
 export interface LoginResponse {
     role: string;
     message: string;
-    // User payload may be absent or explicitly null depending on backend response
+    // El payload del usuario puede estar ausente o ser explícitamente null según la respuesta del backend
     user?: {
         id?: number;
         name?: string;
@@ -26,8 +35,11 @@ export interface LoginResponse {
     } | null;
 }
 
+/**
+ * Credenciales requeridas para autenticar a un usuario mediante documento y contraseña.
+ */
 export interface LoginCredentials {
-    document: number; // Backend expects 'document' (Long) based on AuthCredentials.java
+    document: number; // El backend espera 'document' (Long) según AuthCredentials.java
     password: string;
     rememberMe?: boolean;
 }

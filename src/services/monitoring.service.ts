@@ -1,6 +1,9 @@
 import apiClient from './api-client'
 import { format } from 'date-fns'
 
+/**
+ * Estadísticas diarias detalladas de un mensajero.
+ */
 export interface DailyStats {
     assigned: number
     delivered: number
@@ -10,6 +13,9 @@ export interface DailyStats {
     total: number
 }
 
+/**
+ * Representa un evento individual en la línea de tiempo de actividad.
+ */
 export interface ActivityEvent {
     id: number
     status: string
@@ -27,9 +33,15 @@ export interface MessengerActivityResponse {
     timeline: ActivityEvent[]
 }
 
+/**
+ * Servicio encargado de proporcionar datos detallados para el monitoreo administrativo.
+ * Ofrece estadísticas de rendimiento y cronogramas de actividad para el seguimiento en tiempo real.
+ */
 class MonitoringService {
     /**
-     * Obtiene la actividad de un mensajero para una fecha específica.
+     * Obtiene el resumen de actividad y estadísticas de un mensajero para una fecha determinada.
+     * @param messengerId - ID único del mensajero.
+     * @param date - Fecha para la cual se desea consultar la actividad.
      */
     async getMessengerActivity(messengerId: number, date: Date): Promise<MessengerActivityResponse> {
         const dateStr = format(date, 'yyyy-MM-dd')

@@ -3,6 +3,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+/**
+ * Componente visual de carga a pantalla completa.
+ * Se muestra mientras se cargan componentes perezosos (lazy loading)
+ * o se verifica el estado de autenticación.
+ */
 function PageLoader() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
@@ -45,6 +50,11 @@ const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/Appea
 const MobileOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
 const DesktopOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
+/**
+ * Guardián de rutas que restringe el acceso a usuarios no autenticados.
+ * Si el usuario no ha iniciado sesión, es redirigido a la página de login.
+ * Mientras se verifica el estado, muestra un cargador.
+ */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
 
@@ -66,6 +76,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return children;
 }
 
+/**
+ * Componente secundario que redirige al usuario a su panel correspondiente
+ * (Administración o Mensajería) basándose en su rol.
+ */
 function RoleBasedRedirect() {
     const { user } = useAuth();
 
@@ -78,6 +92,11 @@ function RoleBasedRedirect() {
     return <Navigate to="/messenger" replace />;
 }
 
+/**
+ * Definición central de todas las rutas de la aplicación.
+ * Organiza las rutas por perfiles (Admin, Messenger), gestiona la carga perezosa
+ * de componentes y aplica guardias de protección y tipo de dispositivo.
+ */
 export function AppRoutes() {
     const isMobile = useIsMobile()
 
@@ -98,10 +117,9 @@ export function AppRoutes() {
     return (
         <Suspense fallback={<PageLoader />}>
             <Routes>
-                {/* Public Routes - Login is universal */}
                 <Route path="/login" element={<Login />} />
 
-                {/* Role-based redirect */}
+
                 <Route
                     path="/"
                     element={
@@ -111,7 +129,7 @@ export function AppRoutes() {
                     }
                 />
 
-                {/* Admin Routes - Desktop Only */}
+
                 <Route
                     path="/admin"
                     element={
@@ -121,26 +139,26 @@ export function AppRoutes() {
                     }
                 >
                     <Route index element={<AdminDashboard />} />
-                    {/* Employee routes */}
+
                     <Route path="empleados" element={<Empleados />} />
                     <Route path="empleados/crear" element={<CreateEmployee />} />
                     <Route path="empleados/editar/:id" element={<EditEmployee />} />
-                    {/* Other admin routes */}
-                    {/* Dealership routes */}
+
+
                     <Route path="concesionarios" element={<Concesionarios />} />
                     <Route path="concesionarios/crear" element={<CreateConcesionario />} />
                     <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
-                    {/* Services routes */}
+
                     <Route path="servicios" element={<Servicios />} />
                     <Route path="servicios/:id" element={<ViewServicio />} />
-                    {/* Other routes */}
+
                     <Route path="eliminados" element={<Eliminados />} />
                     <Route path="tracking" element={<LiveTracking />} />
                     <Route path="tracking/mensajero/:id" element={<MessengerDetails />} />
                     <Route path="configuracion" element={<Configuracion />} />
                 </Route>
 
-                {/* Messenger Routes - Mobile Only */}
+
                 <Route
                     path="/messenger"
                     element={
@@ -159,7 +177,7 @@ export function AppRoutes() {
                     <Route path="configuracion/apariencia" element={<MessengerAppearancePage />} />
                 </Route>
 
-                {/* Catch all */}
+
                 <Route path="*" element={<Navigate to="/" replace={true} />} />
             </Routes>
         </Suspense>

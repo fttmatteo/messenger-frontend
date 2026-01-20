@@ -1,7 +1,12 @@
 import { http, HttpResponse, type RequestHandler } from 'msw';
 
+/**
+ * Definición de handlers de interceptación de red para Mock Service Worker (MSW).
+ * Simula respuestas de API para endpoints críticos como autenticación, servicios y configuración,
+ * permitiendo pruebas de integración deterministas sin backend real.
+ */
 export const handlers: RequestHandler[] = [
-    // Add global mocks here (e.g., auth check, basic config)
+    // Agregar mocks globales aquí (ej. verificación de auth, configuración básica)
     http.get(new RegExp('.*/auth/check.*'), () => {
         return HttpResponse.json({ authenticated: true, user: { id: 1, name: 'Test User' } });
     }),

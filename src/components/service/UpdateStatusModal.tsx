@@ -23,6 +23,10 @@ interface UpdateStatusModalProps {
     onSuccess: () => void
 }
 
+/**
+ * Modal que permite a los administradores y mensajeros actualizar el estado de un servicio.
+ * Incluye lógica de reasignación para roles administrativos cuando un servicio es cancelado.
+ */
 export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: UpdateStatusModalProps) {
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
@@ -49,9 +53,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                     .then(employees => {
                         setMessengers(employees.filter(e => e.role === 'MESSENGER'))
                     })
-                    .catch(() => {
-                        // Ignore error
-                    })
+                    .catch(() => { })
                     .finally(() => setLoadingMessengers(false))
             }
         }
@@ -116,7 +118,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
-                    {/* Reassign Alert - For CANCELED services */}
+
                     {showReassign && messengers.length > 0 && (
                         <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-3">
                             <div className="flex items-start gap-3">
@@ -169,7 +171,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                         </div>
                     )}
 
-                    {/* Status Selector */}
+
                     <div className="space-y-2">
                         <Label>Nuevo estado</Label>
                         {availableStatuses.length === 0 ? (
@@ -209,7 +211,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                         )}
                     </div>
 
-                    {/* Observation */}
+
                     <div className="space-y-2">
                         <Label htmlFor="observation">Observaciones</Label>
                         <Textarea

@@ -1,6 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
+/**
+ * Esqueleto de carga para la lista de mensajeros en el panel de rastreo.
+ */
 export function MessengerListSkeleton({ count = 5 }: { count?: number }) {
     return (
         <div className="divide-y animate-in fade-in duration-500">
@@ -22,6 +25,9 @@ export function MessengerListSkeleton({ count = 5 }: { count?: number }) {
     )
 }
 
+/**
+ * Esqueleto de carga para el panel lateral de detalles de un mensajero.
+ */
 export function MessengerSidePanelSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500 bg-background/20">
@@ -87,6 +93,9 @@ export function MessengerSidePanelSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga complejo para la vista detallada de monitoreo de un mensajero.
+ */
 export function MessengerDetailsSkeleton() {
     return (
         <div className="space-y-5 animate-in fade-in duration-500 h-full flex flex-col">

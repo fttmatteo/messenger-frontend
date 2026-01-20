@@ -1,10 +1,17 @@
 import React, { createContext, useContext, useRef, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
+/**
+ * Estructura del contexto de UI para administradores.
+ */
 interface AdminUIContextType {
+    /** Muestra un mensaje de error mediante una notificación toast. */
     setError: (error: string | null, id?: string) => void;
+    /** Muestra un mensaje de éxito mediante una notificación toast. */
     setSuccess: (success: string | null, id?: string) => void;
+    /** Cierra todas las notificaciones de error activas. */
     clearError: () => void;
+    /** Cierra todas las notificaciones de éxito activas. */
     clearSuccess: () => void;
 }
 
@@ -15,6 +22,10 @@ const generateUniqueId = (prefix: string): string => {
     return `${prefix}-${Date.now()}-${++toastCounter}`;
 };
 
+/**
+ * Proveedor de contexto para la interfaz de administración.
+ * Gestiona la visualización de notificaciones de éxito y error de forma centralizada.
+ */
 export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const lastErrorIdRef = useRef<string | null>(null);
     const lastSuccessIdRef = useRef<string | null>(null);
@@ -76,6 +87,10 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
     );
 };
 
+/**
+ * Hook para acceder al contexto de UI de administración.
+ * Permite mostrar errores y mensajes de éxito desde cualquier componente hijo.
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAdminUI = () => {
     const context = useContext(AdminUIContext);

@@ -21,6 +21,10 @@ interface TrackingHistoryListProps {
     setCalendarOpen: (open: boolean) => void
 }
 
+/**
+ * Lista lateral o inferior que muestra el historial de movimientos de un mensajero.
+ * Agrupa puntos de ubicación cercanos en el tiempo para facilitar la lectura.
+ */
 export function TrackingHistoryList({
     historyData,
     loading,
@@ -88,7 +92,7 @@ export function TrackingHistoryList({
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Date Picker */}
+
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="w-full justify-start text-left font-normal h-10 border-dashed">
@@ -112,7 +116,7 @@ export function TrackingHistoryList({
                     </PopoverContent>
                 </Popover>
 
-                {/* Toggle Route */}
+
                 {historyData.length > 0 && (
                     <Button
                         variant={showRoute ? "default" : "outline"}
@@ -125,7 +129,7 @@ export function TrackingHistoryList({
                     </Button>
                 )}
 
-                {/* History List */}
+
                 {loading ? (
                     null
                 ) : historyData.length === 0 ? (

@@ -17,6 +17,10 @@ interface DealershipCardProps {
     geocoding: number | null
 }
 
+/**
+ * Componente que muestra la información detallada de un concesionario en una tarjeta.
+ * Incluye acciones para editar, eliminar y geolocalizar.
+ */
 export function DealershipCard({
     dealership,
     onEdit,

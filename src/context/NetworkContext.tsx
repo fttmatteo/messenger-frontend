@@ -12,6 +12,10 @@ interface NetworkProviderProps {
     children: ReactNode
 }
 
+/**
+ * Proveedor de contexto de red y PWA.
+ * Monitorea el estado de conexión, gestiona la sincronización offline y las actualizaciones del Service Worker.
+ */
 export function NetworkProvider({ children }: NetworkProviderProps) {
     const [isOnline, setIsOnline] = useState(navigator.onLine)
     const [wasOffline, setWasOffline] = useState(false)
@@ -19,13 +23,13 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     const [needRefresh, setNeedRefresh] = useState(false)
     const [pendingActionsCount, setPendingActionsCount] = useState(0)
 
-    // Register handler for UPDATE_STATUS_WITH_FILES
+
     useEffect(() => {
         offlineSyncService.registerHandler('UPDATE_STATUS_WITH_FILES', async (action) => {
             try {
                 const payload = action.payload as UpdateStatusWithFilesPayload
 
-                // Convert base64 back to Files
+                // Convertir base64 de vuelta a archivos (Files)
                 let signature: File | undefined
                 if (payload.signatureBase64) {
                     signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')
@@ -53,10 +57,10 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     longitude: payload.longitude,
                 })
 
-                logger.info('Offline action synced: UPDATE_STATUS_WITH_FILES', { serviceId: payload.serviceId })
+                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { serviceId: payload.serviceId })
                 return true
             } catch (error) {
-                logger.error('Failed to sync UPDATE_STATUS_WITH_FILES', error)
+                logger.error('Error al sincronizar UPDATE_STATUS_WITH_FILES', error)
                 return false
             }
         })
@@ -82,7 +86,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
             setPendingActionsCount(0)
         } catch (error) {
-            logger.error('Error syncing pending actions in NetworkContext:', error)
+            logger.error('Error al sincronizar acciones pendientes:', error)
             toast.error('Error al sincronizar algunas acciones', {
                 description: 'Se reintentará automáticamente',
                 duration: 4000,

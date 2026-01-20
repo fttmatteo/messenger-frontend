@@ -5,7 +5,7 @@ const logger = createLogger('TrackingService');
 
 const getWebSocketUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    // Remove trailing slash if present to avoid "//ws/tracking"
+    // Eliminar la barra diagonal al final si está presente para evitar "//ws/tracking"
     const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
 
     if (base.startsWith('https')) {
@@ -43,6 +43,17 @@ const INITIAL_RECONNECT_DELAY = 2000; // 2 segundos inicial
 const MAX_RECONNECT_DELAY = 60000; // 60 segundos máximo
 const JITTER_FACTOR = 0.3; // ±30% variación para evitar thundering herd
 
+/**
+ * Servicio encargado de la comunicación bidireccional en tiempo real mediante WebSockets (protocolo STOMP).
+ * Gestiona el envío de la ubicación GPS de los mensajeros, señales de vida (heartbeats)
+ * y la suscripción a actualizaciones de presencia de otros usuarios.
+ * 
+ * Incluye mecanismos de:
+ * 1. Reconexión automática con estrategia de retroceso exponencial (Exponential Backoff).
+ * 2. Mitigación de congestión mediante Jitter.
+ * 3. Buffer local (Offline Queue) para retransmitir ubicaciones capturadas sin conexión.
+ * 4. Compatibilidad específica para navegadores móviles (Safari Handshake).
+ */
 class TrackingService {
     private client: Client;
     private isConnected: boolean = false;
@@ -58,13 +69,13 @@ class TrackingService {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             // Las cookies se envían automáticamente con la conexión WebSocket
-            // No necesitamos Authorization header
+            // No necesitamos el header Authorization
         });
 
         this.client.onConnect = () => {
             this.isConnected = true;
-            this.reconnectAttempt = 0; // Reset on successful connection
-            this.client.reconnectDelay = INITIAL_RECONNECT_DELAY; // Reset delay
+            this.reconnectAttempt = 0; // Reiniciar en conexión exitosa
+            this.client.reconnectDelay = INITIAL_RECONNECT_DELAY; // Reiniciar delay
             this.drainQueue();
         };
 
@@ -73,8 +84,8 @@ class TrackingService {
         };
 
         this.client.onStompError = (frame) => {
-            logger.error('Broker reported error: ' + frame.headers['message']);
-            logger.error('Additional details: ' + frame.body);
+            logger.error('El Broker reportó un error: ' + frame.headers['message']);
+            logger.error('Detalles adicionales: ' + frame.body);
         };
 
         // Retry exponencial con jitter en cada cierre de conexión
@@ -120,7 +131,7 @@ class TrackingService {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.offlineQueue));
         } catch {
-            // Failed to save queue, continuing anyway
+            // Error al guardar la cola, continuando de todos modos
         }
     }
 
@@ -136,6 +147,11 @@ class TrackingService {
         });
     }
 
+    /**
+     * Establece la conexión con el servidor WebSocket.
+     * @param token - Token de acceso temporal para autenticar el handshake.
+     * @param onConnectCallback - Función opcional a ejecutar tras una conexión exitosa.
+     */
     public connect(token?: string, onConnectCallback?: () => void) {
         // WebSocket cookies se envían automáticamente (como en HTTP requests)
         // Pero para Safari Mobile, usamos el token temporal si está disponible
@@ -150,7 +166,7 @@ class TrackingService {
             const separator = baseUrl.includes('?') ? '&' : '?';
             this.client.brokerURL = `${baseUrl}${separator}token=${token}`;
         } else {
-            // Reset URL a la base si no hay token
+            // Reiniciar URL a la base si no hay token
             this.client.brokerURL = getWebSocketUrl();
             this.client.connectHeaders = {};
         }
@@ -167,21 +183,29 @@ class TrackingService {
         this.client.activate();
     }
 
+    /**
+ * Cierra la conexión activa del WebSocket.
+ */
     public disconnect() {
         this.client.deactivate();
         this.isConnected = false;
     }
 
     /**
-     * Checks if WebSocket is currently connected.
-     * Used to prevent duplicate connection attempts.
+     * Verifica si el WebSocket está conectado actualmente.
+     * Se usa para evitar intentos de conexión duplicados.
      */
     public isCurrentlyConnected(): boolean {
         return this.isConnected && this.client.connected;
     }
 
+    /**
+     * Envía una actualización de ubicación o estado al servidor.
+     * Si no hay conexión, la actualización se guarda en una cola local persistente.
+     * @param update - Datos parciales de la actualización de rastreo.
+     */
     public sendUpdate(update: Partial<LiveTrackingUpdate>) {
-        // Always ensure we have a timestamp for the capture time
+        // Asegurar siempre que tenemos un timestamp para la hora de captura
         const updateWithTime = {
             ...update,
             lastUpdate: update.lastUpdate || new Date().toISOString()
@@ -194,7 +218,7 @@ class TrackingService {
                     body: JSON.stringify(updateWithTime)
                 });
             } catch (error) {
-                logger.error('Error sending tracking update, buffering...', error);
+                logger.error('Error enviando actualización de rastreo, almacenando en buffer...', error);
                 this.bufferUpdate(updateWithTime);
             }
         } else {
@@ -203,21 +227,21 @@ class TrackingService {
     }
 
     private bufferUpdate(update: Partial<LiveTrackingUpdate>) {
-        // Buffer both ACTIVE updates with coordinates AND OFFLINE status changes
-        // OFFLINE status is important to sync when reconnecting
+        // Almacenar tanto actualizaciones ACTIVE con coordenadas COMO cambios de estado OFFLINE
+        // El estado OFFLINE es importante sincronizarlo al reconectar
         const isActiveWithCoords = update.status === 'ACTIVE' && update.latitude;
         const isOfflineStatus = update.status === 'OFFLINE';
 
         if (!isActiveWithCoords && !isOfflineStatus) return;
 
-        // For OFFLINE, only keep the last one (no need to queue multiple)
+        // Para OFFLINE, solo mantener el último (no es necesario encolar múltiples)
         if (isOfflineStatus) {
             this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'OFFLINE');
         }
 
         this.offlineQueue.push(update);
 
-        // Keep queue size manageable
+        // Mantener el tamaño de la cola manejable
         if (this.offlineQueue.length > MAX_QUEUE_SIZE) {
             this.offlineQueue.shift();
         }
@@ -225,6 +249,10 @@ class TrackingService {
         this.saveQueue();
     }
 
+    /**
+     * Se suscribe al canal global de rastreo para recibir actualizaciones de TODOS los mensajeros.
+     * @param callback - Función que se ejecuta al recibir una nueva actualización.
+     */
     public subscribeToAll(callback: (update: LiveTrackingUpdate) => void) {
         const doSubscribe = () => {
             this.client.subscribe('/topic/tracking/all', (message) => {
@@ -235,7 +263,7 @@ class TrackingService {
                             callback(body);
                         }
                     } catch {
-                        // ignore non-json messages
+                        // ignorar mensajes que no sean JSON
                     }
                 }
             });
@@ -244,7 +272,7 @@ class TrackingService {
         if (this.isConnected) {
             doSubscribe();
         } else {
-            // Queue subscription for when connected
+            // Encolar suscripción para cuando esté conectado
             const originalOnConnect = this.client.onConnect;
             this.client.onConnect = (frame) => {
                 this.isConnected = true;
@@ -254,6 +282,10 @@ class TrackingService {
         }
     }
 
+    /**
+     * Se suscribe exclusivamente a los eventos de presencia (conexión/desconexión).
+     * @param callback - Función que se ejecuta al detectar un cambio de estado.
+     */
     public subscribeToPresence(callback: (update: LiveTrackingUpdate) => void) {
         const doSubscribe = () => {
             this.client.subscribe('/topic/tracking/presence', (message) => {
@@ -264,7 +296,7 @@ class TrackingService {
                             callback(body);
                         }
                     } catch {
-                        // ignore non-json messages
+                        // ignorar mensajes que no sean JSON
                     }
                 }
             });
@@ -284,10 +316,16 @@ class TrackingService {
 
     private lastLocation: { latitude: number; longitude: number; timestamp: number } | null = null;
 
+    /**
+     * Guarda localmente la última ubicación conocida para propósitos de navegación rápida.
+     */
     public setLastLocation(latitude: number, longitude: number) {
         this.lastLocation = { latitude, longitude, timestamp: Date.now() };
     }
 
+    /**
+     * Obtiene la última ubicación registrada en memoria.
+     */
     public getLastKnownLocation() {
         return this.lastLocation;
     }
@@ -310,7 +348,7 @@ class TrackingService {
                 })
             });
         } catch (error) {
-            logger.error('Error sending heartbeat:', error);
+            logger.error('Error enviando heartbeat:', error);
         }
     }
 }

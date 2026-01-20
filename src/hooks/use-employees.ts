@@ -33,6 +33,10 @@ interface UseEmployeesReturn {
     fetchEmployees: () => Promise<void>
 }
 
+/**
+ * Hook para gestionar y filtrar la lista de empleados.
+ * Proporciona funcionalidades de búsqueda, filtrado por rol y ordenación.
+ */
 export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployeesReturn {
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)

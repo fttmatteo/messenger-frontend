@@ -4,6 +4,10 @@ import logo from "@/assets/logo.png"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Protector de pantalla que restringe el acceso solo a dispositivos móviles.
+ * Requerido para el flujo de trabajo de los mensajeros que depende de hardware específico (GPS, Cámara).
+ */
 export function MobileOnlyGuard() {
     const { logout } = useAuth()
 
@@ -11,7 +15,6 @@ export function MobileOnlyGuard() {
         <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-4">
             <Card className="max-w-5xl w-full shadow-2xl border-2 overflow-hidden">
                 <div className="grid md:grid-cols-2">
-                    {/* Column 1: Visuals & Header */}
                     <div className="bg-muted/30 p-6 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border">
                         <div className="mb-6">
                             <img src={logo} alt="PLAK" className="h-20 w-20 object-contain drop-shadow-md" />
@@ -35,7 +38,7 @@ export function MobileOnlyGuard() {
                         </p>
                     </div>
 
-                    {/* Column 2: Information & Action */}
+
                     <div className="p-6 flex flex-col justify-center h-full">
                         <CardContent className="space-y-6 p-0">
                             <div className="space-y-4">

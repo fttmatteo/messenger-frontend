@@ -1,9 +1,9 @@
 import { differenceInDays } from "date-fns"
 
 /**
- * Calculates days remaining until permanent deletion (60 days from deletion date).
- * @param deletedAt The ISO date string when the service was moved to trash.
- * @returns Number of days remaining (minimum 0).
+ * Calcula los días restantes hasta la eliminación permanente (60 días desde la fecha de eliminación).
+ * @param deletedAt La cadena de fecha ISO cuando el servicio fue movido a la papelera.
+ * @returns Número de días restantes (mínimo 0).
  */
 export const getDaysRemaining = (deletedAt: string) => {
     const deletedDate = new Date(deletedAt)

@@ -4,6 +4,10 @@ import { logger } from '@/utils/logger'
 import type { LoginCredentials, User } from '@/types'
 import { AuthContext } from './AuthContextDef'
 
+/**
+ * Proveedor de contexto de autenticación.
+ * Gestiona el estado de sesión del usuario, login, logout y persistencia en storage.
+ */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -11,7 +15,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
                 return JSON.parse(storedUser);
             } catch (e) {
-                logger.error("Error parsing stored user", e);
+                logger.error("Error al parsear usuario almacenado", e);
                 return null;
             }
         }
@@ -80,6 +84,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
+/**
+ * Hook para acceder al estado y funciones de autenticación.
+ * @returns {AuthContextType} Contexto de autenticación.
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);

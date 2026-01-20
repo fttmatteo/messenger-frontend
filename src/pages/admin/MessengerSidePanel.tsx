@@ -32,10 +32,17 @@ interface MessengerSidePanelProps {
     onClose: () => void
     onFollow: (id: number) => void
     isFollowing: boolean
-    /** Unified timestamp for synchronization */
+    /** Timestamp unificado para sincronización */
     now: number
 }
 
+/**
+ * Panel lateral informativo para un mensajero seleccionado en el monitoreo.
+ * Muestra opciones de contacto (Teléfono, WhatsApp), estado en línea,
+ * estadísticas de productividad del día y una línea de tiempo con la actividad reciente.
+ * 
+ * @param {MessengerSidePanelProps} props - Propiedades del componente.
+ */
 export function MessengerSidePanel({
     messenger,
     messengerId,
@@ -146,13 +153,13 @@ export function MessengerSidePanel({
         if (!dateString) return 'Sin registro'
         const date = new Date(dateString)
         if (isNaN(date.getTime())) return 'Fecha inválida'
-        // Use the passed 'now' for distance calculation to ensure synchronization
+        // Usar 'now' pasado para cálculo de distancia para asegurar sincronización
         return formatDistanceToNow(date, { addSuffix: true, locale: es })
     }
 
     if (!isOpen) return null
 
-    // Show skeleton only if we have no messenger data at all
+    // Mostrar skeleton solo si no tenemos datos del mensajero
     if (!messenger) {
         return null
     }
@@ -162,11 +169,9 @@ export function MessengerSidePanel({
             "absolute right-4 top-4 bottom-4 w-72 z-20 transition-all duration-300 flex flex-col",
             "bg-background/60 backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-right-full"
         )}>
-            {/* Header */}
             <div className="p-3 border-b bg-background/40 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 flex-1 min-w-0">
                     <div className="flex items-center gap-1 shrink-0">
-                        {/* Phone Call */}
                         <a
                             href={`tel:${employee?.phone}`}
                             className={cn(
@@ -181,7 +186,6 @@ export function MessengerSidePanel({
                             <Phone className="h-3.5 w-3.5" />
                         </a>
 
-                        {/* WhatsApp/Message */}
                         <a
                             href={employee?.phone ? `https://wa.me/${employee.phone.replace(/\D/g, '')}` : '#'}
                             target="_blank"
@@ -198,7 +202,6 @@ export function MessengerSidePanel({
                             <MessageSquare className="h-3.5 w-3.5" />
                         </a>
 
-                        {/* Follow on Map */}
                         <Button
                             variant="ghost"
                             size="icon"
@@ -238,7 +241,6 @@ export function MessengerSidePanel({
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <div className="p-3 space-y-4">
-                    {/* Real-time Stats */}
                     <div className="bg-secondary/5 rounded-xl px-3 py-2 border border-secondary/10">
                         <div className="flex justify-between items-center">
                             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Última señal</p>
@@ -248,10 +250,8 @@ export function MessengerSidePanel({
                         </div>
                     </div>
 
-                    {/* Productivity Summary */}
                     <MessengerProductivity stats={dailyStats} />
 
-                    {/* Timeline */}
                     <MessengerActivityTimeline
                         history={history}
                         loading={loadingHistory}

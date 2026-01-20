@@ -2,31 +2,38 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { offlineSyncService, type OfflineAction } from '../offline-sync.service'
 import { get, set } from 'idb-keyval'
 
-// Mock idb-keyval
+// Mock de idb-keyval
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),
     set: vi.fn(),
     del: vi.fn(),
 }))
 
-// Mock crypto.randomUUID
+// Mock de crypto.randomUUID
 vi.stubGlobal('crypto', {
     randomUUID: () => '550e8400-e29b-41d4-a716-446655440000',
-    // We cast to unknown then Crypto to avoid lint/type errors while providing a simple mock
+    // Hacemos el cast a unknown y luego a Crypto para evitar errores de tipo mientras proporcionamos un mock simple
 } as unknown as Crypto)
 
+/**
+ * Suite de pruebas unitarias para OfflineSyncService.
+ * Verifica la puesta en cola, recuperación, sincronización y reintento de acciones offline utilizando IndexedDB mockeado.
+ */
 describe('OfflineSyncService', () => {
     beforeEach(async () => {
         vi.clearAllMocks()
         await offlineSyncService.clearAll()
 
-        // Mock navigator.onLine
+        // Mock de navigator.onLine
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,
             value: true,
         })
     })
 
+    /**
+     * Verifica que una acción se agregue correctamente a la cola de pendientes en IndexedDB.
+     */
     it('should queue an action correctly', async () => {
         vi.mocked(get).mockResolvedValue([])
 
@@ -41,6 +48,9 @@ describe('OfflineSyncService', () => {
         ]))
     })
 
+    /**
+     * Verifica la recuperación de todas las acciones pendientes.
+     */
     it('should retrieve pending actions', async () => {
         const mockActions: OfflineAction[] = [
             { id: '1', type: 'UPDATE_STATUS', payload: {}, timestamp: Date.now(), retryCount: 0 }
@@ -51,6 +61,9 @@ describe('OfflineSyncService', () => {
         expect(actions).toEqual(mockActions)
     })
 
+    /**
+     * Verifica que una acción específica se elimine correctamente de la cola.
+     */
     it('should remove an action', async () => {
         const mockActions: OfflineAction[] = [
             { id: '1', type: 'UPDATE_STATUS', payload: {}, timestamp: Date.now(), retryCount: 0 },
@@ -63,6 +76,9 @@ describe('OfflineSyncService', () => {
         expect(set).toHaveBeenCalledWith('pending_offline_actions', [mockActions[1]])
     })
 
+    /**
+     * Verifica el proceso completo de sincronización cuando las acciones son procesadas exitosamente por sus handlers.
+     */
     it('should handle syncAll with registered handlers', async () => {
         const handler = vi.fn().mockResolvedValue(true)
         offlineSyncService.registerHandler('UPDATE_STATUS', handler)
@@ -79,6 +95,9 @@ describe('OfflineSyncService', () => {
         expect(set).toHaveBeenCalledWith('pending_offline_actions', [])
     })
 
+    /**
+     * Verifica que el contador de reintentos se incremente si un handler falla.
+     */
     it('should increment retry count on failure', async () => {
         const handler = vi.fn().mockResolvedValue(false)
         offlineSyncService.registerHandler('UPDATE_STATUS', handler)
@@ -95,6 +114,9 @@ describe('OfflineSyncService', () => {
         ])
     })
 
+    /**
+     * Verifica que una acción se elimine permanentemente después de exceder el número máximo de reintentos.
+     */
     it('should remove action after max retries', async () => {
         const handler = vi.fn().mockResolvedValue(false)
         offlineSyncService.registerHandler('UPDATE_STATUS', handler)
@@ -109,6 +131,9 @@ describe('OfflineSyncService', () => {
         expect(set).toHaveBeenCalledWith('pending_offline_actions', [])
     })
 
+    /**
+     * Verifica que la sincronización no se intente si el navegador está offline.
+     */
     it('should not sync when offline', async () => {
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,

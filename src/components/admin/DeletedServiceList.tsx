@@ -17,6 +17,9 @@ interface DeletedServiceCardProps {
     itemVariants: Variants
 }
 
+/**
+ * Tarjeta individual para mostrar un servicio eliminado en la vista móvil.
+ */
 export function DeletedServiceCard({ service, isRestoring, onRestore, itemVariants }: DeletedServiceCardProps) {
     const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
     const daysRemaining = getDaysRemaining(service.deletedAt ?? service.createdAt)
@@ -88,6 +91,9 @@ interface DeletedServiceListProps {
     itemVariants: Variants
 }
 
+/**
+ * Lista optimizada para móviles de servicios eliminados con soporte para animaciones.
+ */
 export function DeletedServiceList({ services, restoringId, onRestore, itemVariants }: DeletedServiceListProps) {
     return (
         <motion.div>

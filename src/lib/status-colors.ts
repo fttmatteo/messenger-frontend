@@ -1,6 +1,5 @@
 import type { ServiceStatus } from "@/types/service.types"
 
-// Default status colors (HEX format)
 export const DEFAULT_STATUS_COLORS: Record<string, string> = {
     ASSIGNED: '#00eeffe1',   // blue-500
     PENDING: '#ff6f00e8',    // indigo-500
@@ -11,14 +10,14 @@ export const DEFAULT_STATUS_COLORS: Record<string, string> = {
     DELETED: '#ff0000dd',    // slate-500
 }
 
-// Default fallback color
-const DEFAULT_FALLBACK_COLOR = '#6b7280' // gray-500
+const DEFAULT_FALLBACK_COLOR = '#6b7280'
 
-// LocalStorage key prefix - userId will be appended
 const STORAGE_KEY_PREFIX = 'status-colors-'
 
 /**
- * Get the storage key for a specific user
+ * Obtiene la clave de almacenamiento para un usuario específico en localStorage.
+ * @param userId - ID único del usuario (opcional).
+ * @returns Clave de almacenamiento formateada.
  */
 function getStorageKey(userId?: number | string): string {
     if (!userId) {
@@ -28,7 +27,7 @@ function getStorageKey(userId?: number | string): string {
 }
 
 /**
- * Load custom colors from localStorage for a specific user
+ * Carga colores personalizados desde localStorage para un usuario específico
  */
 export function loadCustomColors(userId?: number | string): Record<string, string> {
     try {
@@ -37,35 +36,35 @@ export function loadCustomColors(userId?: number | string): Record<string, strin
             return JSON.parse(stored)
         }
     } catch {
-        // Failed to load custom colors from storage
+        // Ignorar error al leer/parsear localStorage
     }
     return {}
 }
 
 /**
- * Save custom colors to localStorage for a specific user
+ * Guarda colores personalizados en localStorage para un usuario específico
  */
 export function saveCustomColors(colors: Record<string, string>, userId?: number | string): void {
     try {
         localStorage.setItem(getStorageKey(userId), JSON.stringify(colors))
     } catch {
-        // Failed to save custom colors to storage
+        // Ignorar error al guardar en localStorage
     }
 }
 
 /**
- * Clear custom colors from localStorage for a specific user (restore defaults)
+ * Elimina colores personalizados de localStorage para un usuario específico (restaura valores por defecto)
  */
 export function clearCustomColors(userId?: number | string): void {
     try {
         localStorage.removeItem(getStorageKey(userId))
     } catch {
-        // Failed to clear custom colors from storage
+        // Ignorar error al eliminar de localStorage
     }
 }
 
 /**
- * Get merged colors (defaults + custom overrides) for a specific user
+ * Obtiene colores fusionados (por defecto + personalizaciones) para un usuario específico
  */
 export function getMergedColors(userId?: number | string): Record<string, string> {
     const customColors = loadCustomColors(userId)
@@ -73,7 +72,7 @@ export function getMergedColors(userId?: number | string): Record<string, string
 }
 
 /**
- * Get the HEX color for a status
+ * Obtiene el color HEX para un estado
  */
 export function getStatusHexColor(status?: ServiceStatus | string, customColors?: Record<string, string>): string {
     const colors = customColors || getMergedColors()
@@ -81,7 +80,7 @@ export function getStatusHexColor(status?: ServiceStatus | string, customColors?
 }
 
 /**
- * Get inline style for status dot (background color)
+ * Obtiene estilo inline para punto de estado (color de fondo)
  */
 export function getStatusDotStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
     return {
@@ -90,7 +89,7 @@ export function getStatusDotStyle(status: ServiceStatus | string, customColors?:
 }
 
 /**
- * Get inline style for status text
+ * Obtiene estilo inline para texto de estado
  */
 export function getStatusTextStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
     return {
@@ -99,26 +98,23 @@ export function getStatusTextStyle(status: ServiceStatus | string, customColors?
 }
 
 /**
- * Convert a hex color (with or without alpha) to rgba with specified opacity
- * Handles both 6-char (#RRGGBB) and 8-char (#RRGGBBAA) hex colors
+ * Convierte un color hex (con o sin alpha) a rgba con opacidad especificada
+ * Maneja colores hex de 6 caracteres (#RRGGBB) y 8 caracteres (#RRGGBBAA)
  */
 export function hexToRgba(hex: string, opacity: number): string {
-    // Remove the hash if present
     const cleanHex = hex.replace('#', '')
 
-    // Handle both 6 and 8 character hex (with alpha)
     const r = parseInt(cleanHex.substring(0, 2), 16)
     const g = parseInt(cleanHex.substring(2, 4), 16)
     const b = parseInt(cleanHex.substring(4, 6), 16)
 
-    // Clamp opacity between 0 and 1
     const clampedOpacity = Math.min(1, Math.max(0, opacity))
 
     return `rgba(${r}, ${g}, ${b}, ${clampedOpacity})`
 }
 
 /**
- * Get the pill background color (status color with low opacity)
+ * Obtiene el color de fondo de la pastilla (color de estado con opacidad baja)
  */
 export function getStatusPillBackground(status: ServiceStatus | string, customColors?: Record<string, string>, opacity: number = 0.15): string {
     const hexColor = getStatusHexColor(status, customColors)
@@ -126,7 +122,7 @@ export function getStatusPillBackground(status: ServiceStatus | string, customCo
 }
 
 /**
- * Get inline style for status badge (background + white text)
+ * Obtiene estilo inline para insignia de estado (fondo + texto blanco)
  */
 export function getStatusBadgeStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
     return {
@@ -136,7 +132,7 @@ export function getStatusBadgeStyle(status: ServiceStatus | string, customColors
 }
 
 /**
- * Status labels in Spanish
+ * Etiquetas de estado en español
  */
 export const STATUS_LABELS: Record<string, string> = {
     ASSIGNED: 'Asignado',
@@ -149,7 +145,7 @@ export const STATUS_LABELS: Record<string, string> = {
 }
 
 /**
- * Get status label
+ * Obtiene etiqueta de estado
  */
 export function getStatusLabel(status: ServiceStatus | string): string {
     return STATUS_LABELS[status] || status

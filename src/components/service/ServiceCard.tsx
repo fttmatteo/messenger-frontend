@@ -18,6 +18,10 @@ interface ServiceCardProps {
     onViewDetails: (serviceId: number) => void
 }
 
+/**
+ * Tarjeta de servicio para la vista de administración.
+ * Permite visualizar el estado, placa y responsables, además de actualizar el estado.
+ */
 export function ServiceCard({ service, onUpdate, onViewDetails }: ServiceCardProps) {
     const statusConfig = getStatusBadge(service.currentStatus)
     const messengerName = formatDisplayName(service.messenger?.fullName ?? 'No asignado')

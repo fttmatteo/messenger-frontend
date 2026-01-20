@@ -42,12 +42,10 @@ function AdminLayoutContent() {
         navigate(-1)
     }
 
-    // Scroll to top functionality
     const mainRef = useRef<HTMLDivElement>(null)
 
     return (
         <SidebarProvider className="h-screen w-screen overflow-hidden">
-            {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
@@ -143,6 +141,11 @@ function AdminLayoutContent() {
     )
 }
 
+/**
+ * Layout principal para la interfaz de administración.
+ * Proporciona una barra lateral de navegación persistente, gestión de temas y
+ * envuelve el contenido en un proveedor de contexto de UI de administración.
+ */
 export default function AdminLayout() {
     return (
         <AdminUIProvider>

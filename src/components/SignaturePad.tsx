@@ -12,6 +12,10 @@ interface SignaturePadProps {
     onClear?: () => void
 }
 
+/**
+ * Lienzo interactivo para capturar firmas manuscritas del usuario.
+ * Genera un archivo PNG y gestiona la limpieza del rastro.
+ */
 export function SignaturePad({
     onChange,
     width = 400,

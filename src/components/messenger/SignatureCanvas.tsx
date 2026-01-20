@@ -9,6 +9,9 @@ import { createLogger } from '@/utils/logger'
 const logger = createLogger('SignatureCanvas')
 
 
+/**
+ * Propiedades para el componente de lienzo de firma.
+ */
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
     onGifGenerated?: (gif: Blob | null) => void
@@ -17,6 +20,9 @@ interface SignatureCanvasProps {
     height?: number
 }
 
+/**
+ * Referencia imperativa para interactuar con el componente de firma.
+ */
 export interface SignatureCanvasRef {
     clear: () => void
     getSignature: () => Promise<File | null>
@@ -25,6 +31,10 @@ export interface SignatureCanvasRef {
     hasGif: () => boolean
 }
 
+/**
+ * Componente que proporciona un área de dibujo (canvas) para capturar la firma del asesor.
+ * Opcionalmente activa la cámara frontal para capturar una ráfaga de imágenes durante la firma.
+ */
 export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasProps>(
     ({ onSignatureChange, onGifGenerated, enableCamera = false, width = 300, height = 150 }, ref) => {
         const savedCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -129,7 +139,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             ctx.beginPath()
             ctx.moveTo(coords.x, coords.y)
 
-            // Trigger camera capture on first stroke
+
             if (enableCamera && cameraRef.current) {
                 cameraRef.current.startCapture()
             }
@@ -226,10 +236,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             clear,
             getSignature,
             getGifFile: async () => {
-                // First try saved blob, then fallback to camera ref
+                // Primero intenta con el blob guardado, si no, usa el fallback a la referencia de la cámara
                 const blob = savedGifBlob ?? await cameraRef.current?.getGif()
                 if (!blob) {
-                    logger.warn('getGifFile return null', { hasSavedBlob: !!savedGifBlob })
+                    logger.warn('getGifFile retornó null', { hasSavedBlob: !!savedGifBlob })
                     return null
                 }
                 return new File([blob], `captura_${Date.now()}.gif`, { type: 'image/gif' })
@@ -284,7 +294,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                         </DialogHeader>
 
                         <div className={`flex-1 flex gap-3 min-h-0 flex-col`}>
-                            {/* Camera preview - 30% height */}
                             {enableCamera && (
                                 <div className="flex-[3] min-h-0">
                                     <SignatureCameraCapture
@@ -299,7 +308,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 </div>
                             )}
 
-                            {/* Signature canvas - 70% height */}
                             <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 ${enableCamera ? 'flex-[7]' : 'flex-1'}`}>
                                 <canvas
                                     ref={fullscreenCanvasRef}

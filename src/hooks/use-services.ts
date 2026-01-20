@@ -31,6 +31,10 @@ interface UseServicesReturn {
     fetchServices: () => Promise<void>
 }
 
+/**
+ * Hook para gestionar la lista paginada de servicios en la vista de administración.
+ * Maneja filtros por estado, búsqueda, ordenación y navegación entre páginas.
+ */
 export function useServices({ searchQuery }: UseServicesOptions = {}): UseServicesReturn {
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)

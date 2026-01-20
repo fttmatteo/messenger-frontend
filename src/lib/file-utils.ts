@@ -1,10 +1,10 @@
 /**
- * Utility functions for file conversion.
- * Used for offline storage (IndexedDB requires base64) and restoration.
+ * Funciones utilitarias para conversión de archivos.
+ * Usadas para almacenamiento offline (IndexedDB requiere base64) y restauración.
  */
 
 /**
- * Convert a File or Blob to base64 string for storage in IndexedDB
+ * Convierte un File o Blob a cadena base64 para almacenamiento en IndexedDB
  */
 export async function fileToBase64(file: File | Blob): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ export async function fileToBase64(file: File | Blob): Promise<string> {
 }
 
 /**
- * Convert a base64 string back to a File for upload
+ * Convierte una cadena base64 de vuelta a File para subida
  */
 export async function base64ToFile(
     base64: string,

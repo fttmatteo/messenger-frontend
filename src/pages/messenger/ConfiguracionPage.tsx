@@ -13,6 +13,11 @@ function getThemeLabel(theme: string | undefined) {
     }
 }
 
+/**
+ * Página de configuración principal para la aplicación del mensajero.
+ * Sirve como menú central para acceder a diferentes secciones de ajustes
+ * como la apariencia, y muestra información sobre la versión de la aplicación.
+ */
 export default function ConfiguracionPage() {
     const { theme } = useTheme()
     const navigate = useNavigate()
@@ -25,7 +30,6 @@ export default function ConfiguracionPage() {
                 </p>
 
                 <Card className="border-border/40 bg-card overflow-hidden rounded-2xl shadow-sm">
-                    {/* Appearance Option */}
                     <button
                         onClick={() => navigate('/messenger/configuracion/apariencia')}
                         className="w-full flex items-center gap-4 p-4 hover:bg-muted/40 active:scale-[0.98] transition-all text-left touch-manipulation group"
@@ -46,11 +50,9 @@ export default function ConfiguracionPage() {
                         </div>
                     </button>
 
-                    {/* Placeholder for more settings can be added with a Separator between them */}
                 </Card>
             </div>
 
-            {/* Additional info or version footer */}
             <div className="mt-auto py-6 text-center">
                 <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
                     {APP_CONFIG.name} v{APP_CONFIG.version}

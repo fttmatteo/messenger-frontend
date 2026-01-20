@@ -21,7 +21,13 @@ import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, X, ExternalLink } from "lucide-react"
 
-// Marker component for the dealership location
+/**
+ * Componente que renderiza un marcador personalizado en el mapa para la ubicación de un concesionario.
+ * Utiliza AdvancedMarkerElement de la API de Google Maps.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {google.maps.LatLngLiteral} props.position - Coordenadas de latitud y longitud.
+ */
 function DealershipMarker({ position }: { position: google.maps.LatLngLiteral }) {
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
@@ -52,7 +58,14 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     return null
 }
 
-// Address Display Component for Reverse Geocoding
+/**
+ * Componente que muestra la dirección física a partir de coordenadas GPS
+ * utilizando el servicio de geocodificación inversa de Google Maps.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {number} props.lat - Latitud.
+ * @param {number} props.lng - Longitud.
+ */
 function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
     const [address, setAddress] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
@@ -105,13 +118,18 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
     )
 }
 
+/**
+ * Página principal de administración de concesionarios.
+ * Permite visualizar la lista de concesionarios, filtrar por zona,
+ * buscar por nombre o dirección, y acceder a la creación/edición.
+ * También permite previsualizar la ubicación geográfica en un mapa emergente.
+ */
 export default function Concesionarios() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const { setSuccess } = useAdminUI()
     const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
 
-    // Use custom hooks
     const {
         loading,
         filteredAndSortedDealerships,
@@ -133,7 +151,6 @@ export default function Concesionarios() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title+Filters center, Button right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
@@ -308,7 +325,6 @@ export default function Concesionarios() {
                 </CardContent>
             </Card>
 
-            {/* Location Popup Dialog */}
             <Dialog open={!!locationPopup} onOpenChange={(open) => !open && setLocationPopup(null)}>
                 <DialogContent className="max-w-lg">
                     <DialogHeader>

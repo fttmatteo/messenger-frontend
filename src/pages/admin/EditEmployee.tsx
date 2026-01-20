@@ -21,15 +21,18 @@ const employeeSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
     fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    password: z.string().optional(), // Password is optional on update
+    password: z.string().optional(),
     role: z.enum(["ADMIN", "MESSENGER"]),
 })
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
 /**
- * Capitalizes the first letter of each word
- * Example: "MATEO VALENCIA ARDILA" → "Mateo Valencia Ardila"
+ * Capitaliza la primera letra de cada palabra en una cadena de texto.
+ * Ejemplo: "MATEO VALENCIA ARDILA" → "Mateo Valencia Ardila"
+ * 
+ * @param {string} str - Cadena de texto a capitalizar.
+ * @returns {string} Cadena de texto capitalizada.
  */
 function capitalizeWords(str: string): string {
     return str
@@ -39,6 +42,11 @@ function capitalizeWords(str: string): string {
         .join(' ')
 }
 
+/**
+ * Página para editar la información de un empleado existente.
+ * Permite actualizar datos personales, cambiar el rol o la contraseña,
+ * y eliminar al empleado del sistema.
+ */
 export default function EditEmployee() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -70,7 +78,7 @@ export default function EditEmployee() {
                     document: String(employee.document),
                     fullName: employee.fullName,
                     phone: employee.phone,
-                    password: "", // Don't populate password
+                    password: "",
                     role: employee.role,
                 })
             } catch (error) {
@@ -90,7 +98,7 @@ export default function EditEmployee() {
                 document: data.document,
                 fullName: capitalizeWords(data.fullName.trim()),
                 phone: data.phone,
-                password: data.password || "", // Send empty if not changed
+                password: data.password || "",
                 role: data.role as EmployeeRole,
             })
             setSuccess("Empleado actualizado exitosamente")
@@ -120,7 +128,6 @@ export default function EditEmployee() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
@@ -143,7 +150,6 @@ export default function EditEmployee() {
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
                         <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
-                            {/* Documento */}
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
                                 <Input
@@ -157,7 +163,6 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            {/* Teléfono */}
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Teléfono</Label>
                                 <Input
@@ -171,7 +176,6 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            {/* Nombre Completo */}
                             <div className="space-y-2 md:col-span-2 lg:col-span-1">
                                 <Label htmlFor="fullName">Nombre completo</Label>
                                 <Input
@@ -185,7 +189,6 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Nueva contraseña (opcional)</Label>
                                 <div className="relative">
@@ -216,7 +219,6 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            {/* Rol */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">Cargo</Label>
                                 <Select
@@ -238,7 +240,6 @@ export default function EditEmployee() {
                             </div>
                         </div>
 
-                        {/* Submit Buttons */}
                         <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
                             <Button
                                 type="button"

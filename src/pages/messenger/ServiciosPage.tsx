@@ -13,6 +13,11 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import { cn } from "@/lib/utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
 
+/**
+ * Página principal de listado de servicios para el perfil Mensajero.
+ * Proporciona funcionalidades de búsqueda, filtrado por fecha y estado,
+ * y visualización del historial completo de entregas y asignaciones.
+ */
 export default function ServiciosPage() {
     const { loading, completedServices, error } = useMessengerServices()
     const { colors } = useStatusColors()
@@ -22,10 +27,10 @@ export default function ServiciosPage() {
     const [statusFilterOpen, setStatusFilterOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState<string>("all")
 
-    // Get the last status change date for a service
+    // Obtener la fecha del último cambio de estado para un servicio
     const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
         if (service.history && service.history.length > 0) {
-            // Get the most recent change date from history
+            // Obtener la fecha de cambio más reciente del historial
             const lastChange = service.history[service.history.length - 1]
             return new Date(lastChange.changeDate)
         }
@@ -33,8 +38,8 @@ export default function ServiciosPage() {
     }, [])
 
     const filteredServices = useMemo(() => {
-        // We use global search if there's a search term OR a status filter active.
-        // Otherwise, we filter by the selected date.
+        // Usamos búsqueda global si hay un término de búsqueda O un filtro de estado activo.
+        // De lo contrario, filtramos por la fecha seleccionada.
         const isGlobalSearch = searchTerm.trim() !== "" || statusFilter !== "all"
 
         let services = isGlobalSearch
@@ -43,12 +48,12 @@ export default function ServiciosPage() {
                 isSameDay(getLastChangeDate(service), selectedDate)
             )
 
-        // Apply Status Filter
+        // Aplicar filtro de estado
         if (statusFilter !== "all") {
             services = services.filter(s => s.currentStatus === statusFilter)
         }
 
-        // Apply Plate/Dealership Search filter
+        // Aplicar filtro de búsqueda de placa/concesionario
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
             services = services.filter(service =>
@@ -58,14 +63,15 @@ export default function ServiciosPage() {
             )
         }
 
-        return services
+        return [...services].sort((a, b) =>
+            getLastChangeDate(b).getTime() - getLastChangeDate(a).getTime()
+        )
     }, [completedServices, selectedDate, searchTerm, statusFilter, getLastChangeDate])
 
     const isToday = isSameDay(selectedDate, new Date())
 
     return (
         <div className="flex flex-col p-3 gap-3">
-            {/* Search Bar + Filters */}
             <div className="flex gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={2.5} />
@@ -80,7 +86,6 @@ export default function ServiciosPage() {
                     />
                 </div>
 
-                {/* Status Filter Popover */}
                 <Popover open={statusFilterOpen} onOpenChange={setStatusFilterOpen}>
                     <PopoverTrigger asChild>
                         <Button
@@ -129,7 +134,6 @@ export default function ServiciosPage() {
                     </PopoverContent>
                 </Popover>
 
-                {/* Date Filter Popover */}
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                         <Button
@@ -157,7 +161,6 @@ export default function ServiciosPage() {
                 </Popover>
             </div>
 
-            {/* Date indicator + Results count */}
             <div className="flex items-center justify-between">
                 <p className="text-[11px] font-black text-muted-foreground/80 flex items-center gap-1.5 overflow-hidden uppercase tracking-[0.18em]">
                     {statusFilter !== 'all' && (
@@ -187,7 +190,6 @@ export default function ServiciosPage() {
                 )}
             </div>
 
-            {/* Services List */}
             <div className="">
                 <ServiceList
                     services={filteredServices}
@@ -201,7 +203,6 @@ export default function ServiciosPage() {
                 />
             </div>
 
-            {/* Error State */}
             {error && !loading && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     <p className="text-red-600 dark:text-red-400 text-sm text-center">

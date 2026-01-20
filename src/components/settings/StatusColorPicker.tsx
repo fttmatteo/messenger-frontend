@@ -10,6 +10,10 @@ interface StatusColorPickerProps {
     onColorChange: (status: string, color: string) => void
 }
 
+/**
+ * Componente para seleccionar y personalizar el color asociado a un estado de servicio.
+ * Permite cambiar el color individualmente y restaurar el valor por defecto.
+ */
 export function StatusColorPicker({ status, color, onColorChange }: StatusColorPickerProps) {
     const inputRef = useRef<HTMLInputElement>(null)
     const defaultColor = DEFAULT_STATUS_COLORS[status]
@@ -30,13 +34,11 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
             onClick={handleCardClick}
         >
             <CardContent className="p-4 flex items-center gap-4">
-                {/* Color Preview Circle - contains the hidden input */}
                 <div className="relative">
                     <div
                         className="w-12 h-12 rounded-full shadow-md shrink-0 transition-transform group-hover:scale-110"
                         style={{ backgroundColor: color }}
                     />
-                    {/* Color Input positioned over the circle */}
                     <input
                         ref={inputRef}
                         type="color"
@@ -46,7 +48,7 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                         aria-label={`Seleccionar color para ${getStatusLabel(status)}`}
                     />
 
-                    {/* Reset Button (only shown if modified) */}
+
                     {isModified && (
                         <Button
                             variant="ghost"
@@ -60,7 +62,7 @@ export function StatusColorPicker({ status, color, onColorChange }: StatusColorP
                     )}
                 </div>
 
-                {/* Status Info */}
+
                 <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm">
                         {getStatusLabel(status)}

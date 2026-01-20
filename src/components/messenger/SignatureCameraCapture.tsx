@@ -1,11 +1,4 @@
-import {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-    useCallback,
-} from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
 import { createLogger } from '@/utils/logger'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -13,7 +6,9 @@ import { RefreshCw, Camera } from 'lucide-react'
 
 const logger = createLogger('SignatureCapture')
 
-// GIF configuration
+/**
+ * Configuración para la generación de GIF de verificación.
+ */
 const GIF_WIDTH = 640
 const GIF_HEIGHT = 480
 const CAPTURE_INTERVAL_MS = 500
@@ -31,6 +26,10 @@ interface SignatureCameraCaptureProps {
     className?: string
 }
 
+/**
+ * Componente que captura una ráfaga de imágenes de la cámara frontal mientras el usuario firma.
+ * Genera un GIF animado para propósitos de verificación de identidad (anti-fraude).
+ */
 const SignatureCameraCapture = forwardRef<
     SignatureCameraCaptureRef,
     SignatureCameraCaptureProps
@@ -45,7 +44,7 @@ const SignatureCameraCapture = forwardRef<
     const [gifUrl, setGifUrl] = useState<string | null>(null)
     const [cameraError, setCameraError] = useState<string | null>(null)
 
-    // Expose methods via ref
+
     useImperativeHandle(ref, () => ({
         getGif: async () => gifBlob,
         isReady: () => gifBlob !== null,
@@ -56,11 +55,11 @@ const SignatureCameraCapture = forwardRef<
         }
     }))
 
-    // Initialize camera on mount
+
     useEffect(() => {
         initCamera()
 
-        // Cleanup on unmount
+
         return () => {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop())
@@ -89,16 +88,16 @@ const SignatureCameraCapture = forwardRef<
                 videoRef.current.srcObject = stream
             }
 
-            logger.info('Camera initialized successfully')
+            logger.info('Cámara inicializada correctamente')
 
-            // Show consent toast
+
             toast.info('Se capturarán fotos para verificación', {
                 description: 'La cámara se activará mientras firma',
                 duration: 3000,
             })
 
         } catch (error) {
-            logger.error('Camera initialization failed', error)
+            logger.error('Error al inicializar cámara', error)
             setCameraError('No se pudo acceder a la cámara')
             toast.error('Error de cámara', {
                 description: 'No se pudo acceder a la cámara. Verifica los permisos.',
@@ -111,7 +110,6 @@ const SignatureCameraCapture = forwardRef<
         const startTime = performance.now()
 
         try {
-            // Lazy load gif.js
             const GIF = (await import('gif.js')).default
 
             const gifPromise = new Promise<Blob>((resolve, reject) => {
@@ -124,7 +122,7 @@ const SignatureCameraCapture = forwardRef<
                 })
 
                 capturedFrames.forEach(frame => {
-                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS * 4 }) // 4x speed adjustment
+                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS * 4 }) // Ajuste de velocidad 4x
                 })
 
                 gif.on('finished', (blob: Blob) => {
@@ -138,7 +136,7 @@ const SignatureCameraCapture = forwardRef<
                 gif.render()
             })
 
-            // Race against timeout
+
             const blob = await Promise.race([
                 gifPromise,
                 new Promise<never>((_, reject) =>
@@ -149,19 +147,19 @@ const SignatureCameraCapture = forwardRef<
             const generationTime = performance.now() - startTime
             const gifSizeKb = Math.round(blob.size / 1024)
 
-            logger.info('gif_capture_success', {
-                generationTimeMs: Math.round(generationTime),
-                gifSizeKb,
+            logger.info('GIF capturado correctamente', {
+                tiempoMs: Math.round(generationTime),
+                tamañoKb: gifSizeKb,
             })
 
-            // Create URL for preview
+
             const url = URL.createObjectURL(blob)
             setGifUrl(url)
             setGifBlob(blob)
             onGifGenerated?.(blob)
 
         } catch (error) {
-            logger.error('gif_capture_failed', { error })
+            logger.error('Error al capturar GIF', { error })
             toast.error('Error generando captura', {
                 description: 'Intenta de nuevo',
             })
@@ -189,14 +187,48 @@ const SignatureCameraCapture = forwardRef<
             return
         }
 
+
+        let streamWaitdAttempts = 0
+        while (!video.srcObject && streamWaitdAttempts < 30) { // Máximo 3 segundos para permiso/inicialización
+            await new Promise(r => setTimeout(r, 100))
+            streamWaitdAttempts++
+        }
+
+        if (!video.srcObject) {
+            logger.warn('Sin stream de video después de esperar')
+        }
+
+
+        let attempts = 0
+        const maxAttempts = 30 // Máximo 3 segundos de espera
+
+
+        while ((video.readyState < 2 || video.currentTime === 0) && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100))
+            attempts++
+        }
+
+        if (video.readyState < 2) {
+            logger.warn('Video no listo después de espera', { readyState: video.readyState, currentTime: video.currentTime })
+        }
+
         canvas.width = GIF_WIDTH
         canvas.height = GIF_HEIGHT
 
         const capturedFrames: ImageData[] = []
 
-        logger.info('gif_capture_started', { frameCount: FRAME_COUNT })
 
-        // Capture frames at intervals
+        if (video.videoWidth === 0) {
+            logger.warn('Ancho de video 0, esperando')
+            await new Promise(r => setTimeout(r, 200)) // Último intento de espera
+        }
+
+        logger.info('Iniciando captura de GIF', {
+            frames: FRAME_COUNT,
+            dimensiones: `${video.videoWidth}x${video.videoHeight}`
+        })
+
+
         for (let i = 0; i < FRAME_COUNT; i++) {
             await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : CAPTURE_INTERVAL_MS))
 
@@ -207,7 +239,7 @@ const SignatureCameraCapture = forwardRef<
 
         setIsCapturing(false)
 
-        // Generate GIF
+
         await generateGif(capturedFrames)
     }, [isCapturing, generateGif])
 
@@ -217,14 +249,12 @@ const SignatureCameraCapture = forwardRef<
         }
         setGifBlob(null)
         setGifUrl(null)
-        // Camera will be re-attached by the useEffect below when gifUrl becomes null
     }
 
-    // Effect to re-attach stream to video when switching back from GIF preview
+
     useEffect(() => {
         if (!gifUrl && videoRef.current && streamRef.current) {
             videoRef.current.srcObject = streamRef.current
-            // Small delay to ensure video element is ready before starting capture
             setTimeout(() => startCapture(), 500)
         }
     }, [gifUrl, startCapture])
@@ -240,7 +270,6 @@ const SignatureCameraCapture = forwardRef<
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
-            {/* Camera preview / GIF preview */}
             <div
                 className={`relative overflow-hidden rounded-lg ${isCapturing ? 'animate-pulse ring-2 ring-red-500' : ''
                     }`}
@@ -262,7 +291,7 @@ const SignatureCameraCapture = forwardRef<
                     />
                 )}
 
-                {/* Capturing indicator */}
+
                 {isCapturing && (
                     <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5 animate-pulse shadow-sm backdrop-blur-sm z-10">
                         <div className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -270,7 +299,7 @@ const SignatureCameraCapture = forwardRef<
                     </div>
                 )}
 
-                {/* Generating indicator */}
+
                 {isGenerating && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] z-20">
                         <div className="bg-background/95 dark:bg-zinc-900/95 text-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-3 border border-border/50">
@@ -280,13 +309,13 @@ const SignatureCameraCapture = forwardRef<
                     </div>
                 )}
 
-                {/* GIF badge */}
+
                 {gifUrl && (
                     <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded border border-white/10 shadow-sm">
                         GIF
                     </div>
                 )}
-                {/* Retry button */}
+
                 {gifUrl && (
                     <Button
                         variant="ghost"
@@ -304,7 +333,7 @@ const SignatureCameraCapture = forwardRef<
                 )}
             </div>
 
-            {/* Hidden canvas for capture */}
+
             <canvas ref={canvasRef} className="hidden" />
         </div>
     )

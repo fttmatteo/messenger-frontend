@@ -2,6 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
+/**
+ * Esqueleto de carga para una fila de la tabla de empleados.
+ */
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -28,6 +31,9 @@ export function TableRowSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga para una tarjeta de empleado (vista móvil).
+ */
 export function CardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">
@@ -55,6 +61,9 @@ export function CardSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga para el formulario de gestión de empleados.
+ */
 export function EmployeeFormSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">

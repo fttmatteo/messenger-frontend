@@ -12,6 +12,10 @@ interface ServiceHistoryTimelineProps {
     className?: string
 }
 
+/**
+ * Línea de tiempo que visualiza el historial de estados de un servicio.
+ * Cada entrada muestra detalles del cambio, incluyendo fotos y firmas asociadas.
+ */
 export function ServiceHistoryTimeline({ service, onImageClick, className }: ServiceHistoryTimelineProps) {
     const { colors } = useStatusColors()
 

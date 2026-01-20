@@ -14,6 +14,10 @@ interface EmployeeCardProps {
     deleting: number | null
 }
 
+/**
+ * Componente que muestra la información de un empleado en una tarjeta.
+ * Incluye acciones para editar y eliminar.
+ */
 export function EmployeeCard({
     employee,
     onEdit,

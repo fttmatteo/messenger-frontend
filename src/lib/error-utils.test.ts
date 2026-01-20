@@ -13,7 +13,7 @@ import {
 } from './error-utils'
 import type { ApiErrorResponse } from '@/types/error.types'
 
-// Helper to create mock Axios errors
+// Helper para crear errores Axios mock
 function createAxiosError(
     status: number,
     data?: ApiErrorResponse,
@@ -35,7 +35,7 @@ function createAxiosError(
     return error
 }
 
-// Helper to create network error (no response)
+// Helper para crear error de red (sin respuesta)
 function createNetworkError(code: string): AxiosError<ApiErrorResponse> {
     const error = new Error('Network Error') as AxiosError<ApiErrorResponse>
     error.isAxiosError = true
@@ -46,11 +46,16 @@ function createNetworkError(code: string): AxiosError<ApiErrorResponse> {
     return error
 }
 
+/**
+ * Suite completa de pruebas para las utilidades de manejo de errores.
+ * Verifica la correcta identificación y clasificación de errores de Axios (Red, Auth, Server, etc.),
+ * así como la extracción segura de mensajes de error de diferentes estructuras de respuesta.
+ */
 describe('error-utils', () => {
     describe('isAxiosError', () => {
         it('should return true for Axios errors', () => {
             const axiosError = createAxiosError(500)
-            // Mock axios.isAxiosError
+            // Mock de axios.isAxiosError
             vi.spyOn(axios, 'isAxiosError').mockReturnValue(true)
             expect(isAxiosError(axiosError)).toBe(true)
         })

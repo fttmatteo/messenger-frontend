@@ -2,10 +2,15 @@ import '@testing-library/jest-dom';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './mocks/server';
 
-// Start MSW server before all tests
+/**
+ * Configuración global para el entorno de pruebas unitarias y de integración.
+ * Configura MSW para interceptar peticiones de red y define mocks para APIs del navegador.
+ */
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 
-// Mock localStorage and sessionStorage for jsdom
+/**
+ * Simulador manual de Web Storage para entornos JSDOM donde no está disponible o es inconsistente.
+ */
 const localStorageMock = (() => {
     let store: Record<string, string> = {};
     return {
@@ -21,7 +26,7 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
 
-// Clean up after each test
+// Limpiar después de cada prueba
 afterEach(() => {
     vi.clearAllMocks();
     server.resetHandlers();
@@ -29,11 +34,14 @@ afterEach(() => {
     sessionStorage.clear();
 });
 
-// Close MSW server after all tests
+// Cerrar el servidor MSW después de todas las pruebas
 afterAll(() => server.close());
 
 
-// Mock ResizeObserver (required by Radix UI components)
+/**
+ * Mocks para APIs modernas de DOM no soportadas nativamente por JSDOM.
+ * Incluye ResizeObserver e IntersectionObserver para componentes UI complejos.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).ResizeObserver = class ResizeObserver {
     observe() { }
@@ -41,7 +49,7 @@ afterAll(() => server.close());
     disconnect() { }
 };
 
-// Mock IntersectionObserver (required by some components)
+// Mock de IntersectionObserver (requerido por algunos componentes)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).IntersectionObserver = class IntersectionObserver {
     constructor() { }
@@ -51,8 +59,7 @@ afterAll(() => server.close());
     takeRecords() { return []; }
 };
 
-// Mock matchMedia (for responsive hooks)
-// Mock pointer events for Radix UI select
+// Mock de eventos de puntero para Radix UI Select
 if (typeof window !== 'undefined' && window.Element && !window.Element.prototype.hasPointerCapture) {
     window.Element.prototype.hasPointerCapture = vi.fn();
     window.Element.prototype.releasePointerCapture = vi.fn();
@@ -60,7 +67,7 @@ if (typeof window !== 'undefined' && window.Element && !window.Element.prototype
     window.Element.prototype.scrollIntoView = vi.fn();
 }
 
-// Mock matchMedia (for responsive hooks)
+// Mock de matchMedia (para hooks responsivos)
 Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation(query => ({

@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/test/test-utils';
 import Login from './Login';
 import * as authService from '@/services/auth.service';
 
-// Mock the auth service
+// Mock del servicio de autenticación
 vi.mock('@/services/auth.service', () => ({
     authService: {
         login: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('@/services/auth.service', () => ({
     },
 }));
 
-// Mock navigate
+// Mock de navigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -23,11 +23,15 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// Mock logo import
+// Mock de importación de logo
 vi.mock('@/assets/logo.png', () => ({
     default: 'logo.png',
 }));
 
+/**
+ * Suite de pruebas de integración para la página de Login.
+ * Verifica la validación de formularios, feedback de usuario, visualización de contraseñ y navegación tras autenticación exitosa.
+ */
 describe('Login Page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -35,6 +39,9 @@ describe('Login Page', () => {
         sessionStorage.clear();
     });
 
+    /**
+     * Verifica que el formulario de login se renderiza correctamente con todos sus elementos.
+     */
     it('should render login form', () => {
         renderWithProviders(<Login />);
 
@@ -44,6 +51,9 @@ describe('Login Page', () => {
         expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument();
     });
 
+    /**
+     * Valida que se muestren mensajes de error cuando los campos requeridos están vacíos al enviar.
+     */
     it('should show validation errors for empty fields', async () => {
         const user = userEvent.setup();
         renderWithProviders(<Login />);
@@ -57,6 +67,9 @@ describe('Login Page', () => {
         });
     });
 
+    /**
+     * Valida que el campo de documento solo acepte números.
+     */
     it('should validate document format (numbers only)', async () => {
         const user = userEvent.setup();
         renderWithProviders(<Login />);
@@ -72,6 +85,9 @@ describe('Login Page', () => {
         });
     });
 
+    /**
+     * Verifica que el botón de visibilidad de contraseña alterne entre texto y password.
+     */
     it('should toggle password visibility', async () => {
         const user = userEvent.setup();
         renderWithProviders(<Login />);
@@ -85,6 +101,9 @@ describe('Login Page', () => {
         expect(passwordInput.type).toBe('text');
     });
 
+    /**
+     * Verifica el flujo exitoso de login: envío de formulario, loading y redirección.
+     */
     it('should call login on successful form submission', async () => {
         const user = userEvent.setup();
         const mockLoginResponse = {
@@ -109,7 +128,7 @@ describe('Login Page', () => {
         await user.type(passwordInput, 'password123');
         await user.click(submitButton);
 
-        // Check if loader is visible - use unique text from FullScreenLoader
+        // Verificar si el cargador es visible - usar texto único de FullScreenLoader
         expect(screen.getByText('Por favor espera un momento')).toBeInTheDocument();
 
         await waitFor(() => {
@@ -123,6 +142,9 @@ describe('Login Page', () => {
     });
 
 
+    /**
+     * Verifica que la opción 'Recordar contraseña' se envíe correctamente al servicio de autenticación.
+     */
     it('should call login with rememberMe true when checkbox is checked', async () => {
         const user = userEvent.setup();
         const mockLoginResponse = {
@@ -142,8 +164,8 @@ describe('Login Page', () => {
         const documentInput = screen.getByPlaceholderText('Ingrese su número de documento');
         const passwordInput = screen.getByPlaceholderText('Ingrese su contraseña');
 
-        // Find checkbox by label text instead of role to avoid ambiguity if multiple checkables exist or if styling hides it
-        // The label "Recordar contraseña" is associated with the checkbox
+        // Buscar checkbox por texto de etiqueta en lugar de rol para evitar ambigüedad
+        // La etiqueta "Recordar contraseña" está asociada con el checkbox
         const rememberMeCheckbox = screen.getByLabelText('Recordar contraseña');
         const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
 

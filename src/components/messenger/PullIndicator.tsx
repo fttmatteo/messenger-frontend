@@ -6,6 +6,9 @@ interface PullIndicatorProps {
     threshold?: number
 }
 
+/**
+ * Indicador visual para la acción de "deslizar para actualizar" (pull-to-refresh).
+ */
 export function PullIndicator({ pullDistance, isRefreshing, threshold = 80 }: PullIndicatorProps) {
     const progress = Math.min(pullDistance / threshold, 1)
 

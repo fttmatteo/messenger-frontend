@@ -7,11 +7,18 @@ import { trackingService } from "@/services/tracking.service"
 import { toast } from "sonner"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { openMaps } from "@/lib/navigation-utils"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('ServiceCard')
 
 interface ServiceCardProps {
     service: ServiceDelivery
 }
 
+/**
+ * Tarjeta compacta para mostrar información básica de un servicio en la lista del mensajero.
+ * Incluye acciones rápidas para navegar al concesionario y actualizar el estado.
+ */
 export function ServiceCard({ service }: ServiceCardProps) {
     const navigate = useNavigate()
     const { colors } = useStatusColors()
@@ -52,7 +59,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     triggerNavigation(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
-                    console.warn("GPS error", error)
+                    logger.warn('Error de GPS', error)
                     toast.warning("Usando ubicación aproximada", { id: toastId })
                     triggerNavigation()
                 },
@@ -77,14 +84,13 @@ export function ServiceCard({ service }: ServiceCardProps) {
             className="group relative flex items-center bg-card hover:bg-muted/30 transition-colors cursor-pointer border border-border/50 rounded-lg overflow-hidden shadow-sm"
             onClick={handleClick}
         >
-            {/* Status Strip */}
+
             <div
                 className="absolute left-0 top-0 bottom-0 w-1.5"
                 style={{ backgroundColor: statusColor }}
             />
 
             <div className="flex items-center w-full pl-4 pr-3 py-3 gap-3">
-                {/* Visual Identifier (Plate) */}
                 <div className="shrink-0">
                     <PlacaBadge
                         plateNumber={service.plate.plateNumber}
@@ -93,10 +99,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     />
                 </div>
 
-                {/* Spacer to push actions to the right */}
                 <div className="flex-1" />
-
-                {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
                     <Button
                         variant="outline"

@@ -9,6 +9,9 @@ export type OfflineActionType =
     | 'UPDATE_STATUS_WITH_FILES'
     | 'UPLOAD_PHOTO'
 
+/**
+ * Estructura de una acción capturada mientras el usuario está sin conexión.
+ */
 export interface OfflineAction {
     id: string
     type: OfflineActionType
@@ -20,8 +23,8 @@ export interface OfflineAction {
 }
 
 /**
- * Payload for UPDATE_STATUS_WITH_FILES action.
- * Files are stored as base64 strings for IndexedDB compatibility.
+ * Payload para la acción UPDATE_STATUS_WITH_FILES.
+ * Los archivos se almacenan como cadenas base64 para compatibilidad con IndexedDB.
  */
 export interface UpdateStatusWithFilesPayload {
     serviceId: number
@@ -37,22 +40,29 @@ export interface UpdateStatusWithFilesPayload {
 type ActionHandler = (action: OfflineAction) => Promise<boolean>
 
 /**
- * Service for managing offline actions queue.
- * Queues actions performed while offline and syncs them when back online.
+ * Servicio encargado de la orquestación y sincronización de acciones realizadas sin conexión.
+ * Implementa una cola de persistencia (Store and Forward) que captura peticiones API,
+ * las almacena localmente y las reejecuta automáticamente cuando se restablece la conectividad.
  */
 class OfflineSyncService {
     private handlers: Map<OfflineActionType, ActionHandler> = new Map()
     private isSyncing = false
 
     /**
-     * Register a handler for a specific action type
+     * Registra un manejador personalizado para procesar un tipo de acción específico durante la sincronización.
+     * @param type - El tipo de acción (ej. 'UPDATE_STATUS').
+     * @param handler - Función asíncrona que ejecuta la lógica de sincronización.
      */
     registerHandler(type: OfflineActionType, handler: ActionHandler): void {
         this.handlers.set(type, handler)
     }
 
     /**
-     * Queue an action to be synced when online
+     * Añade una nueva acción a la cola de pendientes para su posterior sincronización.
+     * @param type - Tipo de la acción a encolar.
+     * @param payload - Datos asociados a la acción (deben ser serializables).
+     * @param options - Configuración adicional (endpoint, método HTTP).
+     * @returns ID único generado para la acción encolada.
      */
     async queueAction(
         type: OfflineActionType,
@@ -77,7 +87,7 @@ class OfflineSyncService {
     }
 
     /**
-     * Get all pending actions
+     * Recupera todas las acciones que están esperando ser sincronizadas.
      */
     async getPendingActions(): Promise<OfflineAction[]> {
         try {
@@ -89,7 +99,8 @@ class OfflineSyncService {
     }
 
     /**
-     * Remove a specific action from the queue
+     * Remueve permanentemente una acción de la cola (tras éxito o fallo definitivo).
+     * @param actionId - ID de la acción a eliminar.
      */
     async removeAction(actionId: string): Promise<void> {
         const actions = await this.getPendingActions()
@@ -98,7 +109,7 @@ class OfflineSyncService {
     }
 
     /**
-     * Update retry count for an action
+     * Incrementar el contador de reintentos para una acción
      */
     async incrementRetry(actionId: string): Promise<void> {
         const actions = await this.getPendingActions()
@@ -111,15 +122,16 @@ class OfflineSyncService {
     }
 
     /**
-     * Clear all pending actions
+     * Borra por completo todas las acciones pendientes de sincronización.
      */
     async clearAll(): Promise<void> {
         await del(PENDING_ACTIONS_KEY)
     }
 
     /**
-     * Sync all pending actions.
-     * Returns the number of successfully synced actions.
+     * Inicia el proceso de sincronización de todas las acciones en la cola.
+     * Itera sobre las acciones y utiliza los manejadores registrados o una petición genérica.
+     * @returns El número de acciones que se sincronizaron exitosamente.
      */
     async syncAll(): Promise<number> {
         if (this.isSyncing) {
@@ -154,7 +166,7 @@ class OfflineSyncService {
                             await this.handleFailedAction(action)
                         }
                     } else {
-                        // No handler registered, try generic fetch if endpoint is defined
+                        // No hay manejador registrado, intentar fetch genérico si el endpoint está definido
                         if (action.endpoint) {
                             const success = await this.genericSync(action)
                             if (success) {
@@ -179,7 +191,7 @@ class OfflineSyncService {
     }
 
     /**
-     * Generic sync using fetch API
+     * Sincronización genérica usando fetch API
      */
     private async genericSync(action: OfflineAction): Promise<boolean> {
         if (!action.endpoint) return false
@@ -200,7 +212,7 @@ class OfflineSyncService {
     }
 
     /**
-     * Handle failed action (increment retry or remove if max retries exceeded)
+     * Manejar acción fallida (incrementar reintentos o eliminar si se supera el máximo)
      */
     private async handleFailedAction(action: OfflineAction): Promise<void> {
         if (action.retryCount >= MAX_RETRY_COUNT) {
@@ -211,7 +223,7 @@ class OfflineSyncService {
     }
 
     /**
-     * Check if there are pending actions
+     * Verificar si hay acciones pendientes
      */
     async hasPendingActions(): Promise<boolean> {
         const actions = await this.getPendingActions()

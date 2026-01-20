@@ -5,7 +5,14 @@ const defaultOptions: ExternalToast = {
   duration: 4000,
 }
 
+/**
+ * Objeto de utilidad centralizado para la gestión de notificaciones visuales (Toasts).
+ * Utiliza la librería "sonner" y define comportamientos consistentes para toda la app.
+ */
 export const showToast = {
+  /**
+   * Muestra una notificación de éxito.
+   */
   success: (message: string, options?: ExternalToast) => {
     toast.success(message, {
       ...defaultOptions,
@@ -14,6 +21,9 @@ export const showToast = {
     })
   },
 
+  /**
+   * Muestra una notificación de error con mayor duración por defecto.
+   */
   error: (message: string, options?: ExternalToast) => {
     toast.error(message, {
       ...defaultOptions,
@@ -22,6 +32,9 @@ export const showToast = {
     })
   },
 
+  /**
+   * Muestra una notificación informativa.
+   */
   info: (message: string, options?: ExternalToast) => {
     toast.info(message, {
       ...defaultOptions,
@@ -30,6 +43,9 @@ export const showToast = {
     })
   },
 
+  /**
+   * Muestra una notificación de advertencia.
+   */
   warning: (message: string, options?: ExternalToast) => {
     toast.warning(message, {
       ...defaultOptions,
@@ -38,6 +54,10 @@ export const showToast = {
     })
   },
 
+  /**
+   * Muestra una notificación de carga persistente que debe ser actualizada o cerrada manualmente.
+   * @returns El ID del toast para poder actualizarlo posteriormente.
+   */
   loading: (message: string, options?: ExternalToast) => {
     return toast.loading(message, {
       ...defaultOptions,
@@ -45,6 +65,9 @@ export const showToast = {
     })
   },
 
+  /**
+   * Muestra un mensaje básico sin iconos de estado.
+   */
   custom: (message: string, options?: ExternalToast) => {
     toast(message, {
       ...defaultOptions,
@@ -53,10 +76,20 @@ export const showToast = {
     })
   },
 
+  /**
+   * Actualiza un toast existente (útil para estados de carga que han terminado).
+   * @param toastId - ID del toast obtenido al usar "loading".
+   * @param message - Nuevo mensaje a mostrar.
+   * @param type - El nuevo tipo visual (success, error, etc.).
+   */
   update: (toastId: string | number, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
     toast[type](message, { id: toastId })
   },
 
+  /**
+   * Cierra uno o todos los toasts activos.
+   * @param toastId - Si se omite, se cerrarán todos los toasts.
+   */
   dismiss: (toastId?: string | number) => {
     if (toastId) {
       toast.dismiss(toastId)
@@ -66,4 +99,7 @@ export const showToast = {
   }
 }
 
+/**
+ * Gancho (Hook) para acceder a las funcionalidades de notificación desde componentes React.
+ */
 export const useToast = () => showToast

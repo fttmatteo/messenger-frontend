@@ -17,6 +17,10 @@ interface UseCameraCaptureReturn {
     clearImage: () => void
 }
 
+/**
+ * Hook para gestionar la captura de fotos desde la cámara del dispositivo.
+ * Proporciona control sobre el stream de video, vista previa y captura de archivos.
+ */
 export function useCameraCapture(): UseCameraCaptureReturn {
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
