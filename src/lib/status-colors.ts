@@ -35,7 +35,9 @@ export function loadCustomColors(userId?: number | string): Record<string, strin
         if (stored) {
             return JSON.parse(stored)
         }
-    } catch { }
+    } catch {
+        // Ignorar error al leer/parsear localStorage
+    }
     return {}
 }
 
@@ -45,7 +47,9 @@ export function loadCustomColors(userId?: number | string): Record<string, strin
 export function saveCustomColors(colors: Record<string, string>, userId?: number | string): void {
     try {
         localStorage.setItem(getStorageKey(userId), JSON.stringify(colors))
-    } catch { }
+    } catch {
+        // Ignorar error al guardar en localStorage
+    }
 }
 
 /**
@@ -54,7 +58,9 @@ export function saveCustomColors(colors: Record<string, string>, userId?: number
 export function clearCustomColors(userId?: number | string): void {
     try {
         localStorage.removeItem(getStorageKey(userId))
-    } catch { }
+    } catch {
+        // Ignorar error al eliminar de localStorage
+    }
 }
 
 /**

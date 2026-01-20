@@ -52,6 +52,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
     (response) => {
         if (response.config.url?.includes('/auth/')) {
+            // Lógica específica de auth si fuera necesaria
         }
 
         // Si la respuesta trae tokens en el body, lo guardamos como fallback
