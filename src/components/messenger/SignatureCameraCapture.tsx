@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallba
 import { createLogger } from '@/utils/logger'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Camera } from 'lucide-react'
+import { RefreshCw, Camera, Loader2 } from 'lucide-react'
 
 const logger = createLogger('SignatureCapture')
 
@@ -40,6 +40,7 @@ const SignatureCameraCapture = forwardRef<
 
     const [isCapturing, setIsCapturing] = useState(false)
     const [isGenerating, setIsGenerating] = useState(false)
+    const [isCameraLoading, setIsCameraLoading] = useState(true)
     const [gifBlob, setGifBlob] = useState<Blob | null>(null)
     const [gifUrl, setGifUrl] = useState<string | null>(null)
     const [cameraError, setCameraError] = useState<string | null>(null)
@@ -86,6 +87,10 @@ const SignatureCameraCapture = forwardRef<
 
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
+                // Esperar a que el video esté listo para reproducir antes de quitar el loading
+                videoRef.current.onloadeddata = () => {
+                    setIsCameraLoading(false)
+                }
             }
 
             logger.info('Cámara inicializada correctamente')
@@ -98,6 +103,7 @@ const SignatureCameraCapture = forwardRef<
 
         } catch (error) {
             logger.error('Error al inicializar cámara', error)
+            setIsCameraLoading(false)
             setCameraError('No se pudo acceder a la cámara')
             toast.error('Error de cámara', {
                 description: 'No se pudo acceder a la cámara. Verifica los permisos.',
@@ -229,8 +235,10 @@ const SignatureCameraCapture = forwardRef<
         })
 
 
+        // Todos los frames usan el mismo delay para evitar capturar una imagen negra
+        // El primer frame necesita esperar para que el video renderice un frame válido
         for (let i = 0; i < FRAME_COUNT; i++) {
-            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : CAPTURE_INTERVAL_MS))
+            await new Promise(resolve => setTimeout(resolve, CAPTURE_INTERVAL_MS))
 
             ctx.drawImage(video, 0, 0, GIF_WIDTH, GIF_HEIGHT)
             const imageData = ctx.getImageData(0, 0, GIF_WIDTH, GIF_HEIGHT)
@@ -282,13 +290,21 @@ const SignatureCameraCapture = forwardRef<
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        className="w-full h-full object-cover"
-                    />
+                    <>
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="w-full h-full object-cover"
+                        />
+                        {isCameraLoading && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 backdrop-blur-sm gap-2">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                <span className="text-sm text-muted-foreground">Iniciando cámara...</span>
+                            </div>
+                        )}
+                    </>
                 )}
 
 
