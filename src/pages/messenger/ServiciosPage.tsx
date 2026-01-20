@@ -63,7 +63,9 @@ export default function ServiciosPage() {
             )
         }
 
-        return services
+        return [...services].sort((a, b) =>
+            getLastChangeDate(b).getTime() - getLastChangeDate(a).getTime()
+        )
     }, [completedServices, selectedDate, searchTerm, statusFilter, getLastChangeDate])
 
     const isToday = isSameDay(selectedDate, new Date())

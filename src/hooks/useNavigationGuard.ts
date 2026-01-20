@@ -62,15 +62,20 @@ export function useNavigationGuard() {
     const handleBackNavigation = useCallback(() => {
         const path = window.location.pathname;
 
+        // Si estamos en login o raíz, ir al dashboard
         if (path === '/login' || path === '/') {
             navigate('/messenger', { replace: true });
             return;
         }
 
+        // Si estamos en la ruta raíz del messenger, bloquear el retroceso
+        // completamente empujando de nuevo al historial
         if (isRootRoute(path)) {
+            window.history.pushState(null, '', path);
             return;
         }
 
+        // Para otras rutas, navegar al padre según la jerarquía
         const parentRoute = getParentRoute(path);
 
         if (parentRoute) {
@@ -81,13 +86,21 @@ export function useNavigationGuard() {
     }, [navigate]);
 
     useEffect(() => {
+        const path = location.pathname;
+
+        // Para rutas finales, añadir entrada extra al historial
+        // para que el primer swipe-back sea capturado por popstate
+        if (isRootRoute(path)) {
+            window.history.pushState(null, '', path);
+        }
+
         const handlePopState = () => {
             handleBackNavigation();
         };
 
         window.addEventListener('popstate', handlePopState);
         return () => window.removeEventListener('popstate', handlePopState);
-    }, [handleBackNavigation]);
+    }, [handleBackNavigation, location.pathname]);
 
     return {
         handleBackNavigation,

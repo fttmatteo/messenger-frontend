@@ -290,11 +290,24 @@ export default function MessengerLayout() {
     }, [location.pathname]);
 
     const handleSidebarOpenChange = (open: boolean) => {
+        // Bloquear completamente la apertura durante el período de bloqueo
         if (open && sidebarBlockedRef.current) {
             return;
         }
         setIsSidebarOpen(open);
     };
+
+    // Estado derivado para bloquear el Sheet completamente durante navegación
+    const [isSheetBlocked, setIsSheetBlocked] = useState(false);
+
+    useEffect(() => {
+        // Bloquear el Sheet durante la navegación para evitar que responda a gestos
+        setIsSheetBlocked(true);
+        const timer = setTimeout(() => {
+            setIsSheetBlocked(false);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [location.pathname]);
 
     const confirmLogout = () => {
         if (isOnline && user?.id) {
@@ -419,7 +432,7 @@ export default function MessengerLayout() {
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="left" className="w-[280px] p-0 border-r bg-background flex flex-col">
+                                <SheetContent side="left" className={cn("w-[280px] p-0 border-r bg-background flex flex-col", isSheetBlocked && "pointer-events-none")}>
                                     <SheetHeader className="p-4 pb-1 text-left">
                                         <div className="flex items-center gap-3 mb-4">
                                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
