@@ -1,10 +1,10 @@
 /**
- * Utility Styles
+ * Estilos de Utilidad
  * 
- * Custom utilities, scrollbars, and animations.
+ * Utilidades personalizadas, barras de desplazamiento y animaciones.
  */
 
-/* Custom Scrollbar Utility */
+/* Utilidad de barra de desplazamiento personalizada */
 .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
 }
@@ -24,11 +24,11 @@
 @layer utilities {
     .text-balance {
         text-wrap: balance;
-        /* Fallback for older browsers */
+        /* Fallback para navegadores antiguos */
         word-break: break-word;
     }
 
-    /* Safe accordion animations using scaleY/opacity instead of height */
+    /* Animaciones seguras para acordeón usando scaleY/opacity en lugar de height */
     @keyframes accordion-down-safe {
         from {
             opacity: 0;

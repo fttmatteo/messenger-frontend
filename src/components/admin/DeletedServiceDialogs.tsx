@@ -8,6 +8,9 @@ interface EmptyTrashDialogProps {
     count: number
 }
 
+/**
+ * Diálogo de confirmación para vaciar la papelera de servicios.
+ */
 export function EmptyTrashDialog({ isOpen, onOpenChange, onConfirm, count }: EmptyTrashDialogProps) {
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -40,6 +43,9 @@ interface ConfirmTrashActionDialogProps {
     type: 'restore' | 'permanent-delete'
 }
 
+/**
+ * Diálogo de confirmación para restaurar un servicio o eliminarlo de forma permanente.
+ */
 export function ConfirmTrashActionDialog({ isOpen, onOpenChange, onConfirm, plateNumber, type }: ConfirmTrashActionDialogProps) {
     const isRestore = type === 'restore'
 

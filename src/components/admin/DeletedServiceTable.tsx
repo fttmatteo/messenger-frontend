@@ -22,6 +22,10 @@ interface DeletedServiceRowProps {
     itemVariants: Variants
 }
 
+/**
+ * Fila individual para la tabla de servicios eliminados.
+ * Maneja acciones de restauración y eliminación permanente.
+ */
 export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore, onDelete, itemVariants }: DeletedServiceRowProps) {
     const [actionType, setActionType] = useState<'restore' | 'permanent-delete' | null>(null)
     const daysRemaining = getDaysRemaining(service.deletedAt ?? service.createdAt)
@@ -130,6 +134,10 @@ interface DeletedServiceTableProps {
     itemVariants: Variants
 }
 
+/**
+ * Tabla de servicios eliminados para visualización en escritorio.
+ * Incluye información detallada y acciones de gestión de papelera.
+ */
 export function DeletedServiceTable({ services, restoringId, deletingId, onRestore, onDelete, itemVariants }: DeletedServiceTableProps) {
     return (
         <Table>

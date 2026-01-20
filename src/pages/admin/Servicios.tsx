@@ -23,7 +23,7 @@ import { formatDisplayName } from "@/lib/format-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { UpdateStatusModal } from "@/components/service/UpdateStatusModal"
 
-// Available statuses for selection
+// Estados disponibles para selección
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'ASSIGNED', label: 'Asignado' },
     { value: 'PENDING', label: 'Pendiente' },
@@ -33,13 +33,18 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'RESOLVED', label: 'Revisado' },
 ]
 
+/**
+ * Página de administración de servicios de entrega.
+ * Muestra una lista paginada de todos los servicios registrados.
+ * Permite filtrar por estado, buscar por placa, concesionario o mensajero,
+ * y realizar actualizaciones rápidas de estado mediante un modal.
+ */
 export default function Servicios() {
     const navigate = useNavigate()
     const outletContext = useOutletContext<{ searchQuery?: string }>()
     const searchQuery = outletContext?.searchQuery || ""
     const { colors } = useStatusColors()
 
-    // Use custom hooks
     const {
         services,
         loading,
@@ -57,7 +62,7 @@ export default function Servicios() {
         fetchServices,
     } = useServices({ searchQuery })
 
-    // Modal state
+    // Estado del modal
     const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
@@ -67,7 +72,7 @@ export default function Servicios() {
     }
 
     const handleUpdateSuccess = () => {
-        fetchServices() // Refresh the list
+        fetchServices() // refresca la lista
     }
 
     const filterLabel = (statusFilter?.length ?? 0) > 0
@@ -76,7 +81,6 @@ export default function Servicios() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title+Filters center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
@@ -251,7 +255,6 @@ export default function Servicios() {
                 </CardContent>
             </Card>
 
-            {/* Update Status Modal */}
             {selectedService && (
                 <UpdateStatusModal
                     open={isUpdateModalOpen}

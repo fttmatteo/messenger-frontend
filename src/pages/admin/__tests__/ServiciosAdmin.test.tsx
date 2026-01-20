@@ -8,7 +8,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 
-// Mock useOutletContext for search query
+// Mock de useOutletContext para query de búsqueda
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom')
     return {
@@ -17,7 +17,12 @@ vi.mock('react-router-dom', async () => {
     }
 })
 
-// Mock useStatusColors to avoid context issues if needed, but we use the Provider
+// Mock de useStatusColors para evitar problemas de contexto si es necesario, pero usamos el Provider
+/**
+ * Suite de pruebas de integración para la página de lista de servicios del administrador.
+ * Verifica la correcta carga de datos, manejo de estados vacíos y visualización de la lista
+ * simulando respuestas del servidor con MSW.
+ */
 describe('Servicios Admin Page Integration', () => {
     beforeEach(() => {
         server.use(
@@ -72,15 +77,15 @@ describe('Servicios Admin Page Integration', () => {
     it('should load and display services list', async () => {
         renderPage()
 
-        // Wait for skeleton to disappear
+        // Esperar a que desaparezca el skeleton
         await waitFor(() => {
             expect(screen.queryByTestId('service-skeleton-0')).not.toBeInTheDocument()
         }, { timeout: 4000 })
 
-        // Check for dealership first
+        // Verificar concesionario primero
         expect(await screen.findByText(/Dealership-Alpha/i)).toBeInTheDocument()
 
-        // Then check for plate parts
+        // Luego verificar partes de la placa
         expect(await screen.findByText(/ADM/i)).toBeInTheDocument()
         expect(await screen.findByText(/001/i)).toBeInTheDocument()
         expect(await screen.findByText(/Messenger-Beta/i)).toBeInTheDocument()

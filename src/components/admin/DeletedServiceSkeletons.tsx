@@ -2,6 +2,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
+/**
+ * Componente que muestra un esqueleto de carga para una fila de la tabla de servicios eliminados.
+ * Proporciona feedback visual mientras se obtienen los datos.
+ */
 export function DeletedServiceRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -41,6 +45,9 @@ export function DeletedServiceRowSkeleton() {
     )
 }
 
+/**
+ * Componente que muestra un esqueleto de carga para una tarjeta de servicio eliminado (vista móvil).
+ */
 export function DeletedServiceCardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">

@@ -28,6 +28,12 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
+/**
+ * Página de inicio de sesión de la aplicación.
+ * Gestiona la autenticación de usuarios (Administradores y Mensajeros),
+ * el manejo de errores de red, el control de intentos fallidos (rate limiting)
+ * y la redirección según el tipo de dispositivo.
+ */
 export default function Login() {
     const isMobile = useIsMobile()
     const { login } = useAuth()
@@ -108,7 +114,7 @@ export default function Login() {
         }
     }
 
-    // Show loading while detecting device type
+    // Mostrar cargando mientras se detecta el tipo de dispositivo
     if (isMobile === undefined) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-background overflow-hidden">
@@ -120,7 +126,7 @@ export default function Login() {
         );
     }
 
-    // Render mobile version on mobile devices
+    // Renderizar versión móvil en dispositivos móviles
     if (isMobile) {
         return <LoginMobile />
     }
@@ -142,7 +148,6 @@ export default function Login() {
             {isSubmitting && <FullScreenLoader />}
             <div className="flex items-center justify-center h-screen bg-background p-2 sm:p-4 overflow-auto">
                 <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
-                    {/* Help Button - Top Left */}
                     <div className="absolute top-3 left-3 z-10">
                         <Button
                             variant="ghost"
@@ -155,19 +160,16 @@ export default function Login() {
                             <HelpCircle className="h-5 w-5" />
                         </Button>
                     </div>
-                    {/* Mode Toggle Button - Consistent Position */}
                     <div className="absolute top-3 right-3 z-10">
                         <ModeToggle showLabel={false} />
                     </div>
                     <CardHeader className="space-y-1 pb-2 pt-10 sm:pt-6">
                         <div className="flex flex-col items-center justify-center mb-1 sm:mb-2">
-                            {/* Fallback icon shown while loading or on error */}
                             {(!logoLoaded || logoError) && (
                                 <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center bg-primary/10 rounded-lg">
                                     <Package className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
                                 </div>
                             )}
-                            {/* Actual logo image */}
                             <img
                                 src={logo}
                                 alt="PLAK Logo"

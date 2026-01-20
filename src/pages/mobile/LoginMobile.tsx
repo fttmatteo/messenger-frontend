@@ -26,6 +26,12 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
+/**
+ * Componente de inicio de sesión optimizado para dispositivos móviles.
+ * Proporciona una interfaz simplificada para que los mensajeros autentiquen
+ * su acceso mediante documento y contraseña. Incluye manejo de errores de red,
+ * bloqueo por intentos fallidos (rate limiting) y persistencia de sesión.
+ */
 export default function LoginMobile() {
     const { login } = useAuth()
     const navigate = useNavigate()
@@ -52,8 +58,8 @@ export default function LoginMobile() {
                 password: data.password,
                 rememberMe: data.rememberMe
             })
-            // Clear history and navigate to messenger home
-            // This prevents back gesture from returning to login
+            // Limpiar historial y navegar al inicio de mensajero
+            // Esto evita que el gesto de retroceso regrese al login
             navigateAfterLogin(navigate)
         } catch (error) {
             const err = error as { statusCode?: number }
@@ -113,7 +119,6 @@ export default function LoginMobile() {
             {isSubmitting && <FullScreenLoader />}
             <div className="flex items-center justify-center min-h-[100dvh] w-full bg-background p-3 overflow-hidden supports-[min-height:100dvh]:min-h-[100dvh] supports-[min-height:100dvh]:h-[100dvh]">
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
-                    {/* Help Button - Top Left */}
                     <div className="absolute top-2 left-2 z-10">
                         <Button
                             variant="ghost"
@@ -126,19 +131,16 @@ export default function LoginMobile() {
                             <HelpCircle className="h-4 w-4" />
                         </Button>
                     </div>
-                    {/* Mode Toggle Button - Consistent Position */}
                     <div className="absolute top-2 right-2 z-10">
                         <ModeToggle showLabel={false} />
                     </div>
                     <CardHeader className="space-y-0.5 pb-2 pt-8">
                         <div className="flex flex-col items-center justify-center mb-1">
-                            {/* Fallback icon shown while loading or on error */}
                             {(!logoLoaded || logoError) && (
                                 <div className="h-10 w-10 flex items-center justify-center bg-primary/10 rounded-lg">
                                     <Package className="h-6 w-6 text-primary" />
                                 </div>
                             )}
-                            {/* Actual logo image */}
                             <img
                                 src={logo}
                                 alt="PLAK Logo"

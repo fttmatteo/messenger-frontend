@@ -5,18 +5,24 @@ import { AuthProvider } from '@/context/AuthContext';
 import { AdminUIProvider } from '@/context/AdminUIContext';
 
 /**
- * Custom render function that wraps components with all necessary providers
- * for integration testing (Router, Auth, AdminUI).
+ * Configuración extendida para el renderizado de componentes en pruebas.
+ * Permite inyectar contextos específicos y definir el estado inicial de la navegación.
  */
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-    /** Initial route for the Router */
+    /** Ruta del navegador al iniciar el test. */
     initialRoute?: string;
-    /** Whether to include AuthProvider (default: true) */
+    /** Determina si se inyecta el contexto de autenticación. */
     withAuth?: boolean;
-    /** Whether to include AdminUIProvider (default: true) */
+    /** Determina si se inyecta el contexto de la interfaz de administración. */
     withAdminUI?: boolean;
 }
 
+/**
+ * Función de renderizado personalizada que envuelve componentes con todos los proveedores necesarios
+ * (Router, Auth, AdminUI) para asegurar un entorno de prueba realista.
+ * @param ui - El componente React a probar.
+ * @param options - Opciones de configuración del entorno.
+ */
 export function renderWithProviders(
     ui: React.ReactElement,
     {
@@ -26,7 +32,7 @@ export function renderWithProviders(
         ...renderOptions
     }: CustomRenderOptions = {}
 ) {
-    // Set initial route if specified
+    // Establecer la ruta inicial si se especifica
     if (initialRoute !== '/') {
         window.history.pushState({}, 'Test page', initialRoute);
     }
@@ -48,7 +54,7 @@ export function renderWithProviders(
     return render(ui, { wrapper: Wrapper, ...renderOptions });
 }
 
-// Re-export everything from @testing-library/react
+// Re-exportar todo desde @testing-library/react
 // eslint-disable-next-line react-refresh/only-export-components
 export * from '@testing-library/react';
 export { renderWithProviders as render };

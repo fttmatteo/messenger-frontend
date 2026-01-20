@@ -7,6 +7,11 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
 )
 
+/**
+ * Suite de pruebas de integración para el contexto de autenticación.
+ * Verifica el flujo completo de inicio de sesión, cierre de sesión y persistencia
+ * utilizando MSW (Mock Service Worker) para interceptar las llamadas a la API.
+ */
 describe('AuthIntegration (MSW)', () => {
     beforeEach(() => {
         localStorage.clear()

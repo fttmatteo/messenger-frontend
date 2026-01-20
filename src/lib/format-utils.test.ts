@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { formatDisplayName, capitalizeWords } from './format-utils';
 
+/**
+ * Suite de pruebas para las utilidades de formateo de texto.
+ * Verifica la correcta transformación de nombres completos a nombres con iniciales
+ * y la capitalización de palabras para una visualización consistente.
+ */
 describe('format-utils', () => {
     describe('formatDisplayName', () => {
         it('should format full name to First Name + Last Initial', () => {

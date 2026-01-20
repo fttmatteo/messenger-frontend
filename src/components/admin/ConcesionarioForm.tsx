@@ -10,13 +10,16 @@ interface ConcesionarioFormProps {
     disabled?: boolean
 }
 
+/**
+ * Formulario para la creación y edición de concesionarios.
+ * Gestiona campos básicos como nombre, teléfono, dirección y zona.
+ */
 export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
     const { register, formState: { errors }, setValue, watch } = form
     const selectedZone = watch("zone")
 
     return (
         <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
-            {/* Nombre */}
             <div className="space-y-2">
                 <Label htmlFor="name">Nombre del concesionario</Label>
                 <Input
@@ -31,7 +34,6 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            {/* Teléfono */}
             <div className="space-y-2">
                 <Label htmlFor="phone">Teléfono</Label>
                 <Input
@@ -46,7 +48,6 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            {/* Dirección */}
             <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="address">Dirección completa</Label>
                 <Textarea
@@ -62,7 +63,6 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            {/* Zona */}
             <div className="space-y-2">
                 <Label htmlFor="zone">Zona</Label>
                 <Select

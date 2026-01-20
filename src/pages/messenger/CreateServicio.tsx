@@ -22,7 +22,7 @@ import { useSmartLocation } from "@/hooks/use-smart-location"
 import { CreateServiceSkeleton } from "@/components/service/ServiceSkeletons"
 
 
-// Form validation schema
+// Esquema de validación del formulario
 const formSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario es obligatorio"),
     manualPlateNumber: z.string().optional(),
@@ -31,18 +31,24 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+/**
+ * Página para que el mensajero cree un nuevo servicio de entrega.
+ * Permite capturar una foto de la placa del vehículo (con detección automática OCR),
+ * seleccionar el concesionario de destino y, si la detección falla, ingresar
+ * la placa manualmente. También captura la ubicación GPS actual al momento de la creación.
+ */
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
     const { getCurrentLocation } = useSmartLocation()
 
 
-    // Form state
+    // Estado del formulario
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loadingData, setLoadingData] = useState(true)
     const [showManualPlate, setShowManualPlate] = useState(false)
 
-    // Image state
+    // Estado de la imagen
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [showCamera, setShowCamera] = useState(true)
 
@@ -54,7 +60,7 @@ export default function MessengerCreateServicio() {
         },
     })
 
-    // Group dealerships by zone
+    // Agrupar concesionarios por zona
     const groupedDealerships = useMemo(() => {
         const groups: Record<string, Dealership[]> = {}
         dealerships.forEach(d => {
@@ -67,7 +73,7 @@ export default function MessengerCreateServicio() {
         return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
     }, [dealerships])
 
-    // Load dealerships on mount
+    // Cargar concesionarios al montar el componente
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -86,28 +92,28 @@ export default function MessengerCreateServicio() {
         fetchData()
     }, [])
 
-    // Handle photo capture from camera
+    // Manejar captura de foto desde la cámara
     const handlePhotoCapture = useCallback((file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
     }, [form])
 
-    // Handle image selection from gallery
+    // Manejar selección de imagen desde la galería
     const handleImageSelect = useCallback((file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
     }, [form])
 
-    // Clear selected image
+    // Limpiar imagen seleccionada
     const clearImage = useCallback(() => {
         form.setValue("image", undefined as unknown as File)
         setImagePreview(null)
         setShowCamera(true)
     }, [form])
 
-    // Form submit handler
+    // Manejador de envío del formulario
     const onSubmit = async (values: FormValues) => {
         try {
             setLoading(true)
@@ -120,7 +126,7 @@ export default function MessengerCreateServicio() {
                 latitude = location.latitude;
                 longitude = location.longitude;
             } catch {
-                // Location error already handled/toasted in hook
+                // El error de ubicación ya es manejado/notificado en el hook
             }
 
             await serviceDeliveryService.create({
@@ -161,7 +167,7 @@ export default function MessengerCreateServicio() {
         }
     }
 
-    // Loading skeleton while fetching dealerships
+    // Skeleton de carga mientras se obtienen los concesionarios
     if (loadingData) {
         return <CreateServiceSkeleton />
     }
@@ -170,9 +176,7 @@ export default function MessengerCreateServicio() {
         <div className="pb-24">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-                    {/* Content */}
                     <div className="">
-                        {/* Photo Section Card */}
                         <div className="p-4 pb-2">
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
@@ -233,7 +237,6 @@ export default function MessengerCreateServicio() {
                             </Card>
                         </div>
 
-                        {/* Dealership Select Card */}
                         <div className="px-4 pb-2">
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
@@ -285,7 +288,6 @@ export default function MessengerCreateServicio() {
                             </Card>
                         </div>
 
-                        {/* Manual Plate Number Card - Only shown after OCR fails */}
                         {showManualPlate && (
                             <div className="px-4 pb-2">
                                 <Card className="p-4 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
@@ -326,7 +328,6 @@ export default function MessengerCreateServicio() {
                         )}
                     </div>
 
-                    {/* Fixed Bottom Action */}
                     <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
                         <div className="flex gap-3">
                             <Button

@@ -21,6 +21,10 @@ interface UseMessengerServicesReturn {
     isFromCache: boolean
 }
 
+/**
+ * Hook para gestionar los servicios del mensajero actual.
+ * Maneja la carga, caché offline, estadísticas y filtrado de servicios.
+ */
 export function useMessengerServices(): UseMessengerServicesReturn {
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
@@ -35,9 +39,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
                     setServices(cached)
                     setIsFromCache(true)
                 }
-            } catch {
-                // Failed to load cached services, continuing without cache
-            }
+            } catch { }
         }
         loadCachedData()
     }, [])

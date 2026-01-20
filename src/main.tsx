@@ -7,22 +7,26 @@ import "./index.css"
 import "./styles/toast.css"
 import App from "./App.tsx"
 
+/**
+ * Punto de entrada principal de la aplicación React.
+ * Configura el Service Worker para capacidades PWA y renderiza el componente raíz.
+ */
 const logger = createLogger('PWA')
 
-// Register service worker for PWA with enhanced callbacks
+// Registrar el Service Worker para PWA con callbacks mejorados
 const updateSW = registerSW({
   immediate: true,
   onOfflineReady() {
-    logger.info('App ready to work offline')
+    logger.info('Aplicación lista para trabajar sin conexión')
     window.dispatchEvent(new CustomEvent('sw-offline-ready'))
   },
   onNeedRefresh() {
-    logger.info('New version available')
+    logger.info('Nueva versión disponible')
     window.dispatchEvent(new CustomEvent('sw-need-refresh'))
   },
   onRegisteredSW(swUrl, registration) {
-    logger.info('Service Worker registered:', swUrl)
-    // Check for updates periodically (every hour)
+    logger.info('Service Worker registrado:', swUrl)
+    // Verificar actualizaciones periódicamente (cada hora)
     if (registration) {
       setInterval(() => {
         registration.update()
@@ -30,11 +34,11 @@ const updateSW = registerSW({
     }
   },
   onRegisterError(error) {
-    logger.error('Service Worker registration error:', error)
+    logger.error('Error en el registro del Service Worker:', error)
   },
 })
 
-// Expose update function globally for NetworkContext to use
+// Exponer la función de actualización globalmente para uso de NetworkContext
 window.__updateSW = updateSW
 
 createRoot(document.getElementById("root")!).render(

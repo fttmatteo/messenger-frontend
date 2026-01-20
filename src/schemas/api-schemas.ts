@@ -1,6 +1,12 @@
+/**
+ * Esquemas de validación Zod para las respuestas y peticiones de la API.
+ * Aseguran la integridad de los datos en tiempo de ejecución.
+ */
 import { z } from 'zod'
 
-// ---------- Auth Schemas ----------
+/**
+ * Esquema de validación para la respuesta de inicio de sesión.
+ */
 export const LoginResponseSchema = z.object({
     role: z.string(),
     message: z.string(),
@@ -17,7 +23,9 @@ export const LoginResponseSchema = z.object({
         .optional()
 })
 
-// ---------- Enums ----------
+/**
+ * Enumeración de todos los estados posibles de un servicio de entrega.
+ */
 export const ServiceStatusSchema = z.enum([
     'ASSIGNED',
     'PENDING',
@@ -28,27 +36,41 @@ export const ServiceStatusSchema = z.enum([
     'DELETED'
 ])
 
+/**
+ * Tipos de vehículos soportados por el sistema.
+ */
 export const PlateTypeSchema = z.enum(['CAR', 'MOTORCYCLE', 'MOTORCAR'])
 
-// ---------- Nested entities ----------
+/**
+ * Información básica de la placa de un vehículo.
+ */
 export const PlateInfoSchema = z.object({
     idPlate: z.number(),
     plateNumber: z.string(),
     plateType: PlateTypeSchema
 })
 
+/**
+ * Datos relacionados con la firma capturada como evidencia (imagen y GIF).
+ */
 export const SignatureInfoSchema = z.object({
     idSignature: z.number(),
     signaturePath: z.string(),
     gifPath: z.string().optional()
 })
 
+/**
+ * Información de una fotografía capturada.
+ */
 export const PhotoInfoSchema = z.object({
     idPhoto: z.number(),
     photoPath: z.string(),
     photoType: z.enum(['PLATE_DETECTION', 'EVIDENCE']).optional()
 })
 
+/**
+ * Información detallada de un concesionario (destino).
+ */
 export const DealershipInfoSchema = z.object({
     idDealership: z.number(),
     name: z.string(),
@@ -59,6 +81,9 @@ export const DealershipInfoSchema = z.object({
     longitude: z.number().optional()
 })
 
+/**
+ * Información de perfil de un empleado (Administrador o Mensajero).
+ */
 export const EmployeeInfoSchema = z.object({
     idEmployee: z.number(),
     document: z.number(),
@@ -67,9 +92,11 @@ export const EmployeeInfoSchema = z.object({
     role: z.enum(['ADMIN', 'MESSENGER'])
 })
 
+/**
+ * Registro de un cambio de estado en la historia del servicio.
+ */
 export const StatusHistoryInfoSchema = z.object({
     idStatusHistory: z.number(),
-    // previousStatus can be null or any valid status; coerce invalid values to null
     previousStatus: z.union([ServiceStatusSchema, z.null()]).catch(null),
     newStatus: ServiceStatusSchema,
     changeDate: z.string(),
@@ -81,6 +108,9 @@ export const StatusHistoryInfoSchema = z.object({
     observation: z.string().optional()
 })
 
+/**
+ * Representación completa de un servicio de entrega de placa.
+ */
 export const ServiceDeliverySchema = z.object({
     idServiceDelivery: z.number(),
     plate: PlateInfoSchema,
@@ -95,7 +125,10 @@ export const ServiceDeliverySchema = z.object({
     deletedAt: z.string().optional()
 })
 
-// ---------- Pagination ----------
+/**
+ * Esquema genérico para envolver respuestas con paginación.
+ * @param schema - El esquema de Zod para los elementos del contenido.
+ */
 export const PaginatedSchema = <T extends z.ZodTypeAny>(schema: T) =>
     z.object({
         content: z.array(schema),
@@ -107,7 +140,9 @@ export const PaginatedSchema = <T extends z.ZodTypeAny>(schema: T) =>
         last: z.boolean()
     })
 
-// ---------- Error Schema ----------
+/**
+ * Esquema para capturar errores estandarizados de la API.
+ */
 export const ErrorResponseSchema = z.object({
     status: z.number().optional(),
     message: z.string().optional(),
@@ -116,5 +151,4 @@ export const ErrorResponseSchema = z.object({
     path: z.string().optional()
 })
 
-// ---------- Collections ----------
 export const ServiceListResponseSchema = z.array(ServiceDeliverySchema)

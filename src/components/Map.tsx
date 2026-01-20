@@ -8,7 +8,7 @@ const containerStyle = {
 }
 
 const defaultCenter = {
-    lat: 6.2442, // Medellín default
+    lat: 6.2442, // Medellín por defecto
     lng: -75.5812
 }
 
@@ -24,9 +24,12 @@ interface MapProps {
     className?: string
 }
 
+/**
+ * Componente base para la integración con Google Maps.
+ * Gestiona la carga de la API, el tema visual (claro/oscuro) y la configuración del contenedor.
+ */
 function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onUnmount, className }: MapProps) {
     const { resolvedTheme } = useTheme()
-    // map state is kept for onLoad reference but local access is no longer needed for effect
     const [, setMap] = useState<google.maps.Map | null>(null)
 
     const { isLoaded } = useJsApiLoader({
@@ -47,7 +50,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     }, [onUnmount])
 
     const getColorScheme = useCallback((): ColorScheme => {
-        // Always force explicit mode based on resolvedTheme to ensure reactivity
+        // Siempre forzar modo explícito basado en resolvedTheme para asegurar la reactividad
         return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
     }, [resolvedTheme])
 

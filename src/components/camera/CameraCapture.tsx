@@ -14,6 +14,10 @@ interface CameraCaptureProps {
     onClear: () => void
 }
 
+/**
+ * Componente para la captura de fotos de placas.
+ * Proporciona una interfaz para usar la cámara trasera del dispositivo o seleccionar un archivo de la galería.
+ */
 export function CameraCapture({
     onCapture,
     onFileSelect,
@@ -72,13 +76,13 @@ export function CameraCapture({
                             toast.success("Cámara lista", { duration: 1500 })
                         })
                         .catch(err => {
-                            logger.error('Video play error:', err)
+                            logger.error('Error al reproducir video:', err)
                             setCameraError('Error al reproducir video')
                         })
                 }
             }
         } catch (error) {
-            logger.error('Camera access error:', error)
+            logger.error('Error al acceder a la cámara:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
             toast.error("Error de cámara", {

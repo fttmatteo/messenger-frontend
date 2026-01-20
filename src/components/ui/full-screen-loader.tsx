@@ -15,7 +15,7 @@ export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScree
             <div className="relative flex flex-col items-center">
 
 
-                {/* Logo container with spin */}
+
                 <div className="relative bg-card p-6 rounded-2xl shadow-2xl border border-border/50 flex flex-col items-center space-y-4">
                     <div className="relative">
                         <div className="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />

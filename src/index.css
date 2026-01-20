@@ -1,15 +1,15 @@
 /**
- * Main Stylesheet
+ * Hoja de Estilos Principal
  * 
- * This file imports all modular CSS files in the correct order.
- * The CSS is organized as follows:
+ * Este archivo importa todos los archivos CSS modulares en el orden correcto.
+ * El CSS está organizado de la siguiente manera:
  * 
- * 1. Tailwind - Core framework
+ * 1. Tailwind - Framework principal
  * 2. Animations - tw-animate-css
- * 3. Tokens - Design tokens and theme variables
- * 4. Base - HTML elements, typography, layout foundations
- * 5. Components - UI component styles (data-slot)
- * 6. Utilities - Custom utilities and animations
+ * 3. Tokens - Design tokens y variables de tema
+ * 4. Base - Elementos HTML, tipografía, bases de diseño
+ * 5. Components - Estilos de componentes de UI (data-slot)
+ * 6. Utilities - Utilidades y animaciones personalizadas
  */
 
 @import "tailwindcss";
@@ -17,7 +17,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Modular CSS imports */
+/* Importaciones de CSS modulares */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/components.css";

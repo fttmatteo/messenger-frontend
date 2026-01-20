@@ -147,6 +147,10 @@ function ThemeColorSync() {
     return null
 }
 
+/**
+ * Proveedor global de temas que extiende NextThemesProvider.
+ * Sincroniza el color de la barra de estado del sistema y otros metadatos con el tema activo.
+ */
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     return (
         <NextThemesProvider {...props}>

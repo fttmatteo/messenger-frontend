@@ -1,7 +1,7 @@
 /**
- * Base Styles
+ * Estilos Base
  * 
- * Core HTML elements, typography, and layout foundations.
+ * Elementos HTML principales, tipografía y bases de diseño.
  */
 
 html {
@@ -27,7 +27,7 @@ body {
 
     html {
         @apply bg-background text-foreground;
-        /* Scale up the root font size so all rem-based Tailwind utilities (text-sm, etc.) scale up */
+        /* Escalar el tamaño de fuente raíz para que todas las utilidades de Tailwind basadas en rem (text-sm, etc.) se escalen */
         font-size: 105%;
         height: 100%;
         -webkit-text-size-adjust: 100%;
@@ -42,7 +42,7 @@ body {
 
     body {
         @apply bg-background text-foreground;
-        /* Professional base font size for better readability - Increased */
+        /* Tamaño de fuente base profesional para mejor legibilidad */
         font-size: 15px;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
@@ -50,7 +50,7 @@ body {
         height: 100%;
     }
 
-    /* Desktop typography scaling */
+    /* Escalado de tipografía en escritorio */
     @media (min-width: 768px) {
         body {
             font-size: 16px;
@@ -63,7 +63,7 @@ body {
         }
     }
 
-    /* Professional heading styles */
+    /* Estilos de encabezado profesionales */
     h1 {
         @apply text-2xl font-bold tracking-tight;
     }
@@ -105,14 +105,14 @@ body {
     }
 }
 
-/* Smooth scrolling for mobile */
+/* Desplazamiento suave para móvil */
 @supports (scroll-behavior: smooth) {
     html {
         scroll-behavior: smooth;
     }
 }
 
-/* Global compatibility overrides */
+/* Sobrescrituras de compatibilidad global */
 button,
 a,
 [role="button"],

@@ -13,6 +13,10 @@ interface ServiceHeaderProps {
     deleting?: boolean
 }
 
+/**
+ * Cabecera detallada para la vista individual de un servicio.
+ * Incluye migas de pan, indicador de estado prominente y acciones de gestión.
+ */
 export function ServiceHeader({ service, onDelete, onUpdate, deleting }: ServiceHeaderProps) {
     const { colors } = useStatusColors()
     const { user } = useAuth()
@@ -25,7 +29,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
 
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
-            {/* Left: Navigation */}
+
             <div className="flex-1">
                 <AdminBreadcrumb segments={[
                     { label: "Servicios", href: "/admin/servicios" },
@@ -33,7 +37,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
                 ]} />
             </div>
 
-            {/* Center: Status */}
+
             <div className="flex-1 flex flex-row items-center justify-center gap-3">
                 <div
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
@@ -46,7 +50,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
                 </div>
             </div>
 
-            {/* Right: Actions */}
+
             <div className="flex-1 flex justify-end gap-3">
                 {canEdit && onUpdate && (
                     <Button

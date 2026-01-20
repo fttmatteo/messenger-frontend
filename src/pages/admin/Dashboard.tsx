@@ -1,5 +1,10 @@
 import { Rocket } from "lucide-react"
 
+/**
+ * Vista de marcador de posición para el Panel de Control (Dashboard) de administración.
+ * Actualmente muestra un mensaje indicando que las estadísticas avanzadas estarán
+ * disponibles próximamente.
+ */
 export default function AdminDashboard() {
     return (
         <div className="flex h-full flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500 overflow-y-auto">

@@ -27,7 +27,13 @@ import { createLogger } from "@/utils/logger"
 
 const logger = createLogger('UpdateStatus')
 
-// Helper to convert hex to rgba for backgrounds
+/**
+ * Convierte un color hexadecimal a formato RGBA con transparencia.
+ * 
+ * @param hex - Color en formato hexadecimal (ej. #ffffff).
+ * @param alpha - Nivel de opacidad (0 a 1).
+ * @returns Cadena de texto con el color en formato rgba().
+ */
 function hexToRgba(hex: string, alpha: number): string {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
     if (!result) return `rgba(128, 128, 128, ${alpha})`
@@ -36,6 +42,12 @@ function hexToRgba(hex: string, alpha: number): string {
 
 
 
+/**
+ * Página para que el mensajero actualice el estado de un servicio de entrega.
+ * Permite seleccionar el nuevo estado (Entregado, Devuelto, etc.), capturar la firma
+ * del asesor (con video GIF de evidencia), tomar fotos y añadir observaciones.
+ * Incluye soporte para funcionamiento offline sincronizando los datos posteriormente.
+ */
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -56,15 +68,15 @@ export default function UpdateStatus() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
-    // statusOptions derived from shared config
+    // statusOptions derivado de la configuración compartida
     const statusOptions = useMemo(() => {
         return STATUS_OPTIONS
             .filter(option => !service || option.id !== service.currentStatus)
             .map(option => ({
-                value: option.id, // Map 'id' to 'value' to match existing component usage if possible, or update component
+                value: option.id, // Mapear 'id' a 'value' para coincidir con el uso del componente existente
                 label: option.label,
                 description: option.description,
-                icon: option.icon, // This is now a Component, not an Element. We need to render it.
+                icon: option.icon, // Esto ahora es un Componente, no un Elemento. Necesitamos renderizarlo.
                 requiresSignature: option.requiresSignature,
                 requiresPhotos: option.requiresPhotos,
                 requiresObservation: option.requiresObservation,
@@ -101,7 +113,7 @@ export default function UpdateStatus() {
             return false
         }
 
-        // GIF is required for DELIVERED and PENDING
+        // El GIF es obligatorio para ENTREGADO y PENDIENTE
         if (option.requiresSignature && (option.value === 'DELIVERED' || option.value === 'PENDING') && !hasGif) {
             return false
         }
@@ -126,7 +138,7 @@ export default function UpdateStatus() {
         try {
             setSubmitting(true)
 
-            // Get signature file if required
+            // Obtener archivo de firma si es requerido
             let signatureFile: File | undefined
             let signatureGifFile: File | undefined
             if (option.requiresSignature && signatureRef.current) {
@@ -134,7 +146,7 @@ export default function UpdateStatus() {
                 if (sig) signatureFile = sig
                 if (sig) signatureFile = sig
 
-                // Get GIF for DELIVERED/PENDING
+                // Obtener GIF para ENTREGADO/PENDIENTE
                 if (option.value === 'DELIVERED' || option.value === 'PENDING') {
                     const gif = await signatureRef.current.getGifFile()
                     if (gif) {
@@ -146,7 +158,7 @@ export default function UpdateStatus() {
                 }
             }
 
-            // Capture Location using hook
+            // Capturar ubicación usando el hook
             let latitude: number | undefined
             let longitude: number | undefined
 
@@ -155,12 +167,12 @@ export default function UpdateStatus() {
                 latitude = loc.latitude
                 longitude = loc.longitude
             } catch {
-                // Already toasted by hook
+                // Ya notificado por el hook
             }
 
-            // Check if online - if not, queue for offline sync
+            // Verificar si hay conexión - si no, encolar para sincronización offline
             if (!isOnline) {
-                // Convert files to base64 for IndexedDB storage
+                // Convertir archivos a base64 para almacenamiento en IndexedDB
                 const payload: UpdateStatusWithFilesPayload = {
                     serviceId: Number(id),
                     status: selectedStatus,
@@ -229,9 +241,7 @@ export default function UpdateStatus() {
 
     return (
         <div className="relative pb-24">
-            {/* Content */}
             <div className="">
-                {/* Hero Card - Plate & Dealership */}
                 <div className="p-4 pb-2">
                     <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">
                         <div className="flex flex-col items-center gap-3">
@@ -244,7 +254,6 @@ export default function UpdateStatus() {
                                 <Building2 className="h-4 w-4" strokeWidth={2.5} />
                                 <span className="text-sm font-bold">{service.dealership.name}</span>
                             </div>
-                            {/* Current Status Badge */}
                             <div
                                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
                                 style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
@@ -258,7 +267,6 @@ export default function UpdateStatus() {
                     </Card>
                 </div>
 
-                {/* Status Selection */}
                 <div className="px-4 py-3">
                     <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] mb-3 px-1">
                         Seleccionar estado
@@ -316,7 +324,6 @@ export default function UpdateStatus() {
                     </div>
                 </div>
 
-                {/* Evidence Forms - Show based on selected status */}
                 <AnimatePresence mode="wait">
                     {selectedOption && (
                         <motion.div
@@ -327,7 +334,6 @@ export default function UpdateStatus() {
                             transition={{ duration: 0.2 }}
                             className="px-4 pb-4 space-y-4"
                         >
-                            {/* Signature Section */}
                             {selectedOption.requiresSignature && (
                                 <Card className="p-4 border-border/50">
                                     <div className="flex items-center gap-2 mb-3">
@@ -346,7 +352,6 @@ export default function UpdateStatus() {
                                 </Card>
                             )}
 
-                            {/* Photos Section */}
                             {selectedOption.requiresPhotos && (
                                 <Card className="p-4 border-border/50">
                                     <div className="flex items-center gap-2 mb-3">
@@ -364,7 +369,6 @@ export default function UpdateStatus() {
                                 </Card>
                             )}
 
-                            {/* Observation Section */}
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-1.5 rounded-lg bg-primary/10">
@@ -403,7 +407,6 @@ export default function UpdateStatus() {
                 </AnimatePresence>
             </div>
 
-            {/* Fixed Bottom Action */}
             <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
                 <Button
                     className="w-full h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
@@ -432,7 +435,6 @@ export default function UpdateStatus() {
                 </Button>
             </div>
 
-            {/* Confirmation Dialog */}
             <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
                 <AlertDialogContent className="max-w-[90vw] rounded-xl">
                     <AlertDialogHeader>

@@ -21,6 +21,10 @@ export interface MessengerListPanelProps {
     now: number
 }
 
+/**
+ * Panel lateral que lista todos los mensajeros activos en el sistema de rastreo.
+ * Permite filtrar, seleccionar y seguir el movimiento de mensajeros específicos en el mapa.
+ */
 export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
@@ -33,7 +37,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
 
     return (
         <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
-            {/* Header */}
+
             <div className={cn(
                 "flex items-center border-b shrink-0 h-10",
                 isCollapsed ? "justify-center p-0" : "justify-between px-3"
@@ -55,7 +59,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                 )}
             </div>
 
-            {/* Content */}
+
             {!isCollapsed && (
                 <ScrollArea className="flex-1">
                     {messengers.length === 0 ? (
@@ -84,7 +88,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                                             <span className="font-medium text-sm truncate">
                                                 {messenger.messengerName ? formatDisplayName(messenger.messengerName) : `#${messenger.messengerId}`}
                                             </span>
-                                            {/* Indicadores de estado */}
+
                                             <div className="flex items-center gap-1">
                                                 <Badge
                                                     variant="outline"

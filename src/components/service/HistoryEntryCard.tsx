@@ -12,6 +12,10 @@ interface HistoryEntryCardProps {
     onImageClick?: (url: string) => void
 }
 
+/**
+ * Tarjeta que muestra una entrada individual en el historial de estados de un servicio.
+ * Visualiza la fecha, el usuario, observaciones y multimedia asociada (fotos/firmas).
+ */
 export function HistoryEntryCard({
     entry,
     platePhotos,
@@ -31,7 +35,6 @@ export function HistoryEntryCard({
 
     return (
         <div className={`bg-muted/30 rounded-lg p-2.5 space-y-2 border border-border/50 ${className}`}>
-            {/* Date and User Info */}
             <div className="flex flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 flex-shrink-0" />
@@ -76,15 +79,13 @@ export function HistoryEntryCard({
                 </div>
             )}
 
-            {/* Combined Evidence Section (Signature + Photos) */}
+
             {(((entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath)) || (entry.photos && entry.photos.length > 0)) && (
                 <div className="pt-1.5 border-t border-border/50 flex flex-row gap-2 justify-center">
-                    {/* Signature + GIF Collage */}
                     {(entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath) && (
                         <div className="flex flex-col items-center">
                             <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Captura + Firma</p>
                             <div className="flex rounded border border-border/50 overflow-hidden bg-white">
-                                {/* GIF - 60% */}
                                 {entry.signature?.gifPath && (
                                     <div
                                         className="relative group cursor-pointer h-16 w-24 flex items-center justify-center border-r border-border/30"
@@ -103,7 +104,7 @@ export function HistoryEntryCard({
                                         </div>
                                     </div>
                                 )}
-                                {/* Signature - 40% */}
+
                                 <div
                                     className="relative group cursor-pointer h-16 w-16 flex items-center justify-center"
                                     onClick={() => handleImageClick(entry.signature?.signaturePath || signaturePath!)}
@@ -123,7 +124,7 @@ export function HistoryEntryCard({
                         </div>
                     )}
 
-                    {/* Photos */}
+
                     {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-col items-center">
                             <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Evidencia</p>

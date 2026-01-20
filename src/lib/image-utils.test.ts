@@ -1,14 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { getImageUrl } from './image-utils'
 
+/**
+ * Suite de pruebas para las utilidades de procesamiento de rutas de imágenes.
+ * Verifica la normalización de URLs relativas y absolutas, prependiendo la URL de la API
+ * cuando es necesario y evitando duplicidades.
+ */
 describe('image-utils', () => {
     beforeEach(() => {
-        // Reset any mocks
+        // Limpiar mocks
         vi.clearAllMocks()
     })
 
     afterEach(() => {
-        // Restore original env
+        // Restaurar env original
         vi.unstubAllEnvs()
     })
 
@@ -18,9 +23,9 @@ describe('image-utils', () => {
         })
 
         it('should return empty string for falsy input', () => {
-            // @ts-expect-error Testing edge case with null
+            // @ts-expect-error Probando caso borde con null
             expect(getImageUrl(null)).toBe('')
-            // @ts-expect-error Testing edge case with undefined
+            // @ts-expect-error Probando caso borde con undefined
             expect(getImageUrl(undefined)).toBe('')
         })
 
@@ -52,7 +57,7 @@ describe('image-utils', () => {
             const pathWithApi = '/api/uploads/images/photo.jpg'
             const result = getImageUrl(pathWithApi)
 
-            // Should not have double /api/api
+            // No debería tener doble /api/api
             expect(result).not.toContain('/api/api')
             expect(result).toContain('/uploads/images/photo.jpg')
         })
@@ -61,7 +66,7 @@ describe('image-utils', () => {
             const pathWithApi = '/api/photos/123.jpg'
             const result = getImageUrl(pathWithApi)
 
-            // The /api/ prefix should be removed
+            // El prefijo /api/ debería ser removido
             expect(result).toContain('/photos/123.jpg')
         })
 

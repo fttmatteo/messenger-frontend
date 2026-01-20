@@ -18,18 +18,22 @@ import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
 import type { TrackingHistoryItem } from "@/types/tracking.types"
 import { logger } from "@/utils/logger"
-
-// New components
 import { MessengerInfoCard } from "@/components/tracking/MessengerInfoCard"
 import { TrackingHistoryList } from "@/components/tracking/TrackingHistoryList"
 
+/**
+ * Vista detallada de un mensajero específico.
+ * Muestra información personal, estado actual en tiempo real, velocidad,
+ * última ubicación conocida y permite consultar el historial de navegación
+ * por fechas, visualizando la ruta recorrida en el mapa.
+ */
 export default function MessengerDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { resolvedTheme } = useTheme()
     const messengerId = Number(id)
 
-    // State
+    // Estado
     const [employee, setEmployee] = useState<Employee | null>(null)
     const [loading, setLoading] = useState(true)
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number } | null>(null)
@@ -37,14 +41,14 @@ export default function MessengerDetails() {
     const [speed, setSpeed] = useState<number | null>(null)
     const [isActive, setIsActive] = useState(false)
 
-    // History state
+    // Estado del historial
     const [historyDate, setHistoryDate] = useState<Date>(new Date())
     const [historyData, setHistoryData] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [showHistoryRoute, setShowHistoryRoute] = useState(false)
     const [calendarOpen, setCalendarOpen] = useState(false)
 
-    // Handle real-time updates
+    // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
         if (update.messengerId === messengerId) {
             setCurrentLocation({ lat: update.latitude, lng: update.longitude })
@@ -56,7 +60,7 @@ export default function MessengerDetails() {
         }
     }, [messengerId])
 
-    // Connect to WebSocket
+    // Conectar a WebSocket
     useEffect(() => {
         const connect = async () => {
             if (trackingService.isCurrentlyConnected()) {
@@ -70,7 +74,7 @@ export default function MessengerDetails() {
                     trackingService.subscribeToAll(handleTrackingUpdate)
                 })
             } catch (err) {
-                // Fallback to cookie/header auth if ws-token endpoint fails
+                // Fallback a autenticación por cookie/header si el endpoint ws-token falla
                 logger.debug('WS token unavailable in Details, using fallback', err)
                 trackingService.connect(undefined, () => {
                     trackingService.subscribeToAll(handleTrackingUpdate)
@@ -84,7 +88,7 @@ export default function MessengerDetails() {
         }
     }, [handleTrackingUpdate])
 
-    // Fetch employee and tracking data
+    // Obtener datos del empleado y tracking
     const fetchData = useCallback(async () => {
         if (!messengerId || isNaN(messengerId)) {
             setLoading(false)
@@ -94,11 +98,11 @@ export default function MessengerDetails() {
         try {
             setLoading(true)
 
-            // Get employee info
+            // Obtener info del empleado
             const emp = await employeeService.getById(messengerId)
             setEmployee(emp)
 
-            // Get active tracking if exists
+            // Obtener tracking activo si existe
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeData = activeMessengers.find(m => m.messengerId === messengerId)
 
@@ -109,7 +113,7 @@ export default function MessengerDetails() {
                 setSpeed(activeData.speed || null)
                 setIsActive(activeData.status === 'ACTIVE')
             } else {
-                // Try to get last known location
+                // Intentar obtener última ubicación conocida
                 try {
                     const lastLocation = await trackingApiService.getLastLocation(messengerId)
                     if (lastLocation) {
@@ -118,7 +122,7 @@ export default function MessengerDetails() {
                         setLastUpdate(date && isFinite(date.getTime()) ? date : null)
                     }
                 } catch {
-                    // Ignore error if last location is not found
+                    // Ignorar error si no se encuentra última ubicación
                 }
                 setIsActive(false)
             }
@@ -129,7 +133,7 @@ export default function MessengerDetails() {
         }
     }, [messengerId])
 
-    // Fetch history data
+    // Obtener datos del historial
     const fetchHistory = useCallback(async () => {
         if (!messengerId || isNaN(messengerId)) return
 
@@ -161,7 +165,7 @@ export default function MessengerDetails() {
         fetchHistory()
     }, [fetchHistory])
 
-    // History path for polyline
+    // Ruta del historial para polyline
     const historyPath = historyData
         .filter(h => h.latitude && h.longitude && h.latitude !== 0)
         .map(h => ({ lat: h.latitude, lng: h.longitude }))
@@ -192,7 +196,6 @@ export default function MessengerDetails() {
 
     return (
         <div className="space-y-4 animate-in fade-in duration-500">
-            {/* Header: Nav left, Title center, Status right */}
             <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3">
                 <div className="justify-self-start">
                     <AdminBreadcrumb
@@ -223,11 +226,8 @@ export default function MessengerDetails() {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Info + History */}
                 <div className="space-y-6">
-                    {/* Current Status Card */}
                     <MessengerInfoCard
                         employee={employee}
                         speed={speed}
@@ -235,7 +235,6 @@ export default function MessengerDetails() {
                         currentLocation={currentLocation}
                     />
 
-                    {/* History Card */}
                     <TrackingHistoryList
                         historyData={historyData}
                         loading={loadingHistory}
@@ -248,7 +247,6 @@ export default function MessengerDetails() {
                     />
                 </div>
 
-                {/* Right Column - Map */}
                 <Card className="lg:col-span-2 overflow-hidden border-2 shadow-inner">
                     <CardContent className="p-0 h-[600px] bg-muted/20 relative">
                         <MapComponent className="w-full h-full" center={mapCenter} zoom={15}>

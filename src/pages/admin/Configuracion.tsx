@@ -12,10 +12,10 @@ import { cn } from "@/lib/utils"
 import { APP_CONFIG } from "@/lib/app-config"
 
 
-// Status order for display
+// Orden de estados para visualización
 const STATUS_ORDER = ['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED', 'DELETED']
 
-// Theme options for appearance section
+// Opciones de tema para la sección de apariencia
 type ThemeOption = 'light' | 'dark' | 'system'
 
 interface ThemeOptionItem {
@@ -46,7 +46,7 @@ const themeOptions: ThemeOptionItem[] = [
     }
 ]
 
-// Settings sections - add more here in the future
+// Secciones de configuración - agregar más aquí en el futuro
 const SETTINGS_SECTIONS = [
     {
         id: 'appearance',
@@ -62,6 +62,12 @@ const SETTINGS_SECTIONS = [
     },
 ]
 
+/**
+ * Página de configuración global para administradores.
+ * Permite gestionar la apariencia (tema claro/oscuro) y la personalización
+ * de colores para los estados de los servicios.
+ * Utiliza parámetros de búsqueda en la URL para navegar entre secciones.
+ */
 export default function Configuracion() {
     const [searchParams, setSearchParams] = useSearchParams()
     const activeSection = searchParams.get('section')
@@ -91,9 +97,7 @@ export default function Configuracion() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title center, Actions right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
-                {/* Left: Navigation */}
                 <div className="flex-1">
                     {activeSection === null ? (
                         <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
@@ -107,14 +111,12 @@ export default function Configuracion() {
                     )}
                 </div>
 
-                {/* Center: Title */}
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">
                         {activeSection === 'colors' ? 'Colores de estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
                     </h1>
                 </div>
 
-                {/* Right: Actions */}
                 <div className="flex-1 flex justify-end">
                     {activeSection === 'colors' && isModified && (
                         <Button
@@ -130,9 +132,8 @@ export default function Configuracion() {
                 </div>
             </div>
 
-            {/* Content */}
+
             {activeSection === null ? (
-                /* Settings Menu */
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                     <CardContent className="p-0 space-y-2 overflow-y-auto">
                         {SETTINGS_SECTIONS.map((section) => {
@@ -156,7 +157,7 @@ export default function Configuracion() {
                         })}
                     </CardContent>
 
-                    {/* Additional info or version footer like in Messenger */}
+
                     <div className="mt-auto py-6 text-center">
                         <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
                             {APP_CONFIG.name} v{APP_CONFIG.version}
@@ -164,7 +165,6 @@ export default function Configuracion() {
                     </div>
                 </Card>
             ) : activeSection === 'appearance' ? (
-                /* Appearance Section */
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="py-2 px-4">
                         <CardDescription>
@@ -214,7 +214,6 @@ export default function Configuracion() {
                     </CardContent>
                 </Card>
             ) : activeSection === 'colors' ? (
-                /* Status Colors Section */
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="py-2 px-4">
                         <CardDescription>
@@ -222,7 +221,6 @@ export default function Configuracion() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
-                        {/* Color Pickers Grid */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                             {STATUS_ORDER.map(status => (
                                 <StatusColorPicker
@@ -234,7 +232,6 @@ export default function Configuracion() {
                             ))}
                         </div>
 
-                        {/* Compact Preview - inline at bottom - same style as content headers */}
                         <div className="mt-auto pt-3 border-t flex items-center gap-4 flex-wrap">
                             <span className="text-xs text-muted-foreground">Vista previa:</span>
                             {STATUS_ORDER.map(status => (

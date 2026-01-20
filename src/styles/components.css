@@ -1,15 +1,15 @@
 /**
- * Component Styles
+ * Estilos de Componentes
  * 
- * Global styles for UI components using data-slot attributes.
- * These provide consistent sizing and touch targets across the app.
+ * Estilos globales para componentes de UI usando atributos data-slot.
+ * Estos proporcionan tamaños consistentes y objetivos táctiles en toda la aplicación.
  */
 
-/* Mobile-first component improvements (base styles) */
-/* Touch-friendly sizing for mobile - 44px minimum touch targets */
+/* Mejoras de componentes Mobile-first (estilos base) */
+/* Tamaño amigable para pantallas táctiles - objetivos mínimos de 44px */
 [data-slot="button"] {
     min-height: 2.75rem;
-    /* 44px - Apple/Google recommended touch target */
+    /* 44px - objetivo táctil recomendado por Apple/Google */
 }
 
 [data-slot="button"][data-size="sm"] {
@@ -23,16 +23,16 @@
     min-height: 2.75rem;
 }
 
-/* Input touch targets */
+/* Objetivos táctiles para inputs */
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
     min-height: 2.75rem;
     font-size: 16px;
-    /* Prevents iOS zoom on focus */
+    /* Previene el zoom en iOS al enfocar */
 }
 
-/* Hide native browser password reveal icons (Edge, Chrome) */
+/* Ocultar iconos nativos de revelación de contraseña del navegador (Edge, Chrome) */
 input::-ms-reveal,
 input::-ms-clear {
     display: none;
@@ -45,7 +45,7 @@ input::-webkit-credentials-auto-fill-button {
     right: 0;
 }
 
-/* Card mobile spacing */
+/* Espaciado de tarjetas en móvil */
 [data-slot="card"] {
     padding: 1rem;
 }
@@ -65,14 +65,14 @@ input::-webkit-credentials-auto-fill-button {
     padding-right: 1rem;
 }
 
-/* Badge mobile readability */
+/* Legibilidad de insignias (badges) en móvil */
 [data-slot="badge"] {
     font-size: 0.8125rem;
     padding: 0.25rem 0.625rem;
     font-weight: 500;
 }
 
-/* Better tap highlighting */
+/* Mejor resaltado al tocar */
 @media (hover: none) {
 
     button,
@@ -84,17 +84,17 @@ input::-webkit-credentials-auto-fill-button {
     }
 }
 
-/* Professional desktop component sizing */
+/* Dimensionamiento profesional para componentes en escritorio */
 @media (min-width: 768px) {
 
-    /* Table cells - better padding and font size */
+    /* Celdas de tabla - mejor espaciado y tamaño de fuente */
     [data-slot="table"] td,
     [data-slot="table"] th {
         padding: 0.875rem 1rem;
         font-size: 0.9375rem;
     }
 
-    /* Card improvements */
+    /* Mejoras en tarjetas */
     [data-slot="card"] {
         padding: 1.5rem;
     }
@@ -107,7 +107,7 @@ input::-webkit-credentials-auto-fill-button {
         font-size: 0.9375rem;
     }
 
-    /* Button improvements for desktop */
+    /* Mejoras de botones para escritorio */
     [data-slot="button"][data-size="default"] {
         height: 2.5rem;
         padding-left: 1.25rem;
@@ -122,13 +122,13 @@ input::-webkit-credentials-auto-fill-button {
         font-size: 1rem;
     }
 
-    /* Badge improvements */
+    /* Mejoras en insignias (badges) */
     [data-slot="badge"] {
         font-size: 0.875rem;
         padding: 0.25rem 0.75rem;
     }
 
-    /* Input improvements */
+    /* Mejoras en inputs */
     input:not([type="checkbox"]):not([type="radio"]),
     select,
     textarea {
@@ -138,7 +138,7 @@ input::-webkit-credentials-auto-fill-button {
 
 @media (min-width: 1024px) {
 
-    /* Larger screens - slightly larger sizing */
+    /* Pantallas grandes - tamaños ligeramente superiores */
     [data-slot="table"] td,
     [data-slot="table"] th {
         padding: 1rem 1.125rem;
@@ -149,7 +149,7 @@ input::-webkit-credentials-auto-fill-button {
         font-size: 1.25rem;
     }
 
-    /* Icon sizing in tables and lists - use CSS variables for consistency */
+    /* Tamaño de iconos en tablas y listas */
     [data-slot="table"] svg:not([class*="h-"]) {
         width: 1.125rem;
     }

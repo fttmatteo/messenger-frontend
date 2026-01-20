@@ -50,6 +50,10 @@ const defaultConfig = {
     Icon: Clock
 }
 
+/**
+ * Insignia visual (badge) que representa el estado de un servicio.
+ * Incluye un icono descriptivo y soporte para temas claro/oscuro.
+ */
 export function StatusBadge({ status, size = 'md', className, showLabel = false }: StatusBadgeProps) {
     const config = statusConfig[status] || defaultConfig
     const Icon = config.Icon

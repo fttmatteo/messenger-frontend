@@ -2,6 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
+/**
+ * Esqueleto de carga para una fila de la tabla de servicios.
+ */
 export function TableRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
@@ -41,6 +44,9 @@ export function TableRowSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga para una tarjeta de servicio (vista móvil/lista).
+ */
 export function CardSkeleton() {
     return (
         <Card className="mb-3 border-border/50 bg-background/40">
@@ -81,6 +87,9 @@ export function CardSkeleton() {
     )
 }
 
+/**
+ * Lista de esqueletos de carga para múltiples servicios.
+ */
 export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     return (
         <div className="space-y-2 animate-in fade-in duration-500">
@@ -114,6 +123,9 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     )
 }
 
+/**
+ * Esqueleto detallado para la vista de información de un servicio.
+ */
 export function ServiceDetailsSkeleton() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">
@@ -168,6 +180,9 @@ export function ServiceDetailsSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga para el flujo de actualización de estado del servicio.
+ */
 export function UpdateServiceStatusSkeleton() {
     return (
         <div className="animate-in fade-in duration-500 pb-24">
@@ -212,6 +227,9 @@ export function UpdateServiceStatusSkeleton() {
     )
 }
 
+/**
+ * Esqueleto de carga para el flujo de creación de un nuevo servicio.
+ */
 export function CreateServiceSkeleton() {
     return (
         <div className="pb-24 animate-in fade-in duration-500">

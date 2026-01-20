@@ -9,9 +9,14 @@ import {
 } from './status-utils';
 import { DEFAULT_STATUS_COLORS } from './status-colors';
 
-// Default fallback color for unknown statuses
+// Color por defecto para estados desconocidos
 const DEFAULT_FALLBACK_COLOR = '#6b7280';
 
+/**
+ * Suite de pruebas para las utilidades de lógica de negocio y estados.
+ * Valida la correcta asignación de etiquetas, colores de insignias, iconos,
+ * y las reglas de transición de estados permitidas según el rol del usuario.
+ */
 describe('status-utils', () => {
     describe('getStatusBadge', () => {
         it('should return correct badge config for known statuses', () => {
@@ -29,7 +34,7 @@ describe('status-utils', () => {
         });
 
         it('should return default for unknown status', () => {
-            // Testing invalid status input - falls back to gray-500
+            // Probando entrada de estado inválido - usa gray-500 por defecto
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
             expect(result.style?.backgroundColor).toBe(DEFAULT_FALLBACK_COLOR);

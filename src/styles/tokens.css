@@ -1,8 +1,8 @@
 /**
  * Design Tokens
  * 
- * CSS custom properties for colors, spacing, and theming.
- * This is the foundation of the design system.
+ * Propiedades personalizadas de CSS para colores, espaciado y tematización.
+ * Esta es la base del sistema de diseño.
  */
 
 @theme inline {
@@ -73,7 +73,7 @@
   --chart-3: hsl(197 37% 24%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
-  /* Sidebar - light mode */
+  /* Sidebar - modo claro */
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(0 0% 9%);
   --sidebar-primary: hsl(0 0% 9%);
@@ -87,15 +87,15 @@
 }
 
 .dark {
-  /* Matte finish background - Darker for more premium feel */
+  /* Fondo con acabado mate - Más oscuro para una sensación más premium */
   --background: hsl(0 0% 8%);
   --foreground: hsl(0 0% 98%);
 
-  /* Subtly lighter card for depth */
+  /* Tarjeta sutilmente más clara para dar profundidad */
   --card: hsl(0 0% 10%);
   --card-foreground: hsl(0 0% 98%);
 
-  /* Popover matches card */
+  /* Popover coincide con la tarjeta */
   --popover: hsl(0 0% 10%);
   --popover-foreground: hsl(0 0% 98%);
 
@@ -114,7 +114,7 @@
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  /* Much softer border for better integration */
+  /* Borde mucho más suave para una mejor integración */
   --border: hsl(0 0% 14%);
   --input: hsl(0 0% 20%);
   --ring: hsl(0 0% 83.1%);
@@ -125,7 +125,7 @@
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
 
-  /* Sidebar - integrated with premium dark theme */
+  /* Sidebar - integrado con el tema oscuro premium */
   --sidebar: hsl(0 0% 9%);
   --sidebar-foreground: hsl(0 0% 98%);
   --sidebar-primary: hsl(0 0% 98%);

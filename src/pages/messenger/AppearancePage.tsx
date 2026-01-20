@@ -33,6 +33,11 @@ const themeOptions: ThemeOptionItem[] = [
     }
 ]
 
+/**
+ * Página de configuración de apariencia para la interfaz del mensajero.
+ * Permite al usuario elegir entre temas claro, oscuro o sincronizado con el sistema.
+ * El cambio se aplica instantáneamente en toda la aplicación.
+ */
 export default function AppearancePage() {
     const { theme, setTheme } = useTheme()
 

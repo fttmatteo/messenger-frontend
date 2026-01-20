@@ -1,7 +1,3 @@
-/**
- * Barrel export for all application types.
- * Import types from '@/types' instead of individual files.
- */
 
 export * from './auth.types'
 export * from './dealership.types'

@@ -11,6 +11,10 @@ interface MessengerInfoCardProps {
     currentLocation: { lat: number, lng: number } | null
 }
 
+/**
+ * Tarjeta lateral que muestra información en tiempo real de un mensajero.
+ * Incluye teléfono, velocidad actual, tiempo desde la última señal y coordenadas.
+ */
 export function MessengerInfoCard({ employee, speed, lastUpdate, currentLocation }: MessengerInfoCardProps) {
     return (
         <Card>

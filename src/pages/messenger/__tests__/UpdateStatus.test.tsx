@@ -9,7 +9,7 @@ import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 
 
-// Mock useSmartLocation to avoid real GPS prompts in tests
+// Mock de useSmartLocation para evitar avisos de GPS real en los tests
 vi.mock('@/hooks/use-smart-location', () => ({
     useSmartLocation: () => ({
         getCurrentLocation: vi.fn().mockResolvedValue({ latitude: 10, longitude: 20 })
@@ -72,10 +72,15 @@ vi.mock('@/components/messenger/SignatureCanvas', async () => {
     return { SignatureCanvas: MockSignatureCanvas }
 })
 
+/**
+ * Suite de pruebas de integración para el componente UpdateStatus.
+ * Verifica el flujo crítico de actualización de estado de entrega, incluyendo la validación
+ * de requisitos complejos como firmas digitales y captura de evidencia GIF.
+ */
 describe('UpdateStatus Page Integration', () => {
     beforeEach(() => {
-        localStorage.setItem('role', 'MESSENGER') // Required by some hooks or services
-        // Explicitly handle 123 for this test suite
+        localStorage.setItem('role', 'MESSENGER') // Requerido por algunos hooks o servicios
+        // Manejar explícitamente el id 123 para esta suite de tests
         server.use(
             http.get('http://localhost:8080/services/findByServiceId/123', () => {
                 return HttpResponse.json({

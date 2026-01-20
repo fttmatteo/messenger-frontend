@@ -4,7 +4,15 @@ import { logger } from '../utils/logger'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
-// Create axios instance with default config
+/**
+ * Cliente Axios configurado para interactuar con la API del backend.
+ * Incluye configuración base para cookies (CORS), timeouts y manejo de errores.
+ * 
+ * Implementa un sistema de interceptores para:
+ * 1. Inyectar IDs de correlación y tokens de sesión como fallback.
+ * 2. Gestionar la renovación automática de tokens (Refresh Token) ante errores 401.
+ * 3. Centralizar el logueo de errores de comunicación.
+ */
 export const apiClient = axios.create({
     baseURL: API_URL,
     timeout: 30000,
@@ -43,9 +51,7 @@ apiClient.interceptors.request.use(
 // Interceptor de respuesta: capturar token del body si llega
 apiClient.interceptors.response.use(
     (response) => {
-        // Log para debug
         if (response.config.url?.includes('/auth/')) {
-            // logger.debug('Auth response received', { url: response.config.url });
         }
 
         // Si la respuesta trae tokens en el body, lo guardamos como fallback
@@ -60,21 +66,21 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        // This part is handled by the subsequent interceptor, so we just pass the error along
+        // Esta parte es manejada por el interceptor posterior, así que solo pasamos el error
         return Promise.reject(error);
     }
 );
 
-// Flag to track if token refresh is already in progress
+// Indicador para rastrear si la renovación del token ya está en progreso
 let isRefreshing = false
 
-// Type for queued requests waiting for token refresh
+// Tipo para peticiones en cola esperando la renovación del token
 interface QueuedRequest {
     resolve: (token: string) => void
     reject: (error: unknown) => void
 }
 
-// Queue to hold requests that are waiting for the token refresh
+// Cola para mantener las peticiones que están esperando la renovación del token
 let failedQueue: QueuedRequest[] = []
 
 const processQueue = (error: unknown, token: string | null = null) => {
@@ -89,7 +95,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue = []
 }
 
-// Response interceptor - handle 401 errors globally and log all errors
+// Interceptor de respuesta - manejar errores 401 globalmente y loguear todos los errores
 apiClient.interceptors.response.use(
     (response) => {
         // Podemos loguear metadata opcionalmente aquí
@@ -98,7 +104,6 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
-        // Loguear error de API de forma profesional
         if (!originalRequest?._retry || error.response?.status !== 401) {
             logger.apiError('Error en petición API', error);
         }
@@ -130,7 +135,7 @@ apiClient.interceptors.response.use(
                 await authService.refreshToken()
                 processQueue(null, 'refreshed')
 
-                // Retry original request
+                // Reintentar petición original
                 return apiClient(originalRequest)
             } catch (err) {
                 processQueue(err, null)

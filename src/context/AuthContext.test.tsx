@@ -15,6 +15,11 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
 )
 
+/**
+ * Suite de pruebas unitarias para el contexto de autenticación (AuthContext).
+ * Evalúa los estados de sesión (login, logout, persistencia) y la correcta
+ * interacción con el almacenamiento local (localStorage/sessionStorage).
+ */
 describe('AuthContext', () => {
     beforeEach(() => {
         localStorage.clear()
@@ -27,14 +32,14 @@ describe('AuthContext', () => {
         sessionStorage.clear()
     })
 
-    describe('useAuth hook', () => {
-        it('should throw error when used outside AuthProvider', () => {
+    describe('hook useAuth', () => {
+        it('debe lanzar un error cuando se usa fuera de AuthProvider', () => {
             expect(() => {
                 renderHook(() => useAuth())
             }).toThrow('useAuth must be used within an AuthProvider')
         })
 
-        it('should return initial unauthenticated state', async () => {
+        it('debe devolver el estado inicial no autenticado', async () => {
             const { result } = renderHook(() => useAuth(), { wrapper })
 
             await waitFor(() => {
@@ -45,7 +50,7 @@ describe('AuthContext', () => {
             expect(result.current.isAuthenticated).toBe(false)
         })
 
-        it('should restore user from localStorage on mount', async () => {
+        it('debe restaurar al usuario desde localStorage al montar', async () => {
             const storedUser = {
                 document: '12345',
                 role: 'ADMIN',
@@ -65,7 +70,7 @@ describe('AuthContext', () => {
             expect(result.current.isAuthenticated).toBe(true)
         })
 
-        it('should restore user from sessionStorage on mount', async () => {
+        it('debe restaurar al usuario desde sessionStorage al montar', async () => {
             const storedUser = {
                 document: '12345',
                 role: 'MESSENGER',
@@ -87,7 +92,7 @@ describe('AuthContext', () => {
     })
 
     describe('login', () => {
-        it('should login with rememberMe and store in localStorage', async () => {
+        it('debe iniciar sesión con rememberMe y guardar en localStorage', async () => {
             vi.mocked(authService.login).mockResolvedValue({
                 role: 'ADMIN',
                 message: 'ok',
@@ -119,7 +124,7 @@ describe('AuthContext', () => {
             expect(result.current.user?.role).toBe('ADMIN')
         })
 
-        it('should login without rememberMe and store in sessionStorage', async () => {
+        it('debe iniciar sesión sin rememberMe y guardar en sessionStorage', async () => {
             localStorage.clear()
             sessionStorage.clear()
 
@@ -151,7 +156,7 @@ describe('AuthContext', () => {
     })
 
     describe('logout', () => {
-        it('should clear user and call authService.logout', async () => {
+        it('debe limpiar al usuario y llamar a authService.logout', async () => {
             const storedUser = {
                 document: '12345',
                 role: 'ADMIN',
@@ -178,7 +183,7 @@ describe('AuthContext', () => {
     })
 
     describe('updateUser', () => {
-        it('should update user partially', async () => {
+        it('debe actualizar al usuario parcialmente', async () => {
             const storedUser = {
                 document: '12345',
                 role: 'MESSENGER',
@@ -204,7 +209,7 @@ describe('AuthContext', () => {
             expect(updatedStored.isOnline).toBe(true)
         })
 
-        it('should do nothing when no user is logged in', async () => {
+        it('no debe hacer nada cuando no hay un usuario autenticado', async () => {
             const { result } = renderHook(() => useAuth(), { wrapper })
 
             await waitFor(() => {

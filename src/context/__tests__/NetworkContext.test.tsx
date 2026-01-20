@@ -27,6 +27,11 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     <NetworkProvider>{children}</NetworkProvider>
 )
 
+/**
+ * Suite de pruebas unitarias para el contexto de red (NetworkContext).
+ * Evalúa la detección de estado online/offline, la sincronización automática
+ * de acciones pendientes y la gestión de eventos de PWA (Service Worker).
+ */
 describe('NetworkContext', () => {
     beforeEach(() => {
         vi.clearAllMocks()

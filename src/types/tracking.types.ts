@@ -1,3 +1,6 @@
+/**
+ * Representa un punto individual en el historial de rastreo GPS de un mensajero.
+ */
 export interface TrackingHistoryItem {
     id?: number
     latitude: number
@@ -6,6 +9,4 @@ export interface TrackingHistoryItem {
     speed?: number
 }
 
-// Re-export LiveTrackingUpdate if we want to centralize, 
-// but for now keeping it compatible with existing imports
 export type { LiveTrackingUpdate } from '@/services/tracking.service'

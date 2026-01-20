@@ -5,6 +5,9 @@ interface ExtendedWindow extends Window {
     MSStream?: unknown;
 }
 
+/**
+ * Hook para detectar el tipo de dispositivo (iOS, Android, Móvil) basado en el User Agent.
+ */
 export function useDeviceType() {
     const [device] = useState(() => {
         if (typeof window === 'undefined' || !window.navigator) {

@@ -17,7 +17,7 @@ export function ImageViewer({ src, alt = "Visualizador de imagen", open, onClose
         <AnimatePresence>
             {open && (
                 <div className="relative z-[99999]">
-                    {/* Backdrop */}
+
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -26,9 +26,7 @@ export function ImageViewer({ src, alt = "Visualizador de imagen", open, onClose
                         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99990]"
                     />
 
-                    {/* Content Container */}
                     <div className="fixed inset-0 z-[99991] flex items-center justify-center p-4 pointer-events-none">
-                        {/* Close Button - Fixed to viewport */}
                         <Button
                             size="icon"
                             variant="ghost"
@@ -46,7 +44,6 @@ export function ImageViewer({ src, alt = "Visualizador de imagen", open, onClose
                             className="relative max-w-[95vw] max-h-[90vh] pointer-events-auto shadow-2xl flex items-center justify-center outline-none"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Image */}
                             <img
                                 src={src}
                                 alt={alt}

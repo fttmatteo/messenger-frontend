@@ -1,4 +1,11 @@
+/**
+ * Declaraciones de tipos para la biblioteca 'gif.js', la cual carece de tipos oficiales.
+ * Define las interfaces para configuración de GIF, opciones de cuadros y la clase principal GIF.
+ */
 declare module 'gif.js' {
+    /**
+     * Opciones de configuración inicial para la instancia de GIF.
+     */
     interface GIFOptions {
         workers?: number
         quality?: number
@@ -11,12 +18,18 @@ declare module 'gif.js' {
         dither?: boolean | string
     }
 
+    /**
+     * Opciones específicas para cada cuadro (frame) añadido al GIF.
+     */
     interface GIFFrameOptions {
         delay?: number
         copy?: boolean
         dispose?: number
     }
 
+    /**
+     * Clase principal para la generación de GIFs animados en el cliente.
+     */
     class GIF {
         constructor(options?: GIFOptions)
         addFrame(

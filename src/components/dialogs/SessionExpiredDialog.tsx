@@ -5,6 +5,10 @@ import { LogOut } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 
+/**
+ * Diálogo global que se muestra cuando la sesión del usuario ha expirado.
+ * Escucha el evento personalizado 'session-expired' para activarse.
+ */
 export function SessionExpiredDialog() {
     const [isOpen, setIsOpen] = useState(false)
     const navigate = useNavigate()

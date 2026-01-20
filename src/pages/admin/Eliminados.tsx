@@ -15,7 +15,7 @@ import { DeletedServiceRowSkeleton, DeletedServiceCardSkeleton } from "@/compone
 import { DeletedServiceTable } from "@/components/admin/DeletedServiceTable"
 import { EmptyTrashDialog } from "@/components/admin/DeletedServiceDialogs"
 
-// Animation variants
+// Variantes de animación
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -30,6 +30,12 @@ const itemVariants = {
     exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
 }
 
+/**
+ * Página de administración de servicios eliminados (papelera).
+ * Permite visualizar los servicios que están en estado de eliminación lógica,
+ * restaurarlos a su estado original, eliminarlos permanentemente uno a uno
+ * o vaciar la papelera por completo.
+ */
 export default function Eliminados() {
     const isMobile = useIsMobile()
     const { setSuccess, setError } = useAdminUI()
@@ -96,7 +102,7 @@ export default function Eliminados() {
         }
     }
 
-    // Empty state component
+    // Componente de estado vacío
     const EmptyState = () => (
         <Empty className="py-12">
             <EmptyHeader>
@@ -113,7 +119,6 @@ export default function Eliminados() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Eliminados" }]} />
@@ -143,7 +148,6 @@ export default function Eliminados() {
                 </div>
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-h-0 flex flex-col">
                 {isMobile ? (
                     <div className="flex-1 overflow-y-auto pr-1">

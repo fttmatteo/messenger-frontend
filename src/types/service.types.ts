@@ -1,4 +1,6 @@
-// Service Status - using type instead of enum for TS compatibility
+/**
+ * Estados permitidos para un servicio de entrega.
+ */
 export type ServiceStatus =
     | 'ASSIGNED'
     | 'PENDING'
@@ -8,13 +10,17 @@ export type ServiceStatus =
     | 'RESOLVED'
     | 'DELETED'
 
-// Plate Type
+/**
+ * Categorías de vehículos admitidas.
+ */
 export type PlateType =
     | 'CAR'
     | 'MOTORCYCLE'
     | 'MOTORCAR'
 
-// Nested interfaces
+/**
+ * Información resumida de la placa identificada.
+ */
 export interface PlateInfo {
     idPlate: number
     plateNumber: string
@@ -33,6 +39,9 @@ export interface PhotoInfo {
     photoType?: 'PLATE_DETECTION' | 'EVIDENCE'
 }
 
+/**
+ * Información básica de un concesionario.
+ */
 export interface DealershipInfo {
     idDealership: number
     name: string
@@ -51,9 +60,11 @@ export interface EmployeeInfo {
     role: 'ADMIN' | 'MESSENGER'
 }
 
+/**
+ * Registro de auditoría y evidencia para cada cambio de estado.
+ */
 export interface StatusHistoryInfo {
     idStatusHistory: number
-    // previousStatus can be null when service transitions from initial state
     previousStatus: ServiceStatus | null
     newStatus: ServiceStatus
     changeDate: string
@@ -65,12 +76,15 @@ export interface StatusHistoryInfo {
     observation?: string
 }
 
-// Main Service Delivery interface
+/**
+ * Interface principal de Entrega de Servicio (Service Delivery).
+ * Contiene toda la información de la placa, el concesionario, el historial y las evidencias.
+ */
 export interface ServiceDelivery {
     idServiceDelivery: number
     plate: PlateInfo
     dealership: DealershipInfo
-    // Backend may omit or null messenger when not assigned
+    // El backend puede omitir o devolver null para el mensajero cuando no está asignado
     messenger?: EmployeeInfo | null
     currentStatus: ServiceStatus
     observation?: string
@@ -78,11 +92,13 @@ export interface ServiceDelivery {
     photos: PhotoInfo[]
     history: StatusHistoryInfo[]
     createdAt: string
-    /** Date when service was moved to trash (soft deleted). Only present for deleted services. */
+    /** Fecha en que el servicio fue movido a la papelera (borrado lógico). Solo presente para servicios eliminados. */
     deletedAt?: string
 }
 
-// Request types
+/**
+ * Parámetros requeridos para la creación de un nuevo servicio con imagen de placa.
+ */
 export interface CreateServiceRequest {
     image: File
     dealershipId: string
@@ -92,6 +108,9 @@ export interface CreateServiceRequest {
     longitude?: number
 }
 
+/**
+ * Datos y evidencias para actualizar el estado de un servicio.
+ */
 export interface UpdateServiceStatusRequest {
     status: ServiceStatus
     observation?: string
@@ -102,6 +121,9 @@ export interface UpdateServiceStatusRequest {
     longitude?: number
 }
 
+/**
+ * Estadísticas operativas diarias para dashboards.
+ */
 export interface DailyStats {
     date: string
     assigned: number
@@ -112,7 +134,9 @@ export interface DailyStats {
     total: number
 }
 
-// Paginated Response (matches backend PageResponse)
+/**
+ * Estructura de respuesta genérica para listados con paginación del lado del servidor.
+ */
 export interface PaginatedResponse<T> {
     content: T[]
     currentPage: number

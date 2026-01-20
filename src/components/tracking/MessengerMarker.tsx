@@ -7,6 +7,10 @@ export interface MessengerMarkerProps {
     title?: string
 }
 
+/**
+ * Marcador avanzado de Google Maps para representar a un mensajero.
+ * Utiliza AdvancedMarkerElement para una mejor integración y personalización del pin.
+ */
 export function MessengerMarker({
     position,
     color = '#10b981',

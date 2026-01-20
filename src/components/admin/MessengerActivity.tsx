@@ -9,6 +9,9 @@ import { es } from "date-fns/locale"
 import { AddressDisplay } from "@/components/tracking"
 import type { DailyStats } from "@/types/service.types"
 
+/**
+ * Representa un evento individual en la línea de tiempo de actividad de un mensajero.
+ */
 export interface TimelineEvent {
     id: string
     time: string
@@ -30,6 +33,9 @@ interface MessengerProductivityProps {
     stats: DailyStats | null
 }
 
+/**
+ * Muestra métricas de productividad diaria del mensajero (entregas, devoluciones, etc.).
+ */
 export function MessengerProductivity({ stats }: MessengerProductivityProps) {
     return (
         <div className="space-y-3">
@@ -71,6 +77,10 @@ interface MessengerActivityTimelineProps {
     onRetry: () => void
 }
 
+/**
+ * Línea de tiempo interactiva que visualiza el historial de eventos de un mensajero por fecha.
+ * Permite filtrar por calendario y muestra ubicaciones integradas.
+ */
 export function MessengerActivityTimeline({
     history,
     loading,

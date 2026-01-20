@@ -9,6 +9,9 @@ interface ServiceListProps {
     emptyMessage?: string
 }
 
+/**
+ * Renderiza una lista de tarjetas de servicio o un estado vacío/cargando.
+ */
 export function ServiceList({ services, loading, emptyMessage = "No hay servicios" }: ServiceListProps) {
     if (loading) {
         return <ServiceListSkeleton count={3} />

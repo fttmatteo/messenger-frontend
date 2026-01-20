@@ -6,7 +6,7 @@ import MessengerCreateServicio from '../CreateServicio';
 import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
 
-// Mock components and hooks
+// Mock de componentes y hooks
 vi.mock('@/components/camera', () => ({
     PlateCamera: ({ onCancel }: { onCancel: () => void }) => (
         <div data-testid="camera-mock">
@@ -23,7 +23,7 @@ vi.mock('@/hooks/use-smart-location', () => ({
     })
 }));
 
-// Mock navigate
+// Mock de navigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -33,10 +33,15 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
+/**
+ * Suite de pruebas de integración para la página de creación de servicios (perfil mensajero).
+ * Evalúa el renderizado del formulario, la interacción con la cámara (mock) y la validación
+ * de campos obligatorios como el concesionario.
+ */
 describe('CreateServicio Page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Mock dealerships API
+        // Mock de API de concesionarios
         server.use(
             http.get('http://localhost:8080/dealerships', () => {
                 return HttpResponse.json([
@@ -69,10 +74,10 @@ describe('CreateServicio Page', () => {
         const user = userEvent.setup();
         renderWithProviders(<MessengerCreateServicio />);
 
-        // Wait for data to load
+        // Esperar a que carguen los datos
         await screen.findByText('Concesionario destino');
 
-        // Close camera to enable button
+        // Cerrar cámara para habilitar el botón
         const closeCameraBtn = screen.getByText('Cancel Camera');
         await user.click(closeCameraBtn);
 

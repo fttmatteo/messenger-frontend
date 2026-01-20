@@ -1,6 +1,11 @@
 import { CheckCircle, Clock, CornerDownLeft } from "lucide-react"
 import type { ServiceStatus } from "@/types/service.types"
 
+/**
+ * Definición técnica de un estado dentro del flujo de trabajo de servicios.
+ * Especifica las reglas de negocio, como la obligatoriedad de firmas o fotos
+ * para realizar la transición a dicho estado.
+ */
 export interface StatusConfig {
     id: ServiceStatus
     label: string
@@ -11,6 +16,10 @@ export interface StatusConfig {
     requiresObservation: boolean
 }
 
+/**
+ * Catálogo maestro de estados de servicio con su configuración lógica y visual.
+ * Se utiliza para generar formularios dinámicos de actualización de estado.
+ */
 export const STATUS_OPTIONS: StatusConfig[] = [
     {
         id: "PENDING",

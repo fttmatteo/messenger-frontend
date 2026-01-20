@@ -10,6 +10,10 @@ export interface PulsingMarkerProps {
     isSelected?: boolean
 }
 
+/**
+ * Marcador de mapa con efecto de pulsación visual para mensajeros activos.
+ * Muestra información contextual al ser seleccionado y cambia de color según el estado de conexión.
+ */
 export const PulsingMarker = memo(function PulsingMarker({
     messenger,
     onClick,
@@ -32,7 +36,6 @@ export const PulsingMarker = memo(function PulsingMarker({
 
         const container = document.createElement('div')
         container.style.position = 'relative'
-        // Ensure container doesn't block clicks to the marker itself, but children might need pointer-events
         container.style.cursor = 'pointer'
 
         if (isActive) {
@@ -72,7 +75,7 @@ export const PulsingMarker = memo(function PulsingMarker({
         })
         container.appendChild(pinElement.element)
 
-        // Popup / Label logic
+
         if (isSelected) {
             const popup = document.createElement('div')
             popup.className = "bg-background/90 backdrop-blur-md rounded-md shadow-lg border px-3 py-1.5 absolute"
@@ -88,13 +91,13 @@ export const PulsingMarker = memo(function PulsingMarker({
                 gap: 8px;
             `
 
-            // Name
+
             const nameSpan = document.createElement('span')
             nameSpan.textContent = title
             nameSpan.className = "text-xs font-semibold"
             popup.appendChild(nameSpan)
 
-            // Close button
+
             if (onDeselect) {
                 const closeBtn = document.createElement('button')
                 closeBtn.innerHTML = '✕'
@@ -107,7 +110,6 @@ export const PulsingMarker = memo(function PulsingMarker({
                     border: none;
                     cursor: pointer;
                 `
-                // Prevent bubble to map
                 closeBtn.addEventListener('click', (e) => {
                     e.stopPropagation()
                     onDeselect()
@@ -116,7 +118,6 @@ export const PulsingMarker = memo(function PulsingMarker({
             }
 
             container.appendChild(popup)
-            // Ensure container z-index is higher when selected
             container.style.zIndex = '1000'
         }
 

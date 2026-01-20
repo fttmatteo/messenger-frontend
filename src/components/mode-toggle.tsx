@@ -8,6 +8,10 @@ interface ModeToggleProps {
     showLabel?: boolean
 }
 
+/**
+ * Botón para alternar entre los temas visuales del sistema (claro, oscuro, sistema).
+ * Incluye iconos animados y etiquetas descriptivas opcionales.
+ */
 export function ModeToggle({ className, showLabel = true }: ModeToggleProps) {
     const { theme, setTheme } = useTheme()
 

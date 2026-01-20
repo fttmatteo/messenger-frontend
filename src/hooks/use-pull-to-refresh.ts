@@ -6,6 +6,10 @@ interface UsePullToRefreshOptions {
     disabled?: boolean
 }
 
+/**
+ * Hook para implementar la funcionalidad de "deslizar para actualizar" (Pull to Refresh).
+ * Gestiona los eventos táctiles, la distancia de arrastre y el estado de carga.
+ */
 export function usePullToRefresh({
     onRefresh,
     threshold = 80,

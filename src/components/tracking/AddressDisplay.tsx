@@ -25,6 +25,10 @@ const addToQueue = (request: () => Promise<void>) => {
     processQueue()
 }
 
+/**
+ * Componente que muestra una dirección legible (geocodificación inversa) a partir de coordenadas.
+ * Utiliza una caché interna y una cola de solicitudes para optimizar las llamadas a la API de Google Maps.
+ */
 export function AddressDisplay({ lat, lng, className }: { lat: number; lng: number, className?: string }) {
     const [address, setAddress] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
@@ -56,7 +60,7 @@ export function AddressDisplay({ lat, lng, className }: { lat: number; lng: numb
                     setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
                 }
             } catch (err) {
-                logger.warn('Reverse geocode error in AddressDisplay:', err)
+                logger.warn('Error de geocodificación inversa:', err)
                 setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`)
             } finally {
                 setLoading(false)

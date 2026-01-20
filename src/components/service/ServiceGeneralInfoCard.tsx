@@ -13,6 +13,9 @@ interface ServiceGeneralInfoCardProps {
     className?: string
 }
 
+/**
+ * Tarjeta que muestra la información detallada de un servicio (placa, concesionario, mensajero, etc.).
+ */
 export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInfoCardProps) {
     const messengerName = service.messenger?.fullName ?? 'No asignado'
     const messengerPhone = service.messenger?.phone
@@ -23,7 +26,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <CardTitle className="text-base text-foreground font-semibold">Información general</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1 overflow-y-auto">
-                {/* Placa */}
+
                 <div className="flex items-start gap-3">
                     {createElement(getPlateTypeIcon(service.plate.plateType), {
                         className: "h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0"
@@ -36,7 +39,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                     </div>
                 </div>
 
-                {/* Concesionario */}
+
                 <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
@@ -61,7 +64,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                     </div>
                 </div>
 
-                {/* Mensajero */}
+
                 <div className="flex items-start gap-3">
                     <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
@@ -85,7 +88,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                     </div>
                 </div>
 
-                {/* Fecha */}
+
                 <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">

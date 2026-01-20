@@ -5,14 +5,29 @@ import { toast } from 'sonner'
 
 const logger = createLogger('useSmartLocation')
 
+/**
+ * Estructura de coordenadas geográficas simples.
+ */
 export interface LocationResult {
+    /** Latitud en grados decimales. */
     latitude: number
+    /** Longitud en grados decimales. */
     longitude: number
 }
 
+/**
+ * Hook para obtener la ubicación actual del dispositivo de forma optimizada.
+ * Intenta usar una ubicación reciente del caché antes de solicitar una nueva.
+ */
 export function useSmartLocation() {
     const [loading, setLoading] = useState(false)
 
+    /**
+     * Obtiene las coordenadas actuales con lógica de optimización.
+     * Prioriza el último punto conocido por el servicio de rastreo si es reciente (menos de 5 min)
+     * para ahorrar batería y mejorar la respuesta en zonas de baja señal.
+     * @returns Promesa con las coordenadas del dispositivo.
+     */
     const getCurrentLocation = useCallback(async (): Promise<LocationResult> => {
         setLoading(true)
         try {

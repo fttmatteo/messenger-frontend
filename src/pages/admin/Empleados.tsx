@@ -18,11 +18,16 @@ import { formatDisplayName } from "@/lib/format-utils"
 
 
 
+/**
+ * Página principal de administración de empleados.
+ * Muestra una lista paginada de todos los empleados registrada en el sistema.
+ * Permite filtrar por rol (Administrador/Mensajero), buscar por nombre o documento,
+ * y navegar hacia las vistas de creación y edición.
+ */
 export default function Empleados() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
 
-    // Use custom hooks
     const {
         loading,
         filteredAndSortedEmployees,
@@ -45,7 +50,6 @@ export default function Empleados() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title+Filters center, Button right */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Empleados" }]} />

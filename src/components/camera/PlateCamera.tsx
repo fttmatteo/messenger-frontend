@@ -12,6 +12,10 @@ export interface PlateCameraProps {
     autoStart?: boolean
 }
 
+/**
+ * Componente especializado para la captura de fotos de placas.
+ * Proporciona un visor de cámara directo con guías visuales y captura optimizada.
+ */
 export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCameraProps) {
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
@@ -35,7 +39,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
     const startCamera = useCallback(async () => {
         if (streamRef.current) {
-            logger.info('Camera already active, skipping startCamera')
+            logger.info('Cámara ya activa, omitiendo inicio')
             return
         }
 
@@ -46,7 +50,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
             const timeoutId = setTimeout(() => {
                 if (videoRef.current?.paused !== false) {
-                    logger.warn('Camera initialization timeout')
+                    logger.warn('Tiempo de espera agotado al iniciar cámara')
                     setCameraError('La cámara tardó demasiado en iniciar. Intenta de nuevo o usa la galería.')
                     stopCamera()
                 }
@@ -81,7 +85,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                             })
                             .catch(err => {
                                 clearTimeout(timeoutId)
-                                logger.error('Video play error:', err)
+                                logger.error('Error al reproducir video:', err)
                                 setCameraError('Error al reproducir video. Intenta de nuevo.')
                                 stopCamera()
                             })
@@ -101,7 +105,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                 streamRef.current = null
             }
         } catch (error) {
-            logger.error('Camera error:', error)
+            logger.error('Error de cámara:', error)
             setCameraActive(false)
 
             let errorMessage = 'No se pudo acceder a la cámara.'
@@ -210,7 +214,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
         <div className="space-y-2">
             <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-            {/* Live camera view */}
+
             <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
                 <video
                     ref={videoRef}
@@ -239,7 +243,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                 )}
             </div>
 
-            {/* Camera controls */}
+
             <div className="flex gap-2">
                 <Button
                     type="button"
@@ -270,6 +274,9 @@ export interface ImageUploadFallbackProps {
     onSelect: (file: File, previewUrl: string) => void
 }
 
+/**
+ * Componente de respaldo para la carga de imágenes desde la galería cuando la cámara no está disponible o no se desea usar.
+ */
 export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

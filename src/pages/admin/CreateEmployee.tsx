@@ -26,6 +26,11 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
+/**
+ * Página para la creación de un nuevo empleado (Administrador o Mensajero).
+ * Proporciona un formulario para ingresar el documento, nombre, teléfono,
+ * contraseña y rol del usuario.
+ */
 export default function CreateEmployee() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
@@ -65,7 +70,6 @@ export default function CreateEmployee() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            {/* Header: Breadcrumb left, Title center */}
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
@@ -88,7 +92,6 @@ export default function CreateEmployee() {
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
                         <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
-                            {/* Documento */}
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
                                 <Input
@@ -102,7 +105,6 @@ export default function CreateEmployee() {
                                 )}
                             </div>
 
-                            {/* Teléfono */}
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Teléfono</Label>
                                 <Input
@@ -116,7 +118,6 @@ export default function CreateEmployee() {
                                 )}
                             </div>
 
-                            {/* Nombre Completo */}
                             <div className="space-y-2 md:col-span-2 lg:col-span-1">
                                 <Label htmlFor="fullName">Nombre completo</Label>
                                 <Input
@@ -130,7 +131,6 @@ export default function CreateEmployee() {
                                 )}
                             </div>
 
-                            {/* Contraseña */}
                             <div className="space-y-2">
                                 <Label htmlFor="password">Contraseña</Label>
                                 <div className="relative">
@@ -161,7 +161,6 @@ export default function CreateEmployee() {
                                 )}
                             </div>
 
-                            {/* Rol */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">Cargo</Label>
                                 <Select
@@ -183,7 +182,6 @@ export default function CreateEmployee() {
                             </div>
                         </div>
 
-                        {/* Submit Buttons */}
                         <div className="flex gap-4 pt-6 mt-auto border-t">
                             <Button
                                 type="button"

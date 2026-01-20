@@ -7,6 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 
+/**
+ * Panel principal (Dashboard) para la aplicación del mensajero.
+ * Muestra la lista de servicios pendientes asignados al mensajero actual.
+ * Permite filtrar los servicios por concesionario, refrescar la lista
+ * manualmente y acceder rápidamente a la creación de un nuevo servicio.
+ * Soporta visualización de datos en caché cuando no hay conexión.
+ */
 export default function MessengerDashboard() {
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
@@ -21,7 +28,7 @@ export default function MessengerDashboard() {
         setIsRefreshing(false)
     }
 
-    // Extract unique dealerships from available services
+    // Extraer concesionarios únicos de los servicios disponibles
     const dealerships = useMemo(() => {
         const map = new Map();
         pendingServices.forEach(s => {
@@ -32,7 +39,7 @@ export default function MessengerDashboard() {
         return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
     }, [pendingServices]);
 
-    // Filter services
+    // Filtrar servicios
     const filteredServices = useMemo(() => {
         if (selectedDealership === "all") return pendingServices;
         return pendingServices.filter(s => String(s.dealership.idDealership) === selectedDealership);
@@ -40,7 +47,6 @@ export default function MessengerDashboard() {
 
     return (
         <div className="flex flex-col p-3 gap-3 relative min-h-full pb-24">
-            {/* Header with Dealership Filter */}
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
@@ -94,7 +100,6 @@ export default function MessengerDashboard() {
                 </Button>
             </div>
 
-            {/* Sub-header info */}
             <div className="flex items-center justify-between px-1.5">
                 <p className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em]">
                     {filteredServices.length} {filteredServices.length !== 1 ? 'Servicios' : 'Servicio'} {selectedDealership !== 'all' ? 'Filtrados' : 'Pendientes'}
@@ -107,7 +112,6 @@ export default function MessengerDashboard() {
                 )}
             </div>
 
-            {/* Assigned Services List */}
             <div className="">
                 <ServiceList
                     services={filteredServices}
@@ -116,7 +120,6 @@ export default function MessengerDashboard() {
                 />
             </div>
 
-            {/* Floating Create Button */}
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in zoom-in slide-in-from-bottom-10 duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
                 <Button
                     onClick={() => navigate('/messenger/crear')}
@@ -129,7 +132,6 @@ export default function MessengerDashboard() {
                 </Button>
             </div>
 
-            {/* Error State */}
             {error && !loading && (
                 <div className="fixed bottom-24 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-lg z-40 animate-in fade-in slide-in-from-bottom-2">
                     <p className="text-red-600 dark:text-red-400 text-sm text-center font-medium">

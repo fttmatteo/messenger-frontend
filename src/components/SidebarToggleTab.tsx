@@ -3,6 +3,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Pestaña flotante lateral que permite expandir o contraer la barra lateral de navegación.
+ * Automatiza la visibilidad según el estado del dispositivo (solo escritorio).
+ */
 export function SidebarToggleTab() {
     const { toggleSidebar, state, isMobile } = useSidebar()
 

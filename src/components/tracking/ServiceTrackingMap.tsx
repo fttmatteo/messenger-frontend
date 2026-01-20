@@ -21,6 +21,10 @@ interface ServiceTrackingMapProps {
     className?: string
 }
 
+/**
+ * Marcador avanzado reutilizable para el mapa de rastreo de servicio.
+ * Permite personalizar el color y la etiqueta del pin.
+ */
 function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
     position: google.maps.LatLngLiteral,
     title?: string,
@@ -65,6 +69,10 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
     return null
 }
 
+/**
+ * Componente de mapa especializado para el rastreo histórico y en tiempo real de un servicio específico.
+ * Visualiza la ruta recorrida, puntos de inicio/fin y calcula distancias estimadas al destino.
+ */
 export function ServiceTrackingMap({
     serviceId,
     dealershipLat,
@@ -101,7 +109,7 @@ export function ServiceTrackingMap({
                 const data = await trackingApiService.getHistoryByService(serviceId)
                 setTrackingData(data || [])
             } catch (error) {
-                logger.error("Error fetching service tracking in ServiceTrackingMap:", error)
+                logger.error("Error al obtener seguimiento del servicio:", error)
                 setTrackingData([])
             } finally {
                 setLoading(false)
@@ -207,7 +215,7 @@ export function ServiceTrackingMap({
                 <CardTitle className="text-sm text-foreground font-medium">
                     Ubicaciones
                 </CardTitle>
-                {/* Location buttons below title */}
+
                 <div className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-4 text-sm font-normal">
                         {firstPosition && (
@@ -241,7 +249,7 @@ export function ServiceTrackingMap({
                             </button>
                         )}
                     </div>
-                    {/* Distance info below location points */}
+
                     {lastPosition && dealershipLat && dealershipLng && (
                         <div className="flex items-center gap-2">
                             {distance && distance.meters !== null ? (
@@ -262,7 +270,7 @@ export function ServiceTrackingMap({
                 </div>
             </CardHeader>
             <CardContent className="p-2 pt-1 flex-1 flex flex-col min-h-0">
-                {/* Map */}
+
                 <div className="w-full flex-1 min-h-[200px] rounded-md overflow-hidden border">
                     <Map
                         className="w-full h-full"
@@ -270,7 +278,7 @@ export function ServiceTrackingMap({
                         zoom={14}
                         onLoad={setMapInstance}
                     >
-                        {/* Tracking route polyline */}
+
                         {trackingPath.length > 1 && (
                             <Polyline
                                 path={trackingPath}
@@ -282,7 +290,7 @@ export function ServiceTrackingMap({
                             />
                         )}
 
-                        {/* Start marker: Always "Asignado" (Blue) */}
+
                         {firstPosition && (
                             <AdvancedMarker
                                 position={firstPosition}
@@ -292,7 +300,7 @@ export function ServiceTrackingMap({
                             />
                         )}
 
-                        {/* Last/Current position marker: Matches current Service Status */}
+
                         {lastPosition && lastPosition !== firstPosition && (
                             <AdvancedMarker
                                 position={lastPosition}
@@ -302,7 +310,7 @@ export function ServiceTrackingMap({
                             />
                         )}
 
-                        {/* Dealership marker: Always Orange (matches Returned/Destination concept or Keep generic orange) */}
+
                         {dealershipLat && dealershipLng && (
                             <AdvancedMarker
                                 position={{ lat: dealershipLat, lng: dealershipLng }}

@@ -13,6 +13,10 @@ interface EvidenceCaptureProps {
     onPhotosChange: (photos: File[]) => void
 }
 
+/**
+ * Componente para la captura de fotos de evidencia.
+ * Soporta el uso de la cámara del dispositivo o la carga de archivos desde la galería.
+ */
 export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: EvidenceCaptureProps) {
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraReady, setCameraReady] = useState(false)
@@ -59,13 +63,13 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                     videoRef.current?.play()
                         .then(() => setCameraReady(true))
                         .catch(err => {
-                            logger.error('Video play error:', err)
+                            logger.error('Error al reproducir video:', err)
                             stopCamera()
                         })
                 }
             }
         } catch (error) {
-            logger.error('Camera error:', error)
+            logger.error('Error de cámara:', error)
             setCameraActive(false)
             toast.error('Error de cámara', {
                 description: getErrorMessage(error)
@@ -170,7 +174,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         <div className="space-y-3">
             <canvas ref={canvasRef} className="hidden" />
 
-            {/* Photo previews */}
+
             {photos.length > 0 && (
                 <div className="space-y-3">
                     <div className={`grid gap-3 ${photos.length === 1 ? 'grid-cols-1 max-w-sm' : 'grid-cols-2 sm:grid-cols-3'}`}>
@@ -199,7 +203,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 </div>
             )}
 
-            {/* Actions */}
+
             {photos.length < maxPhotos && (
                 <div className="flex gap-2">
                     <Button

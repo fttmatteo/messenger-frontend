@@ -22,15 +22,20 @@ import { cn } from "@/lib/utils"
 const logger = createLogger('MessengerLayout')
 
 
+/**
+ * Layout principal para la aplicación móvil del mensajero.
+ * Gestiona el ciclo de vida del rastreo GPS en tiempo real, el estado de conexión (offline)
+ * y proporciona la navegación jerárquica optimizada para dispositivos táctiles.
+ */
 export default function MessengerLayout() {
     const { user, logout, updateUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const sidebarBlockedRef = useRef(false) // Blocks sidebar opening briefly after navigation
-    const previousPathnameRef = useRef(location.pathname) // Track previous route for sidebar closing
-    const wasSubPageRef = useRef(false) // Track if we came from a subpage to add longer block
+    const sidebarBlockedRef = useRef(false) // Bloquea la apertura del sidebar brevemente después de la navegación
+    const previousPathnameRef = useRef(location.pathname) // Rastrea la ruta anterior para el cierre del sidebar
+    const wasSubPageRef = useRef(false) // Rastrea si venimos de una subpágina para añadir un bloqueo más largo
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -45,7 +50,6 @@ export default function MessengerLayout() {
         location.pathname.includes('/configuracion/')
 
 
-    // Lock body scroll to prevent browser chrome resizing (gives native app feel)
     useEffect(() => {
         const originalStyle = {
             position: document.body.style.position,
@@ -67,7 +71,6 @@ export default function MessengerLayout() {
         }
     }, [])
 
-    // Get page title based on path
     const getPageTitle = () => {
         if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
 
@@ -77,7 +80,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('actualizar')) return 'Actualizar estado'
         if (location.pathname.includes('servicio/')) return 'Detalle servicio'
         if (location.pathname.includes('crear')) return 'Nuevo servicio'
-        return null // Will show logo instead
+        return null // Mostrará el logo en su lugar
     }
 
     const pageTitle = getPageTitle()
@@ -86,7 +89,6 @@ export default function MessengerLayout() {
 
     useEffect(() => {
         if (isOnline) {
-            // Usar user.id si existe, sino usar document como fallback
             const userId = user?.id || user?.document
 
             if (!userId) {
@@ -96,30 +98,27 @@ export default function MessengerLayout() {
             }
 
             if (!user?.id) {
-                // Using document as fallback for messengerId
+                // Usando document como fallback para messengerId
             }
 
 
 
             const startTracking = async () => {
-                // Skip if already connected to prevent duplicate connections
                 if (trackingService.isCurrentlyConnected()) {
-                    logger.debug('WebSocket already connected, skipping reconnection')
+                    logger.debug('WebSocket ya conectado, omitiendo reconexión')
                     return
                 }
 
                 try {
                     const token = await authService.getWsToken()
                     trackingService.connect(token, () => {
-                        // Send immediate status update to appear online instantly
                         trackingService.sendUpdate({
                             messengerId: userId,
                             status: 'ACTIVE'
                         })
                     })
                 } catch {
-                    // Silent fallback - normal behavior on Safari Mobile
-                    logger.debug('WS token unavailable, using cookie fallback (normal on Safari)')
+                    logger.debug('Token WS no disponible, usando fallback de cookie (normal en Safari)')
                     trackingService.connect(undefined, () => {
                         trackingService.sendUpdate({
                             messengerId: userId,
@@ -132,7 +131,6 @@ export default function MessengerLayout() {
             startTracking()
 
             if ('geolocation' in navigator) {
-                // Initial fast fix to populate map and status immediately
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
@@ -152,7 +150,7 @@ export default function MessengerLayout() {
                             toast.error('GPS devolvió coordenadas inválidas. Esperando señal válida...', { id: 'invalid-coords' })
                         }
                     },
-                    () => { /* error getting initial location */ },
+                    () => { /* error al obtener ubicación inicial */ },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 )
 
@@ -170,22 +168,19 @@ export default function MessengerLayout() {
                                 accuracy,
                                 status: 'ACTIVE'
                             })
-                            // Cache locally for instant navigation
                             trackingService.setLastLocation(latitude, longitude)
                         }
                     },
                     (error) => {
-                        logger.warn('Geolocation partial error:', error.message)
+                        logger.warn('Error parcial de geolocalización:', error.message)
 
                         if (error.code === 1) {
                             toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
-                            // Position unavailable - show warning but don't logout
                             toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000, id: 'messenger-gps-weak' })
                         } else if (error.code === 3) {
-                            // Timeout - GPS taking too long
                             toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000, id: 'messenger-gps-timeout' })
                         }
                     },
@@ -228,13 +223,11 @@ export default function MessengerLayout() {
         }
     }, [isOnline, user, logout, navigate, updateUser])
 
-    // Heartbeat timer: envía señal de vida cada 30 segundos independiente del GPS
     useEffect(() => {
         if (!isOnline || !user?.id) return
 
         const userId = user.id // TypeScript sabe que no es undefined aquí
 
-        // Enviar heartbeat cada 30 segundos
         const heartbeatInterval = setInterval(() => {
             trackingService.sendHeartbeat(userId)
         }, 30000) // 30 segundos
@@ -242,12 +235,10 @@ export default function MessengerLayout() {
         return () => clearInterval(heartbeatInterval)
     }, [isOnline, user?.id])
 
-    // Visibility change: send heartbeat when returning to app instead of full reconnect
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible' && isOnline) {
                 const userId = user?.id || user?.document
-                // Only send heartbeat if already connected, don't trigger full reconnection
                 if (userId && trackingService.isCurrentlyConnected()) {
                     trackingService.sendHeartbeat(userId)
                 }
@@ -264,39 +255,28 @@ export default function MessengerLayout() {
 
 
 
-    // Native Navigation Guard: Handle back gesture with hierarchy
-    // This is now handled by the useNavigationGuard hook
     useNavigationGuard();
 
-    // Block sidebar opening temporarily when route changes
-    // This prevents the back gesture from accidentally triggering the menu button
-    // when transitioning from a subpage (ChevronLeft) to the main page (Menu button)
     useEffect(() => {
         const previousPath = previousPathnameRef.current;
         const currentPath = location.pathname;
 
-        // Always close sidebar on route change (deferred to avoid cascading renders)
         queueMicrotask(() => setIsSidebarOpen(false));
 
-        // Check if we came from a subpage (where ChevronLeft was shown)
         const cameFromSubPage = previousPath.includes('/servicio/') ||
             previousPath.includes('/historial') ||
             previousPath.includes('/actualizar') ||
             previousPath.includes('/configuracion/');
 
-        // Check if we're now on a main page (where Menu button is shown)
         const isNowMainPage = !currentPath.includes('/servicio/') &&
             !currentPath.includes('/historial') &&
             !currentPath.includes('/actualizar') &&
             !currentPath.includes('/configuracion/');
 
-        // If transitioning from subpage to main page, apply longer block
-        // This is crucial because the Menu button appears where ChevronLeft was
         wasSubPageRef.current = cameFromSubPage && isNowMainPage;
 
         sidebarBlockedRef.current = true;
 
-        // Use longer delay when coming from subpage to ensure touch events are cleared
         const blockDuration = wasSubPageRef.current ? 500 : 300;
 
         const timer = setTimeout(() => {
@@ -304,15 +284,12 @@ export default function MessengerLayout() {
             wasSubPageRef.current = false;
         }, blockDuration);
 
-        // Update previousPathnameRef for the next navigation
         previousPathnameRef.current = currentPath;
 
         return () => clearTimeout(timer);
     }, [location.pathname]);
 
-    // Safe sidebar opener that respects the block
     const handleSidebarOpenChange = (open: boolean) => {
-        // Block opening during navigation transition (especially after back gesture)
         if (open && sidebarBlockedRef.current) {
             return;
         }
@@ -330,7 +307,6 @@ export default function MessengerLayout() {
         navigate("/login")
     }
 
-    // Show loading while detecting device type
     if (isMobile === undefined) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-background">
@@ -348,22 +324,18 @@ export default function MessengerLayout() {
 
     return (
         <div className="flex flex-col h-full w-full bg-background overflow-hidden relative">
-            {/* Skip link for keyboard navigation */}
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
             >
                 Saltar al contenido principal
             </a>
-            {/* Simplified Header */}
             <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm" role="banner">
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
-                    {/* Center: Page title or Status - Absolutely Centered within the h-12 area */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                         {pageTitle ? (
                             <div className="flex items-center justify-center gap-2">
                                 <span className="font-semibold text-sm">{pageTitle}</span>
-                                {/* Subtle network offline indicator */}
                                 {!isNetworkOnline && (
                                     <Badge
                                         variant="outline"
@@ -411,8 +383,6 @@ export default function MessengerLayout() {
                                         </>
                                     )}
                                 </div>
-                                {/* Pending sync actions indicator */}
-                                {/* Pending sync actions indicator */}
                                 {pendingActionsCount > 0 && isNetworkOnline && (
                                     <Badge
                                         variant="outline"
@@ -426,7 +396,6 @@ export default function MessengerLayout() {
                         )}
                     </div>
 
-                    {/* Left: Back button or Logo */}
                     <div className="flex-1 flex justify-start z-10">
                         {isSubPage ? (
                             <Button
@@ -555,12 +524,10 @@ export default function MessengerLayout() {
 
 
 
-                    {/* Right: Spacer to maintain layout balance */}
                     <div className="flex-1 flex justify-end items-center gap-1 z-10" />
                 </div>
             </header>
 
-            {/* Main Content Area - with bottom padding for nav */}
             <main
                 id="main-content"
                 ref={mainRef}
@@ -570,7 +537,6 @@ export default function MessengerLayout() {
                 <Outlet />
             </main>
 
-            {/* Logout Confirmation Dialog */}
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background">
                     <AlertDialogHeader>

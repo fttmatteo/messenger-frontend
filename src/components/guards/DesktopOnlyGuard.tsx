@@ -4,6 +4,10 @@ import logo from "@/assets/logo.png"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Protector de pantalla que restringe el acceso solo a dispositivos de escritorio.
+ * Muestra un mensaje informativo si se accede desde un dispositivo móvil.
+ */
 export function DesktopOnlyGuard() {
     const { logout } = useAuth()
 

@@ -3,11 +3,17 @@ import apiClient from './api-client'
 import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
 import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
 
+/**
+ * Servicio encargado de la gestión integral de las entregas de placas.
+ * Centraliza las operaciones CRUD, la lógica de actualización de estados con evidencias,
+ * y la administración de la papelera de servicios para roles administrativos.
+ */
 class ServiceDeliveryService {
     /**
-     * Get all services (filtered by role automatically in backend)
-     * ADMIN: gets all services
-     * MESSENGER: gets only assigned services
+     * Obtiene la lista completa de servicios.
+     * El resultado se filtra automáticamente en el backend según el rol del usuario:
+     * - ADMIN: Obtiene todos los servicios del sistema.
+     * - MESSENGER: Obtiene solo los servicios asignados a él.
      */
     async getAll(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/allServices')
@@ -15,9 +21,8 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Get all services with pagination
-     * ADMIN: gets all services
-     * MESSENGER: gets only assigned services
+     * Recupera servicios con soporte para paginación, ordenamiento y filtrado avanzado.
+     * @param params - Objeto con criterios de búsqueda (página, tamaño, estado, término de búsqueda).
      */
     async getAllPaginated(params: {
         page?: number
@@ -41,8 +46,9 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Get service by ID
-     * Validates ownership for MESSENGER role
+     * Obtiene los detalles de un servicio específico por su ID.
+     * Verifica permisos de propiedad si el usuario es un mensajero.
+     * @param id - ID único del servicio.
      */
     async getById(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.get(`/services/findByServiceId/${id}`)
@@ -50,8 +56,9 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Create new service with image
-     * Supports OCR or manual plate entry
+     * Crea un nuevo servicio de entrega.
+     * Permite adjuntar una imagen para procesamiento OCR y registrar metadatos iniciales GPS.
+     * @param request - Datos del nuevo servicio.
      */
     async create(request: CreateServiceRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
@@ -79,8 +86,10 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Update service status with evidence
-     * Required evidence varies by target status
+     * Actualiza el estado de un servicio capturando evidencias obligatorias.
+     * Maneja el envío de firmas (imágenes y GIF), fotos y observaciones como FormData.
+     * @param id - ID del servicio a actualizar.
+     * @param request - Información del nuevo estado y archivos de respaldo.
      */
     async updateStatus(id: number, request: UpdateServiceStatusRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
@@ -117,14 +126,15 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Delete service (admin only)
+     * Eliminar servicio (solo admin)
      */
     async delete(id: number): Promise<void> {
         await apiClient.delete(`/services/deleteService/${id}`)
     }
 
     /**
-     * Get all deleted services (trash) - Admin only
+     * Lista los servicios que han sido marcados como eliminados pero aún están en la papelera.
+     * Solo accesible por usuarios con rol ADMIN.
      */
     async getTrash(): Promise<ServiceDelivery[]> {
         const response = await apiClient.get('/services/trash')
@@ -132,7 +142,8 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Restore a service from trash - Admin only
+     * Restaura un servicio previamente eliminado de la papelera.
+     * @param id - ID del servicio a restaurar.
      */
     async restore(id: number): Promise<ServiceDelivery> {
         const response = await apiClient.post(`/services/trash/restore/${id}`)
@@ -140,7 +151,7 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Empty trash permanently deleting all services - Admin only
+     * Vaciar papelera eliminando permanentemente todos los servicios - Solo Admin
      */
     async emptyTrash(): Promise<{ message: string; deletedCount: number }> {
         const response = await apiClient.delete('/services/trash/empty')
@@ -148,7 +159,7 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Permanently delete a single service from trash - Admin only
+     * Eliminar permanentemente un solo servicio de la papelera - Solo Admin
      */
     async permanentDelete(id: number): Promise<{ message: string }> {
         const response = await apiClient.delete(`/services/trash/${id}`)
@@ -156,8 +167,8 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Reassign a service to another messenger - Admin only
-     * Only allowed when service is in CANCELED status
+     * Reasignar un servicio a otro mensajero - Solo Admin
+     * Solo se permite cuando el servicio está en estado CANCELED
      */
     async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
         const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
@@ -165,7 +176,7 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Get daily statistics for a messenger
+     * Obtener estadísticas diarias para un mensajero
      */
     async getDailyStats(messengerId: number, from: Date, to: Date): Promise<DailyStats[]> {
         const fromDate = from.toISOString().split('T')[0]
