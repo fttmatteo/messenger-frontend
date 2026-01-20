@@ -11,7 +11,7 @@
 /* Contenedor principal del toaster */
 .sonner-toaster {
   position: fixed;
-  z-index: 9999;
+  z-index: 99999 !important;
   pointer-events: none;
   top: 1rem;
   left: 0;
