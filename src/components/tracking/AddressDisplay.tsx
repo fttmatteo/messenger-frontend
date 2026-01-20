@@ -66,7 +66,7 @@ export function AddressDisplay({ lat, lng, className }: { lat: number; lng: numb
     }, [lat, lng, cacheKey])
 
     if (loading) {
-        return <span className={className || "truncate max-w-[180px] text-muted-foreground animate-pulse"}>...</span>
+        return null
     }
 
     return <span className={className || "truncate max-w-[180px]"} title={address || ''}>{address}</span>

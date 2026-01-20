@@ -25,7 +25,6 @@ export const MessengerListPanel = memo(function MessengerListPanel({
     messengers,
     selectedMessengerId,
     followingMessengerId,
-    loading,
     isCollapsed,
     onToggleCollapse,
     onSelect,
@@ -59,11 +58,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
             {/* Content */}
             {!isCollapsed && (
                 <ScrollArea className="flex-1">
-                    {loading && messengers.length === 0 ? (
-                        <div className="p-8 text-center text-muted-foreground text-sm animate-pulse">
-                            Cargando mensajeros...
-                        </div>
-                    ) : messengers.length === 0 ? (
+                    {messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
                             No hay mensajeros disponibles
                         </div>

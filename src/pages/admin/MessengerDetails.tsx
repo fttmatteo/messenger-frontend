@@ -11,6 +11,8 @@ import { MessengerMarker } from "@/components/tracking"
 import { ArrowLeft, MapPin, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
+import { trackingService, type LiveTrackingUpdate } from "@/services/tracking.service"
+import { authService } from "@/services/auth.service"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
@@ -41,6 +43,46 @@ export default function MessengerDetails() {
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [showHistoryRoute, setShowHistoryRoute] = useState(false)
     const [calendarOpen, setCalendarOpen] = useState(false)
+
+    // Handle real-time updates
+    const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
+        if (update.messengerId === messengerId) {
+            setCurrentLocation({ lat: update.latitude, lng: update.longitude })
+            if (update.lastUpdate) {
+                setLastUpdate(new Date(update.lastUpdate))
+            }
+            setSpeed(update.speed || 0)
+            setIsActive(update.status === 'ACTIVE')
+        }
+    }, [messengerId])
+
+    // Connect to WebSocket
+    useEffect(() => {
+        const connect = async () => {
+            if (trackingService.isCurrentlyConnected()) {
+                trackingService.subscribeToAll(handleTrackingUpdate)
+                return
+            }
+
+            try {
+                const token = await authService.getWsToken()
+                trackingService.connect(token, () => {
+                    trackingService.subscribeToAll(handleTrackingUpdate)
+                })
+            } catch (err) {
+                // Fallback to cookie/header auth if ws-token endpoint fails
+                logger.debug('WS token unavailable in Details, using fallback', err)
+                trackingService.connect(undefined, () => {
+                    trackingService.subscribeToAll(handleTrackingUpdate)
+                })
+            }
+        }
+        connect()
+
+        return () => {
+            trackingService.disconnect()
+        }
+    }, [handleTrackingUpdate])
 
     // Fetch employee and tracking data
     const fetchData = useCallback(async () => {
@@ -127,11 +169,7 @@ export default function MessengerDetails() {
     const mapCenter = currentLocation || { lat: 6.2442, lng: -75.5812 } // Medellín default
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4 animate-pulse">
-                <p className="text-muted-foreground">Cargando perfil...</p>
-            </div>
-        )
+        return null
     }
 
     if (!employee && !loading) {

@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { Route, CalendarIcon, MapPin, Loader2 } from "lucide-react"
+import { Route, CalendarIcon, MapPin } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { AddressDisplay } from "@/components/tracking"
@@ -127,9 +127,7 @@ export function TrackingHistoryList({
 
                 {/* History List */}
                 {loading ? (
-                    <div className="flex items-center justify-center py-10">
-                        <Loader2 className="h-7 w-7 animate-spin text-primary/40" />
-                    </div>
+                    null
                 ) : historyData.length === 0 ? (
                     <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/30">
                         <p className="text-sm text-muted-foreground font-medium">

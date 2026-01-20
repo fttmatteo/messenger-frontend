@@ -108,11 +108,7 @@ export function MessengerActivityTimeline({
                 </Popover>
             </div>
 
-            {loading ? (
-                <div className="flex justify-center py-4">
-                    <p className="text-xs text-muted-foreground animate-pulse">Cargando actividad...</p>
-                </div>
-            ) : error ? (
+            {loading ? null : error ? (
                 <div className="flex flex-col items-center justify-center py-6 text-center">
                     <AlertCircle className="h-8 w-8 text-red-500/50 mb-2" />
                     <p className="text-xs text-muted-foreground">{error}</p>

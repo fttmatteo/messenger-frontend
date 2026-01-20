@@ -222,54 +222,49 @@ export default function LiveTracking() {
         <div className="h-full w-full relative overflow-hidden">
             {/* Fullscreen Map */}
             <div className="absolute inset-0">
-                {loading && messengers.length === 0 ? (
-                    <div className="w-full h-full bg-muted/10 animate-pulse flex items-center justify-center">
-                        <p className="text-muted-foreground text-sm">Cargando mapa...</p>
-                    </div>
-                ) : (
-                    <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
-                        {visibleMarkers.map((marker) => (
-                            <PulsingMarker
-                                key={marker.messengerId}
-                                messenger={marker}
-                                onClick={selectMessenger}
-                                isOnline={marker.isOnline}
-                            />
-                        ))}
+                <MapComponent className="w-full h-full" center={mapCenter} zoom={13}>
+                    {visibleMarkers.map((marker) => (
+                        <PulsingMarker
+                            key={marker.messengerId}
+                            messenger={marker}
+                            onClick={selectMessenger}
+                            isOnline={marker.isOnline}
+                        />
+                    ))}
 
-                        {/* Custom popup overlay at marker position */}
-                        {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
-                            <OverlayView
-                                position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
-                                mapPaneName={OverlayView.FLOAT_PANE}
+                    {/* Custom popup overlay at marker position */}
+                    {selectedMessenger && selectedMessenger.latitude !== 0 && selectedMessenger.longitude !== 0 && (
+                        <OverlayView
+                            position={{ lat: selectedMessenger.latitude, lng: selectedMessenger.longitude }}
+                            mapPaneName={OverlayView.FLOAT_PANE}
+                        >
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    transform: 'translate(-50%, -100%)',
+                                    marginTop: '-50px'
+                                }}
                             >
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        transform: 'translate(-50%, -100%)',
-                                        marginTop: '-50px'
-                                    }}
-                                >
-                                    <div className="bg-background/60 backdrop-blur-xl rounded-md shadow-md border px-2 py-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-semibold text-xs whitespace-nowrap">
-                                                {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
-                                            </p>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={deselectMessenger}
-                                                className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground shrink-0"
-                                            >
-                                                ✕
-                                            </Button>
-                                        </div>
+                                <div className="bg-background/60 backdrop-blur-xl rounded-md shadow-md border px-2 py-1">
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-semibold text-xs whitespace-nowrap">
+                                            {selectedMessenger.messengerName || `#${selectedMessenger.messengerId}`}
+                                        </p>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={deselectMessenger}
+                                            className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground shrink-0"
+                                        >
+                                            ✕
+                                        </Button>
                                     </div>
                                 </div>
-                            </OverlayView>
-                        )}
-                    </MapComponent>
-                )}
+                            </div>
+                        </OverlayView>
+                    )}
+                </MapComponent>
+
             </div>
 
             {/* Floating Header */}

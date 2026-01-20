@@ -217,7 +217,7 @@ export function MessengerSidePanel({
 
                     <div className="min-w-0 flex-1 ml-1">
                         <h3 className="text-[13px] font-bold truncate leading-tight">
-                            {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : 'Cargando...'}
+                            {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : ''}
                         </h3>
                         <Badge variant="outline" className={cn(
                             "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold",
