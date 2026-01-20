@@ -3,7 +3,6 @@ import { Map } from "@/components/Map"
 import { useGoogleMap, Polyline } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
@@ -184,7 +183,9 @@ export function ServiceTrackingMap({
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Skeleton static className="w-full h-[300px] rounded-md" />
+                    <div className="w-full h-[300px] rounded-md bg-muted/10 animate-pulse flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+                    </div>
                 </CardContent>
             </Card>
         )

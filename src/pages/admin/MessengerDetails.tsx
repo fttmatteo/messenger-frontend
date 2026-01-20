@@ -6,7 +6,6 @@ import { useTheme } from "next-themes"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MessengerDetailsSkeleton } from "@/components/tracking/TrackingSkeletons"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { MessengerMarker } from "@/components/tracking"
 import { ArrowLeft, MapPin, User } from "lucide-react"
@@ -128,7 +127,11 @@ export default function MessengerDetails() {
     const mapCenter = currentLocation || { lat: 6.2442, lng: -75.5812 } // Medellín default
 
     if (loading) {
-        return <MessengerDetailsSkeleton />
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4 animate-pulse">
+                <p className="text-muted-foreground">Cargando perfil...</p>
+            </div>
+        )
     }
 
     if (!employee && !loading) {

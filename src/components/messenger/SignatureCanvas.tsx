@@ -3,10 +3,16 @@ import { Button } from '@/components/ui/button'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import SignatureCameraCapture, { type SignatureCameraCaptureRef } from './SignatureCameraCapture'
+import { createLogger } from '@/utils/logger'
+
+const logger = createLogger('SignatureCanvas')
 
 
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
+    onGifGenerated?: (gif: Blob | null) => void
+    enableCamera?: boolean
     width?: number
     height?: number
 }
@@ -14,18 +20,22 @@ interface SignatureCanvasProps {
 export interface SignatureCanvasRef {
     clear: () => void
     getSignature: () => Promise<File | null>
+    getGifFile: () => Promise<File | null>
     hasSignature: () => boolean
+    hasGif: () => boolean
 }
 
 export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasProps>(
-    ({ onSignatureChange, width = 300, height = 150 }, ref) => {
+    ({ onSignatureChange, onGifGenerated, enableCamera = false, width = 300, height = 150 }, ref) => {
         const savedCanvasRef = useRef<HTMLCanvasElement>(null)
         const fullscreenCanvasRef = useRef<HTMLCanvasElement>(null)
+        const cameraRef = useRef<SignatureCameraCaptureRef>(null)
         const [hasDrawn, setHasDrawn] = useState(false)
         const [isOpen, setIsOpen] = useState(false)
         const [tempHasDrawn, setTempHasDrawn] = useState(false)
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
+        const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
 
 
         useEffect(() => {
@@ -118,7 +128,12 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             isDrawingRef.current = true
             ctx.beginPath()
             ctx.moveTo(coords.x, coords.y)
-        }, [getCoords])
+
+            // Trigger camera capture on first stroke
+            if (enableCamera && cameraRef.current) {
+                cameraRef.current.startCapture()
+            }
+        }, [getCoords, enableCamera])
 
         const handleMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             if (!isDrawingRef.current) return
@@ -181,7 +196,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             setIsOpen(false)
         }
 
-        const clear = () => {
+        const clear = useCallback(() => {
             const canvas = savedCanvasRef.current
             if (!canvas) return
             const ctx = canvas.getContext('2d')
@@ -190,9 +205,9 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             setHasDrawn(false)
             onSignatureChange?.(false)
-        }
+        }, [onSignatureChange])
 
-        const getSignature = async (): Promise<File | null> => {
+        const getSignature = useCallback(async (): Promise<File | null> => {
             const canvas = savedCanvasRef.current
             if (!canvas || !hasDrawn) return null
 
@@ -205,13 +220,23 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     }
                 }, 'image/png')
             })
-        }
+        }, [hasDrawn])
 
         useImperativeHandle(ref, () => ({
             clear,
             getSignature,
-            hasSignature: () => hasDrawn
-        }))
+            getGifFile: async () => {
+                // First try saved blob, then fallback to camera ref
+                const blob = savedGifBlob ?? await cameraRef.current?.getGif()
+                if (!blob) {
+                    logger.warn('getGifFile return null', { hasSavedBlob: !!savedGifBlob })
+                    return null
+                }
+                return new File([blob], `captura_${Date.now()}.gif`, { type: 'image/gif' })
+            },
+            hasSignature: () => hasDrawn,
+            hasGif: () => savedGifBlob !== null || (cameraRef.current?.isReady() ?? false)
+        }), [savedGifBlob, hasDrawn, clear, getSignature])
 
         return (
             <>
@@ -258,24 +283,42 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             </VisuallyHidden>
                         </DialogHeader>
 
-                        <div className="flex-1 relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0">
-                            <canvas
-                                ref={fullscreenCanvasRef}
-                                className="touch-none cursor-crosshair absolute inset-0 w-full h-full"
-                                onMouseDown={handleStart}
-                                onMouseMove={handleMove}
-                                onMouseUp={handleEnd}
-                                onMouseLeave={handleEnd}
-                                onTouchStart={handleStart}
-                                onTouchMove={handleMove}
-                                onTouchEnd={handleEnd}
-                            />
-                            <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 right-6 sm:right-8 border-b-2 border-gray-300 pointer-events-none" />
-                            {!tempHasDrawn && (
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <span className="text-muted-foreground/40 text-base sm:text-xl">Firme aquí</span>
+                        <div className={`flex-1 flex gap-3 min-h-0 flex-col`}>
+                            {/* Camera preview - 30% height */}
+                            {enableCamera && (
+                                <div className="flex-[3] min-h-0">
+                                    <SignatureCameraCapture
+                                        ref={cameraRef}
+                                        onGifGenerated={(gif) => {
+                                            logger.info('onGifGenerated received', { size: gif?.size })
+                                            setSavedGifBlob(gif)
+                                            onGifGenerated?.(gif)
+                                        }}
+                                        className="h-full"
+                                    />
                                 </div>
                             )}
+
+                            {/* Signature canvas - 70% height */}
+                            <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 ${enableCamera ? 'flex-[7]' : 'flex-1'}`}>
+                                <canvas
+                                    ref={fullscreenCanvasRef}
+                                    className="touch-none cursor-crosshair absolute inset-0 w-full h-full"
+                                    onMouseDown={handleStart}
+                                    onMouseMove={handleMove}
+                                    onMouseUp={handleEnd}
+                                    onMouseLeave={handleEnd}
+                                    onTouchStart={handleStart}
+                                    onTouchMove={handleMove}
+                                    onTouchEnd={handleEnd}
+                                />
+                                <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 right-6 sm:right-8 border-b-2 border-gray-300 pointer-events-none" />
+                                {!tempHasDrawn && (
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <span className="text-muted-foreground/40 text-base sm:text-xl">Firme aquí</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="flex gap-3 flex-shrink-0">
