@@ -302,11 +302,19 @@ export default function MessengerLayout() {
 
     useEffect(() => {
         // Bloquear el Sheet durante la navegación para evitar que responda a gestos
-        setIsSheetBlocked(true);
-        const timer = setTimeout(() => {
+        // Usamos setTimeout para evitar setState síncrono que causa renders en cascada
+        const startTimer = setTimeout(() => {
+            setIsSheetBlocked(true);
+        }, 0);
+
+        const endTimer = setTimeout(() => {
             setIsSheetBlocked(false);
         }, 400);
-        return () => clearTimeout(timer);
+
+        return () => {
+            clearTimeout(startTimer);
+            clearTimeout(endTimer);
+        };
     }, [location.pathname]);
 
     const confirmLogout = () => {
