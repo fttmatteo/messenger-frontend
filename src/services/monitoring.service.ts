@@ -1,4 +1,5 @@
 import apiClient from './api-client'
+import { format } from 'date-fns'
 
 export interface DailyStats {
     assigned: number
@@ -31,7 +32,7 @@ class MonitoringService {
      * Obtiene la actividad de un mensajero para una fecha específica.
      */
     async getMessengerActivity(messengerId: number, date: Date): Promise<MessengerActivityResponse> {
-        const dateStr = date.toISOString().split('T')[0]
+        const dateStr = format(date, 'yyyy-MM-dd')
         const response = await apiClient.get(`/monitoring/messenger/${messengerId}/activity`, {
             params: { date: dateStr }
         })

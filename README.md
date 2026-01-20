@@ -103,7 +103,7 @@
 |:---|:---|
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
-| **Evidence Capture** | Client-side image compression and vector digital signature support. |
+| **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
 
 ---
 
