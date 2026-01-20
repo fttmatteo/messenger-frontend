@@ -167,6 +167,7 @@ export default function LiveTracking() {
                 trackingService.connect(token, () => {
                     setConnected(true)
                     trackingService.subscribeToAll(handleTrackingUpdate)
+                    trackingService.subscribeToPresence(handleTrackingUpdate)
                 })
             } catch (err) {
                 // Silent fallback - normal on Safari Mobile
@@ -174,6 +175,7 @@ export default function LiveTracking() {
                 trackingService.connect(undefined, () => {
                     setConnected(true)
                     trackingService.subscribeToAll(handleTrackingUpdate)
+                    trackingService.subscribeToPresence(handleTrackingUpdate)
                 })
             }
         }

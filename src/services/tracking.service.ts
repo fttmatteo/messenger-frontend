@@ -254,6 +254,34 @@ class TrackingService {
         }
     }
 
+    public subscribeToPresence(callback: (update: LiveTrackingUpdate) => void) {
+        const doSubscribe = () => {
+            this.client.subscribe('/topic/tracking/presence', (message) => {
+                if (message.body) {
+                    try {
+                        const body = JSON.parse(message.body);
+                        if (typeof body === 'object' && body.messengerId) {
+                            callback(body);
+                        }
+                    } catch {
+                        // ignore non-json messages
+                    }
+                }
+            });
+        };
+
+        if (this.isConnected) {
+            doSubscribe();
+        } else {
+            const originalOnConnect = this.client.onConnect;
+            this.client.onConnect = (frame) => {
+                this.isConnected = true;
+                originalOnConnect?.(frame);
+                doSubscribe();
+            };
+        }
+    }
+
     private lastLocation: { latitude: number; longitude: number; timestamp: number } | null = null;
 
     public setLastLocation(latitude: number, longitude: number) {
