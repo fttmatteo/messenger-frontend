@@ -12,6 +12,11 @@ html {
 body {
     height: 100%;
     min-height: -webkit-fill-available;
+    /* Safe area nativo - respeta notch, Dynamic Island, home indicator */
+    padding-top: var(--safe-area-inset-top);
+    padding-right: var(--safe-area-inset-right);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
 }
 
 #root {

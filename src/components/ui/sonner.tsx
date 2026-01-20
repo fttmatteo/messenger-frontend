@@ -7,18 +7,17 @@ import {
 import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { useIsMobile } from "@/hooks/use-mobile"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
-  const isMobile = useIsMobile()
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="top-center"
-      offset={isMobile ? 80 : 32}
+      // Offset manejado por CSS con safe area nativo
+      offset={0}
       gap={12}
       duration={4000}
       toastOptions={{
@@ -41,7 +40,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         style: {
           fontFamily: "inherit",
           wordBreak: "break-word",
-          zIndex: 99999,
+          zIndex: 999999,
         }
       }}
       icons={{

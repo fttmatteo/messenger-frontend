@@ -9,14 +9,21 @@
 }
 
 /* Contenedor principal del toaster */
-.sonner-toaster {
+.sonner-toaster,
+[data-sonner-toaster] {
   position: fixed;
-  z-index: 99999 !important;
+  z-index: 999999 !important;
   pointer-events: none;
-  top: 1rem;
-  left: 0;
-  right: 0;
+  /* Safe area nativo */
+  top: var(--safe-area-inset-top);
+  left: var(--safe-area-inset-left);
+  right: var(--safe-area-inset-right);
   padding: 0 1rem;
+}
+
+/* Asegurar que el toaster esté por encima de diálogos de Radix */
+[data-sonner-toast] {
+  z-index: 999999 !important;
 }
 
 .sonner-toaster * {
