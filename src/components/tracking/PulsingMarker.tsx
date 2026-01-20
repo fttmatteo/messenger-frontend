@@ -5,13 +5,17 @@ import { useGoogleMap } from "@react-google-maps/api"
 export interface PulsingMarkerProps {
     messenger: LiveTrackingUpdate
     onClick: (messenger: LiveTrackingUpdate) => void
+    onDeselect?: () => void
     isOnline: boolean
+    isSelected?: boolean
 }
 
 export const PulsingMarker = memo(function PulsingMarker({
     messenger,
     onClick,
-    isOnline
+    onDeselect,
+    isOnline,
+    isSelected
 }: PulsingMarkerProps) {
     const position = useMemo(() => ({
         lat: messenger.latitude,
@@ -28,6 +32,8 @@ export const PulsingMarker = memo(function PulsingMarker({
 
         const container = document.createElement('div')
         container.style.position = 'relative'
+        // Ensure container doesn't block clicks to the marker itself, but children might need pointer-events
+        container.style.cursor = 'pointer'
 
         if (isActive) {
             const pulse = document.createElement('div')
@@ -41,6 +47,7 @@ export const PulsingMarker = memo(function PulsingMarker({
                 left: 50%;
                 transform: translate(-50%, -50%);
                 animation: pulse 2s infinite;
+                pointer-events: none; 
             `
             container.appendChild(pulse)
 
@@ -65,11 +72,60 @@ export const PulsingMarker = memo(function PulsingMarker({
         })
         container.appendChild(pinElement.element)
 
+        // Popup / Label logic
+        if (isSelected) {
+            const popup = document.createElement('div')
+            popup.className = "bg-background/90 backdrop-blur-md rounded-md shadow-lg border px-3 py-1.5 absolute"
+            popup.style.cssText = `
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translate(-50%, -12px);
+                white-space: nowrap;
+                z-index: 50;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `
+
+            // Name
+            const nameSpan = document.createElement('span')
+            nameSpan.textContent = title
+            nameSpan.className = "text-xs font-semibold"
+            popup.appendChild(nameSpan)
+
+            // Close button
+            if (onDeselect) {
+                const closeBtn = document.createElement('button')
+                closeBtn.innerHTML = '✕'
+                closeBtn.className = "text-muted-foreground hover:text-foreground ml-1"
+                closeBtn.style.cssText = `
+                    font-size: 10px;
+                    line-height: 1;
+                    padding: 2px;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                `
+                // Prevent bubble to map
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation()
+                    onDeselect()
+                })
+                popup.appendChild(closeBtn)
+            }
+
+            container.appendChild(popup)
+            // Ensure container z-index is higher when selected
+            container.style.zIndex = '1000'
+        }
+
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
             title,
-            content: container
+            content: container,
+            zIndex: isSelected ? 100 : undefined
         })
 
         marker.addListener('click', () => {
@@ -83,7 +139,7 @@ export const PulsingMarker = memo(function PulsingMarker({
                 markerRef.current.map = null
             }
         }
-    }, [map, color, onClick, position, title, isActive, messenger])
+    }, [map, color, onClick, onDeselect, position, title, isActive, messenger, isSelected])
 
     useEffect(() => {
         if (markerRef.current) {
