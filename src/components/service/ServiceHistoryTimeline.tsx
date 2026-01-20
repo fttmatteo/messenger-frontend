@@ -24,7 +24,7 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
             <CardHeader className="p-2 pb-0">
                 <CardTitle className="text-base text-foreground font-semibold">Historial de estados</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto pr-2 min-h-0">
+            <CardContent className="flex-1 overflow-y-auto max-h-[50vh] pr-2">
                 {service.history && service.history.length > 0 ? (
                     <div className="py-2 pl-2">
                         <Timeline className="w-full">
