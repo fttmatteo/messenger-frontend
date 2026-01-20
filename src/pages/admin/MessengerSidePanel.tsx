@@ -164,13 +164,13 @@ export function MessengerSidePanel({
         )}>
             {/* Header */}
             <div className="p-3 border-b bg-background/40 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
                     <div className="flex items-center gap-1 shrink-0">
                         {/* Phone Call */}
                         <a
                             href={`tel:${employee?.phone}`}
                             className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center border transition-all duration-200",
+                                "h-8 w-8 rounded-full flex items-center justify-center border transition-colors duration-200",
                                 employee?.phone
                                     ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"
                                     : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
@@ -187,7 +187,7 @@ export function MessengerSidePanel({
                             target="_blank"
                             rel="noopener noreferrer"
                             className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center border transition-all duration-200",
+                                "h-8 w-8 rounded-full flex items-center justify-center border transition-colors duration-200",
                                 employee?.phone
                                     ? "bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20"
                                     : "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-50"
@@ -204,7 +204,7 @@ export function MessengerSidePanel({
                             size="icon"
                             onClick={() => messengerId && onFollow(messengerId)}
                             className={cn(
-                                "h-8 w-8 rounded-full border transition-all duration-200",
+                                "h-8 w-8 rounded-full border transition-colors duration-200",
                                 isFollowing
                                     ? "bg-primary/20 text-primary border-primary/30 shadow-sm"
                                     : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted"

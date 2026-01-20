@@ -223,7 +223,7 @@ export default function LiveTracking() {
             {/* Fullscreen Map */}
             <div className="absolute inset-0">
                 {loading && messengers.length === 0 ? (
-                    <div className="w-full h-full bg-muted/10 animate-pulse flex items-center justify-center">
+                    <div className="w-full h-full bg-muted/10 animate-pulse flex items-center justify-center overflow-hidden">
                         <p className="text-muted-foreground text-sm">Cargando mapa...</p>
                     </div>
                 ) : (
@@ -306,7 +306,7 @@ export default function LiveTracking() {
             <div className={cn(
                 "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
                 isPanelCollapsed ? "w-9" : "w-72",
-                showMessengerDetails && "opacity-0 pointer-events-none translate-x-full"
+                showMessengerDetails && "opacity-0 pointer-events-none"
             )}>
                 <MessengerListPanel
                     messengers={messengers}
