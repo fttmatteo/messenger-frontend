@@ -41,6 +41,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         style: {
           fontFamily: "inherit",
           wordBreak: "break-word",
+          zIndex: 99999,
         }
       }}
       icons={{

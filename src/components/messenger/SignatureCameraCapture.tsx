@@ -1,11 +1,4 @@
-import {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-    useCallback,
-} from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
 import { createLogger } from '@/utils/logger'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -89,7 +82,7 @@ const SignatureCameraCapture = forwardRef<
                 videoRef.current.srcObject = stream
             }
 
-            logger.info('Camera initialized successfully')
+            logger.info('Cámara inicializada correctamente')
 
             // Show consent toast
             toast.info('Se capturarán fotos para verificación', {
@@ -98,7 +91,7 @@ const SignatureCameraCapture = forwardRef<
             })
 
         } catch (error) {
-            logger.error('Camera initialization failed', error)
+            logger.error('Error al inicializar cámara', error)
             setCameraError('No se pudo acceder a la cámara')
             toast.error('Error de cámara', {
                 description: 'No se pudo acceder a la cámara. Verifica los permisos.',
@@ -149,9 +142,9 @@ const SignatureCameraCapture = forwardRef<
             const generationTime = performance.now() - startTime
             const gifSizeKb = Math.round(blob.size / 1024)
 
-            logger.info('gif_capture_success', {
-                generationTimeMs: Math.round(generationTime),
-                gifSizeKb,
+            logger.info('GIF capturado correctamente', {
+                tiempoMs: Math.round(generationTime),
+                tamañoKb: gifSizeKb,
             })
 
             // Create URL for preview
@@ -161,7 +154,7 @@ const SignatureCameraCapture = forwardRef<
             onGifGenerated?.(blob)
 
         } catch (error) {
-            logger.error('gif_capture_failed', { error })
+            logger.error('Error al capturar GIF', { error })
             toast.error('Error generando captura', {
                 description: 'Intenta de nuevo',
             })
@@ -189,12 +182,47 @@ const SignatureCameraCapture = forwardRef<
             return
         }
 
+        // 1. Wait for stream to be assigned (initCamera might be running)
+        let streamWaitdAttempts = 0
+        while (!video.srcObject && streamWaitdAttempts < 30) { // 3 seconds max for permission/init
+            await new Promise(r => setTimeout(r, 100))
+            streamWaitdAttempts++
+        }
+
+        if (!video.srcObject) {
+            logger.warn('Sin stream de video después de esperar')
+            // Continue might result in black, but we can't do much
+        }
+
+        // 2. Wait for video to be playing and have data
+        let attempts = 0
+        const maxAttempts = 30 // 3 seconds max wait
+
+        // readyState >= 2 (HAVE_CURRENT_DATA) AND currentTime > 0 (Playback started)
+        while ((video.readyState < 2 || video.currentTime === 0) && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100))
+            attempts++
+        }
+
+        if (video.readyState < 2) {
+            logger.warn('Video no listo después de espera', { readyState: video.readyState, currentTime: video.currentTime })
+        }
+
         canvas.width = GIF_WIDTH
         canvas.height = GIF_HEIGHT
 
         const capturedFrames: ImageData[] = []
 
-        logger.info('gif_capture_started', { frameCount: FRAME_COUNT })
+        // Double check dimensions
+        if (video.videoWidth === 0) {
+            logger.warn('Ancho de video 0, esperando')
+            await new Promise(r => setTimeout(r, 200)) // Last ditch effort
+        }
+
+        logger.info('Iniciando captura de GIF', {
+            frames: FRAME_COUNT,
+            dimensiones: `${video.videoWidth}x${video.videoHeight}`
+        })
 
         // Capture frames at intervals
         for (let i = 0; i < FRAME_COUNT; i++) {
