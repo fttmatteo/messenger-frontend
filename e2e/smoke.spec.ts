@@ -35,6 +35,28 @@ test.describe('Smoke Tests - Happy Path', () => {
                 });
             }
         });
+
+        // Mock Turnstile script to auto-verify in tests
+        await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/javascript',
+                body: `
+                    window.turnstile = {
+                        render: (container, options) => {
+                            const id = "mock-widget-id";
+                            setTimeout(() => {
+                                if (options.callback) options.callback("mock-token");
+                            }, 100);
+                            return id;
+                        },
+                        reset: () => {},
+                        remove: () => {}
+                    };
+                    if (window.onTurnstileLoad) window.onTurnstileLoad();
+                `
+            });
+        });
     });
 
     test('should login successfully as admin', async ({ page }) => {
@@ -64,7 +86,7 @@ test.describe('Smoke Tests - Happy Path', () => {
 
         // 4. Wait for redirection and dashboard to load
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
-        
+
         // Simple check: title should still be PLAK and no longer on login
         await expect(page).toHaveTitle(/PLAK/);
         await expect(page).not.toHaveURL(/login/);
