@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { offlineSyncService, type OfflineAction } from '../offline-sync.service'
 import { get, set } from 'idb-keyval'
 
@@ -22,13 +22,18 @@ vi.stubGlobal('crypto', {
 describe('OfflineSyncService', () => {
     beforeEach(async () => {
         vi.clearAllMocks()
+        vi.useFakeTimers()
         await offlineSyncService.clearAll()
 
-        // Mock de navigator.onLine
+        // Mock de navigator.onLine (por defecto true en setup.ts, pero lo aseguramos)
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,
             value: true,
         })
+    })
+
+    afterEach(() => {
+        vi.useRealTimers()
     })
 
     /**
@@ -46,6 +51,18 @@ describe('OfflineSyncService', () => {
                 retryCount: 0
             })
         ]))
+    })
+
+    /**
+     * Verifica que la actualización optimista se ejecute al encolar.
+     */
+    it('should execute optimistic update when queuing', async () => {
+        vi.mocked(get).mockResolvedValue([])
+        const optimisticUpdate = vi.fn().mockResolvedValue(undefined)
+
+        await offlineSyncService.queueAction('UPDATE_STATUS', { id: 1 }, { optimisticUpdate })
+
+        expect(optimisticUpdate).toHaveBeenCalled()
     })
 
     /**
@@ -96,22 +113,79 @@ describe('OfflineSyncService', () => {
     })
 
     /**
-     * Verifica que el contador de reintentos se incremente si un handler falla.
+     * Verifica que el contador de reintentos se incremente y se establezca nextRetryAfter si un handler falla.
      */
-    it('should increment retry count on failure', async () => {
+    it('should increment retry count and set backoff on failure', async () => {
         const handler = vi.fn().mockResolvedValue(false)
         offlineSyncService.registerHandler('UPDATE_STATUS', handler)
 
+        const startTime = Date.now()
         const mockActions: OfflineAction[] = [
-            { id: '1', type: 'UPDATE_STATUS', payload: {}, timestamp: Date.now(), retryCount: 0 }
+            { id: '1', type: 'UPDATE_STATUS', payload: {}, timestamp: startTime, retryCount: 0 }
         ]
         vi.mocked(get).mockResolvedValue(mockActions)
 
         await offlineSyncService.syncAll()
 
-        expect(set).toHaveBeenCalledWith('pending_offline_actions', [
-            expect.objectContaining({ id: '1', retryCount: 1 })
-        ])
+        expect(set).toHaveBeenCalledWith('pending_offline_actions', expect.arrayContaining([
+            expect.objectContaining({
+                id: '1',
+                retryCount: 1,
+                nextRetryAfter: startTime + (1 * 60 * 1000) // 1 minuto de backoff inicial
+            })
+        ]))
+    })
+
+    /**
+     * Verifica que no se intente sincronizar una acción si aún no ha pasado su tiempo de reintento.
+     */
+    it('should skip actions that are still in backoff period', async () => {
+        const handler = vi.fn()
+        offlineSyncService.registerHandler('UPDATE_STATUS', handler)
+
+        const now = Date.now()
+        const mockActions: OfflineAction[] = [
+            {
+                id: '1',
+                type: 'UPDATE_STATUS',
+                payload: {},
+                timestamp: now - 10000,
+                retryCount: 1,
+                nextRetryAfter: now + 30000 // Faltan 30 segundos
+            }
+        ]
+        vi.mocked(get).mockResolvedValue(mockActions)
+
+        const syncedCount = await offlineSyncService.syncAll()
+
+        expect(syncedCount).toBe(0)
+        expect(handler).not.toHaveBeenCalled()
+    })
+
+    /**
+     * Verifica que se sincronice después de que haya pasado el tiempo de backoff.
+     */
+    it('should sync action after backoff period has passed', async () => {
+        const handler = vi.fn().mockResolvedValue(true)
+        offlineSyncService.registerHandler('UPDATE_STATUS', handler)
+
+        const now = Date.now()
+        const mockActions: OfflineAction[] = [
+            {
+                id: '1',
+                type: 'UPDATE_STATUS',
+                payload: {},
+                timestamp: now - 70000,
+                retryCount: 1,
+                nextRetryAfter: now - 10000 // Pasó hace 10 segundos
+            }
+        ]
+        vi.mocked(get).mockResolvedValue(mockActions)
+
+        const syncedCount = await offlineSyncService.syncAll()
+
+        expect(syncedCount).toBe(1)
+        expect(handler).toHaveBeenCalled()
     })
 
     /**

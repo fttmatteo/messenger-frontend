@@ -14,6 +14,8 @@ import { useStatusColors } from "@/hooks/use-status-colors"
 import { openMaps } from "@/lib/navigation-utils"
 import { logger } from "@/utils/logger"
 import { ServiceDetailsSkeleton } from "@/components/service/ServiceSkeletons"
+import { useNetwork } from "@/hooks/use-network"
+import { WifiOff } from "lucide-react"
 
 
 /**
@@ -26,6 +28,7 @@ export default function ServiceDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { colors } = useStatusColors()
+    const { isOnline } = useNetwork()
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -55,6 +58,16 @@ export default function ServiceDetails() {
     }, [id])
 
     const handleNavigate = () => {
+        if (!isOnline) {
+            toast.warning('Sin conexión para navegar', {
+                description: 'Los mapas requieren internet para cargar rutas.',
+                icon: <WifiOff className="h-4 w-4" />,
+                duration: 4000,
+                id: 'offline-nav-warning'
+            })
+            return
+        }
+
         if (!service?.dealership) return
 
         const { latitude, longitude, address } = service.dealership

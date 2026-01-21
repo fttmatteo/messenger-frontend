@@ -22,6 +22,7 @@ import { STATUS_OPTIONS } from "@/config/status-options"
 import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
 import { useNetwork } from "@/hooks/use-network"
 import { offlineSyncService, type UpdateStatusWithFilesPayload } from "@/services/offline-sync.service"
+import { offlineCacheService } from "@/services/offline-cache.service"
 import { fileToBase64 } from "@/lib/file-utils"
 import { createLogger } from "@/utils/logger"
 
@@ -184,7 +185,15 @@ export default function UpdateStatus() {
                     longitude,
                 }
 
-                await offlineSyncService.queueAction('UPDATE_STATUS_WITH_FILES', payload)
+                await offlineSyncService.queueAction('UPDATE_STATUS_WITH_FILES', payload, {
+                    optimisticUpdate: async () => {
+                        const cachedServices = await offlineCacheService.getCachedServices()
+                        const updatedServices = cachedServices.map((s: ServiceDelivery) =>
+                            s.idServiceDelivery === Number(id) ? { ...s, currentStatus: selectedStatus } : s
+                        )
+                        await offlineCacheService.cacheServices(updatedServices)
+                    }
+                })
 
                 toast.success('Guardado para sincronizar', {
                     description: 'Se enviará cuando haya conexión',

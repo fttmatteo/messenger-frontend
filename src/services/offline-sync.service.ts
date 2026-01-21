@@ -18,6 +18,7 @@ export interface OfflineAction {
     payload: unknown
     timestamp: number
     retryCount: number
+    nextRetryAfter?: number
     endpoint?: string
     method?: 'POST' | 'PUT' | 'PATCH'
 }
@@ -67,7 +68,11 @@ class OfflineSyncService {
     async queueAction(
         type: OfflineActionType,
         payload: unknown,
-        options?: { endpoint?: string; method?: 'POST' | 'PUT' | 'PATCH' }
+        options?: {
+            endpoint?: string;
+            method?: 'POST' | 'PUT' | 'PATCH';
+            optimisticUpdate?: () => Promise<void>;
+        }
     ): Promise<string> {
         const action: OfflineAction = {
             id: crypto.randomUUID(),
@@ -83,7 +88,36 @@ class OfflineSyncService {
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
 
+        // Intentar registrar Background Sync si está disponible
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            try {
+                const registration = await navigator.serviceWorker.ready
+                // @ts-expect-error - sync solo existe en navegadores compatibles con Background Sync
+                await registration.sync.register('sync-pending-actions')
+            } catch (err) {
+                console.warn('Background Sync no pudo ser registrado:', err)
+            }
+        }
+
+        // Ejecutar actualización optimista si se proporciona
+        if (options?.optimisticUpdate) {
+            await options.optimisticUpdate()
+        }
+
         return action.id
+    }
+
+    /**
+     * Configura la escucha de mensajes desde el Service Worker
+     */
+    setupBackgroundSyncListener(): void {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SYNC_PENDING_ACTIONS') {
+                    void this.syncAll()
+                }
+            })
+        }
     }
 
     /**
@@ -153,6 +187,11 @@ class OfflineSyncService {
             }
 
             for (const action of actions) {
+                // Saltar acciones que aún están en periodo de espera tras fallo
+                if (action.nextRetryAfter && Date.now() < action.nextRetryAfter) {
+                    continue
+                }
+
                 try {
                     const handler = this.handlers.get(action.type)
 
@@ -218,7 +257,18 @@ class OfflineSyncService {
         if (action.retryCount >= MAX_RETRY_COUNT) {
             await this.removeAction(action.id)
         } else {
-            await this.incrementRetry(action.id)
+            const nextRetryCount = action.retryCount + 1;
+            // Cálculo exponencial: 1min, 5min, 15min
+            const backoffMinutes = [1, 5, 15][action.retryCount] || 30;
+            const nextRetryAfter = Date.now() + (backoffMinutes * 60 * 1000);
+
+            const actions = await this.getPendingActions()
+            const updatedActions = actions.map(a =>
+                a.id === action.id
+                    ? { ...a, retryCount: nextRetryCount, nextRetryAfter }
+                    : a
+            )
+            await set(PENDING_ACTIONS_KEY, updatedActions)
         }
     }
 

@@ -25,6 +25,8 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
 
     useEffect(() => {
+        offlineSyncService.setupBackgroundSyncListener()
+
         offlineSyncService.registerHandler('UPDATE_STATUS_WITH_FILES', async (action) => {
             try {
                 const payload = action.payload as UpdateStatusWithFilesPayload
