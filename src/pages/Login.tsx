@@ -57,6 +57,18 @@ export default function Login() {
         }
     })
 
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token)
+    }, [])
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
+
     const onSubmit = async (data: LoginFormValues) => {
         if (!turnstileToken) {
             toast.error("Por favor, espera a que se complete la verificación de seguridad.")
@@ -135,17 +147,6 @@ export default function Login() {
         return <LoginMobile />
     }
 
-    const handleTurnstileVerify = useCallback((token: string) => {
-        setTurnstileToken(token)
-    }, [])
-
-    const handleTurnstileError = useCallback(() => {
-        setTurnstileToken(null)
-    }, [])
-
-    const handleTurnstileExpire = useCallback(() => {
-        setTurnstileToken(null)
-    }, [])
 
     const handleExit = () => {
         window.open('', '_self', '');
