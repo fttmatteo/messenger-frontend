@@ -33,7 +33,8 @@ describe('AuthIntegration (MSW)', () => {
             await result.current.login({
                 document: 12345,
                 password: 'correct-password',
-                rememberMe: true
+                rememberMe: true,
+                turnstileToken: 'test-token'
             })
         })
 
@@ -56,7 +57,8 @@ describe('AuthIntegration (MSW)', () => {
             await result.current.login({
                 document: 12345,
                 password: 'any',
-                rememberMe: false
+                rememberMe: false,
+                turnstileToken: 'test-token'
             })
         })
         expect(result.current.isAuthenticated).toBe(true)

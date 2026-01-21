@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -17,6 +17,7 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { getErrorMessage } from "@/lib/error-utils"
 import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
+import { TurnstileWidget } from "@/components/ui/turnstile-widget"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -38,6 +39,19 @@ export default function LoginMobile() {
     const [showPassword, setShowPassword] = useState(false)
     const [logoLoaded, setLogoLoaded] = useState(false)
     const [logoError, setLogoError] = useState(false)
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token)
+    }, [])
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
 
     const {
         register,
@@ -52,11 +66,17 @@ export default function LoginMobile() {
     })
 
     const onSubmit = async (data: LoginFormValues) => {
+        if (!turnstileToken) {
+            toast.error("Por favor, espera a que se complete la verificación de seguridad.")
+            return
+        }
+
         try {
             await login({
                 document: parseInt(data.document, 10),
                 password: data.password,
-                rememberMe: data.rememberMe
+                rememberMe: data.rememberMe,
+                turnstileToken
             })
             // Limpiar historial y navegar al inicio de mensajero
             // Esto evita que el gesto de retroceso regrese al login
@@ -227,13 +247,23 @@ export default function LoginMobile() {
                             <Button
                                 type="submit"
                                 className="w-full h-11 text-base font-medium mt-1"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || !turnstileToken}
                             >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
                     </CardContent>
                 </Card>
+
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+                    <TurnstileWidget
+                        onVerify={handleTurnstileVerify}
+                        onError={handleTurnstileError}
+                        onExpire={handleTurnstileExpire}
+                        theme="auto"
+                        size="normal"
+                    />
+                </div>
             </div>
         </>
     )

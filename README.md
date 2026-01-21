@@ -238,6 +238,9 @@ VITE_GOOGLE_MAPS_KEY=your_google_maps_api_key
 
 # WebSocket (optional - for development)
 VITE_WS_URL=ws://localhost:8080/ws
+
+# Cloudflare Turnstile (Bot Protection)
+VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
 
 ### 📜 Available Scripts
@@ -264,8 +267,10 @@ VITE_WS_URL=ws://localhost:8080/ws
 | **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
 | **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
 | **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
-| **HTTPS Only** | Enforced secure connections in production |
+| **Solo HTTPS** | Enforced secure connections in production |
 | **Input Validation** | All user inputs validated with Zod schemas |
+| **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
+| **Rate Limiting** | Client-side handling of 429 errors from the backend |
 
 ---
 

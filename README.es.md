@@ -238,6 +238,9 @@ VITE_GOOGLE_MAPS_KEY=tu_api_key_de_google_maps
 
 # WebSocket (opcional - para desarrollo)
 VITE_WS_URL=ws://localhost:8080/ws
+
+# Cloudflare Turnstile (Protección contra Bots)
+VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 ```
 
 ### 📜 Scripts Disponibles
@@ -266,6 +269,8 @@ VITE_WS_URL=ws://localhost:8080/ws
 | **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Messenger) a nivel de router |
 | **Solo HTTPS** | Conexiones seguras forzadas en producción |
 | **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod |
+| **Protección contra Bots** | Cloudflare Turnstile integrado en todos los flujos de login |
+| **Rate Limiting** | Manejo del lado del cliente de errores 429 desde el backend |
 
 ---
 
