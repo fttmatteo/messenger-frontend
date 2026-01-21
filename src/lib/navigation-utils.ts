@@ -41,5 +41,12 @@ export const openMaps = (
         webUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     }
 
-    window.open(webUrl, '_blank', 'noopener,noreferrer');
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isPWA || isMobile) {
+        window.location.href = webUrl;
+    } else {
+        window.open(webUrl, '_blank', 'noopener,noreferrer');
+    }
 };
