@@ -234,14 +234,22 @@ class TrackingService {
 
         if (!isActiveWithCoords && !isOfflineStatus) return;
 
-        // Para OFFLINE, solo mantener el último (no es necesario encolar múltiples)
-        if (isOfflineStatus) {
+        // OPTIMIZACIÓN: "Smart Last-Location"
+        // Si es una actualización de ubicación (ACTIVE), NO queremos guardar todo el historial (A -> B -> C)
+        // Solo nos interesa el último punto (C) para enviarlo al reconectar.
+        // Esto evita el efecto de "relleno de ruta" innecesario y ahorra datos.
+
+        if (isActiveWithCoords) {
+            // Eliminar cualquier actualización de ubicación previa pendiente
+            this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'ACTIVE');
+        } else if (isOfflineStatus) {
+            // Mismo principio para OFFLINE: solo el último estado offline importa
             this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'OFFLINE');
         }
 
         this.offlineQueue.push(update);
 
-        // Mantener el tamaño de la cola manejable
+        // Mantener el tamaño de la cola manejable (aunque ahora será muy pequeña, máx 2 elementos típicamente)
         if (this.offlineQueue.length > MAX_QUEUE_SIZE) {
             this.offlineQueue.shift();
         }

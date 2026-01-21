@@ -41,8 +41,7 @@
 
 ## 📸 Capturas de Pantalla
 
-<details>
-<summary><b>🖥️ Admin Dashboard</b> (clic para expandir)</summary>
+### 🖥️ Admin Dashboard
 
 | Login | Monitoreo en Vivo |
 |:---:|:---:|
@@ -59,10 +58,9 @@
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Gestión del personal* | *Administración de concesionarios* |
 
-</details>
+---
 
-<details>
-<summary><b>📱 Messenger PWA</b> (clic para expandir)</summary>
+### 📱 Messenger PWA
 
 | Login | Servicios Asignados | Actualización de Estado |
 |:---:|:---:|:---:|
@@ -74,8 +72,6 @@
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
 | *Información completa y navegación* | *Servicios con cambio de estado* | *Preferencias de la app* |
 
-</details>
-
 ---
 
 ## ✨ Características Principales
@@ -85,6 +81,7 @@
 | Característica | Descripción |
 |:---|:---|
 | **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones realizadas sin conexión se persisten en `IndexedDB` y se reintentan automáticamente al restaurar la conexión. |
+| **Última Ubicación Inteligente** | Estrategia de rastreo optimizada que solo encola la ubicación más reciente cuando está offline, evitando desperdicio de ancho de banda y "teletransportes" al reconectar. |
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |
 

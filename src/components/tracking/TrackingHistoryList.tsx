@@ -15,8 +15,6 @@ interface TrackingHistoryListProps {
     loading: boolean
     date: Date
     onDateSelect: (date: Date) => void
-    showRoute: boolean
-    onToggleRoute: () => void
     calendarOpen: boolean
     setCalendarOpen: (open: boolean) => void
 }
@@ -30,8 +28,6 @@ export function TrackingHistoryList({
     loading,
     date,
     onDateSelect,
-    showRoute,
-    onToggleRoute,
     calendarOpen,
     setCalendarOpen
 }: TrackingHistoryListProps) {
@@ -115,20 +111,6 @@ export function TrackingHistoryList({
                         />
                     </PopoverContent>
                 </Popover>
-
-
-                {historyData.length > 0 && (
-                    <Button
-                        variant={showRoute ? "default" : "outline"}
-                        size="sm"
-                        className="w-full h-9"
-                        onClick={onToggleRoute}
-                    >
-                        <Route className="h-4 w-4 mr-2" />
-                        {showRoute ? "Ocultar ruta" : "Ver ruta en mapa"}
-                    </Button>
-                )}
-
 
                 {loading ? (
                     null

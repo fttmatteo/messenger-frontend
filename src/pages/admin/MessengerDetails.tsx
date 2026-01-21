@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Map as MapComponent } from "@/components/Map"
-import { Polyline } from "@react-google-maps/api"
-import { useTheme } from "next-themes"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +28,6 @@ import { TrackingHistoryList } from "@/components/tracking/TrackingHistoryList"
 export default function MessengerDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { resolvedTheme } = useTheme()
     const messengerId = Number(id)
 
     // Estado
@@ -45,7 +42,6 @@ export default function MessengerDetails() {
     const [historyDate, setHistoryDate] = useState<Date>(new Date())
     const [historyData, setHistoryData] = useState<TrackingHistoryItem[]>([])
     const [loadingHistory, setLoadingHistory] = useState(false)
-    const [showHistoryRoute, setShowHistoryRoute] = useState(false)
     const [calendarOpen, setCalendarOpen] = useState(false)
 
     // Manejar actualizaciones en tiempo real
@@ -144,10 +140,8 @@ export default function MessengerDetails() {
 
             if (Array.isArray(data)) {
                 setHistoryData(data)
-                setShowHistoryRoute(data.length > 0)
             } else {
                 setHistoryData([])
-                setShowHistoryRoute(false)
             }
         } catch (error) {
             logger.error("Error fetching history in MessengerDetails:", error)
@@ -164,11 +158,6 @@ export default function MessengerDetails() {
     useEffect(() => {
         fetchHistory()
     }, [fetchHistory])
-
-    // Ruta del historial para polyline
-    const historyPath = historyData
-        .filter(h => h.latitude && h.longitude && h.latitude !== 0)
-        .map(h => ({ lat: h.latitude, lng: h.longitude }))
 
     const mapCenter = currentLocation || { lat: 6.2442, lng: -75.5812 } // Medellín default
 
@@ -240,8 +229,6 @@ export default function MessengerDetails() {
                         loading={loadingHistory}
                         date={historyDate}
                         onDateSelect={setHistoryDate}
-                        showRoute={showHistoryRoute}
-                        onToggleRoute={() => setShowHistoryRoute(!showHistoryRoute)}
                         calendarOpen={calendarOpen}
                         setCalendarOpen={setCalendarOpen}
                     />
@@ -254,22 +241,6 @@ export default function MessengerDetails() {
                                 <MessengerMarker
                                     position={currentLocation}
                                     color={isActive ? '#10b981' : '#6b7280'}
-                                />
-                            )}
-
-                            {showHistoryRoute && historyPath.length > 1 && (
-                                <Polyline
-                                    path={historyPath}
-                                    options={{
-                                        strokeColor: resolvedTheme === 'dark' ? '#818cf8' : '#4f46e5',
-                                        strokeOpacity: 0.8,
-                                        strokeWeight: 4,
-                                        icons: [{
-                                            icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
-                                            offset: '100%',
-                                            repeat: '100px'
-                                        }]
-                                    }}
                                 />
                             )}
                         </MapComponent>
