@@ -8,16 +8,12 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useAuth } from "@/context/AuthContext"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
   const isMobile = useIsMobile()
-  const { user } = useAuth()
 
-  const role = user?.role?.toUpperCase() || ''
-  const isAdmin = role.includes('ADMIN')
-  const position = (isAdmin && !isMobile) ? "bottom-right" : "top-center"
+  const position: ToasterProps["position"] = isMobile ? "bottom-center" : "bottom-right"
 
   return (
     <Sonner
@@ -42,7 +38,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           success: "!border-l-green-500 !bg-green-50 dark:!bg-green-950",
           info: "!border-l-blue-500 !bg-blue-50 dark:!bg-blue-950",
           warning: "!border-l-amber-500 !bg-amber-50 dark:!bg-amber-950",
-          loading: "!border-l-primary !bg-primary/10",
+          loading: "!border-l-primary !bg-muted",
         },
         style: {
           fontFamily: "inherit",

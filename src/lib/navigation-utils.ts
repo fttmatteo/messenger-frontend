@@ -33,7 +33,7 @@ export const openMaps = (
 
     let webUrl = '';
     if (latitude && longitude) {
-        webUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+        webUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving&dir_action=navigate`;
         if (originLat && originLng) {
             webUrl += `&origin=${originLat},${originLng}`;
         }
