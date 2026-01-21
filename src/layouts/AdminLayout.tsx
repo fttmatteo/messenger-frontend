@@ -55,11 +55,9 @@ function AdminLayoutContent() {
             <Sidebar collapsible="offcanvas" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border">
                     <div className="flex items-center justify-between px-2 py-2">
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col items-center gap-1">
                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
-                            <div>
-                                <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
-                            </div>
+                            <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
                         </div>
                         <ModeToggle showLabel={false} />
                     </div>

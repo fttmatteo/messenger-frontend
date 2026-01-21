@@ -134,7 +134,7 @@ export default function ViewServicio() {
                 deleting={deleting}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0 overflow-hidden">
                 <ServiceGeneralInfoCard service={service} />
 
                 <ServiceHistoryTimeline
