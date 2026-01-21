@@ -8,7 +8,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Playwright](https://img.shields.io/badge/Playwright-E2E-orange?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-Unit-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
@@ -113,8 +112,6 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 
 ```
     ╭────────────────────╮
-    │   E2E (Playwright) │  ← Critical user flows
-    ├────────────────────┤
     │  Integration (MSW) │  ← Component + API layer
     ├────────────────────┤
     │   Unit (Vitest)    │  ← Business logic
@@ -125,7 +122,6 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 
 | Level | Tools | Focus |
 |:---|:---|:---|
-| **E2E** | `Playwright` | Critical business flows (Login, Maps, CRUD) in real Chromium browser |
 | **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
 | **Unit** | `Vitest` | Isolated business logic, utilities, and complex hooks |
 | **Visual** | `Playwright Snapshots` | Automatic detection of design regressions (pixel-perfect diffing) |
@@ -145,9 +141,6 @@ npm run test:ui
 
 # Coverage report
 npm run test:coverage
-
-# E2E tests (requires local server running)
-npx playwright test
 ```
 
 ---
@@ -238,6 +231,9 @@ VITE_GOOGLE_MAPS_KEY=your_google_maps_api_key
 
 # WebSocket (optional - for development)
 VITE_WS_URL=ws://localhost:8080/ws
+
+# Cloudflare Turnstile (Bot Protection)
+VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
 
 ### 📜 Available Scripts
@@ -264,8 +260,10 @@ VITE_WS_URL=ws://localhost:8080/ws
 | **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
 | **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
 | **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
-| **HTTPS Only** | Enforced secure connections in production |
+| **Solo HTTPS** | Enforced secure connections in production |
 | **Input Validation** | All user inputs validated with Zod schemas |
+| **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
+| **Rate Limiting** | Client-side handling of 429 errors from the backend |
 
 ---
 

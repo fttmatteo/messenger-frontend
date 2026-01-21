@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -19,6 +19,7 @@ import LoginMobile from "@/pages/mobile/LoginMobile"
 import { getErrorMessage } from "@/lib/error-utils"
 import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
+import { TurnstileWidget } from "@/components/ui/turnstile-widget"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -42,6 +43,7 @@ export default function Login() {
     const [showExitDialog, setShowExitDialog] = useState(false)
     const [logoLoaded, setLogoLoaded] = useState(false)
     const [logoError, setLogoError] = useState(false)
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
     const {
         register,
@@ -55,12 +57,30 @@ export default function Login() {
         }
     })
 
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token)
+    }, [])
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null)
+    }, [])
+
     const onSubmit = async (data: LoginFormValues) => {
+        if (!turnstileToken) {
+            toast.error("Por favor, espera a que se complete la verificación de seguridad.")
+            return
+        }
+
         try {
             await login({
                 document: parseInt(data.document, 10),
                 password: data.password,
-                rememberMe: data.rememberMe
+                rememberMe: data.rememberMe,
+                turnstileToken
             })
             navigate("/", { replace: true })
         } catch (error) {
@@ -126,6 +146,7 @@ export default function Login() {
     if (isMobile) {
         return <LoginMobile />
     }
+
 
     const handleExit = () => {
         window.open('', '_self', '');
@@ -253,12 +274,21 @@ export default function Login() {
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full h-10 text-sm font-medium mt-2" disabled={isSubmitting}>
+                            <Button type="submit" className="w-full h-10 text-sm font-medium mt-2" disabled={isSubmitting || !turnstileToken}>
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
                     </CardContent>
                 </Card>
+
+                <div className="fixed bottom-4 left-4 z-50">
+                    <TurnstileWidget
+                        onVerify={handleTurnstileVerify}
+                        onError={handleTurnstileError}
+                        onExpire={handleTurnstileExpire}
+                        theme="auto"
+                    />
+                </div>
 
                 <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
                     <AlertDialogContent>

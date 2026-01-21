@@ -110,6 +110,7 @@ describe('AuthContext', () => {
                     document: 12345,
                     password: 'password',
                     rememberMe: true,
+                    turnstileToken: 'test-token',
                 })
             })
 
@@ -117,6 +118,7 @@ describe('AuthContext', () => {
                 document: 12345,
                 password: 'password',
                 rememberMe: true,
+                turnstileToken: 'test-token',
             })
             expect(localStorage.getItem('role')).toBe('ADMIN')
             expect(localStorage.getItem('user')).toContain('"id":123')
@@ -145,6 +147,7 @@ describe('AuthContext', () => {
                     document: 67890,
                     password: 'password',
                     rememberMe: false,
+                    turnstileToken: 'test-token',
                 })
             })
 

@@ -39,7 +39,8 @@ export interface LoginResponse {
  * Credenciales requeridas para autenticar a un usuario mediante documento y contraseña.
  */
 export interface LoginCredentials {
-    document: number; // El backend espera 'document' (Long) según AuthCredentials.java
+    document: number;
     password: string;
     rememberMe?: boolean;
+    turnstileToken: string; // Token de Cloudflare Turnstile (anti-bot)
 }

@@ -28,6 +28,15 @@ vi.mock('@/assets/logo.png', () => ({
     default: 'logo.png',
 }));
 
+// Mock de TurnstileWidget
+vi.mock('@/components/ui/turnstile-widget', () => ({
+    TurnstileWidget: ({ onVerify }: { onVerify: (token: string) => void }) => {
+        // Ejecutar onVerify inmediatamente para simular verificación exitosa en tests
+        setTimeout(() => onVerify('test-token'), 0);
+        return <div data-testid="turnstile-widget" />;
+    },
+}));
+
 /**
  * Suite de pruebas de integración para la página de Login.
  * Verifica la validación de formularios, feedback de usuario, visualización de contraseñ y navegación tras autenticación exitosa.
@@ -136,6 +145,7 @@ describe('Login Page', () => {
                 document: 12345678,
                 password: 'password123',
                 rememberMe: false,
+                turnstileToken: 'test-token',
             });
             expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
         });
@@ -179,6 +189,7 @@ describe('Login Page', () => {
                 document: 12345678,
                 password: 'password123',
                 rememberMe: true,
+                turnstileToken: 'test-token',
             });
             expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
         });
