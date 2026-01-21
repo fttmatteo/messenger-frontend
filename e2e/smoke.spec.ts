@@ -2,31 +2,31 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Smoke Tests - Happy Path', () => {
     test.beforeEach(async ({ page }) => {
-        // Global mock for all backend requests to prevent hanging on unhandled routes
-        await page.route(url => url.host === 'localhost:8080' || url.host === '127.0.0.1:8080', async (route) => {
-            const url = route.request().url();
-
-            // Allow specific mocks to be handled by subsequent route definitions if they are more specific,
-            // or handle them here. Playwright handles routes in reverse order, so we'll define 
-            // specific ones AFTER this if we want them to take priority.
-            // Actually, let's just use continue() here and define specifics after.
-            // Wait, if we want a catch-all, we should define it FIRST, then specifics AFTER (which override).
-
-            if (url.includes('/auth/login') || url.includes('/auth/check')) {
-                await route.continue();
-                return;
+        // Log browser console to terminal for better debugging
+        page.on('console', msg => {
+            const text = msg.text();
+            if (msg.type() === 'error') {
+                console.error(`BROWSER ERROR: ${text}`);
+            } else {
+                console.log(`BROWSER LOG: ${text}`);
             }
+        });
 
-            // Generic response for other backend calls to prevent hanging
+        // Global mock for all backend requests to prevent hanging on unhandled routes
+        // Registered FIRST, so it has LOWEST priority (since Playwright uses reverse order)
+        await page.route(url => url.toString().includes(':8080'), async (route) => {
+            const url = route.request().url();
+            console.log(`E2E: Catch-all mock handling request: ${url}`);
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ message: 'Mocked response' })
+                body: JSON.stringify({ message: 'Catch-all mocked response', data: [] })
             });
         });
 
         // Mock auth check (initially not logged in)
         await page.route('**/auth/check', async (route) => {
+            console.log('E2E: Mocking auth/check -> 401');
             await route.fulfill({
                 status: 401,
                 contentType: 'application/json',
@@ -37,6 +37,7 @@ test.describe('Smoke Tests - Happy Path', () => {
         // Mock login
         await page.route('**/auth/login', async (route) => {
             if (route.request().method() === 'POST') {
+                console.log('E2E: Mocking auth/login -> 200 SUCCESS');
                 await route.fulfill({
                     status: 200,
                     contentType: 'application/json',
@@ -56,30 +57,52 @@ test.describe('Smoke Tests - Happy Path', () => {
 
         // Mock Turnstile globally before any script runs
         await page.addInitScript(`
-            window.turnstile = {
+            console.log('E2E: Injecting Turnstile mock...');
+            const mockTurnstile = {
                 render: (container, options) => {
-                    const id = "mock-widget-id";
+                    console.log('E2E BROWSER: Turnstile.render called for:', container);
+                    const id = "mock-widget-id-" + Math.random().toString(36).substr(2, 9);
                     if (options && options.callback) {
-                        // Use a short timeout to simulate async behavior
+                        console.log('E2E BROWSER: Triggering verification callback...');
                         setTimeout(() => {
-                            options.callback("mock-token");
+                            options.callback("mock-token-" + id);
                         }, 50);
                     }
                     return id;
                 },
-                reset: () => {},
-                remove: () => {}
+                reset: (id) => { console.log('E2E BROWSER: Turnstile.reset', id); },
+                remove: (id) => { console.log('E2E BROWSER: Turnstile.remove', id); }
             };
-            // Signal that turnstile is ready
-            if (window.onTurnstileLoad) window.onTurnstileLoad();
+
+            // Define it on window
+            window.turnstile = mockTurnstile;
+
+            // Handle the case where the component might be waiting for the load event
+            const originalOnTurnstileLoad = window.onTurnstileLoad;
+            Object.defineProperty(window, 'onTurnstileLoad', {
+                get: () => originalOnTurnstileLoad,
+                set: (fn) => {
+                    console.log('E2E BROWSER: window.onTurnstileLoad was set, calling it immediately');
+                    if (typeof fn === 'function') {
+                        setTimeout(() => fn(), 10);
+                    }
+                },
+                configurable: true
+            });
+
+            // If it was already set, call it
+            if (typeof originalOnTurnstileLoad === 'function') {
+                originalOnTurnstileLoad();
+            }
         `);
 
-        // Intercept script request
-        await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
+        // Intercept Cloudflare script and just fulfill it
+        await page.route('**/turnstile/v0/api.js*', async (route) => {
+            console.log('E2E: Intercepting Turnstile script request');
             await route.fulfill({
                 status: 200,
                 contentType: 'application/javascript',
-                body: 'if (window.onTurnstileLoad) window.onTurnstileLoad();'
+                body: 'console.log("E2E BROWSER: Turnstile script placeholder loaded");'
             });
         });
     });
