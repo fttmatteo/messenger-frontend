@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       VitePWA({
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
         manifest: {
@@ -66,25 +69,7 @@ export default defineConfig(({ mode }) => {
           globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
           navigateFallback: 'index.html',
           navigateFallbackAllowlist: [/^\/(?!api)/],
-          clientsClaim: true,
-          skipWaiting: true,
-          runtimeCaching: [
-            {
-              urlPattern: /^https?:\/\/.*\/api\/.*/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'api-cache',
-                networkTimeoutSeconds: 10,
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 5, // 5 minutes
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-          ],
+          // Configuración específica para injectManifest si fuera necesaria
         },
         devOptions: {
           enabled: true,

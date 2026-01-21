@@ -26,6 +26,16 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
 
+// Mock de indexedDB (mínimo para que librerías como idb-keyval no exploten)
+if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'indexedDB', {
+        value: {
+            open: vi.fn().mockReturnValue({ onupgradeneeded: null, onsuccess: null, onerror: null }),
+        },
+        writable: true
+    });
+}
+
 // Limpiar después de cada prueba
 afterEach(() => {
     vi.clearAllMocks();
@@ -81,4 +91,33 @@ Object.defineProperty(window, 'matchMedia', {
         dispatchEvent: vi.fn(),
     })),
 });
+
+// Mock de Service Worker y Sync API
+if (typeof window !== 'undefined') {
+    Object.defineProperty(navigator, 'serviceWorker', {
+        value: {
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            register: vi.fn().mockResolvedValue({}),
+            ready: Promise.resolve({
+                sync: {
+                    register: vi.fn().mockResolvedValue(undefined),
+                    getTags: vi.fn().mockResolvedValue([]),
+                }
+            }),
+        },
+        writable: true,
+        configurable: true
+    });
+
+    // Mock de SyncManager en window
+    (window as any).SyncManager = class { };
+
+    // Mock de navigator.onLine (por defecto true)
+    Object.defineProperty(navigator, 'onLine', {
+        value: true,
+        writable: true,
+        configurable: true
+    });
+}
 

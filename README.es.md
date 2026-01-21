@@ -8,7 +8,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Playwright](https://img.shields.io/badge/Playwright-E2E-orange?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-Unit-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/Licencia-Propietaria-red?style=for-the-badge)](LICENSE)
@@ -113,8 +112,6 @@ Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confian
 
 ```
     ╭────────────────────╮
-    │   E2E (Playwright) │  ← Flujos críticos de usuario
-    ├────────────────────┤
     │  Integración (MSW) │  ← Componente + capa API
     ├────────────────────┤
     │   Unitarias (Vitest)│  ← Lógica de negocio
@@ -125,10 +122,8 @@ Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confian
 
 | Nivel | Herramientas | Enfoque |
 |:---|:---|:---|
-| **E2E** | `Playwright` | Flujos críticos de negocio (Login, Mapas, CRUD) en navegador Chromium real |
 | **Integración** | `Vitest` + `MSW` | Pruebas de página completa con capa de red mockeada via Mock Service Worker |
 | **Unitarias** | `Vitest` | Lógica de negocio aislada, utilidades y hooks complejos |
-| **Visuales** | `Playwright Snapshots` | Detección automática de regresiones de diseño (pixel-perfect diffing) |
 | **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
 
 ### 🧪 Ejecutar Pruebas
@@ -145,9 +140,6 @@ npm run test:ui
 
 # Reporte de cobertura
 npm run test:coverage
-
-# Pruebas E2E (requiere servidor local corriendo)
-npx playwright test
 ```
 
 ---

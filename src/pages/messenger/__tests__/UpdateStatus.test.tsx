@@ -29,6 +29,7 @@ vi.mock('@/services/offline-sync.service', () => ({
         registerHandler: vi.fn(),
         queueAction: vi.fn(),
         getPendingActions: vi.fn().mockResolvedValue([]),
+        setupBackgroundSyncListener: vi.fn(),
     }
 }))
 
