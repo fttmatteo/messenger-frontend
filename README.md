@@ -41,8 +41,7 @@
 
 ## 📸 Screenshots
 
-<details>
-<summary><b>🖥️ Admin Dashboard</b> (click to expand)</summary>
+### 🖥️ Admin Dashboard
 
 | Login | Live Monitoring |
 |:---:|:---:|
@@ -59,10 +58,9 @@
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Staff management* | *Dealership administration* |
 
-</details>
+---
 
-<details>
-<summary><b>📱 Messenger PWA</b> (click to expand)</summary>
+### 📱 Messenger PWA
 
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
@@ -73,8 +71,6 @@
 |:---:|:---:|:---:|
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
 | *Complete information & navigation* | *Service status history* | *App preferences* |
-
-</details>
 
 ---
 
