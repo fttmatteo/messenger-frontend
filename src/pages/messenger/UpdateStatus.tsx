@@ -407,10 +407,7 @@ export default function UpdateStatus() {
                 </AnimatePresence>
             </div>
 
-            <div
-                className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background"
-                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
-            >
+            <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
                 <Button
                     className="w-full h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                     style={{
