@@ -38,8 +38,20 @@ test.describe('Smoke Tests - Happy Path', () => {
 
         // Mock Turnstile globally before any script runs
         await page.addInitScript(() => {
-            (window as any).turnstile = {
-                render: (container: any, options: any) => {
+            interface TurnstileMockOptions {
+                callback?: (token: string) => void;
+            }
+
+            interface MockWindow extends Window {
+                turnstile: {
+                    render: (container: string | HTMLElement, options: TurnstileMockOptions) => string;
+                    reset: (widgetId: string) => void;
+                    remove: (widgetId: string) => void;
+                };
+            }
+
+            (window as unknown as MockWindow).turnstile = {
+                render: (_container: string | HTMLElement, options: TurnstileMockOptions) => {
                     const id = "mock-widget-id";
                     // Execute callback in next tick to simulate async behavior but very fast
                     setTimeout(() => {
