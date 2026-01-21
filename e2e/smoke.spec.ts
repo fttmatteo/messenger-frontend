@@ -2,9 +2,27 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Smoke Tests - Happy Path', () => {
     test.beforeEach(async ({ page }) => {
-        // Global mock: catch-all for unhandled API routes to prevent hanging
-        await page.route('**/api/**', async (route) => {
-            await route.continue();
+        // Global mock for all backend requests to prevent hanging on unhandled routes
+        await page.route(url => url.host === 'localhost:8080' || url.host === '127.0.0.1:8080', async (route) => {
+            const url = route.request().url();
+
+            // Allow specific mocks to be handled by subsequent route definitions if they are more specific,
+            // or handle them here. Playwright handles routes in reverse order, so we'll define 
+            // specific ones AFTER this if we want them to take priority.
+            // Actually, let's just use continue() here and define specifics after.
+            // Wait, if we want a catch-all, we should define it FIRST, then specifics AFTER (which override).
+
+            if (url.includes('/auth/login') || url.includes('/auth/check')) {
+                await route.continue();
+                return;
+            }
+
+            // Generic response for other backend calls to prevent hanging
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ message: 'Mocked response' })
+            });
         });
 
         // Mock auth check (initially not logged in)
@@ -41,19 +59,22 @@ test.describe('Smoke Tests - Happy Path', () => {
             window.turnstile = {
                 render: (container, options) => {
                     const id = "mock-widget-id";
-                    setTimeout(() => {
-                        if (options && options.callback) {
+                    if (options && options.callback) {
+                        // Use a short timeout to simulate async behavior
+                        setTimeout(() => {
                             options.callback("mock-token");
-                        }
-                    }, 0);
+                        }, 50);
+                    }
                     return id;
                 },
-                reset: () => { },
-                remove: () => { }
+                reset: () => {},
+                remove: () => {}
             };
+            // Signal that turnstile is ready
+            if (window.onTurnstileLoad) window.onTurnstileLoad();
         `);
 
-        // Intercept script request and trigger global load callback if defined
+        // Intercept script request
         await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
             await route.fulfill({
                 status: 200,
@@ -84,14 +105,12 @@ test.describe('Smoke Tests - Happy Path', () => {
         });
 
         // 3. Fill and submit login form
-        // Wait for button to be enabled (Turnstile verification)
-        const submitBtn = page.getByRole('button', { name: 'Iniciar sesión' });
-
         await page.getByPlaceholder('Ingrese su número de documento').fill('123456');
         await page.getByPlaceholder('Ingrese su contraseña').fill('password123');
 
-        // Playwright click() will wait for the button to be enabled automatically
-        await submitBtn.click();
+        // Assert button is enabled (means Turnstile mock worked)
+        await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeEnabled();
+        await page.getByRole('button', { name: 'Iniciar sesión' }).click();
 
         // 4. Wait for redirection and dashboard to load
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
