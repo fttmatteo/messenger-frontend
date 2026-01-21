@@ -111,6 +111,7 @@ if (typeof window !== 'undefined') {
     });
 
     // Mock de SyncManager en window
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).SyncManager = class { };
 
     // Mock de navigator.onLine (por defecto true)
