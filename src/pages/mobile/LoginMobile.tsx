@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import logo from "@/assets/logo.png"
 import { ModeToggle } from "@/components/mode-toggle"
 import { getErrorMessage } from "@/lib/error-utils"
-import { openSupportEmail } from "@/lib/app-config"
+import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
 
 const loginSchema = z.object({
@@ -148,13 +148,11 @@ export default function LoginMobile() {
                                 onLoad={() => setLogoLoaded(true)}
                                 onError={() => setLogoError(true)}
                             />
+                            <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1">v{APP_CONFIG.version}</span>
                         </div>
                         <div className="flex items-center justify-center">
                             <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
-                        <CardDescription className="text-center text-sm text-muted-foreground">
-                            Ingrese sus credenciales
-                        </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-3">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">

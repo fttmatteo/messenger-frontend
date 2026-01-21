@@ -344,14 +344,17 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-full w-full bg-background overflow-hidden relative">
+        <div className="flex flex-col h-full w-full bg-background overflow-auto relative">
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
             >
                 Saltar al contenido principal
             </a>
-            <header className="fixed top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm" role="banner">
+            <header
+                className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm"
+                role="banner"
+            >
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">
                         {pageTitle ? (
@@ -442,12 +445,11 @@ export default function MessengerLayout() {
                                 </SheetTrigger>
                                 <SheetContent side="left" className={cn("w-[280px] p-0 border-r bg-background flex flex-col", isSheetBlocked && "pointer-events-none")}>
                                     <SheetHeader className="p-4 pb-1 text-left">
-                                        <div className="flex items-center gap-3 mb-4">
+                                        <div className="flex flex-col items-center gap-1 mb-4">
                                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
-                                            <div>
-                                                <SheetTitle className="text-lg font-bold tracking-tight">{APP_CONFIG.name}</SheetTitle>
-                                                <SheetDescription className="text-[10px] font-medium text-muted-foreground">v{APP_CONFIG.version}</SheetDescription>
-                                            </div>
+                                            <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
+                                            <SheetTitle className="sr-only">{APP_CONFIG.name}</SheetTitle>
+                                            <SheetDescription className="sr-only">Menú de navegación del mensajero</SheetDescription>
                                         </div>
 
                                         <div className={cn(
@@ -552,7 +554,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden pt-12"
+                className="flex-1 flex flex-col overflow-x-hidden"
                 role="main"
             >
                 <Outlet />
