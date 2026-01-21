@@ -58,10 +58,8 @@ export default function ServiceDetails() {
         if (!service?.dealership) return
 
         const { latitude, longitude, address } = service.dealership
-        const toastId = toast.loading("Obteniendo ubicación precisa...")
 
         const triggerNavigation = (originLat?: number, originLng?: number) => {
-            toast.dismiss(toastId)
             openMaps(
                 { latitude, longitude, address },
                 originLat,
@@ -82,14 +80,12 @@ export default function ServiceDetails() {
                 },
                 (error) => {
                     logger.warn("High accuracy geolocation error", error)
-                    toast.loading("GPS lento, intentando ubicación aproximada...", { id: toastId })
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
                             triggerNavigation(pos.coords.latitude, pos.coords.longitude)
                         },
                         (err) => {
                             logger.warn("Low accuracy geolocation error", err)
-                            toast.warning("Ubicación no disponible. Abriendo mapa...", { id: toastId })
                             triggerNavigation()
                         },
                         {
