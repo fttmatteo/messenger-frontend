@@ -179,9 +179,9 @@ export default function MessengerLayout() {
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
-                            toast.warning('Señal GPS débil. Buscando ubicación...', { duration: 3000, id: 'messenger-gps-weak' })
+                            toast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
                         } else if (error.code === 3) {
-                            toast.warning('GPS tardando en responder. Reintentando...', { duration: 3000, id: 'messenger-gps-timeout' })
+                            toast.warning('GPS tardando en responder. Reintentando...', { id: 'messenger-gps-timeout' })
                         }
                     },
                     {

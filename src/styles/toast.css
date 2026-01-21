@@ -8,14 +8,10 @@
   --toast-width-desktop: 28rem;
 }
 
-/* Contenedor principal del toaster */
+/* Contenedor principal del toaster - Sin posiciones fijas para permitir configuración por prop */
 .sonner-toaster {
-  position: fixed;
   z-index: 99999 !important;
   pointer-events: none;
-  top: 1rem;
-  left: 0;
-  right: 0;
   padding: 0 1rem;
 }
 
@@ -23,13 +19,11 @@
   pointer-events: auto;
 }
 
-/* Toast base */
+/* Toast base - Sin márgenes fijos para permitir alineación por prop */
 .sonner-toast {
   will-change: transform, opacity;
   font-family: inherit;
   pointer-events: auto;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Estilos responsivos para el toast */

@@ -41,7 +41,6 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
 
         toast.error(msg, {
             id: toastId,
-            position: 'top-center',
             duration: 3000,
             className: 'bg-red-500 text-white border-red-600',
             descriptionClassName: 'text-white/90'
@@ -61,7 +60,6 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
 
         toast.success(msg, {
             id: toastId,
-            position: 'top-center',
             duration: 3000,
             className: 'bg-green-500 text-white border-green-600',
             descriptionClassName: 'text-white/90'

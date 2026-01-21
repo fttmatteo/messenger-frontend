@@ -70,7 +70,6 @@ export default function LoginMobile() {
                 const toastId = toast.error(
                     `Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.`,
                     {
-                        position: 'top-center',
                         duration: Infinity, // Persistente mientras esté bloqueado
                         closeButton: false,
                     }
@@ -87,7 +86,6 @@ export default function LoginMobile() {
                             toast.dismiss(toastId);
                         }
                         toast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
-                            position: 'top-center',
                             duration: 4000,
                         });
                         return;
@@ -98,7 +96,6 @@ export default function LoginMobile() {
                         `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
                         {
                             id: toastId,
-                            position: 'top-center',
                             duration: Infinity,
                             closeButton: false,
                         }
@@ -107,7 +104,6 @@ export default function LoginMobile() {
             } else {
                 // Otros errores
                 toast.error(getErrorMessage(error), {
-                    position: 'top-center',
                     duration: 4000
                 })
             }
