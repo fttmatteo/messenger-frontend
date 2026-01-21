@@ -85,6 +85,7 @@
 | Característica | Descripción |
 |:---|:---|
 | **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones realizadas sin conexión se persisten en `IndexedDB` y se reintentan automáticamente al restaurar la conexión. |
+| **Última Ubicación Inteligente** | Estrategia de rastreo optimizada que solo encola la ubicación más reciente cuando está offline, evitando desperdicio de ancho de banda y "teletransportes" al reconectar. |
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |
 

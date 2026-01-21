@@ -85,6 +85,7 @@
 | Feature | Description |
 |:---|:---|
 | **Smart Synchronization** | *Store-and-Forward* pattern implementation. Actions performed offline are persisted in `IndexedDB` and automatically retried when connection is restored. |
+| **Smart Last-Location** | Optimized tracking strategy that only queues the most recent location when offline, preventing bandwidth waste and "teleportation" artifacts upon reconnection. |
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
 

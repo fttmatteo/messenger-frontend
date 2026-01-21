@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import { Map } from "@/components/Map"
-import { useGoogleMap, Polyline } from "@react-google-maps/api"
+import { useGoogleMap } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { trackingApiService } from "@/services/tracking-api.service"
@@ -278,17 +278,6 @@ export function ServiceTrackingMap({
                         zoom={14}
                         onLoad={setMapInstance}
                     >
-
-                        {trackingPath.length > 1 && (
-                            <Polyline
-                                path={trackingPath}
-                                options={{
-                                    strokeColor: endColor,
-                                    strokeOpacity: 0.8,
-                                    strokeWeight: 4,
-                                }}
-                            />
-                        )}
 
 
                         {firstPosition && (
