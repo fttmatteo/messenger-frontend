@@ -37,23 +37,10 @@ test.describe('Smoke Tests - Happy Path', () => {
         });
 
         // Mock Turnstile globally before any script runs
-        await page.addInitScript(() => {
-            interface TurnstileMockOptions {
-                callback?: (token: string) => void;
-            }
-
-            interface MockWindow extends Window {
-                turnstile: {
-                    render: (container: string | HTMLElement, options: TurnstileMockOptions) => string;
-                    reset: (widgetId: string) => void;
-                    remove: (widgetId: string) => void;
-                };
-            }
-
-            (window as unknown as MockWindow).turnstile = {
-                render: (_container: string | HTMLElement, options: TurnstileMockOptions) => {
+        await page.addInitScript(`
+            window.turnstile = {
+                render: (container, options) => {
                     const id = "mock-widget-id";
-                    // Execute callback in next tick to simulate async behavior but very fast
                     setTimeout(() => {
                         if (options && options.callback) {
                             options.callback("mock-token");
@@ -64,7 +51,7 @@ test.describe('Smoke Tests - Happy Path', () => {
                 reset: () => { },
                 remove: () => { }
             };
-        });
+        `);
 
         // Intercept script request and trigger global load callback if defined
         await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
