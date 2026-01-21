@@ -344,7 +344,14 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-full w-full bg-background overflow-auto relative">
+        <div
+            className="flex flex-col h-full w-full bg-background overflow-auto relative"
+            style={{
+                paddingLeft: 'env(safe-area-inset-left)',
+                paddingRight: 'env(safe-area-inset-right)',
+                paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
+        >
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
@@ -354,6 +361,7 @@ export default function MessengerLayout() {
             <header
                 className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm"
                 role="banner"
+                style={{ paddingTop: 'env(safe-area-inset-top)' }}
             >
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none">

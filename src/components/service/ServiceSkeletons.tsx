@@ -220,7 +220,7 @@ export function UpdateServiceStatusSkeleton() {
             </div>
 
             {/* Fixed Bottom Action Skeleton */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md">
+            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
                 <Skeleton static className="w-full h-14 rounded-2xl bg-muted/30" />
             </div>
         </div>
@@ -256,7 +256,7 @@ export function CreateServiceSkeleton() {
             </div>
 
             {/* Fixed Bottom Action Skeleton */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md">
+            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
                 <div className="flex gap-4">
                     <Skeleton static className="h-12 w-28 rounded-2xl bg-muted/20" />
                     <Skeleton static className="flex-1 h-12 rounded-2xl bg-muted/30" />
