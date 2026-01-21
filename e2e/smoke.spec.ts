@@ -36,32 +36,37 @@ test.describe('Smoke Tests - Happy Path', () => {
             }
         });
 
-        // Mock Turnstile script to auto-verify in tests
+        // Mock Turnstile globally before any script runs
+        await page.addInitScript(() => {
+            (window as any).turnstile = {
+                render: (container: any, options: any) => {
+                    const id = "mock-widget-id";
+                    // Execute callback in next tick to simulate async behavior but very fast
+                    setTimeout(() => {
+                        if (options && options.callback) {
+                            options.callback("mock-token");
+                        }
+                    }, 0);
+                    return id;
+                },
+                reset: () => { },
+                remove: () => { }
+            };
+        });
+
+        // Intercept script request and trigger global load callback if defined
         await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/javascript',
-                body: `
-                    window.turnstile = {
-                        render: (container, options) => {
-                            const id = "mock-widget-id";
-                            setTimeout(() => {
-                                if (options.callback) options.callback("mock-token");
-                            }, 100);
-                            return id;
-                        },
-                        reset: () => {},
-                        remove: () => {}
-                    };
-                    if (window.onTurnstileLoad) window.onTurnstileLoad();
-                `
+                body: 'if (window.onTurnstileLoad) window.onTurnstileLoad();'
             });
         });
     });
 
     test('should login successfully as admin', async ({ page }) => {
         // 1. Visit login page
-        await page.goto('/login', { waitUntil: 'networkidle' });
+        await page.goto('/login');
         await expect(page).toHaveTitle(/PLAK/);
         await expect(page.getByText('Inicio de sesión')).toBeVisible();
 
@@ -80,9 +85,14 @@ test.describe('Smoke Tests - Happy Path', () => {
         });
 
         // 3. Fill and submit login form
+        // Wait for button to be enabled (Turnstile verification)
+        const submitBtn = page.getByRole('button', { name: 'Iniciar sesión' });
+
         await page.getByPlaceholder('Ingrese su número de documento').fill('123456');
         await page.getByPlaceholder('Ingrese su contraseña').fill('password123');
-        await page.getByRole('button', { name: 'Iniciar sesión' }).click();
+
+        // Playwright click() will wait for the button to be enabled automatically
+        await submitBtn.click();
 
         // 4. Wait for redirection and dashboard to load
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
@@ -102,7 +112,7 @@ test.describe('Smoke Tests - Happy Path', () => {
 
     test('should load monitoring map', async ({ page }) => {
         // 1. Perform login
-        await page.goto('/login', { waitUntil: 'networkidle' });
+        await page.goto('/login');
         await page.route('**/auth/check', async (route) => {
             await route.fulfill({
                 status: 200,
@@ -118,7 +128,7 @@ test.describe('Smoke Tests - Happy Path', () => {
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
 
         // 2. Navigate to Tracking or Monitoreo page
-        await page.goto('/admin/tracking', { waitUntil: 'networkidle' });
+        await page.goto('/admin/tracking');
 
         // 3. Simple check: we're on an admin page and not on login
         await expect(page).toHaveURL(/\/admin/);
@@ -127,7 +137,7 @@ test.describe('Smoke Tests - Happy Path', () => {
 
     test('should create a new dealership successfully', async ({ page }) => {
         // 1. Login
-        await page.goto('/login', { waitUntil: 'networkidle' });
+        await page.goto('/login');
         await page.route('**/auth/check', async (route) => {
             await route.fulfill({
                 status: 200,
@@ -143,7 +153,7 @@ test.describe('Smoke Tests - Happy Path', () => {
         await page.waitForURL(/^(?!.*login)/, { timeout: 30000 });
 
         // 2. Navigate to Create Dealership
-        await page.goto('/admin/concesionarios/crear', { waitUntil: 'networkidle' });
+        await page.goto('/admin/concesionarios/crear');
 
         // 3. Check form is visible (simple smoke test)
         await expect(page).toHaveURL(/concesionarios\/crear/);
