@@ -120,10 +120,7 @@ export default function MessengerDashboard() {
                 />
             </div>
 
-            <div
-                className="fixed left-1/2 -translate-x-1/2 z-50 animate-in zoom-in slide-in-from-bottom-10 duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"
-                style={{ bottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
-            >
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in zoom-in slide-in-from-bottom-10 duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
                 <Button
                     onClick={() => navigate('/messenger/crear')}
                     className="h-14 w-14 rounded-full bg-primary shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-primary/20 hover:scale-110 active:scale-90 transition-all duration-300 group"
@@ -136,10 +133,7 @@ export default function MessengerDashboard() {
             </div>
 
             {error && !loading && (
-                <div
-                    className="fixed left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-lg z-40 animate-in fade-in slide-in-from-bottom-2"
-                    style={{ bottom: 'calc(env(safe-area-inset-bottom) + 6rem)' }}
-                >
+                <div className="fixed bottom-24 left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-lg z-40 animate-in fade-in slide-in-from-bottom-2">
                     <p className="text-red-600 dark:text-red-400 text-sm text-center font-medium">
                         {error}
                     </p>
