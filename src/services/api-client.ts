@@ -33,9 +33,8 @@ apiClient.interceptors.request.use(
         const correlationId = crypto.randomUUID();
         config.headers['X-Correlation-Id'] = correlationId;
 
-        // Fallback: Si el entorno ha guardado un token (porque las cookies fallaron o es Safari),
-        // lo enviamos explícitamente en el header.
-        const token = sessionStorage.getItem('accessToken');
+        // Fallback: Si el entorno ha guardado un token, lo enviamos explícitamente en el header.
+        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -59,9 +58,11 @@ apiClient.interceptors.response.use(
         if (response.data) {
             if (response.data.accessToken) {
                 localStorage.setItem('accessToken', response.data.accessToken);
+                sessionStorage.setItem('accessToken', response.data.accessToken);
             }
             if (response.data.refreshToken) {
                 localStorage.setItem('refreshToken', response.data.refreshToken);
+                sessionStorage.setItem('refreshToken', response.data.refreshToken);
             }
         }
         return response;
