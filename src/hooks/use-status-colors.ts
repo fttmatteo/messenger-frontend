@@ -8,7 +8,7 @@ import { StatusColorContext, type StatusColorContextType } from '@/context/Statu
 export function useStatusColors(): StatusColorContextType {
     const context = useContext(StatusColorContext)
     if (context === undefined) {
-        throw new Error('useStatusColors must be used within a StatusColorProvider')
+        throw new Error('useStatusColors debe ser usado dentro de un StatusColorProvider')
     }
     return context
 }

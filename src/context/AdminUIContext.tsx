@@ -93,7 +93,7 @@ export const AdminUIProvider: React.FC<{ children: ReactNode }> = ({ children })
 export const useAdminUI = () => {
     const context = useContext(AdminUIContext);
     if (context === undefined) {
-        throw new Error('useAdminUI must be used within an AdminUIProvider');
+        throw new Error('useAdminUI debe ser usado dentro de un AdminUIProvider');
     }
     return context;
 };
