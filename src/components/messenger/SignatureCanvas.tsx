@@ -46,7 +46,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
         const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
-        const [isCameraGenerating, setIsCameraGenerating] = useState(false)
+        const [isCameraBusy, setIsCameraBusy] = useState(false)
 
         useEffect(() => {
             const canvas = savedCanvasRef.current
@@ -63,7 +63,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
         const initFullscreenCanvas = useCallback(() => {
             const canvas = fullscreenCanvasRef.current
-            if (!canvas || canvasInitializedRef.current) return
+            if (!canvas) return
 
             const container = canvas.parentElement
             if (!container) return
@@ -74,8 +74,15 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             if (w === 0 || h === 0) return
 
             const dpr = window.devicePixelRatio || 1
-            canvas.width = w * dpr
-            canvas.height = h * dpr
+
+            // Si el canvas ya tiene el tamaño correcto (multiplicado por dpr), no lo reiniciamos
+            // Esto evita que se borre el dibujo si hay micro-ajustes de layout
+            if (canvas.width === Math.round(w * dpr) && canvas.height === Math.round(h * dpr) && canvasInitializedRef.current) {
+                return
+            }
+
+            canvas.width = Math.round(w * dpr)
+            canvas.height = Math.round(h * dpr)
             canvas.style.width = `${w}px`
             canvas.style.height = `${h}px`
 
@@ -84,7 +91,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
             ctx.scale(dpr, dpr)
             ctx.strokeStyle = '#000000'
-            ctx.lineWidth = 3
+            ctx.lineWidth = 2.5
             ctx.lineCap = 'round'
             ctx.lineJoin = 'round'
             ctx.fillStyle = '#ffffff'
@@ -106,7 +113,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
             const observer = new ResizeObserver((entries) => {
                 for (const entry of entries) {
-                    if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+                    if (entry.contentRect.width > 20 && entry.contentRect.height > 20) {
                         initFullscreenCanvas()
                     }
                 }
@@ -120,24 +127,26 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             return () => observer.disconnect()
         }, [isOpen, initFullscreenCanvas])
 
-        // Sincronizar estado de generación de la cámara
+        // Sincronizar estado de generación y captura de la cámara
         useEffect(() => {
             if (!isOpen) return
 
             const interval = setInterval(() => {
                 if (cameraRef.current) {
                     const generating = cameraRef.current.isGenerating()
-                    if (generating !== isCameraGenerating) {
-                        setIsCameraGenerating(generating)
+                    const capturing = cameraRef.current.isCapturing()
+                    const busy = generating || capturing
+                    if (busy !== isCameraBusy) {
+                        setIsCameraBusy(busy)
                     }
                 }
             }, 200)
 
             return () => {
                 clearInterval(interval)
-                setIsCameraGenerating(false)
+                setIsCameraBusy(false)
             }
-        }, [isOpen, isCameraGenerating])
+        }, [isOpen, isCameraBusy])
 
         const getCoords = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             const canvas = fullscreenCanvasRef.current
@@ -218,7 +227,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         }
 
         const confirmSignature = () => {
-            if (isCameraGenerating) return
+            if (isCameraBusy) return
 
             const fullCanvas = fullscreenCanvasRef.current
             const savedCanvas = savedCanvasRef.current
@@ -367,9 +376,9 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <Eraser className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Limpiar
                             </Button>
-                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn || isCameraGenerating}>
+                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn || isCameraBusy}>
                                 <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                {isCameraGenerating ? 'Procesando...' : 'Confirmar firma'}
+                                {isCameraBusy ? 'Procesando...' : 'Confirmar firma'}
                             </Button>
                         </div>
                     </DialogContent>
