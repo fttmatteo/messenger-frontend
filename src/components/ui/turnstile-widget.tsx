@@ -156,13 +156,12 @@ export function TurnstileWidget({
                 checkAndRender();
             }
         }
-
         // Cleanup: Solo remover si el componente se desmonta DE VERDAD
         return () => {
             // No removemos el widget aquí para evitar parpadeos en re-renders
             // El script se queda cargado y el contenedor se mantiene si el componente no cambia
         };
-    }, [theme, size, handleVerify, handleError, handleExpire]);
+    }, [theme, size, handleVerify, handleError, handleExpire, onWidgetId]);
 
     // Cleanup al desmontar el componente
     useEffect(() => {

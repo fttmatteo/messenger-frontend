@@ -18,6 +18,7 @@ const GIF_GENERATION_TIMEOUT_MS = 5000
 export interface SignatureCameraCaptureRef {
     getGif: () => Promise<Blob | null>
     isReady: () => boolean
+    isGenerating: () => boolean
     startCapture: () => void
 }
 
@@ -44,17 +45,6 @@ const SignatureCameraCapture = forwardRef<
     const [gifBlob, setGifBlob] = useState<Blob | null>(null)
     const [gifUrl, setGifUrl] = useState<string | null>(null)
     const [cameraError, setCameraError] = useState<string | null>(null)
-
-
-    useImperativeHandle(ref, () => ({
-        getGif: async () => gifBlob,
-        isReady: () => gifBlob !== null,
-        startCapture: () => {
-            if (!isCapturing && !gifUrl) {
-                startCapture()
-            }
-        }
-    }))
 
 
     useEffect(() => {
@@ -249,7 +239,18 @@ const SignatureCameraCapture = forwardRef<
 
 
         await generateGif(capturedFrames)
-    }, [isCapturing, generateGif])
+    }, [isCapturing, generateGif, setCameraError])
+
+    useImperativeHandle(ref, () => ({
+        getGif: async () => gifBlob,
+        isReady: () => gifBlob !== null,
+        isGenerating: () => isGenerating,
+        startCapture: () => {
+            if (!isCapturing && !gifUrl) {
+                startCapture()
+            }
+        }
+    }), [gifBlob, isGenerating, isCapturing, gifUrl, startCapture])
 
     function handleRetry() {
         if (gifUrl) {
