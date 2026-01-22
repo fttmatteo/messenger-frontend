@@ -58,10 +58,10 @@ apiClient.interceptors.response.use(
         // Si la respuesta trae tokens en el body, lo guardamos como fallback
         if (response.data) {
             if (response.data.accessToken) {
-                localStorage.setItem('accessToken', response.data.accessToken);
+                sessionStorage.setItem('accessToken', response.data.accessToken);
             }
             if (response.data.refreshToken) {
-                localStorage.setItem('refreshToken', response.data.refreshToken);
+                sessionStorage.setItem('refreshToken', response.data.refreshToken);
             }
         }
         return response;
