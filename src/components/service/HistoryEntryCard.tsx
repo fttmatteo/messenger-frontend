@@ -89,7 +89,7 @@ export function HistoryEntryCard({
                                 {entry.signature?.gifPath && (
                                     <div
                                         className="relative group cursor-pointer h-16 w-24 flex items-center justify-center border-r border-border/30"
-                                        onClick={() => handleImageClick(entry.signature!.gifPath!)}
+                                        onClick={() => entry.signature?.gifPath && handleImageClick(entry.signature.gifPath)}
                                     >
                                         <img
                                             src={getImageUrl(entry.signature.gifPath)}
