@@ -80,6 +80,14 @@ export function TurnstileWidget({
     }, []);
 
     useEffect(() => {
+        // Bypass para desarrollo si se usa la clave de prueba de Cloudflare
+        // Site key: 1x00000000000000000000AA
+        if (SITE_KEY === '1x00000000000000000000AA') {
+            console.log('TurnstileWidget: Bypass detectado (usando clave de prueba de Cloudflare)');
+            onVerifyRef.current('dummy-dev-token');
+            return;
+        }
+
         // Verificar que tenemos la site key
         if (!SITE_KEY) {
             console.error('TurnstileWidget: VITE_TURNSTILE_SITE_KEY no está configurada');

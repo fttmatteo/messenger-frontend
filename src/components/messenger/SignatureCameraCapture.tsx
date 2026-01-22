@@ -18,13 +18,12 @@ const GIF_GENERATION_TIMEOUT_MS = 5000
 export interface SignatureCameraCaptureRef {
     getGif: () => Promise<Blob | null>
     isReady: () => boolean
-    isGenerating: () => boolean
-    isCapturing: () => boolean
     startCapture: () => void
 }
 
 interface SignatureCameraCaptureProps {
     onGifGenerated?: (gif: Blob | null) => void
+    onRetry?: () => void
     className?: string
 }
 
@@ -35,7 +34,7 @@ interface SignatureCameraCaptureProps {
 const SignatureCameraCapture = forwardRef<
     SignatureCameraCaptureRef,
     SignatureCameraCaptureProps
->(({ onGifGenerated, className }, ref) => {
+>(({ onGifGenerated, onRetry, className }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
@@ -46,6 +45,17 @@ const SignatureCameraCapture = forwardRef<
     const [gifBlob, setGifBlob] = useState<Blob | null>(null)
     const [gifUrl, setGifUrl] = useState<string | null>(null)
     const [cameraError, setCameraError] = useState<string | null>(null)
+
+
+    useImperativeHandle(ref, () => ({
+        getGif: async () => gifBlob,
+        isReady: () => gifBlob !== null,
+        startCapture: () => {
+            if (!isCapturing && !gifUrl) {
+                startCapture()
+            }
+        }
+    }))
 
 
     useEffect(() => {
@@ -236,21 +246,11 @@ const SignatureCameraCapture = forwardRef<
             capturedFrames.push(imageData)
         }
 
-        await generateGif(capturedFrames)
         setIsCapturing(false)
-    }, [isCapturing, generateGif, setCameraError])
 
-    useImperativeHandle(ref, () => ({
-        getGif: async () => gifBlob,
-        isReady: () => gifBlob !== null,
-        isGenerating: () => isGenerating,
-        isCapturing: () => isCapturing,
-        startCapture: () => {
-            if (!isCapturing && !gifUrl) {
-                startCapture()
-            }
-        }
-    }), [gifBlob, isGenerating, isCapturing, gifUrl, startCapture])
+
+        await generateGif(capturedFrames)
+    }, [isCapturing, generateGif])
 
     function handleRetry() {
         if (gifUrl) {
@@ -258,6 +258,7 @@ const SignatureCameraCapture = forwardRef<
         }
         setGifBlob(null)
         setGifUrl(null)
+        onRetry?.()
     }
 
 
