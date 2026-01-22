@@ -19,6 +19,7 @@ export interface SignatureCameraCaptureRef {
     getGif: () => Promise<Blob | null>
     isReady: () => boolean
     isGenerating: () => boolean
+    isCapturing: () => boolean
     startCapture: () => void
 }
 
@@ -235,16 +236,15 @@ const SignatureCameraCapture = forwardRef<
             capturedFrames.push(imageData)
         }
 
-        setIsCapturing(false)
-
-
         await generateGif(capturedFrames)
+        setIsCapturing(false)
     }, [isCapturing, generateGif, setCameraError])
 
     useImperativeHandle(ref, () => ({
         getGif: async () => gifBlob,
         isReady: () => gifBlob !== null,
         isGenerating: () => isGenerating,
+        isCapturing: () => isCapturing,
         startCapture: () => {
             if (!isCapturing && !gifUrl) {
                 startCapture()
