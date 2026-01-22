@@ -64,7 +64,7 @@ export function useNavigationGuard() {
 
         // Si estamos en login o raíz, ir al dashboard
         if (path === '/login' || path === '/') {
-            navigate('/messenger', { replace: true });
+            navigate('/', { replace: true });
             return;
         }
 
@@ -81,7 +81,7 @@ export function useNavigationGuard() {
         if (parentRoute) {
             navigate(parentRoute, { replace: true });
         } else {
-            navigate('/messenger', { replace: true });
+            navigate('/', { replace: true });
         }
     }, [navigate]);
 
@@ -116,6 +116,6 @@ export function useNavigationGuard() {
  * reemplazando el historial para evitar retrocesos al login.
  */
 export function navigateAfterLogin(navigate: ReturnType<typeof useNavigate>) {
-    window.history.replaceState(null, '', '/messenger');
-    navigate('/messenger', { replace: true });
+    window.history.replaceState(null, '', '/');
+    navigate('/', { replace: true });
 }

@@ -98,12 +98,19 @@ function RoleBasedRedirect() {
  * de componentes y aplica guardias de protección y tipo de dispositivo.
  */
 export function AppRoutes() {
+    const { user } = useAuth();
     const isMobile = useIsMobile()
 
     const renderAdminRoute = () => {
         if (isMobile === undefined) {
             return <PageLoader />;
         }
+
+        const isAdmin = user?.role?.toUpperCase().includes('ADMIN');
+        if (!isAdmin) {
+            return <Navigate to="/messenger" replace />;
+        }
+
         return isMobile ? <DesktopOnlyGuard /> : <AdminLayout />;
     };
 
@@ -111,6 +118,12 @@ export function AppRoutes() {
         if (isMobile === undefined) {
             return <PageLoader />;
         }
+
+        const isAdmin = user?.role?.toUpperCase().includes('ADMIN');
+        if (isAdmin && isMobile) {
+            return <Navigate to="/admin" replace />;
+        }
+
         return !isMobile ? <MobileOnlyGuard /> : <MessengerLayout />;
     };
 
