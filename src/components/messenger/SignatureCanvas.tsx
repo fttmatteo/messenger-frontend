@@ -142,11 +142,14 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
 
             if (enableCamera && cameraRef.current) {
-                setIsGifProcessing(true)
-                setSavedGifBlob(null)
-                cameraRef.current.startCapture()
+                // Solo reiniciar si no hay un GIF guardado y no se está procesando ya uno
+                if (!savedGifBlob && !isGifProcessing) {
+                    setIsGifProcessing(true)
+                    setSavedGifBlob(null)
+                    cameraRef.current.startCapture()
+                }
             }
-        }, [getCoords, enableCamera])
+        }, [getCoords, enableCamera, savedGifBlob, isGifProcessing])
 
         const handleMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             if (!isDrawingRef.current) return
@@ -184,8 +187,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             ctx.strokeStyle = '#000000'
             ctx.lineWidth = 3
             ctx.lineCap = 'round'
-            ctx.lineJoin = 'round'
-
             setTempHasDrawn(false)
         }
 
