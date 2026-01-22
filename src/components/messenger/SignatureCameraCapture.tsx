@@ -23,6 +23,7 @@ export interface SignatureCameraCaptureRef {
 
 interface SignatureCameraCaptureProps {
     onGifGenerated?: (gif: Blob | null) => void
+    onRetry?: () => void
     className?: string
 }
 
@@ -33,7 +34,7 @@ interface SignatureCameraCaptureProps {
 const SignatureCameraCapture = forwardRef<
     SignatureCameraCaptureRef,
     SignatureCameraCaptureProps
->(({ onGifGenerated, className }, ref) => {
+>(({ onGifGenerated, onRetry, className }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
@@ -257,6 +258,7 @@ const SignatureCameraCapture = forwardRef<
         }
         setGifBlob(null)
         setGifUrl(null)
+        onRetry?.()
     }
 
 

@@ -46,6 +46,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
         const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
+        const [isGifProcessing, setIsGifProcessing] = useState(false)
 
 
         useEffect(() => {
@@ -141,6 +142,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
 
             if (enableCamera && cameraRef.current) {
+                setIsGifProcessing(true)
+                setSavedGifBlob(null)
                 cameraRef.current.startCapture()
             }
         }, [getCoords, enableCamera])
@@ -301,7 +304,12 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                         onGifGenerated={(gif) => {
                                             logger.info('onGifGenerated received', { size: gif?.size })
                                             setSavedGifBlob(gif)
+                                            setIsGifProcessing(false)
                                             onGifGenerated?.(gif)
+                                        }}
+                                        onRetry={() => {
+                                            setIsGifProcessing(true)
+                                            setSavedGifBlob(null)
                                         }}
                                         className="h-full"
                                     />
@@ -334,7 +342,11 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <Eraser className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Limpiar
                             </Button>
-                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn}>
+                            <Button
+                                onClick={confirmSignature}
+                                className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
+                                disabled={!tempHasDrawn || !savedGifBlob || isGifProcessing}
+                            >
                                 <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Confirmar firma
                             </Button>
