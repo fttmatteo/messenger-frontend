@@ -20,6 +20,7 @@ import { getErrorMessage } from "@/lib/error-utils"
 import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
 import { TurnstileWidget } from "@/components/ui/turnstile-widget"
+import { useTurnstileReset } from "@/hooks/use-turnstile-reset"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -44,6 +45,8 @@ export default function Login() {
     const [logoLoaded, setLogoLoaded] = useState(false)
     const [logoError, setLogoError] = useState(false)
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+    const [turnstileWidgetId, setTurnstileWidgetId] = useState<string | null>(null)
+    const resetTurnstile = useTurnstileReset(turnstileWidgetId)
 
     const {
         register,
@@ -63,6 +66,7 @@ export default function Login() {
 
     const handleTurnstileError = useCallback(() => {
         setTurnstileToken(null)
+        toast.error("Error al cargar la verificación de seguridad. Por favor, verifica tu conexión o deshabilita bloqueadores de anuncios.")
     }, [])
 
     const handleTurnstileExpire = useCallback(() => {
@@ -84,6 +88,10 @@ export default function Login() {
             })
             navigate("/", { replace: true })
         } catch (error) {
+            // Resetear Turnstile en caso de error para obtener un nuevo token
+            resetTurnstile()
+            setTurnstileToken(null)
+
             const err = error as { statusCode?: number }
 
             // Manejar rate limiting (429)
@@ -286,6 +294,7 @@ export default function Login() {
                         onVerify={handleTurnstileVerify}
                         onError={handleTurnstileError}
                         onExpire={handleTurnstileExpire}
+                        onWidgetId={setTurnstileWidgetId}
                         theme="auto"
                     />
                 </div>

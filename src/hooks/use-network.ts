@@ -9,7 +9,7 @@ export function useNetwork() {
     const context = useContext(NetworkContext)
 
     if (!context) {
-        throw new Error('useNetwork must be used within a NetworkProvider')
+        throw new Error('useNetwork debe ser usado dentro de un NetworkProvider')
     }
 
     return context

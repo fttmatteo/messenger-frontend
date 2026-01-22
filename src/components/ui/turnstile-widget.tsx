@@ -28,6 +28,7 @@ interface TurnstileWidgetProps {
     onVerify: (token: string) => void;
     onError?: () => void;
     onExpire?: () => void;
+    onWidgetId?: (widgetId: string) => void;
     theme?: 'light' | 'dark' | 'auto';
     size?: 'normal' | 'compact';
     className?: string;
@@ -44,6 +45,7 @@ export function TurnstileWidget({
     onVerify,
     onError,
     onExpire,
+    onWidgetId,
     theme = 'auto',
     size = 'normal',
     className = '',
@@ -51,6 +53,8 @@ export function TurnstileWidget({
     const containerRef = useRef<HTMLDivElement>(null);
     const widgetIdRef = useRef<string | null>(null);
     const scriptLoadedRef = useRef(false);
+    const retryCountRef = useRef(0);
+    const maxRetries = 3;
 
     // Usar refs para los callbacks para evitar recrear el widget si cambian
     const onVerifyRef = useRef(onVerify);
@@ -87,7 +91,7 @@ export function TurnstileWidget({
 
             // Renderizar nuevo widget si no existe
             if (!widgetIdRef.current) {
-                widgetIdRef.current = window.turnstile.render(containerRef.current, {
+                const id = window.turnstile.render(containerRef.current, {
                     sitekey: SITE_KEY,
                     callback: handleVerify,
                     'error-callback': handleError,
@@ -96,6 +100,10 @@ export function TurnstileWidget({
                     size,
                     appearance: 'always',
                 });
+                widgetIdRef.current = id;
+                if (onWidgetId) {
+                    onWidgetId(id);
+                }
             }
         };
 
@@ -110,16 +118,33 @@ export function TurnstileWidget({
 
             if (!existingScript && !scriptLoadedRef.current) {
                 scriptLoadedRef.current = true;
-                const script = document.createElement('script');
-                script.src = `${TURNSTILE_SCRIPT_URL}?onload=onTurnstileLoad`;
-                script.async = true;
-                script.defer = true;
-                window.onTurnstileLoad = renderWidget;
-                script.onerror = () => {
-                    console.error('TurnstileWidget: Error al cargar el script de Turnstile');
-                    handleError();
+
+                const loadScript = () => {
+                    const script = document.createElement('script');
+                    script.src = `${TURNSTILE_SCRIPT_URL}?onload=onTurnstileLoad`;
+                    script.async = true;
+                    script.defer = true;
+                    window.onTurnstileLoad = renderWidget;
+
+                    script.onerror = () => {
+                        console.error(`TurnstileWidget: Error al cargar el script de Turnstile (Intento ${retryCountRef.current + 1}/${maxRetries})`);
+                        script.remove(); // Limpiar script fallido
+
+                        if (retryCountRef.current < maxRetries) {
+                            retryCountRef.current++;
+                            setTimeout(() => {
+                                // Resetear flag para permitir reintento si es necesario, 
+                                // aunque aquí estamos reintentando manualmente
+                                loadScript();
+                            }, 1000 * retryCountRef.current); // Backoff exponencial simple: 0s, 1s, 2s... no, espera. 1s, 2s, 3s.
+                        } else {
+                            handleError();
+                        }
+                    };
+                    document.head.appendChild(script);
                 };
-                document.head.appendChild(script);
+
+                loadScript();
             } else if (existingScript) {
                 const checkAndRender = () => {
                     if (window.turnstile) {
