@@ -36,7 +36,7 @@ describe('AuthContext', () => {
         it('debe lanzar un error cuando se usa fuera de AuthProvider', () => {
             expect(() => {
                 renderHook(() => useAuth())
-            }).toThrow('useAuth must be used within an AuthProvider')
+            }).toThrow('useAuth debe ser usado dentro de un AuthProvider')
         })
 
         it('debe devolver el estado inicial no autenticado', async () => {
