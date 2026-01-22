@@ -34,7 +34,7 @@ export const authService = {
      */
     async refreshToken(): Promise<void> {
         // Enviar refresh token en body como fallback si existe en storage (cookies bloqueadas)
-        const fallbackToken = sessionStorage.getItem('refreshToken');
+        const fallbackToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
         await apiClient.post('/auth/refresh', fallbackToken ? { refreshToken: fallbackToken } : {});
     },
 
@@ -59,9 +59,12 @@ export const authService = {
             sessionStorage.removeItem(key);
         });
 
-        // Limpiar token fallback
-        sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
+        // Limpiar tokens
+        const tokenKeys = ['accessToken', 'refreshToken'];
+        tokenKeys.forEach(key => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+        });
     },
 
     /**
@@ -79,7 +82,7 @@ export const authService = {
      * @returns El token de acceso como string o null.
      */
     getToken() {
-        return sessionStorage.getItem('accessToken');
+        return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
     },
 
     /**
