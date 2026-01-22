@@ -46,7 +46,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
         const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
-
+        const [isCameraGenerating, setIsCameraGenerating] = useState(false)
 
         useEffect(() => {
             const canvas = savedCanvasRef.current
@@ -94,19 +94,50 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             setTempHasDrawn(false)
         }, [])
 
+        // Reemplazar los múltiples setTimeout por un ResizeObserver para una inicialización más profesional
         useEffect(() => {
             if (!isOpen) {
                 canvasInitializedRef.current = false
                 return
             }
 
-            const attempts = [50, 150, 300]
-            const timers = attempts.map(delay =>
-                setTimeout(initFullscreenCanvas, delay)
-            )
+            const canvas = fullscreenCanvasRef.current
+            if (!canvas) return
 
-            return () => timers.forEach(t => clearTimeout(t))
+            const observer = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+                        initFullscreenCanvas()
+                    }
+                }
+            })
+
+            const container = canvas.parentElement
+            if (container) {
+                observer.observe(container)
+            }
+
+            return () => observer.disconnect()
         }, [isOpen, initFullscreenCanvas])
+
+        // Sincronizar estado de generación de la cámara
+        useEffect(() => {
+            if (!isOpen) return
+
+            const interval = setInterval(() => {
+                if (cameraRef.current) {
+                    const generating = cameraRef.current.isGenerating()
+                    if (generating !== isCameraGenerating) {
+                        setIsCameraGenerating(generating)
+                    }
+                }
+            }, 200)
+
+            return () => {
+                clearInterval(interval)
+                setIsCameraGenerating(false)
+            }
+        }, [isOpen, isCameraGenerating])
 
         const getCoords = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             const canvas = fullscreenCanvasRef.current
@@ -187,6 +218,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         }
 
         const confirmSignature = () => {
+            if (isCameraGenerating) return
+
             const fullCanvas = fullscreenCanvasRef.current
             const savedCanvas = savedCanvasRef.current
             if (!fullCanvas || !savedCanvas) return
@@ -334,9 +367,9 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <Eraser className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Limpiar
                             </Button>
-                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn}>
+                            <Button onClick={confirmSignature} className="flex-1 h-11 sm:h-12 text-sm sm:text-base" disabled={!tempHasDrawn || isCameraGenerating}>
                                 <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                Confirmar firma
+                                {isCameraGenerating ? 'Procesando...' : 'Confirmar firma'}
                             </Button>
                         </div>
                     </DialogContent>
