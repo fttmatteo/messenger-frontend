@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
 
 type SortDirection = "asc" | "desc"
@@ -61,9 +61,8 @@ export function useServices({ searchQuery }: UseServicesOptions = {}): UseServic
             setTotalPages(response.totalPages)
             setTotalElements(response.totalElements)
         } catch (error) {
-            toast.error("Error al cargar servicios", {
-                description: getErrorMessage(error),
-                id: "error-cargar-servicios"
+            showToast.error("Error al cargar servicios", {
+                description: getErrorMessage(error)
             })
         } finally {
             setLoading(false)

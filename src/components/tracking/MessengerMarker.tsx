@@ -30,7 +30,7 @@ export function MessengerMarker({
                 background: color,
                 borderColor: 'white',
                 glyphColor: 'white',
-            }).element
+            })
         })
 
         markerRef.current = marker

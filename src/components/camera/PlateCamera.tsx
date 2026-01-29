@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, X, Upload } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { createLogger } from "@/utils/logger"
 
 const logger = createLogger('PlateCamera')
@@ -122,7 +122,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
             }
 
             setCameraError(errorMessage)
-            toast.error("Error de cámara", {
+            showToast.error("Error de cámara", {
                 description: errorMessage,
                 id: "error-camara"
             })
@@ -134,25 +134,51 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
         const canvas = canvasRef.current
 
         if (!video || !canvas) {
-            toast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
+            showToast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
             return
         }
 
         if (video.videoWidth === 0 || video.videoHeight === 0) {
-            toast.error("Error", { description: "El video aún no está listo", id: "error-video" })
+            showToast.error("Error", { description: "El video aún no está listo", id: "error-video" })
             return
         }
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        // Relación de aspecto del contenedor (4:3 como se define en la clase aspect-[4/3])
+        const targetAspectRatio = 4 / 3
 
-        const ctx = canvas.getContext('2d')
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        const videoAspectRatio = videoWidth / videoHeight
+
+        let sourceX = 0
+        let sourceY = 0
+        let sourceWidth = videoWidth
+        let sourceHeight = videoHeight
+
+        if (videoAspectRatio > targetAspectRatio) {
+            sourceWidth = videoHeight * targetAspectRatio
+            sourceX = (videoWidth - sourceWidth) / 2
+        } else {
+            sourceHeight = videoWidth / targetAspectRatio
+            sourceY = (videoHeight - sourceHeight) / 2
+        }
+
+        canvas.width = sourceWidth
+        canvas.height = sourceHeight
+
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) {
-            toast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
+            showToast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
             return
         }
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(
+            video,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, sourceWidth, sourceHeight
+        )
 
         canvas.toBlob((blob) => {
             if (blob) {
@@ -162,7 +188,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                 stopCamera()
                 onCapture(file, dataUrl)
             } else {
-                toast.error("Error al capturar foto", { id: "error-captura" })
+                showToast.error("Error al capturar foto", { id: "error-captura" })
             }
         }, 'image/jpeg', 0.9)
     }, [stopCamera, onCapture])
@@ -283,7 +309,7 @@ export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
         if (!file) return
 
         if (!file.type.startsWith('image/')) {
-            toast.error("Archivo inválido", {
+            showToast.error("Archivo inválido", {
                 description: "Por favor selecciona una imagen",
                 id: "error-archivo-invalido"
             })
@@ -291,7 +317,7 @@ export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            toast.error("Archivo muy grande", {
+            showToast.error("Archivo muy grande", {
                 description: "El tamaño máximo es 10MB",
                 id: "error-archivo-grande"
             })

@@ -1,5 +1,6 @@
-import { GoogleMap, useJsApiLoader, type Libraries } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
 import { memo, useCallback, useState } from 'react'
+import { MAP_LIBRARIES } from '@/lib/maps.constants'
 import { useTheme } from "next-themes"
 
 const containerStyle = {
@@ -12,7 +13,7 @@ const defaultCenter = {
     lng: -75.5812
 }
 
-const LIBRARIES: Libraries = ["marker"];
+
 type ColorScheme = 'DARK' | 'LIGHT' | 'FOLLOW_SYSTEM';
 
 interface MapProps {
@@ -35,7 +36,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: LIBRARIES,
+        libraries: MAP_LIBRARIES,
         version: 'weekly'
     })
 

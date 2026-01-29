@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 import { getErrorMessage } from '@/lib/error-utils'
 import { createLogger } from '@/utils/logger'
 
@@ -38,7 +38,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
     const startCamera = useCallback(async () => {
         if (photos.length >= maxPhotos) {
-            toast.error(`Máximo ${maxPhotos} fotos permitidas`)
+            showToast.error(`Máximo ${maxPhotos} fotos permitidas`)
             return
         }
 
@@ -71,7 +71,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         } catch (error) {
             logger.error('Error de cámara:', error)
             setCameraActive(false)
-            toast.error('Error de cámara', {
+            showToast.error('Error de cámara', {
                 description: getErrorMessage(error)
             })
         }
@@ -82,13 +82,44 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         const canvas = canvasRef.current
         if (!video || !canvas || !cameraReady) return
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        // Relación de aspecto del contenedor (16:9 como se define en la clase aspect-video)
+        const targetAspectRatio = 16 / 9
 
-        const ctx = canvas.getContext('2d')
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        const videoAspectRatio = videoWidth / videoHeight
+
+        let sourceX = 0
+        let sourceY = 0
+        let sourceWidth = videoWidth
+        let sourceHeight = videoHeight
+
+        // Calcular el recorte centrado (equivalente a object-cover)
+        if (videoAspectRatio > targetAspectRatio) {
+            // El video es más ancho que el objetivo: recortar los lados
+            sourceWidth = videoHeight * targetAspectRatio
+            sourceX = (videoWidth - sourceWidth) / 2
+        } else {
+            // El video es más alto que el objetivo: recortar arriba/abajo
+            sourceHeight = videoWidth / targetAspectRatio
+            sourceY = (videoHeight - sourceHeight) / 2
+        }
+
+        // Ajustar el canvas al tamaño del recorte (manteniendo calidad)
+        canvas.width = sourceWidth
+        canvas.height = sourceHeight
+
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) return
 
-        ctx.drawImage(video, 0, 0)
+        // Dibujar solo la parte recortada
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(
+            video,
+            sourceX, sourceY, sourceWidth, sourceHeight, // Fuente
+            0, 0, sourceWidth, sourceHeight              // Destino
+        )
 
         canvas.toBlob((blob) => {
             if (blob) {
@@ -105,7 +136,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
         const remainingSlots = maxPhotos - photos.length
         if (remainingSlots <= 0) {
-            toast.error(`Máximo ${maxPhotos} fotos permitidas`)
+            showToast.error(`Máximo ${maxPhotos} fotos permitidas`)
             return
         }
 

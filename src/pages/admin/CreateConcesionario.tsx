@@ -11,7 +11,8 @@ import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useState, useRef, useEffect } from "react"
 import { Map } from "@/components/Map"
-import { useGoogleMap } from "@react-google-maps/api"
+import { MAP_LIBRARIES } from "@/lib/maps.constants"
+import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
 import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
@@ -37,7 +38,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
                 background: '#10b981',
                 borderColor: 'white',
                 glyphColor: 'white',
-            }).element
+            })
         })
 
         markerRef.current = marker
@@ -64,6 +65,14 @@ export default function CreateConcesionario() {
     const [geocoding, setGeocoding] = useState(false)
     const [previewDone, setPreviewDone] = useState(false)
 
+    // Cargar la API de Google Maps a nivel de página para que el Geocoder esté disponible
+    const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        libraries: MAP_LIBRARIES,
+        version: 'weekly'
+    })
+
     const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
         defaultValues: {
@@ -79,10 +88,16 @@ export default function CreateConcesionario() {
 
     const handlePreviewLocation = async () => {
         if (!currentAddress || currentAddress.length < 5) return
+
+        if (!isMapsApiLoaded) {
+            setError("Cargando servicios de mapas... Por favor intenta de nuevo en un momento.")
+            return
+        }
+
         setGeocoding(true)
         try {
             if (!window.google?.maps?.Geocoder) {
-                setError("Servicio de geocodificación no disponible")
+                setError("Servicio de geocodificación no disponible en este momento")
                 setGeocoding(false)
                 return
             }
@@ -101,11 +116,11 @@ export default function CreateConcesionario() {
                 })
                 setPreviewDone(true)
             } else {
-                setError("No se encontraron coordenadas para esta dirección")
+                setError("No se encontraron coordenadas para esta dirección. Intenta ser más específico.")
             }
         } catch (error) {
             console.error("Geocoding error", error)
-            setError("Error obteniendo ubicación")
+            setError("Error obteniendo ubicación. Verifica tu conexión a internet.")
         } finally {
             setGeocoding(false)
         }

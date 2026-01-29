@@ -6,7 +6,7 @@ import { useStatusColors } from "@/hooks/use-status-colors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel, getStatusPillBackground } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { APP_CONFIG } from "@/lib/app-config"
@@ -92,7 +92,7 @@ export default function Configuracion() {
 
     const handleResetAll = () => {
         resetToDefaults()
-        toast.success('Colores restaurados a valores por defecto', { id: 'reset-colors-success' })
+        showToast.success('Colores restaurados a valores por defecto', { id: 'reset-colors-success' })
     }
 
     return (

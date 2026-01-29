@@ -73,7 +73,7 @@ export const PulsingMarker = memo(function PulsingMarker({
             glyphColor: 'white',
             scale: isActive ? 1.2 : 1,
         })
-        container.appendChild(pinElement.element)
+        container.appendChild(pinElement as unknown as Node)
 
 
         if (isSelected) {
@@ -129,7 +129,7 @@ export const PulsingMarker = memo(function PulsingMarker({
             zIndex: isSelected ? 100 : undefined
         })
 
-        marker.addListener('click', () => {
+        marker.addListener('gmp-click', () => {
             onClick(messenger)
         })
 

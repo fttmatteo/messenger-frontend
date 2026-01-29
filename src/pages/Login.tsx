@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
 import { Eye, EyeOff, HelpCircle, Package } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import logo from "@/assets/logo.png"
@@ -66,7 +66,7 @@ export default function Login() {
 
     const handleTurnstileError = useCallback(() => {
         setTurnstileToken(null)
-        toast.error("Error al cargar la verificación de seguridad. Por favor, verifica tu conexión o deshabilita bloqueadores de anuncios.")
+        showToast.error("Error al cargar la verificación de seguridad. Por favor, verifica tu conexión o deshabilita bloqueadores de anuncios.")
     }, [])
 
     const handleTurnstileExpire = useCallback(() => {
@@ -75,7 +75,7 @@ export default function Login() {
 
     const onSubmit = async (data: LoginFormValues) => {
         if (!turnstileToken) {
-            toast.error("Por favor, espera a que se complete la verificación de seguridad.")
+            showToast.error("Por favor, espera a que se complete la verificación de seguridad.")
             return
         }
 
@@ -97,7 +97,7 @@ export default function Login() {
             // Manejar rate limiting (429)
             if (err.statusCode === 429) {
                 // Mostrar notificación persistente de Sonner
-                const toastId = toast.error(
+                const toastId = showToast.error(
                     `Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.`,
                     {
                         duration: Infinity, // Persistente mientras esté bloqueado
@@ -112,15 +112,15 @@ export default function Login() {
 
                     if (counter <= 0) {
                         clearInterval(interval);
-                        toast.dismiss(toastId);
-                        toast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
+                        showToast.dismiss(toastId);
+                        showToast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
                             duration: 4000,
                         });
                         return;
                     }
 
                     // Actualizar el toast con el tiempo restante
-                    toast.error(
+                    showToast.error(
                         `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
                         {
                             id: toastId,
@@ -131,7 +131,7 @@ export default function Login() {
                 }, 60000); // Actualizar cada minuto
             } else {
                 // Otros errores
-                toast.error(getErrorMessage(error), {
+                showToast.error(getErrorMessage(error), {
                     duration: 4000
                 })
             }

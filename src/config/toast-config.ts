@@ -14,9 +14,10 @@ export const showToast = {
    * Muestra una notificación de éxito.
    */
   success: (message: string, options?: ExternalToast) => {
-    toast.success(message, {
+    return toast.success(message, {
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 3000
     })
   },
@@ -25,9 +26,10 @@ export const showToast = {
    * Muestra una notificación de error con mayor duración por defecto.
    */
   error: (message: string, options?: ExternalToast) => {
-    toast.error(message, {
+    return toast.error(message, {
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 5000
     })
   },
@@ -36,9 +38,10 @@ export const showToast = {
    * Muestra una notificación informativa.
    */
   info: (message: string, options?: ExternalToast) => {
-    toast.info(message, {
+    return toast.info(message, {
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },
@@ -47,9 +50,10 @@ export const showToast = {
    * Muestra una notificación de advertencia.
    */
   warning: (message: string, options?: ExternalToast) => {
-    toast.warning(message, {
+    return toast.warning(message, {
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },
@@ -61,7 +65,8 @@ export const showToast = {
   loading: (message: string, options?: ExternalToast) => {
     return toast.loading(message, {
       ...defaultOptions,
-      ...options
+      ...options,
+      id: options?.id ?? message,
     })
   },
 
@@ -69,9 +74,10 @@ export const showToast = {
    * Muestra un mensaje básico sin iconos de estado.
    */
   custom: (message: string, options?: ExternalToast) => {
-    toast(message, {
+    return toast(message, {
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },

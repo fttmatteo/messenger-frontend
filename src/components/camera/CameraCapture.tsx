@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, Upload, X } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
 import { createLogger } from "@/utils/logger"
 
@@ -73,7 +73,7 @@ export function CameraCapture({
                     videoRef.current?.play()
                         .then(() => {
                             setCameraReady(true)
-                            toast.success("Cámara lista", { duration: 1500 })
+                            showToast.success("Cámara lista", { duration: 1500 })
                         })
                         .catch(err => {
                             logger.error('Error al reproducir video:', err)
@@ -85,7 +85,7 @@ export function CameraCapture({
             logger.error('Error al acceder a la cámara:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
-            toast.error("Error de cámara", {
+            showToast.error("Error de cámara", {
                 description: getErrorMessage(error),
                 id: "error-camara"
             })
@@ -97,17 +97,43 @@ export function CameraCapture({
         const canvas = canvasRef.current
 
         if (!video || !canvas || video.videoWidth === 0) {
-            toast.error("Error", { description: "El video aún no está listo" })
+            showToast.error("Error", { description: "El video aún no está listo" })
             return
         }
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        // Relación de aspecto del contenedor (16:9 como se define en la clase aspect-video)
+        const targetAspectRatio = 16 / 9
 
-        const ctx = canvas.getContext('2d')
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        const videoAspectRatio = videoWidth / videoHeight
+
+        let sourceX = 0
+        let sourceY = 0
+        let sourceWidth = videoWidth
+        let sourceHeight = videoHeight
+
+        if (videoAspectRatio > targetAspectRatio) {
+            sourceWidth = videoHeight * targetAspectRatio
+            sourceX = (videoWidth - sourceWidth) / 2
+        } else {
+            sourceHeight = videoWidth / targetAspectRatio
+            sourceY = (videoHeight - sourceHeight) / 2
+        }
+
+        canvas.width = sourceWidth
+        canvas.height = sourceHeight
+
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) return
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(
+            video,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, sourceWidth, sourceHeight
+        )
 
         canvas.toBlob((blob) => {
             if (blob) {
@@ -115,7 +141,7 @@ export function CameraCapture({
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
                 stopCamera()
                 onCapture(file, dataUrl)
-                toast.success("Foto capturada exitosamente")
+                showToast.success("Foto capturada exitosamente")
             }
         }, 'image/jpeg', 0.9)
     }
@@ -125,12 +151,12 @@ export function CameraCapture({
         if (!file) return
 
         if (!file.type.startsWith('image/')) {
-            toast.error("Archivo inválido", { description: "Por favor selecciona una imagen" })
+            showToast.error("Archivo inválido", { description: "Por favor selecciona una imagen" })
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Archivo muy grande", { description: "El tamaño máximo es 5MB" })
+            showToast.error("Archivo muy grande", { description: "El tamaño máximo es 5MB" })
             return
         }
 

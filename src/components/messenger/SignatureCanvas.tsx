@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { Eraser, Check, PenLine, X } from 'lucide-react'
+import { Eraser, Check, PenLine, X, Loader2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import SignatureCameraCapture, { type SignatureCameraCaptureRef } from './SignatureCameraCapture'
@@ -47,6 +47,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const canvasInitializedRef = useRef(false)
         const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
         const [isGifProcessing, setIsGifProcessing] = useState(false)
+        const [isCameraReady, setIsCameraReady] = useState(!enableCamera) // Si no hay cámara, está listo
 
 
         useEffect(() => {
@@ -100,6 +101,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 canvasInitializedRef.current = false
                 return
             }
+
+            // Inicializar canvas cuando se abre el diálogo
 
             const attempts = [50, 150, 300]
             const timers = attempts.map(delay =>
@@ -264,7 +267,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <span className="font-medium">Firma capturada</span>
                             </div>
                             <div className="flex gap-2">
-                                <Button type="button" variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+                                <Button type="button" variant="outline" size="sm" onClick={() => {
+                                    if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                    setIsOpen(true)
+                                }}>
                                     Cambiar
                                 </Button>
                                 <Button type="button" variant="ghost" size="sm" onClick={clear} className="text-red-600 hover:text-red-700 hover:bg-red-50">
@@ -277,7 +283,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             type="button"
                             variant="outline"
                             className="w-full h-20 border-dashed border-2 flex flex-col gap-1"
-                            onClick={() => setIsOpen(true)}
+                            onClick={() => {
+                                if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                setIsOpen(true)
+                            }}
                         >
                             <PenLine className="h-6 w-6 text-muted-foreground" />
                             <span className="text-muted-foreground">Toca para firmar</span>
@@ -302,6 +311,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <div className="flex-[3] min-h-0">
                                     <SignatureCameraCapture
                                         ref={cameraRef}
+                                        onReadyChange={setIsCameraReady}
                                         onGifGenerated={(gif) => {
                                             logger.info('onGifGenerated received', { size: gif?.size })
                                             setSavedGifBlob(gif)
@@ -309,15 +319,16 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                             onGifGenerated?.(gif)
                                         }}
                                         onRetry={() => {
-                                            setIsGifProcessing(true)
+                                            setIsGifProcessing(true) // Se está iniciando uno nuevo automáticamente
                                             setSavedGifBlob(null)
+                                            // No limpiamos la firma para que el usuario no tenga que volver a firmar
                                         }}
                                         className="h-full"
                                     />
                                 </div>
                             )}
 
-                            <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 ${enableCamera ? 'flex-[7]' : 'flex-1'}`}>
+                            <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 ${enableCamera ? 'flex-[7]' : 'flex-1'} ${(!isCameraReady && !savedGifBlob && !isGifProcessing) ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <canvas
                                     ref={fullscreenCanvasRef}
                                     className="touch-none cursor-crosshair absolute inset-0 w-full h-full"
@@ -332,7 +343,14 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 right-6 sm:right-8 border-b-2 border-gray-300 pointer-events-none" />
                                 {!tempHasDrawn && (
                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <span className="text-muted-foreground/40 text-base sm:text-xl">Firme aquí</span>
+                                        <span className="text-muted-foreground/40 text-base sm:text-xl">
+                                            {(!isCameraReady && !savedGifBlob && !isGifProcessing) ? 'Preparando cámara...' : 'Firme aquí'}
+                                        </span>
+                                    </div>
+                                )}
+                                {!isCameraReady && !savedGifBlob && !isGifProcessing && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+                                        <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
                                     </div>
                                 )}
                             </div>

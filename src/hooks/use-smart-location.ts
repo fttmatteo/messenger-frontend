@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { trackingService } from '@/services/tracking.service'
 import { createLogger } from '@/utils/logger'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 
 const logger = createLogger('useSmartLocation')
 
@@ -74,7 +74,7 @@ export function useSmartLocation() {
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Error desconocido"
             logger.error("Error al obtener ubicación inteligente", error)
-            toast.warning("Ubicación no capturada", {
+            showToast.warning("Ubicación no capturada", {
                 description: `${msg}. Se continuará sin ubicación precisa.`,
                 duration: 4000
             })

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { Button } from "@/components/ui/button"
 import { trackingService } from "@/services/tracking.service"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { openMaps } from "@/lib/navigation-utils"
 import { createLogger } from "@/utils/logger"
@@ -36,10 +36,10 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
         const { latitude, longitude, address } = service.dealership
 
-        const toastId = toast.loading("Obteniendo ubicación...", { duration: 2000 })
+        const toastId = showToast.loading("Obteniendo ubicación...", { duration: 2000 })
 
         const triggerNavigation = (originLat?: number, originLng?: number) => {
-            toast.dismiss(toastId)
+            showToast.dismiss(toastId)
             openMaps(
                 { latitude, longitude, address },
                 originLat,
@@ -60,7 +60,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                 },
                 (error) => {
                     logger.warn('Error de GPS', error)
-                    toast.warning("Usando ubicación aproximada", { id: toastId })
+                    showToast.warning("Usando ubicación aproximada", { id: toastId })
                     triggerNavigation()
                 },
                 {

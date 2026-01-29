@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react"
+import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { Map as MapComponent } from "@/components/Map"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -45,6 +45,19 @@ export default function LiveTracking() {
     const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
+
+    // Refs para evitar reinicios de conexión cuando cambian estas dependencias
+    const followingMessengerIdRef = useRef<number | null>(null)
+    const mapRef = useRef<google.maps.Map | null>(null)
+
+    // Actualizar refs cuando cambia el estado
+    useEffect(() => {
+        followingMessengerIdRef.current = followingMessengerId
+    }, [followingMessengerId])
+
+    useEffect(() => {
+        mapRef.current = map
+    }, [map])
 
     // Timestamp unificado para sincronizar estado en todos los componentes UI (Map, List, SidePanel)
     // Intervalo de 10s asegura respuesta rápida para desconexiones
@@ -115,11 +128,11 @@ export default function LiveTracking() {
                 setSuccess(`Monitoreo actualizado`)
             }
 
-            // Centrar mapa en primer mensajero activo si está disponible Y refresco manual
+            // Centrar mapa en primer mensajero activo si está disponible Y refresco manual (usando ref)
             if (!manual && updatedMessengers.length > 0) {
                 const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
-                if (firstActive && map) {
-                    map.panTo({ lat: firstActive.latitude, lng: firstActive.longitude })
+                if (firstActive && mapRef.current) {
+                    mapRef.current.panTo({ lat: firstActive.latitude, lng: firstActive.longitude })
                 }
             }
 
@@ -131,7 +144,7 @@ export default function LiveTracking() {
         } finally {
             setLoading(false)
         }
-    }, [setSuccess, setError, map])
+    }, [setSuccess, setError]) // Eliminada dependencia 'map' para estabilidad
 
     // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
@@ -155,20 +168,27 @@ export default function LiveTracking() {
             return prev
         })
 
-        // Modo seguimiento: actualizar centro del mapa al seguir un mensajero
-        if (followingMessengerId === update.messengerId && isValidCoords(update.latitude, update.longitude) && map) {
-            map.panTo({ lat: update.latitude, lng: update.longitude })
+        // Modo seguimiento: usar refs para evitar re-crear la función
+        const currentFollowId = followingMessengerIdRef.current
+        const currentMap = mapRef.current
+
+        if (currentFollowId === update.messengerId && isValidCoords(update.latitude, update.longitude) && currentMap) {
+            currentMap.panTo({ lat: update.latitude, lng: update.longitude })
         }
-    }, [followingMessengerId, map])
+    }, []) // Sin dependencias inestables
 
     // Conectar a WebSocket al montar
     useEffect(() => {
-        fetchMessengers()
+        // Carga inicial de datos
+        fetchMessengers() // fetchMessengers es ahora estable
 
         const startTracking = async () => {
             // Omitir si ya está conectado
             if (trackingService.isCurrentlyConnected()) {
                 setConnected(true)
+                // Asegurarse de suscribir incluso si ya estaba conectado (idempotente)
+                // trackingService maneja suscripciones duplicadas internamente o lo podemos manejar aquí
+                // Pero lo más seguro es reconectar si queremos garantizar el estado limpio
                 return
             }
 
@@ -196,7 +216,7 @@ export default function LiveTracking() {
             trackingService.disconnect()
             setConnected(false)
         }
-    }, [fetchMessengers, handleTrackingUpdate, setError])
+    }, [fetchMessengers, handleTrackingUpdate]) // Ahora estas dependencias son estables
 
     const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)

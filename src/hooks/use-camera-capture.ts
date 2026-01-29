@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
 
 interface UseCameraCaptureReturn {
@@ -66,7 +66,7 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                         videoRef.current.play()
                             .then(() => {
                                 setCameraReady(true)
-                                toast.success("Cámara lista", { duration: 1500 })
+                                showToast.success("Cámara lista", { duration: 1500 })
                             })
                             .catch(() => {
                                 setCameraError('Error al reproducir video')
@@ -77,9 +77,8 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         } catch (error) {
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
-            toast.error("Error de cámara", {
-                description: getErrorMessage(error),
-                id: "error-camara"
+            showToast.error("Error de cámara", {
+                description: getErrorMessage(error)
             })
         }
     }, [])
@@ -89,25 +88,50 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         const canvas = canvasRef.current
 
         if (!video || !canvas) {
-            toast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
+            showToast.error("Error", { description: "Componentes no disponibles" })
             return null
         }
 
         if (video.videoWidth === 0 || video.videoHeight === 0) {
-            toast.error("Error", { description: "El video aún no está listo", id: "error-video" })
+            showToast.error("Error", { description: "El video aún no está listo" })
             return null
         }
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        // Relación de aspecto objetivo (16:9)
+        const targetAspectRatio = 16 / 9
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        const videoAspectRatio = videoWidth / videoHeight
 
-        const ctx = canvas.getContext('2d')
+        let sourceX = 0
+        let sourceY = 0
+        let sourceWidth = videoWidth
+        let sourceHeight = videoHeight
+
+        if (videoAspectRatio > targetAspectRatio) {
+            sourceWidth = videoHeight * targetAspectRatio
+            sourceX = (videoWidth - sourceWidth) / 2
+        } else {
+            sourceHeight = videoWidth / targetAspectRatio
+            sourceY = (videoHeight - sourceHeight) / 2
+        }
+
+        canvas.width = sourceWidth
+        canvas.height = sourceHeight
+
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) {
-            toast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
+            showToast.error("Error", { description: "No se pudo crear contexto de canvas" })
             return null
         }
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(
+            video,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, sourceWidth, sourceHeight
+        )
 
         let capturedFile: File | null = null
 
@@ -119,9 +143,9 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                 setImagePreview(dataUrl)
 
                 stopCamera()
-                toast.success("Foto capturada exitosamente")
+                showToast.success("Foto capturada exitosamente")
             } else {
-                toast.error("Error al capturar foto", { id: "error-captura" })
+                showToast.error("Error al capturar foto")
             }
         }, 'image/jpeg', 0.9)
 
@@ -130,17 +154,15 @@ export function useCameraCapture(): UseCameraCaptureReturn {
 
     const setImageFromFile = useCallback((file: File) => {
         if (!file.type.startsWith('image/')) {
-            toast.error("Archivo inválido", {
-                description: "Por favor selecciona una imagen",
-                id: "error-archivo-invalido"
+            showToast.error("Archivo inválido", {
+                description: "Por favor selecciona una imagen"
             })
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Archivo muy grande", {
-                description: "El tamaño máximo es 5MB",
-                id: "error-archivo-grande"
+            showToast.error("Archivo muy grande", {
+                description: "El tamaño máximo es 5MB"
             })
             return
         }

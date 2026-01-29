@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
-import { useGoogleMap } from "@react-google-maps/api"
+import { MAP_LIBRARIES } from "@/lib/maps.constants"
+import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
 import { Loader2, MapPin, Trash2, Save } from "lucide-react"
 import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
@@ -53,7 +54,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
                 background: '#10b981',
                 borderColor: 'white',
                 glyphColor: 'white',
-            }).element
+            })
         })
 
         markerRef.current = marker
@@ -83,6 +84,14 @@ export default function EditConcesionario() {
     const [geocoding, setGeocoding] = useState(false)
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
     const [initialAddress, setInitialAddress] = useState("")
+
+    // Cargar la API de Google Maps a nivel de página
+    const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        libraries: MAP_LIBRARIES,
+        version: 'weekly'
+    })
 
     const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
@@ -140,6 +149,12 @@ export default function EditConcesionario() {
     // Guardar cambios Y geocodificar en un solo paso
     const handleSaveAndGeocode = async (data: DealershipFormValues) => {
         if (!id) return
+
+        if (!isMapsApiLoaded) {
+            setError("Cargando servicios de mapas... Por favor intenta de nuevo.")
+            return
+        }
+
         try {
             setGeocoding(true)
             // Primero guardar

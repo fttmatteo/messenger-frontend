@@ -12,7 +12,7 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
 import { useStatusColors } from "@/hooks/use-status-colors"
@@ -145,7 +145,6 @@ export default function UpdateStatus() {
             if (option.requiresSignature && signatureRef.current) {
                 const sig = await signatureRef.current.getSignature()
                 if (sig) signatureFile = sig
-                if (sig) signatureFile = sig
 
                 // Obtener GIF para ENTREGADO/PENDIENTE
                 if (option.value === 'DELIVERED' || option.value === 'PENDING') {
@@ -195,7 +194,7 @@ export default function UpdateStatus() {
                     }
                 })
 
-                toast.success('Guardado para sincronizar', {
+                showToast.success('Guardado para sincronizar', {
                     description: 'Se enviará cuando haya conexión',
                     icon: <WifiOff className="h-4 w-4" />,
                     duration: 4000,
@@ -217,7 +216,7 @@ export default function UpdateStatus() {
 
             navigate('/messenger')
         } catch (error) {
-            toast.error('Error al actualizar', {
+            showToast.error('Error al actualizar', {
                 description: getErrorMessage(error),
                 id: 'update-status-error',
             })
@@ -367,11 +366,13 @@ export default function UpdateStatus() {
                                         <div className="p-1.5 rounded-lg bg-primary/10">
                                             <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-bold tracking-tight">Foto de evidencia</h3>
+                                        <h3 className="text-sm font-bold tracking-tight">
+                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
+                                        </h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <EvidenceCapture
-                                        maxPhotos={1}
+                                        maxPhotos={selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 5 : 1}
                                         photos={photos}
                                         onPhotosChange={setPhotos}
                                     />
