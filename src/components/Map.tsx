@@ -12,7 +12,7 @@ const defaultCenter = {
     lng: -75.5812
 }
 
-const LIBRARIES: Libraries = ["marker"];
+export const MAP_LIBRARIES: Libraries = ["marker", "places"];
 type ColorScheme = 'DARK' | 'LIGHT' | 'FOLLOW_SYSTEM';
 
 interface MapProps {
@@ -35,7 +35,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: LIBRARIES,
+        libraries: MAP_LIBRARIES,
         version: 'weekly'
     })
 
