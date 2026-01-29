@@ -8,9 +8,10 @@ import { http, HttpResponse } from 'msw';
 
 // Mock de componentes y hooks
 vi.mock('@/components/camera', () => ({
-    PlateCamera: ({ onCancel }: { onCancel: () => void }) => (
+    PlateCamera: ({ onCapture, onCancel }: { onCapture: (file: File) => void, onCancel: () => void }) => (
         <div data-testid="camera-mock">
             Camera Mock
+            <button onClick={() => onCapture(new File([''], 'plate.jpg', { type: 'image/jpeg' }))}>Capture Photo</button>
             <button onClick={onCancel}>Cancel Camera</button>
         </div>
     ),
@@ -41,13 +42,20 @@ vi.mock('react-router-dom', async () => {
 describe('CreateServicio Page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Mock de API de concesionarios
+        // Mock de APIs
         server.use(
-            http.get('http://localhost:8080/dealerships', () => {
+            http.get('http://localhost:8080/dealerships/allDealerships', () => {
                 return HttpResponse.json([
                     { idDealership: 1, name: 'Concesionario A', zone: 'Norte' },
                     { idDealership: 2, name: 'Concesionario B', zone: 'Sur' }
                 ]);
+            }),
+            http.post('http://localhost:8080/services/extractPlate', () => {
+                return HttpResponse.json({
+                    success: true,
+                    plate: 'ABC123',
+                    message: 'Placa detectada'
+                });
             })
         );
     });
@@ -58,6 +66,19 @@ describe('CreateServicio Page', () => {
         expect(await screen.findByText('Foto de la placa')).toBeInTheDocument();
         expect(screen.getByText('Concesionario destino')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
+    });
+
+    it('should show plate preview after capturing a photo', async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<MessengerCreateServicio />);
+
+        const captureBtn = await screen.findByText('Capture Photo');
+        await user.click(captureBtn);
+
+        // Debería aparecer la sección de placa detectada
+        expect(await screen.findByText(/Placa Detectada/i)).toBeInTheDocument();
+        expect(screen.getByDisplayValue('ABC123')).toBeInTheDocument();
+        expect(screen.getByText(/Confirma o corrige la placa detectada/i)).toBeInTheDocument();
     });
 
     it('should navigate back to /messenger when cancel is clicked', async () => {
@@ -85,7 +106,7 @@ describe('CreateServicio Page', () => {
         await user.click(submitBtn);
 
         await waitFor(() => {
-            expect(screen.getByText('El concesionario es obligatorio')).toBeInTheDocument();
+            expect(screen.getByText(/el concesionario es obligatorio/i)).toBeInTheDocument();
         });
     });
 });

@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { PlateCamera, ImageUploadFallback } from "@/components/camera"
-import { X, Loader2, Bike, Camera, Building2, Edit3 } from "lucide-react"
+import { X, Loader2, Bike, Camera, Building2, Search, CheckCircle2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
@@ -51,6 +51,10 @@ export default function MessengerCreateServicio() {
     // Estado de la imagen
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [showCamera, setShowCamera] = useState(true)
+
+    // Estado del preview de OCR
+    const [extractingPlate, setExtractingPlate] = useState(false)
+    const [ocrSuccess, setOcrSuccess] = useState<boolean | null>(null)
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -93,24 +97,65 @@ export default function MessengerCreateServicio() {
     }, [])
 
     // Manejar captura de foto desde la cámara
-    const handlePhotoCapture = useCallback((file: File, previewUrl: string) => {
+    const handlePhotoCapture = useCallback(async (file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
+
+        // Ejecutar OCR automáticamente
+        setExtractingPlate(true)
+        setOcrSuccess(null)
+        try {
+            const result = await serviceDeliveryService.extractPlate(file)
+            if (result.success && result.plate) {
+                setOcrSuccess(true)
+                form.setValue("manualPlateNumber", result.plate)
+            } else {
+                setOcrSuccess(false)
+                setShowManualPlate(true)
+            }
+        } catch {
+            setOcrSuccess(false)
+            setShowManualPlate(true)
+        } finally {
+            setExtractingPlate(false)
+        }
     }, [form])
 
     // Manejar selección de imagen desde la galería
-    const handleImageSelect = useCallback((file: File, previewUrl: string) => {
+    const handleImageSelect = useCallback(async (file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
+
+        // Ejecutar OCR automáticamente
+        setExtractingPlate(true)
+        setOcrSuccess(null)
+        try {
+            const result = await serviceDeliveryService.extractPlate(file)
+            if (result.success && result.plate) {
+                setOcrSuccess(true)
+                form.setValue("manualPlateNumber", result.plate)
+            } else {
+                setOcrSuccess(false)
+                setShowManualPlate(true)
+            }
+        } catch {
+            setOcrSuccess(false)
+            setShowManualPlate(true)
+        } finally {
+            setExtractingPlate(false)
+        }
     }, [form])
 
     // Limpiar imagen seleccionada
     const clearImage = useCallback(() => {
         form.setValue("image", undefined as unknown as File)
+        form.setValue("manualPlateNumber", "")
         setImagePreview(null)
         setShowCamera(true)
+        setOcrSuccess(null)
+        setShowManualPlate(false)
     }, [form])
 
     // Manejador de envío del formulario
@@ -237,6 +282,75 @@ export default function MessengerCreateServicio() {
                             </Card>
                         </div>
 
+                        {/* Preview de placa detectada por OCR */}
+                        {imagePreview && (
+                            <div className="px-4 pb-2">
+                                <Card className={`p-4 border-border/50 transition-all ${extractingPlate ? 'animate-pulse' : ''
+                                    } ${ocrSuccess === true ? 'border-green-500/50 bg-green-50/30 dark:bg-green-900/10' : ''
+                                    } ${ocrSuccess === false ? 'border-amber-500/50 bg-amber-50/30 dark:bg-amber-900/10' : ''}`}>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className={`p-1.5 rounded-lg ${extractingPlate ? 'bg-primary/10' :
+                                            ocrSuccess === true ? 'bg-green-500/10' : 'bg-amber-500/10'
+                                            }`}>
+                                            {extractingPlate ? (
+                                                <Search className="h-4 w-4 text-primary animate-pulse" strokeWidth={2.5} />
+                                            ) : ocrSuccess === true ? (
+                                                <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" strokeWidth={2.5} />
+                                            ) : (
+                                                <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" strokeWidth={2.5} />
+                                            )}
+                                        </div>
+                                        <h3 className="text-sm font-bold tracking-tight">
+                                            {extractingPlate ? 'Detectando placa...' :
+                                                ocrSuccess === true ? 'Placa detectada' : 'Ingresa la placa'}
+                                        </h3>
+                                    </div>
+
+                                    {extractingPlate ? (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            <span>Procesando imagen con OCR...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {ocrSuccess === true && (
+                                                <p className="text-xs text-green-600 dark:text-green-400 mb-3">
+                                                    Verifica que la placa sea correcta. Puedes editarla si es necesario.
+                                                </p>
+                                            )}
+                                            {ocrSuccess === false && (
+                                                <p className="text-xs text-amber-600 dark:text-amber-400 mb-3">
+                                                    No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
+                                                </p>
+                                            )}
+                                            <FormField
+                                                control={form.control}
+                                                name="manualPlateNumber"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="ABC123"
+                                                                {...field}
+                                                                className={`h-12 font-mono uppercase touch-manipulation text-xl tracking-widest text-center font-bold ${ocrSuccess === true ? 'border-green-500/50' : 'border-amber-500/50'
+                                                                    }`}
+                                                                maxLength={7}
+                                                                autoComplete="off"
+                                                            />
+                                                        </FormControl>
+                                                        <FormDescription className="text-xs text-center">
+                                                            {ocrSuccess === true ? 'Confirma o edita la placa' : 'Ingresa la placa del vehículo'}
+                                                        </FormDescription>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </>
+                                    )}
+                                </Card>
+                            </div>
+                        )}
+
                         <div className="px-4 pb-2">
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center gap-2 mb-3">
@@ -287,45 +401,6 @@ export default function MessengerCreateServicio() {
                                 />
                             </Card>
                         </div>
-
-                        {showManualPlate && (
-                            <div className="px-4 pb-2">
-                                <Card className="p-4 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="p-1.5 rounded-lg bg-amber-500/10">
-                                            <Edit3 className="h-4 w-4 text-amber-600 dark:text-amber-400" strokeWidth={2.5} />
-                                        </div>
-                                        <h3 className="text-sm font-bold tracking-tight">Ingreso manual de placa</h3>
-                                        <span className="text-xs text-red-500 font-bold">*</span>
-                                    </div>
-                                    <p className="text-xs text-amber-600 dark:text-amber-400 mb-3">
-                                        No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
-                                    </p>
-                                    <FormField
-                                        control={form.control}
-                                        name="manualPlateNumber"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="ABC123"
-                                                        {...field}
-                                                        className="h-11 font-mono uppercase touch-manipulation text-lg tracking-wider"
-                                                        maxLength={7}
-                                                        autoFocus
-                                                        autoComplete="off"
-                                                    />
-                                                </FormControl>
-                                                <FormDescription className="text-xs">
-                                                    Ingresa la placa del vehículo
-                                                </FormDescription>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </Card>
-                            </div>
-                        )}
                     </div>
 
                     <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
@@ -341,7 +416,7 @@ export default function MessengerCreateServicio() {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={loading || loadingData || showCamera}
+                                disabled={loading || loadingData || showCamera || extractingPlate}
                                 className="flex-1 h-12 text-base font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98]"
                             >
                                 {loading ? (

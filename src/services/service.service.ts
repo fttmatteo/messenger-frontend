@@ -86,6 +86,20 @@ class ServiceDeliveryService {
     }
 
     /**
+     * Extrae la placa de una imagen mediante OCR sin crear el servicio.
+     * Permite previsualizar la placa detectada y corregirla si es necesario.
+     * @param image - Imagen de la placa a procesar
+     * @returns Objeto con la placa detectada y estado de éxito
+     */
+    async extractPlate(image: File): Promise<{ plate: string | null; success: boolean; message: string }> {
+        const formData = new FormData()
+        formData.append('image', image)
+
+        const response = await apiClient.post('/services/extractPlate', formData)
+        return response.data
+    }
+
+    /**
      * Actualiza el estado de un servicio capturando evidencias obligatorias.
      * Maneja el envío de firmas (imágenes y GIF), fotos y observaciones como FormData.
      * @param id - ID del servicio a actualizar.
