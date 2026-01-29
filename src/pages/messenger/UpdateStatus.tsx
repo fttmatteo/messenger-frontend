@@ -367,11 +367,13 @@ export default function UpdateStatus() {
                                         <div className="p-1.5 rounded-lg bg-primary/10">
                                             <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-bold tracking-tight">Foto de evidencia</h3>
+                                        <h3 className="text-sm font-bold tracking-tight">
+                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
+                                        </h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <EvidenceCapture
-                                        maxPhotos={1}
+                                        maxPhotos={selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 5 : 1}
                                         photos={photos}
                                         onPhotosChange={setPhotos}
                                     />

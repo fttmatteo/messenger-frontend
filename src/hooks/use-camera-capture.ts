@@ -98,16 +98,41 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             return null
         }
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        // Relación de aspecto objetivo (16:9)
+        const targetAspectRatio = 16 / 9
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        const videoAspectRatio = videoWidth / videoHeight
 
-        const ctx = canvas.getContext('2d')
+        let sourceX = 0
+        let sourceY = 0
+        let sourceWidth = videoWidth
+        let sourceHeight = videoHeight
+
+        if (videoAspectRatio > targetAspectRatio) {
+            sourceWidth = videoHeight * targetAspectRatio
+            sourceX = (videoWidth - sourceWidth) / 2
+        } else {
+            sourceHeight = videoWidth / targetAspectRatio
+            sourceY = (videoHeight - sourceHeight) / 2
+        }
+
+        canvas.width = sourceWidth
+        canvas.height = sourceHeight
+
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) {
             toast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
             return null
         }
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(
+            video,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, sourceWidth, sourceHeight
+        )
 
         let capturedFile: File | null = null
 

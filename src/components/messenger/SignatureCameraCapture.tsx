@@ -236,12 +236,39 @@ const SignatureCameraCapture = forwardRef<
         })
 
 
+        // Relación de aspecto objetivo (GIF_WIDTH / GIF_HEIGHT = 4/3)
+        const targetAspectRatio = GIF_WIDTH / GIF_HEIGHT
+
         // Todos los frames usan el mismo delay para evitar capturar una imagen negra
         // El primer frame necesita esperar para que el video renderice un frame válido
         for (let i = 0; i < FRAME_COUNT; i++) {
             await new Promise(resolve => setTimeout(resolve, CAPTURE_INTERVAL_MS))
 
-            ctx.drawImage(video, 0, 0, GIF_WIDTH, GIF_HEIGHT)
+            const videoWidth = video.videoWidth
+            const videoHeight = video.videoHeight
+            const videoAspectRatio = videoWidth / videoHeight
+
+            let sourceX = 0
+            let sourceY = 0
+            let sourceWidth = videoWidth
+            let sourceHeight = videoHeight
+
+            if (videoAspectRatio > targetAspectRatio) {
+                sourceWidth = videoHeight * targetAspectRatio
+                sourceX = (videoWidth - sourceWidth) / 2
+            } else {
+                sourceHeight = videoWidth / targetAspectRatio
+                sourceY = (videoHeight - sourceHeight) / 2
+            }
+
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+            ctx.drawImage(
+                video,
+                sourceX, sourceY, sourceWidth, sourceHeight,
+                0, 0, GIF_WIDTH, GIF_HEIGHT
+            )
+
             const imageData = ctx.getImageData(0, 0, GIF_WIDTH, GIF_HEIGHT)
             capturedFrames.push(imageData)
         }
