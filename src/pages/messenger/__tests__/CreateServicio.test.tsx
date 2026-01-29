@@ -7,11 +7,20 @@ import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
 
 // Mock de componentes y hooks
+vi.mock('@/services/service.service', () => ({
+    serviceDeliveryService: {
+        extractPlate: vi.fn(),
+        create: vi.fn(),
+    }
+}));
+
+import { serviceDeliveryService } from '@/services/service.service';
+
 vi.mock('@/components/camera', () => ({
-    PlateCamera: ({ onCapture, onCancel }: { onCapture: (file: File) => void, onCancel: () => void }) => (
+    PlateCamera: ({ onCapture, onCancel }: { onCapture: (file: File, url: string) => void, onCancel: () => void }) => (
         <div data-testid="camera-mock">
             Camera Mock
-            <button onClick={() => onCapture(new File([''], 'plate.jpg', { type: 'image/jpeg' }))}>Capture Photo</button>
+            <button onClick={() => onCapture(new File([''], 'plate.jpg', { type: 'image/jpeg' }), 'blob:http://localhost:5173/test-url')}>Capture Photo</button>
             <button onClick={onCancel}>Cancel Camera</button>
         </div>
     ),
@@ -49,15 +58,13 @@ describe('CreateServicio Page', () => {
                     { idDealership: 1, name: 'Concesionario A', zone: 'Norte' },
                     { idDealership: 2, name: 'Concesionario B', zone: 'Sur' }
                 ]);
-            }),
-            http.post('http://localhost:8080/services/extractPlate', () => {
-                return HttpResponse.json({
-                    success: true,
-                    plate: 'ABC123',
-                    message: 'Placa detectada'
-                });
             })
         );
+        (serviceDeliveryService.extractPlate as any).mockResolvedValue({
+            success: true,
+            plate: 'ABC123',
+            message: 'Placa detectada'
+        });
     });
 
     it('should render the creation form', async () => {
@@ -75,10 +82,10 @@ describe('CreateServicio Page', () => {
         const captureBtn = await screen.findByText('Capture Photo');
         await user.click(captureBtn);
 
-        // Debería aparecer la sección de placa detectada
-        expect(await screen.findByText(/Placa Detectada/i)).toBeInTheDocument();
+        // Debería aparecer la sección de placa detectada con los datos del mock
+        expect(await screen.findByText(/Placa detectada/i)).toBeInTheDocument();
         expect(screen.getByDisplayValue('ABC123')).toBeInTheDocument();
-        expect(screen.getByText(/Confirma o corrige la placa detectada/i)).toBeInTheDocument();
+        expect(screen.getByText(/Confirma o edita la placa/i)).toBeInTheDocument();
     });
 
     it('should navigate back to /messenger when cancel is clicked', async () => {
