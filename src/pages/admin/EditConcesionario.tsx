@@ -54,7 +54,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
                 background: '#10b981',
                 borderColor: 'white',
                 glyphColor: 'white',
-            }).element
+            })
         })
 
         markerRef.current = marker
