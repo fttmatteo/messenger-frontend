@@ -48,7 +48,7 @@ function AdvancedMarker({ position, title, color = '#4f46e5', label }: {
             map,
             position,
             title,
-            content: pinElement.element
+            content: pinElement
         })
 
         markerRef.current = marker
