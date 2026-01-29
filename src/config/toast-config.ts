@@ -15,9 +15,9 @@ export const showToast = {
    */
   success: (message: string, options?: ExternalToast) => {
     return toast.success(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 3000
     })
   },
@@ -27,9 +27,9 @@ export const showToast = {
    */
   error: (message: string, options?: ExternalToast) => {
     return toast.error(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 5000
     })
   },
@@ -39,9 +39,9 @@ export const showToast = {
    */
   info: (message: string, options?: ExternalToast) => {
     return toast.info(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },
@@ -51,9 +51,9 @@ export const showToast = {
    */
   warning: (message: string, options?: ExternalToast) => {
     return toast.warning(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },
@@ -64,9 +64,9 @@ export const showToast = {
    */
   loading: (message: string, options?: ExternalToast) => {
     return toast.loading(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
-      ...options
+      ...options,
+      id: options?.id ?? message,
     })
   },
 
@@ -75,9 +75,9 @@ export const showToast = {
    */
   custom: (message: string, options?: ExternalToast) => {
     return toast(message, {
-      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
+      id: options?.id ?? message,
       duration: options?.duration ?? 4000
     })
   },
