@@ -1,5 +1,6 @@
-import { GoogleMap, useJsApiLoader, type Libraries } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
 import { memo, useCallback, useState } from 'react'
+import { MAP_LIBRARIES } from '@/lib/maps.constants'
 import { useTheme } from "next-themes"
 
 const containerStyle = {
@@ -12,7 +13,7 @@ const defaultCenter = {
     lng: -75.5812
 }
 
-export const MAP_LIBRARIES: Libraries = ["marker", "places"];
+
 type ColorScheme = 'DARK' | 'LIGHT' | 'FOLLOW_SYSTEM';
 
 interface MapProps {

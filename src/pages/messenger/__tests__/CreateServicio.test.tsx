@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
@@ -60,7 +60,7 @@ describe('CreateServicio Page', () => {
                 ]);
             })
         );
-        (serviceDeliveryService.extractPlate as any).mockResolvedValue({
+        (serviceDeliveryService.extractPlate as Mock).mockResolvedValue({
             success: true,
             plate: 'ABC123',
             message: 'Placa detectada'
