@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, X, Upload } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { createLogger } from "@/utils/logger"
 
 const logger = createLogger('PlateCamera')
@@ -122,7 +122,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
             }
 
             setCameraError(errorMessage)
-            toast.error("Error de cámara", {
+            showToast.error("Error de cámara", {
                 description: errorMessage,
                 id: "error-camara"
             })
@@ -134,12 +134,12 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
         const canvas = canvasRef.current
 
         if (!video || !canvas) {
-            toast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
+            showToast.error("Error", { description: "Componentes no disponibles", id: "error-componentes" })
             return
         }
 
         if (video.videoWidth === 0 || video.videoHeight === 0) {
-            toast.error("Error", { description: "El video aún no está listo", id: "error-video" })
+            showToast.error("Error", { description: "El video aún no está listo", id: "error-video" })
             return
         }
 
@@ -168,7 +168,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
         const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) {
-            toast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
+            showToast.error("Error", { description: "No se pudo crear contexto de canvas", id: "error-canvas" })
             return
         }
 
@@ -188,7 +188,7 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
                 stopCamera()
                 onCapture(file, dataUrl)
             } else {
-                toast.error("Error al capturar foto", { id: "error-captura" })
+                showToast.error("Error al capturar foto", { id: "error-captura" })
             }
         }, 'image/jpeg', 0.9)
     }, [stopCamera, onCapture])
@@ -309,7 +309,7 @@ export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
         if (!file) return
 
         if (!file.type.startsWith('image/')) {
-            toast.error("Archivo inválido", {
+            showToast.error("Archivo inválido", {
                 description: "Por favor selecciona una imagen",
                 id: "error-archivo-invalido"
             })
@@ -317,7 +317,7 @@ export function ImageUploadFallback({ onSelect }: ImageUploadFallbackProps) {
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            toast.error("Archivo muy grande", {
+            showToast.error("Archivo muy grande", {
                 description: "El tamaño máximo es 10MB",
                 id: "error-archivo-grande"
             })

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog"
 import type { Dealership } from "@/types/dealership.types"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 
 interface DealershipCardProps {
     dealership: Dealership
@@ -47,7 +47,7 @@ export function DealershipCard({
                                                 onClick={() => {
                                                     const coords = `${dealership.latitude}, ${dealership.longitude}`
                                                     navigator.clipboard.writeText(coords)
-                                                    toast.success("Coordenadas copiadas", {
+                                                    showToast.success("Coordenadas copiadas", {
                                                         description: coords
                                                     })
                                                 }}

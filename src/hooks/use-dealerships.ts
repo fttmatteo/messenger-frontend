@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react"
 import { dealershipService } from "@/services/dealership.service"
 import type { Dealership } from "@/types/dealership.types"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -97,9 +97,8 @@ export function useDealerships({ searchQuery }: UseDealershipsOptions): UseDeale
             const data = await dealershipService.getAll()
             setDealerships(data)
         } catch (error) {
-            toast.error("Error al cargar concesionarios", {
-                description: getErrorMessage(error),
-                id: "error-cargar-concesionarios"
+            showToast.error("Error al cargar concesionarios", {
+                description: getErrorMessage(error)
             })
         } finally {
             setLoading(false)

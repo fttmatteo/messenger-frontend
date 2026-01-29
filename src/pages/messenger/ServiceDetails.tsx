@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { MapPin, Navigation, Phone, Clock, User, Building2, FileImage, AlertCircle, Edit, MessageSquareText } from "lucide-react"
 import { PlacaBadge } from "@/components/PlacaBadge"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { trackingService } from "@/services/tracking.service"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
@@ -45,7 +45,7 @@ export default function ServiceDetails() {
             } catch (error) {
                 const message = getErrorMessage(error)
                 setError(message)
-                toast.error('Error al cargar servicio', {
+                showToast.error('Error al cargar servicio', {
                     description: message,
                     id: 'error-fetch-service'
                 })
@@ -59,7 +59,7 @@ export default function ServiceDetails() {
 
     const handleNavigate = () => {
         if (!isOnline) {
-            toast.warning('Sin conexión para navegar', {
+            showToast.warning('Sin conexión para navegar', {
                 description: 'Los mapas requieren internet para cargar rutas.',
                 icon: <WifiOff className="h-4 w-4" />,
                 duration: 4000,

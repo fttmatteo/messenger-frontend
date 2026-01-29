@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
 import { createLogger } from '@/utils/logger'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, Camera, Loader2 } from 'lucide-react'
 
@@ -23,6 +23,7 @@ export interface SignatureCameraCaptureRef {
 
 interface SignatureCameraCaptureProps {
     onGifGenerated?: (gif: Blob | null) => void
+    onReadyChange?: (isReady: boolean) => void // Nueva prop para notificar preparación
     onRetry?: () => void
     className?: string
 }
@@ -34,7 +35,7 @@ interface SignatureCameraCaptureProps {
 const SignatureCameraCapture = forwardRef<
     SignatureCameraCaptureRef,
     SignatureCameraCaptureProps
->(({ onGifGenerated, onRetry, className }, ref) => {
+>(({ onGifGenerated, onReadyChange, onRetry, className }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
@@ -45,6 +46,7 @@ const SignatureCameraCapture = forwardRef<
     const [gifBlob, setGifBlob] = useState<Blob | null>(null)
     const [gifUrl, setGifUrl] = useState<string | null>(null)
     const [cameraError, setCameraError] = useState<string | null>(null)
+    const [isInternalReady, setIsInternalReady] = useState(false)
 
 
     useImperativeHandle(ref, () => ({
@@ -56,6 +58,34 @@ const SignatureCameraCapture = forwardRef<
             }
         }
     }))
+
+    // Monitorear preparación real de la cámara
+    useEffect(() => {
+        let interval: any
+        if (!gifUrl && !isCapturing && !cameraError && !isCameraLoading) {
+            interval = setInterval(() => {
+                const video = videoRef.current
+                const ready = !!(video &&
+                    video.readyState >= 2 &&
+                    video.currentTime > 0 &&
+                    video.videoWidth > 0)
+
+                if (ready !== isInternalReady) {
+                    setIsInternalReady(ready)
+                    onReadyChange?.(ready)
+                }
+            }, 100)
+        } else if (gifUrl || isCapturing) {
+            // Mientras captura o si ya hay GIF, no estamos "listos para iniciar"
+            if (isInternalReady) {
+                setIsInternalReady(false)
+                onReadyChange?.(false)
+            }
+        }
+        return () => {
+            if (interval) clearInterval(interval)
+        }
+    }, [gifUrl, isCapturing, cameraError, isCameraLoading, isInternalReady, onReadyChange])
 
 
     useEffect(() => {
@@ -89,15 +119,22 @@ const SignatureCameraCapture = forwardRef<
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
                 // Esperar a que el video esté listo para reproducir antes de quitar el loading
-                videoRef.current.onloadeddata = () => {
-                    setIsCameraLoading(false)
+                videoRef.current.onloadedmetadata = () => {
+                    videoRef.current?.play()
+                        .then(() => {
+                            setIsCameraLoading(false)
+                        })
+                        .catch(err => {
+                            logger.error('Error al reproducir video inicial', err)
+                            setIsCameraLoading(false)
+                        })
                 }
             }
 
             logger.info('Cámara inicializada correctamente')
 
 
-            toast.info('Se capturarán fotos para verificación', {
+            showToast.info('Se capturarán fotos para verificación', {
                 description: 'La cámara se activará mientras firma',
                 duration: 3000,
             })
@@ -106,7 +143,7 @@ const SignatureCameraCapture = forwardRef<
             logger.error('Error al inicializar cámara', error)
             setIsCameraLoading(false)
             setCameraError('No se pudo acceder a la cámara')
-            toast.error('Error de cámara', {
+            showToast.error('Error de cámara', {
                 description: 'No se pudo acceder a la cámara. Verifica los permisos.',
             })
         }
@@ -129,7 +166,7 @@ const SignatureCameraCapture = forwardRef<
                 })
 
                 capturedFrames.forEach(frame => {
-                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS * 4 }) // Ajuste de velocidad 4x
+                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS }) // Velocidad de la captura real
                 })
 
                 gif.on('finished', (blob: Blob) => {
@@ -167,7 +204,7 @@ const SignatureCameraCapture = forwardRef<
 
         } catch (error) {
             logger.error('Error al capturar GIF', { error })
-            toast.error('Error generando captura', {
+            showToast.error('Error generando captura', {
                 description: 'Intenta de nuevo',
             })
             onGifGenerated?.(null)
@@ -225,9 +262,13 @@ const SignatureCameraCapture = forwardRef<
         const capturedFrames: ImageData[] = []
 
 
-        if (video.videoWidth === 0) {
-            logger.warn('Ancho de video 0, esperando')
-            await new Promise(r => setTimeout(r, 200)) // Último intento de espera
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+            logger.warn('Dimensiones de video 0, esperando metadata')
+            let dimensionsAttempts = 0
+            while ((video.videoWidth === 0 || video.videoHeight === 0) && dimensionsAttempts < 20) {
+                await new Promise(r => setTimeout(r, 100))
+                dimensionsAttempts++
+            }
         }
 
         logger.info('Iniciando captura de GIF', {
@@ -286,15 +327,17 @@ const SignatureCameraCapture = forwardRef<
         setGifBlob(null)
         setGifUrl(null)
         onRetry?.()
+        // Reiniciar la captura automáticamente después de un breve delay para que el estado se limpie
+        setTimeout(() => startCapture(), 100)
     }
 
 
     useEffect(() => {
-        if (!gifUrl && videoRef.current && streamRef.current) {
+        // Asegurar que el video se mantenga conectado al stream si se cambia de estado
+        if (!gifUrl && videoRef.current && streamRef.current && !videoRef.current.srcObject) {
             videoRef.current.srcObject = streamRef.current
-            setTimeout(() => startCapture(), 500)
         }
-    }, [gifUrl, startCapture])
+    }, [gifUrl])
 
     if (cameraError) {
         return (

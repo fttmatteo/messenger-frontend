@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { employeeService } from "@/services/employee.service"
 import type { Employee } from "@/types/employee.types"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
@@ -91,9 +91,8 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
             const data = await employeeService.getAll()
             setEmployees(data)
         } catch (error) {
-            toast.error("Error al cargar empleados", {
-                description: getErrorMessage(error),
-                id: "error-cargar-empleados"
+            showToast.error("Error al cargar empleados", {
+                description: getErrorMessage(error)
             })
         } finally {
             setLoading(false)

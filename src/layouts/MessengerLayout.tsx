@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, WifiOff, CloudOff, Menu, History, Settings, ClipboardList, HelpCircle } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { authService } from "@/services/auth.service"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -93,7 +93,7 @@ export default function MessengerLayout() {
 
             if (!userId) {
                 logger.error('❌ No se puede iniciar tracking: ni user.id ni user.document están disponibles', user)
-                toast.error('Error: ID de usuario no disponible', { id: 'user-id-missing' })
+                showToast.error('Error: ID de usuario no disponible', { id: 'user-id-missing' })
                 return
             }
 
@@ -147,7 +147,7 @@ export default function MessengerLayout() {
                             })
                             trackingService.setLastLocation(latitude, longitude)
                         } else {
-                            toast.error('GPS devolvió coordenadas inválidas. Esperando señal válida...', { id: 'invalid-coords' })
+                            showToast.error('GPS devolvió coordenadas inválidas. Esperando señal válida...', { id: 'invalid-coords' })
                         }
                     },
                     () => { /* error al obtener ubicación inicial */ },
@@ -175,13 +175,13 @@ export default function MessengerLayout() {
                         logger.warn('Error parcial de geolocalización:', error.message)
 
                         if (error.code === 1) {
-                            toast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })
+                            showToast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-required' })
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
-                            toast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
+                            showToast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
                         } else if (error.code === 3) {
-                            toast.warning('GPS tardando en responder. Reintentando...', { id: 'messenger-gps-timeout' })
+                            showToast.warning('GPS tardando en responder. Reintentando...', { id: 'messenger-gps-timeout' })
                         }
                     },
                     {
@@ -191,7 +191,7 @@ export default function MessengerLayout() {
                     }
                 )
             } else {
-                toast.error('Geolocalización no soportada', { id: 'messenger-geolocation-unsupported' })
+                showToast.error('Geolocalización no soportada', { id: 'messenger-geolocation-unsupported' })
                 updateUser({ isOnline: false })
             }
         } else {

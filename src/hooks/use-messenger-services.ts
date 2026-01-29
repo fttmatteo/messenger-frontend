@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { serviceDeliveryService } from '@/services/service.service'
 import type { ServiceDelivery } from '@/types/service.types'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 import { getErrorMessage } from '@/lib/error-utils'
 import { offlineCacheService } from '@/services/offline-cache.service'
 
@@ -72,9 +72,8 @@ export function useMessengerServices(): UseMessengerServicesReturn {
             }
 
             setError(message)
-            toast.error('Error al cargar servicios', {
+            showToast.error('Error al cargar servicios', {
                 description: message,
-                id: 'error-fetch-services'
             })
         } finally {
             setLoading(false)

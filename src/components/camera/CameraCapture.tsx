@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, CameraOff, Loader2, Upload, X } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
 import { createLogger } from "@/utils/logger"
 
@@ -73,7 +73,7 @@ export function CameraCapture({
                     videoRef.current?.play()
                         .then(() => {
                             setCameraReady(true)
-                            toast.success("Cámara lista", { duration: 1500 })
+                            showToast.success("Cámara lista", { duration: 1500 })
                         })
                         .catch(err => {
                             logger.error('Error al reproducir video:', err)
@@ -85,7 +85,7 @@ export function CameraCapture({
             logger.error('Error al acceder a la cámara:', error)
             setCameraActive(false)
             setCameraError('No se pudo acceder a la cámara. Verifica los permisos.')
-            toast.error("Error de cámara", {
+            showToast.error("Error de cámara", {
                 description: getErrorMessage(error),
                 id: "error-camara"
             })
@@ -97,7 +97,7 @@ export function CameraCapture({
         const canvas = canvasRef.current
 
         if (!video || !canvas || video.videoWidth === 0) {
-            toast.error("Error", { description: "El video aún no está listo" })
+            showToast.error("Error", { description: "El video aún no está listo" })
             return
         }
 
@@ -141,7 +141,7 @@ export function CameraCapture({
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
                 stopCamera()
                 onCapture(file, dataUrl)
-                toast.success("Foto capturada exitosamente")
+                showToast.success("Foto capturada exitosamente")
             }
         }, 'image/jpeg', 0.9)
     }
@@ -151,12 +151,12 @@ export function CameraCapture({
         if (!file) return
 
         if (!file.type.startsWith('image/')) {
-            toast.error("Archivo inválido", { description: "Por favor selecciona una imagen" })
+            showToast.error("Archivo inválido", { description: "Por favor selecciona una imagen" })
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Archivo muy grande", { description: "El tamaño máximo es 5MB" })
+            showToast.error("Archivo muy grande", { description: "El tamaño máximo es 5MB" })
             return
         }
 

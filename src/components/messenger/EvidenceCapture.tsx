@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 import { getErrorMessage } from '@/lib/error-utils'
 import { createLogger } from '@/utils/logger'
 
@@ -38,7 +38,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
     const startCamera = useCallback(async () => {
         if (photos.length >= maxPhotos) {
-            toast.error(`Máximo ${maxPhotos} fotos permitidas`)
+            showToast.error(`Máximo ${maxPhotos} fotos permitidas`)
             return
         }
 
@@ -71,7 +71,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         } catch (error) {
             logger.error('Error de cámara:', error)
             setCameraActive(false)
-            toast.error('Error de cámara', {
+            showToast.error('Error de cámara', {
                 description: getErrorMessage(error)
             })
         }
@@ -136,7 +136,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
         const remainingSlots = maxPhotos - photos.length
         if (remainingSlots <= 0) {
-            toast.error(`Máximo ${maxPhotos} fotos permitidas`)
+            showToast.error(`Máximo ${maxPhotos} fotos permitidas`)
             return
         }
 

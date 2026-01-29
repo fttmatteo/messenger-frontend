@@ -14,7 +14,8 @@ export const showToast = {
    * Muestra una notificación de éxito.
    */
   success: (message: string, options?: ExternalToast) => {
-    toast.success(message, {
+    return toast.success(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
       duration: options?.duration ?? 3000
@@ -25,7 +26,8 @@ export const showToast = {
    * Muestra una notificación de error con mayor duración por defecto.
    */
   error: (message: string, options?: ExternalToast) => {
-    toast.error(message, {
+    return toast.error(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
       duration: options?.duration ?? 5000
@@ -36,7 +38,8 @@ export const showToast = {
    * Muestra una notificación informativa.
    */
   info: (message: string, options?: ExternalToast) => {
-    toast.info(message, {
+    return toast.info(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
       duration: options?.duration ?? 4000
@@ -47,7 +50,8 @@ export const showToast = {
    * Muestra una notificación de advertencia.
    */
   warning: (message: string, options?: ExternalToast) => {
-    toast.warning(message, {
+    return toast.warning(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
       duration: options?.duration ?? 4000
@@ -60,6 +64,7 @@ export const showToast = {
    */
   loading: (message: string, options?: ExternalToast) => {
     return toast.loading(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options
     })
@@ -69,7 +74,8 @@ export const showToast = {
    * Muestra un mensaje básico sin iconos de estado.
    */
   custom: (message: string, options?: ExternalToast) => {
-    toast(message, {
+    return toast(message, {
+      id: options?.id ?? message,
       ...defaultOptions,
       ...options,
       duration: options?.duration ?? 4000

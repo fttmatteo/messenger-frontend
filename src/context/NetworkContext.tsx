@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react'
 import { NetworkContext } from './NetworkContextDef'
-import { toast } from 'sonner'
+import { showToast } from '@/config/toast-config'
 import { Wifi, WifiOff, RefreshCw, CloudOff } from 'lucide-react'
 import { offlineSyncService, type UpdateStatusWithFilesPayload } from '@/services/offline-sync.service'
 import { logger } from '@/utils/logger'
@@ -79,20 +79,18 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             const syncedCount = await offlineSyncService.syncAll()
 
             if (syncedCount > 0) {
-                toast.success(`${syncedCount} acción${syncedCount > 1 ? 'es' : ''} sincronizada${syncedCount > 1 ? 's' : ''}`, {
+                showToast.success(`${syncedCount} acción${syncedCount > 1 ? 'es' : ''} sincronizada${syncedCount > 1 ? 's' : ''}`, {
                     icon: <CloudOff className="h-4 w-4" />,
                     duration: 3000,
-                    id: 'network-sync-success',
                 })
             }
 
             setPendingActionsCount(0)
         } catch (error) {
             logger.error('Error al sincronizar acciones pendientes:', error)
-            toast.error('Error al sincronizar algunas acciones', {
+            showToast.error('Error al sincronizar algunas acciones', {
                 description: 'Se reintentará automáticamente',
                 duration: 4000,
-                id: 'network-sync-error',
             })
         }
     }, [])
@@ -109,11 +107,10 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             setIsOnline(true)
 
             if (wasOffline) {
-                toast.success('Conexión restaurada', {
+                showToast.success('Conexión restaurada', {
                     description: 'Sincronizando datos...',
                     icon: <Wifi className="h-4 w-4" />,
                     duration: 3000,
-                    id: 'network-online',
                 })
 
                 syncPendingActions()
@@ -126,11 +123,10 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             setIsOnline(false)
             setWasOffline(true)
 
-            toast.warning('Sin conexión', {
+            showToast.warning('Sin conexión', {
                 description: 'Trabajando en modo offline',
                 icon: <WifiOff className="h-4 w-4" />,
                 duration: 4000,
-                id: 'network-offline',
             })
         }
 
@@ -151,7 +147,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         const handleNeedRefresh = () => {
             setNeedRefresh(true)
 
-            toast('Nueva versión disponible', {
+            showToast.custom('Nueva versión disponible', {
                 description: 'Actualiza para obtener las últimas mejoras',
                 icon: <RefreshCw className="h-4 w-4" />,
                 action: {
@@ -159,7 +155,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     onClick: () => updateServiceWorker(),
                 },
                 duration: 10000,
-                id: 'sw-update-available',
             })
         }
 

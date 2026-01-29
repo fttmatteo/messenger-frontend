@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Input } from "@/components/ui/input"
 import { PlateCamera, ImageUploadFallback } from "@/components/camera"
 import { X, Loader2, Bike, Camera, Building2, Search, CheckCircle2, AlertCircle } from "lucide-react"
-import { toast } from "sonner"
+import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useSmartLocation } from "@/hooks/use-smart-location"
 import { CreateServiceSkeleton } from "@/components/service/ServiceSkeletons"
@@ -85,9 +85,8 @@ export default function MessengerCreateServicio() {
                 const dealershipsData = await dealershipService.getAll()
                 setDealerships(dealershipsData)
             } catch (error) {
-                toast.error("Error al cargar concesionarios", {
-                    description: getErrorMessage(error),
-                    id: "error-cargar-datos"
+                showToast.error("Error al cargar concesionarios", {
+                    description: getErrorMessage(error)
                 })
             } finally {
                 setLoadingData(false)
@@ -197,14 +196,13 @@ export default function MessengerCreateServicio() {
 
             if (isOcrError && !showManualPlate) {
                 setShowManualPlate(true)
-                toast.warning("No se pudo detectar la placa", {
+                showToast.warning("No se pudo detectar la placa", {
                     description: "Por favor ingresa la placa manualmente",
                     id: "ocr-failed"
                 })
             } else {
-                toast.error("Error al crear servicio", {
-                    description: errorMessage,
-                    id: "error-crear-servicio"
+                showToast.error("Error al crear servicio", {
+                    description: errorMessage
                 })
             }
         } finally {
