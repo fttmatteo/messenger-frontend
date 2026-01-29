@@ -61,7 +61,7 @@ const SignatureCameraCapture = forwardRef<
 
     // Monitorear preparación real de la cámara
     useEffect(() => {
-        let interval: any
+        let interval: ReturnType<typeof setInterval>
         if (!gifUrl && !isCapturing && !cameraError && !isCameraLoading) {
             interval = setInterval(() => {
                 const video = videoRef.current

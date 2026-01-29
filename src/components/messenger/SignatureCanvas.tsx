@@ -102,11 +102,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 return
             }
 
-            // Cada vez que se abre el diálogo, asumimos que la cámara necesita un momento para inicializarse
-            // a menos que ya tengamos un GIF capturado o no esté habilitada la cámara
-            if (isOpen && enableCamera && !savedGifBlob) {
-                setIsCameraReady(false)
-            }
+            // Inicializar canvas cuando se abre el diálogo
 
             const attempts = [50, 150, 300]
             const timers = attempts.map(delay =>
@@ -271,7 +267,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 <span className="font-medium">Firma capturada</span>
                             </div>
                             <div className="flex gap-2">
-                                <Button type="button" variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+                                <Button type="button" variant="outline" size="sm" onClick={() => {
+                                    if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                    setIsOpen(true)
+                                }}>
                                     Cambiar
                                 </Button>
                                 <Button type="button" variant="ghost" size="sm" onClick={clear} className="text-red-600 hover:text-red-700 hover:bg-red-50">
@@ -284,7 +283,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             type="button"
                             variant="outline"
                             className="w-full h-20 border-dashed border-2 flex flex-col gap-1"
-                            onClick={() => setIsOpen(true)}
+                            onClick={() => {
+                                if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                setIsOpen(true)
+                            }}
                         >
                             <PenLine className="h-6 w-6 text-muted-foreground" />
                             <span className="text-muted-foreground">Toca para firmar</span>
