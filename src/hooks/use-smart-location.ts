@@ -51,6 +51,9 @@ export function useSmartLocation() {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         clearTimeout(timeoutId)
+                        // Guardar en caché para uso futuro inmediato
+                        trackingService.setLastLocation(pos.coords.latitude, pos.coords.longitude)
+
                         resolve({
                             latitude: pos.coords.latitude,
                             longitude: pos.coords.longitude
