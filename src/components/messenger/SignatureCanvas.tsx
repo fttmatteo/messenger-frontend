@@ -98,6 +98,14 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
         useEffect(() => {
             if (!isOpen) {
+                // BUG FIX: Limpiar estado si se cierra el diálogo sin haber confirmado la firma
+                // Esto previene inconsistencias (como mantener un GIF viejo) al volver a abrir
+                if (!hasDrawn) {
+                    setSavedGifBlob(null)
+                    // Restablecer estado de cámara a su valor inicial (no lista si está habilitada)
+                    if (enableCamera) setIsCameraReady(false)
+                }
+
                 canvasInitializedRef.current = false
                 return
             }
@@ -110,7 +118,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             )
 
             return () => timers.forEach(t => clearTimeout(t))
-        }, [isOpen, initFullscreenCanvas])
+        }, [isOpen, hasDrawn, enableCamera, initFullscreenCanvas])
 
         const getCoords = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             const canvas = fullscreenCanvasRef.current
@@ -268,7 +276,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             </div>
                             <div className="flex gap-2">
                                 <Button type="button" variant="outline" size="sm" onClick={() => {
-                                    if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                    if (enableCamera) {
+                                        setSavedGifBlob(null)
+                                        setIsCameraReady(false)
+                                    }
                                     setIsOpen(true)
                                 }}>
                                     Cambiar
