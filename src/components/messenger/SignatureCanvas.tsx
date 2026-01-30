@@ -268,7 +268,10 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             </div>
                             <div className="flex gap-2">
                                 <Button type="button" variant="outline" size="sm" onClick={() => {
-                                    if (enableCamera && !savedGifBlob) setIsCameraReady(false)
+                                    if (enableCamera) {
+                                        setSavedGifBlob(null)
+                                        setIsCameraReady(false)
+                                    }
                                     setIsOpen(true)
                                 }}>
                                     Cambiar
@@ -294,7 +297,14 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     )}
                 </div>
 
-                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <Dialog open={isOpen} onOpenChange={(open) => {
+                    if (!open && !hasDrawn) {
+                        // BUG FIX: Limpiar estado si se cierra sin confirmar
+                        setSavedGifBlob(null)
+                        if (enableCamera) setIsCameraReady(false)
+                    }
+                    setIsOpen(open)
+                }}>
                     <DialogContent
                         className="max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 flex flex-col gap-3 sm:gap-4 rounded-none"
                         aria-describedby={undefined}

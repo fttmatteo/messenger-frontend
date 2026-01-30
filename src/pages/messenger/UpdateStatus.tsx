@@ -104,6 +104,14 @@ export default function UpdateStatus() {
         fetchService()
     }, [id])
 
+    // Optimización: Precargar ubicación al entrar a la pantalla
+    // Esto evita que el usuario tenga que esperar 20s al dar click en Confirmar
+    useEffect(() => {
+        getCurrentLocation().catch(err => {
+            logger.warn('Error precargando ubicación', err)
+        })
+    }, [getCurrentLocation])
+
     const getSelectedOption = () => statusOptions.find(o => o.value === selectedStatus)
 
     const canSubmit = () => {
