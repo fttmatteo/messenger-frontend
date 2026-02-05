@@ -11,7 +11,8 @@ import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff, Mic } from "lucide-react"
+import { VoiceInputButton } from "@/components/ui/voice-input-button"
 import { showToast } from "@/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
@@ -388,37 +389,55 @@ export default function UpdateStatus() {
                             )}
 
                             <Card className="p-4 border-border/50">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="p-1.5 rounded-lg bg-primary/10">
-                                        <MessageSquare className="h-4 w-4 text-primary" strokeWidth={2.5} />
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-1.5 rounded-lg bg-primary/10">
+                                            <MessageSquare className="h-4 w-4 text-primary" strokeWidth={2.5} />
+                                        </div>
+                                        <h3 className="text-sm font-bold tracking-tight">Observaciones</h3>
+                                        {selectedOption.requiresObservation && (
+                                            <span className="text-xs text-red-500 font-bold">*</span>
+                                        )}
+                                        {!selectedOption.requiresObservation && (
+                                            <span className="text-xs text-muted-foreground">(opcional)</span>
+                                        )}
                                     </div>
-                                    <h3 className="text-sm font-bold tracking-tight">Observaciones</h3>
-                                    {selectedOption.requiresObservation && (
-                                        <span className="text-xs text-red-500 font-bold">*</span>
-                                    )}
-                                    {!selectedOption.requiresObservation && (
-                                        <span className="text-xs text-muted-foreground">(opcional)</span>
-                                    )}
+                                    <VoiceInputButton
+                                        onTranscript={(text) => {
+                                            setObservation(prev => {
+                                                const newValue = prev ? `${prev} ${text}` : text
+                                                return newValue.trim()
+                                            })
+                                        }}
+                                        disabled={submitting}
+                                        size="icon-sm"
+                                    />
                                 </div>
-                                <Textarea
-                                    name="observation"
-                                    id="observation"
-                                    placeholder={
-                                        selectedOption.value === 'RETURNED'
-                                            ? 'Motivo de la devolución...'
-                                            : selectedOption.value === 'PENDING'
-                                                ? 'Motivo del servicio pendiente...'
-                                                : 'Notas adicionales...'
-                                    }
-                                    value={observation}
-                                    onChange={(e) => {
-                                        setObservation(e.target.value)
-                                        e.target.style.height = 'auto'
-                                        e.target.style.height = `${e.target.scrollHeight}px`
-                                    }}
-                                    rows={4}
-                                    className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-sm sm:text-base leading-relaxed p-3"
-                                />
+                                <div className="relative">
+                                    <Textarea
+                                        name="observation"
+                                        id="observation"
+                                        placeholder={
+                                            selectedOption.value === 'RETURNED'
+                                                ? 'Motivo de la devolución... (o usa el micrófono para dictar)'
+                                                : selectedOption.value === 'PENDING'
+                                                    ? 'Motivo del servicio pendiente... (o usa el micrófono para dictar)'
+                                                    : 'Notas adicionales... (o usa el micrófono para dictar)'
+                                        }
+                                        value={observation}
+                                        onChange={(e) => {
+                                            setObservation(e.target.value)
+                                            e.target.style.height = 'auto'
+                                            e.target.style.height = `${e.target.scrollHeight}px`
+                                        }}
+                                        rows={4}
+                                        className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-sm sm:text-base leading-relaxed p-3 pr-12"
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Mic className="h-3 w-3" />
+                                        <span>Dictar</span>
+                                    </div>
+                                </div>
                             </Card>
                         </motion.div>
                     )}
