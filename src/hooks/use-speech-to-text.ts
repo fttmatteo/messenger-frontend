@@ -179,7 +179,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
             recognitionRef.current = recognition
             recognition.start()
 
-        } catch (err) {
+        } catch {
             const errorMsg = 'Error al iniciar reconocimiento de voz'
             setError(errorMsg)
             setIsListening(false)
