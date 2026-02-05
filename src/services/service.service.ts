@@ -10,12 +10,10 @@ import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
  */
 class ServiceDeliveryService {
     /**
-     * Obtiene la lista completa de servicios.
-     * El resultado se filtra automáticamente en el backend según el rol del usuario:
-     * - ADMIN: Obtiene todos los servicios del sistema.
-     * - MESSENGER: Obtiene solo los servicios asignados a él.
+     * @deprecated Usar getAllPaginated en su lugar para mejor rendimiento.
      */
     async getAll(): Promise<ServiceDelivery[]> {
+        console.warn('getAll() IS DEPRECATED. Use getAllPaginated()')
         const response = await apiClient.get('/services/allServices')
         return z.array(ServiceDeliverySchema).parse(response.data)
     }
