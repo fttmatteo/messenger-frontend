@@ -50,14 +50,21 @@ export function useMessengerServices(): UseMessengerServicesReturn {
         try {
             setLoading(true)
             setError(null)
-            const data = await serviceDeliveryService.getAll()
-            const sorted = data.sort((a, b) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            )
-            setServices(sorted)
+
+            // Usamos la versión paginada con un tamaño generoso para el mensajero (ej. 100 últimos servicios)
+            // en lugar de traer los miles de registros históricos de una vez.
+            const response = await serviceDeliveryService.getAllPaginated({
+                page: 0,
+                size: 100,
+                sortBy: 'createdAt',
+                sortDirection: 'desc'
+            })
+
+            const data = response.content
+            setServices(data)
             setIsFromCache(false)
 
-            await offlineCacheService.cacheServices(sorted)
+            await offlineCacheService.cacheServices(data)
         } catch (err) {
             const message = getErrorMessage(err)
 
