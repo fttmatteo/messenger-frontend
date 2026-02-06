@@ -19,6 +19,8 @@ export interface UseSpeechToTextReturn {
     isListening: boolean
     /** Indica si el navegador soporta Speech Recognition */
     isSupported: boolean
+    /** Indica si se han denegado los permisos */
+    isPermissionDenied: boolean
     /** Transcripción actual (puede incluir resultados intermedios) */
     transcript: string
     /** Transcripción final confirmada */
@@ -57,12 +59,15 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
     } = options
 
     const [isListening, setIsListening] = useState(false)
+    const [isPermissionDenied, setIsPermissionDenied] = useState(false)
     const [transcript, setTranscript] = useState('')
     const [finalTranscript, setFinalTranscript] = useState('')
     const [error, setError] = useState<string | null>(null)
 
     const recognitionRef = useRef<SpeechRecognition | null>(null)
     const isStoppingRef = useRef(false)
+    const retryCountRef = useRef(0)
+    const MAX_RETRIES = 3
 
     // Verificar soporte del navegador
     const isSupported = typeof window !== 'undefined' &&
@@ -160,6 +165,23 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
                     return
                 }
 
+                if (event.error === 'not-allowed') {
+                    setIsPermissionDenied(true)
+                }
+
+                // En algunos navegadores (Safari/PWA), 'network' ocurre si el servicio se corta
+                // Intentamos reiniciar una vez si fue por red o si se abortó inesperadamente
+                if ((event.error === 'network' || event.error === 'aborted') && !isStoppingRef.current && retryCountRef.current < MAX_RETRIES) {
+                    retryCountRef.current++
+                    console.warn(`[SpeechToText] Error ${event.error}, reintentando (${retryCountRef.current}/${MAX_RETRIES})...`)
+                    setTimeout(() => {
+                        if (!isStoppingRef.current) {
+                            recognition.start()
+                        }
+                    }, 500)
+                    return
+                }
+
                 const errorMsg = getErrorMessage(event.error)
                 setError(errorMsg)
                 setIsListening(false)
@@ -167,19 +189,53 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
             }
 
             recognition.onend = () => {
+                // Si continuous es true y no detuvimos manualmente, intentamos reiniciar
+                // Esto es crucial para PWA y Safari donde el tiempo de silencio es muy agresivo
+                if (continuous && !isStoppingRef.current && retryCountRef.current < MAX_RETRIES) {
+                    try {
+                        recognition.start()
+                        return
+                    } catch (e) {
+                        console.error('[SpeechToText] Error al reiniciar reconocimiento:', e)
+                    }
+                }
+                
                 setIsListening(false)
-                // Limpiar transcripción intermedia al finalizar
                 setTranscript('')
             }
 
             recognition.onspeechend = () => {
-                // La detección de voz terminó, pero onend manejará el estado
+                // La detección de voz terminó, en modo continuo intentamos mantenerlo vivo
             }
 
             recognitionRef.current = recognition
-            recognition.start()
 
-        } catch {
+            // Verificación previa de permisos para mejor UX en móviles/PWA
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(() => {
+                        setIsPermissionDenied(false)
+                        recognition.start()
+                    })
+                    .catch((err) => {
+                        console.error('[SpeechToText] Error de permisos:', err)
+                        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                            setIsPermissionDenied(true)
+                            const msg = getErrorMessage('not-allowed')
+                            setError(msg)
+                            onError?.(msg)
+                        } else {
+                            const msg = 'No se pudo acceder al micrófono'
+                            setError(msg)
+                            onError?.(msg)
+                        }
+                    })
+            } else {
+                recognition.start()
+            }
+
+        } catch (e) {
+            console.error('[SpeechToText] Catch error:', e)
             const errorMsg = 'Error al iniciar reconocimiento de voz'
             setError(errorMsg)
             setIsListening(false)
@@ -189,6 +245,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
 
     const stopListening = useCallback(() => {
         isStoppingRef.current = true
+        retryCountRef.current = 0
 
         if (recognitionRef.current) {
             try {
@@ -218,6 +275,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
     return {
         isListening,
         isSupported,
+        isPermissionDenied,
         transcript,
         finalTranscript,
         error,
