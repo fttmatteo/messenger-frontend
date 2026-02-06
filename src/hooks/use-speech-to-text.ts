@@ -67,6 +67,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
     const recognitionRef = useRef<SpeechRecognition | null>(null)
     const isStoppingRef = useRef(false)
     const retryCountRef = useRef(0)
+    const silenceTimerRef = useRef<any>(null)
     const MAX_RETRIES = 3
 
     // Verificar soporte del navegador
@@ -76,6 +77,9 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
     // Limpiar al desmontar
     useEffect(() => {
         return () => {
+            if (silenceTimerRef.current) {
+                clearTimeout(silenceTimerRef.current)
+            }
             if (recognitionRef.current) {
                 recognitionRef.current.abort()
                 recognitionRef.current = null
@@ -85,16 +89,26 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
 
     const getErrorMessage = useCallback((errorCode: string): string => {
         const errorMessages: Record<string, string> = {
-            'no-speech': 'No se detectó voz. Intenta hablar más cerca del micrófono.',
-            'audio-capture': 'No se pudo acceder al micrófono. Verifica los permisos.',
-            'not-allowed': 'Permiso de micrófono denegado. Habilita el acceso al micrófono.',
-            'network': 'Error de red. Verifica tu conexión a internet.',
-            'aborted': 'Reconocimiento cancelado.',
-            'service-not-allowed': 'Servicio de reconocimiento no permitido.',
-            'language-not-supported': 'Idioma no soportado.',
-            'bad-grammar': 'Error de gramática en el reconocimiento.',
+            'no-speech': 'No se detectó voz. Asegúrate de estar en un lugar con poco ruido y hablar claro.',
+            'audio-capture': 'No se pudo acceder al micrófono. Verifica que no esté siendo usado por otra app.',
+            'not-allowed': 'Permiso denegado. Pulsa el ícono del candado en la barra de direcciones y habilita el micrófono.',
+            'network': 'Error de conexión. El dictado por voz requiere internet para funcionar.',
+            'aborted': 'Reconocimiento detenido.',
+            'service-not-allowed': 'El servicio de voz no está disponible en este momento.',
+            'language-not-supported': 'El idioma seleccionado no es compatible.',
+            'bad-grammar': 'Error de procesamiento. Intenta frases más cortas.',
         }
-        return errorMessages[errorCode] || `Error de reconocimiento: ${errorCode}`
+        return errorMessages[errorCode] || `Error (${errorCode}). Intenta reiniciar el dictado.`
+    }, [])
+
+    const vibrate = useCallback((pattern: number | number[]) => {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(pattern)
+            } catch {
+                // Ignore vibration errors
+            }
+        }
     }, [])
 
     const startListening = useCallback(() => {
@@ -129,9 +143,21 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
             recognition.onstart = () => {
                 setIsListening(true)
                 setError(null)
+                vibrate(15) // Vibración corta al iniciar
+
+                // Iniciar timer de silencio inicial (5 segundos)
+                silenceTimerRef.current = setTimeout(() => {
+                    setError('¿Estás ahí? Habla ahora para dictar tu observación...')
+                }, 5000)
             }
 
             recognition.onresult = (event: SpeechRecognitionEvent) => {
+                // Cancelar timeout de silencio si recibimos resultados
+                if (silenceTimerRef.current) {
+                    clearTimeout(silenceTimerRef.current)
+                    silenceTimerRef.current = null
+                }
+
                 let interimText = ''
                 let finalText = ''
 
@@ -156,10 +182,23 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
                         return newTranscript.trim()
                     })
                     onTranscript?.(finalText.trim())
+
+                    // Reiniciar timer de silencio para la siguiente frase
+                    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
+                    silenceTimerRef.current = setTimeout(() => {
+                        setError('Sigo escuchando... puedes continuar dictando.')
+                        setTimeout(() => setError(null), 3000) // Limpiar el "tip" después de 3s
+                    }, 8000)
                 }
             }
 
             recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+                // Limpiar timers
+                if (silenceTimerRef.current) {
+                    clearTimeout(silenceTimerRef.current)
+                    silenceTimerRef.current = null
+                }
+
                 // Ignorar errores si estamos deteniendo intencionalmente
                 if (isStoppingRef.current && event.error === 'aborted') {
                     return
@@ -186,9 +225,15 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
                 setError(errorMsg)
                 setIsListening(false)
                 onError?.(errorMsg)
+                vibrate([30, 50, 30]) // Patrón de error
             }
 
             recognition.onend = () => {
+                if (silenceTimerRef.current) {
+                    clearTimeout(silenceTimerRef.current)
+                    silenceTimerRef.current = null
+                }
+
                 // Si continuous es true y no detuvimos manualmente, intentamos reiniciar
                 // Esto es crucial para PWA y Safari donde el tiempo de silencio es muy agresivo
                 if (continuous && !isStoppingRef.current && retryCountRef.current < MAX_RETRIES) {
@@ -199,40 +244,16 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
                         console.error('[SpeechToText] Error al reiniciar reconocimiento:', e)
                     }
                 }
-                
+
                 setIsListening(false)
                 setTranscript('')
-            }
-
-            recognition.onspeechend = () => {
-                // La detección de voz terminó, en modo continuo intentamos mantenerlo vivo
+                if (isStoppingRef.current) {
+                    vibrate(10) // Confirmación de apagado manual
+                }
             }
 
             recognitionRef.current = recognition
-
-            // Verificación previa de permisos para mejor UX en móviles/PWA
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(() => {
-                        setIsPermissionDenied(false)
-                        recognition.start()
-                    })
-                    .catch((err) => {
-                        console.error('[SpeechToText] Error de permisos:', err)
-                        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                            setIsPermissionDenied(true)
-                            const msg = getErrorMessage('not-allowed')
-                            setError(msg)
-                            onError?.(msg)
-                        } else {
-                            const msg = 'No se pudo acceder al micrófono'
-                            setError(msg)
-                            onError?.(msg)
-                        }
-                    })
-            } else {
-                recognition.start()
-            }
+            recognition.start()
 
         } catch (e) {
             console.error('[SpeechToText] Catch error:', e)
@@ -241,11 +262,17 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
             setIsListening(false)
             onError?.(errorMsg)
         }
-    }, [isSupported, lang, continuous, interimResults, onTranscript, onError, getErrorMessage])
+    }, [isSupported, lang, continuous, interimResults, onTranscript, onError, getErrorMessage, vibrate])
 
     const stopListening = useCallback(() => {
         isStoppingRef.current = true
         retryCountRef.current = 0
+
+        // Limpiar timers de sugerencias
+        if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current)
+            silenceTimerRef.current = null
+        }
 
         if (recognitionRef.current) {
             try {
@@ -257,6 +284,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
 
         setIsListening(false)
         setTranscript('')
+        setError(null) // Limpiar cualquier mensaje de sugerencia o error previo
     }, [])
 
     const toggleListening = useCallback(() => {

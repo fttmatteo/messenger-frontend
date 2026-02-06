@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { Mic, MicOff, Loader2, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -18,8 +18,6 @@ export interface VoiceInputButtonProps {
     lang?: string
     /** Tamaño del botón */
     size?: 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg'
-    /** Mostrar indicador de transcripción activa */
-    showActiveIndicator?: boolean
 }
 
 /**
@@ -42,10 +40,13 @@ export function VoiceInputButton({
     className,
     lang = 'es-CO',
     size = 'icon',
-    showActiveIndicator = true,
 }: VoiceInputButtonProps) {
     const handleTranscript = useCallback((text: string) => {
-        onTranscript(text)
+        if (!text) return
+
+        // Formatear el texto: Capitalizar primera letra y limpiar espacios
+        const formattedText = text.trim().charAt(0).toUpperCase() + text.trim().slice(1)
+        onTranscript(formattedText)
     }, [onTranscript])
 
     const handleError = useCallback((error: string) => {
@@ -64,22 +65,12 @@ export function VoiceInputButton({
         toggleListening,
     } = useSpeechToText({
         lang,
-        continuous: false,
+        continuous: true,
         interimResults: true,
         onTranscript: handleTranscript,
         onError: handleError,
     } as UseSpeechToTextOptions)
 
-    // Mostrar toast de inicio/fin de escucha
-    useEffect(() => {
-        if (isListening) {
-            showToast.info('Escuchando...', {
-                description: 'Habla ahora para dictar tu observación',
-                duration: 2000,
-                id: 'voice-listening',
-            })
-        }
-    }, [isListening])
 
     // Si no está soportado, no mostrar el botón
     if (!isSupported) {
@@ -157,50 +148,6 @@ export function VoiceInputButton({
                                 )}
                             </AnimatePresence>
                         </Button>
-
-                        {/* Ondas de actividad de voz cuando está escuchando */}
-                        {isListening && showActiveIndicator && (
-                            <div className="absolute inset-0 -z-10 flex items-center justify-center">
-                                <motion.div
-                                    className="absolute w-full h-full rounded-full bg-red-500/20"
-                                    animate={{
-                                        scale: [1, 1.5, 1],
-                                        opacity: [0.5, 0, 0.5]
-                                    }}
-                                    transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeInOut"
-                                    }}
-                                />
-                                <motion.div
-                                    className="absolute w-full h-full rounded-full bg-red-500/10"
-                                    animate={{
-                                        scale: [1, 1.8, 1],
-                                        opacity: [0.3, 0, 0.3]
-                                    }}
-                                    transition={{
-                                        duration: 2.5,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                        delay: 0.5
-                                    }}
-                                />
-                            </div>
-                        )}
-
-                        {/* Indicador de pulso pequeño */}
-                        {isListening && showActiveIndicator && (
-                            <motion.div
-                                className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                exit={{ scale: 0 }}
-                            >
-                                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping" />
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-sm" />
-                            </motion.div>
-                        )}
                     </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
@@ -218,10 +165,17 @@ export function VoiceInputButton({
             <AnimatePresence>
                 {isListening && transcript && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute bottom-full mb-2 left-0 right-0 bg-background/95 backdrop-blur-sm border border-border rounded-lg p-2 shadow-lg z-50"
+                        exit={{ opacity: 0, y: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className={cn(
+                            "z-50 bg-background/95 backdrop-blur-sm border border-border rounded-lg p-2 shadow-lg transition-all duration-200",
+                            // Móvil: Fijo abajo para evitar recortes y estar cerca del pulgar
+                            "fixed bottom-24 left-4 right-4 max-w-[90vw] mx-auto sm:static",
+                            // Escritorio: Absoluto sobre el botón (como pidió el usuario)
+                            "sm:absolute sm:bottom-full sm:mb-2 sm:left-0 sm:right-0 sm:w-auto sm:min-w-[200px]"
+                        )}
                     >
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Loader2 className="h-3 w-3 animate-spin text-primary" />

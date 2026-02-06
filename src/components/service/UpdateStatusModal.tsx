@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Loader2, Save, UserPlus, Mic } from "lucide-react"
+import { Loader2, Save, UserPlus } from "lucide-react"
 import { VoiceInputButton } from "@/components/ui/voice-input-button"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { useStatusColors } from "@/hooks/use-status-colors"
@@ -236,10 +236,6 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                                 rows={3}
                                 className="resize-none pr-10"
                             />
-                            <div className="absolute bottom-2 right-3 flex items-center gap-1 text-[10px] text-muted-foreground pointer-events-none">
-                                <Mic className="h-3 w-3" />
-                                <span>Dictar</span>
-                            </div>
                         </div>
                     </div>
                 </div>

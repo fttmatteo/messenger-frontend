@@ -11,7 +11,7 @@ import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
 import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
-import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff, Mic } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
 import { VoiceInputButton } from "@/components/ui/voice-input-button"
 import { showToast } from "@/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
@@ -433,10 +433,6 @@ export default function UpdateStatus() {
                                         rows={4}
                                         className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-sm sm:text-base leading-relaxed p-3 pr-12"
                                     />
-                                    <div className="absolute bottom-3 right-3 flex items-center gap-1 text-xs text-muted-foreground">
-                                        <Mic className="h-3 w-3" />
-                                        <span>Dictar</span>
-                                    </div>
                                 </div>
                             </Card>
                         </motion.div>
