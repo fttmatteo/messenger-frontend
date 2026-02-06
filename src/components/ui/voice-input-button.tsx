@@ -58,6 +58,7 @@ export function VoiceInputButton({
     const {
         isListening,
         isSupported,
+        isPermissionDenied,
         transcript,
         error,
         toggleListening,
@@ -157,22 +158,59 @@ export function VoiceInputButton({
                             </AnimatePresence>
                         </Button>
 
-                        {/* Indicador de pulso cuando está escuchando */}
+                        {/* Ondas de actividad de voz cuando está escuchando */}
+                        {isListening && showActiveIndicator && (
+                            <div className="absolute inset-0 -z-10 flex items-center justify-center">
+                                <motion.div
+                                    className="absolute w-full h-full rounded-full bg-red-500/20"
+                                    animate={{
+                                        scale: [1, 1.5, 1],
+                                        opacity: [0.5, 0, 0.5]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                                <motion.div
+                                    className="absolute w-full h-full rounded-full bg-red-500/10"
+                                    animate={{
+                                        scale: [1, 1.8, 1],
+                                        opacity: [0.3, 0, 0.3]
+                                    }}
+                                    transition={{
+                                        duration: 2.5,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                        delay: 0.5
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {/* Indicador de pulso pequeño */}
                         {isListening && showActiveIndicator && (
                             <motion.div
-                                className="absolute -top-1 -right-1 w-3 h-3"
+                                className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0 }}
                             >
                                 <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping" />
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-sm" />
                             </motion.div>
                         )}
                     </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                    <p>{isListening ? 'Toca para detener' : 'Dictar por voz'}</p>
+                    <p>
+                        {isPermissionDenied
+                            ? 'Permiso de micrófono denegado'
+                            : isListening
+                                ? 'Toca para detener'
+                                : 'Dictar por voz'}
+                    </p>
                 </TooltipContent>
             </Tooltip>
 
