@@ -4,7 +4,7 @@
  */
 export const APP_CONFIG = {
     name: 'PLAK',
-    version: '1.5.1',
+    version: '1.5.2',
     description: 'Sistema de gestión de entrega de placas',
     supportEmail: 'soporte@plak.digital',
 } as const
