@@ -20,6 +20,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position={position}
+      expand={true}
       offset={isMobile ? 80 : 32}
       gap={12}
       duration={4000}
