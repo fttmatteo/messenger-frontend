@@ -67,7 +67,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): UseSpeech
     const recognitionRef = useRef<SpeechRecognition | null>(null)
     const isStoppingRef = useRef(false)
     const retryCountRef = useRef(0)
-    const silenceTimerRef = useRef<any>(null)
+    const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const MAX_RETRIES = 3
 
     // Verificar soporte del navegador
