@@ -32,8 +32,10 @@ export function useTranscription(): UseTranscriptionReturn {
         const timeoutId = setTimeout(() => controller.abort(), 30000)
 
         try {
+            const extension = audioBlob.type.includes('mp4') ? 'mp4' : 'webm'
             const formData = new FormData()
-            formData.append('audio', audioBlob, 'recording.webm')
+            formData.append('audio', audioBlob, `recording.${extension}`)
+            formData.append('language', 'es-CO')
 
             // Obtener token de autenticación
             const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken')
