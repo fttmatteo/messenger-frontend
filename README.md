@@ -100,7 +100,7 @@
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
-| **Speech-to-Text** | Native Web Speech API integration for dictating service observations, enhancing efficiency for messengers in the field. |
+| **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 
 ---
 
