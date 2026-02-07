@@ -113,6 +113,7 @@ export default function EditConcesionario() {
                     address: dealership.address,
                     phone: dealership.phone,
                     zone: dealership.zone ? dealership.zone.toUpperCase() : "",
+                    whatsappPin: dealership.whatsappPin || "",
                 })
                 setInitialAddress(dealership.address)
                 setGeocoded(dealership.isGeolocated || false)
@@ -138,6 +139,7 @@ export default function EditConcesionario() {
                 address: capitalizeWords(data.address.trim()),
                 phone: data.phone,
                 zone: data.zone,
+                whatsappPin: data.whatsappPin,
             })
             setSuccess("Concesionario actualizado exitosamente")
             navigate("/admin/concesionarios")
@@ -163,6 +165,7 @@ export default function EditConcesionario() {
                 address: capitalizeWords(data.address.trim()),
                 phone: data.phone,
                 zone: data.zone,
+                whatsappPin: data.whatsappPin,
             })
             // Luego geocodificar
             const result = await dealershipService.geocode(Number(id))
