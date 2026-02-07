@@ -1,8 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Mic, MicOff, Loader2, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { useSpeechToText, type UseSpeechToTextOptions } from '@/hooks/use-speech-to-text'
+import { useAudioRecorder } from '@/hooks/use-audio-recorder'
+import { useTranscription } from '@/hooks/use-transcription'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { showToast } from '@/config/toast-config'
@@ -14,65 +15,62 @@ export interface VoiceInputButtonProps {
     disabled?: boolean
     /** Clases adicionales para el botón */
     className?: string
-    /** Idioma para el reconocimiento (default: 'es-CO') */
-    lang?: string
     /** Tamaño del botón */
     size?: 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg'
 }
 
 /**
- * Botón de entrada de voz que utiliza la Web Speech API
- * para transcribir voz a texto.
+ * Botón de entrada de voz que graba audio y lo transcribe
+ * usando Google Cloud Speech-to-Text API.
  * 
- * @example
- * ```tsx
- * <div className="flex gap-2">
- *     <Textarea value={text} onChange={e => setText(e.target.value)} />
- *     <VoiceInputButton 
- *         onTranscript={(t) => setText(prev => prev + ' ' + t)} 
- *     />
- * </div>
- * ```
+ * Modo Toggle: 
+ * - Primer clic: Inicia grabación
+ * - Segundo clic: Detiene y transcribe
  */
 export function VoiceInputButton({
     onTranscript,
     disabled = false,
     className,
-    lang = 'es-CO',
     size = 'icon',
 }: VoiceInputButtonProps) {
-    const handleTranscript = useCallback((text: string) => {
-        if (!text) return
+    const { isRecording, isSupported, startRecording, stopRecording, error: recorderError } = useAudioRecorder()
+    const { transcribe, isTranscribing, error: transcriptionError } = useTranscription()
+    const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-        // Formatear el texto: Capitalizar primera letra y limpiar espacios
-        const formattedText = text.trim().charAt(0).toUpperCase() + text.trim().slice(1)
-        onTranscript(formattedText)
-    }, [onTranscript])
+    const error = recorderError || transcriptionError
 
-    const handleError = useCallback((error: string) => {
-        showToast.error('Error de voz', {
-            description: error,
-            duration: 4000,
-        })
-    }, [])
+    const handleToggle = useCallback(async () => {
+        if (isRecording) {
+            // Detener grabación y transcribir
+            setStatusMessage('Transcribiendo...')
+            const audioBlob = await stopRecording()
 
-    const {
-        isListening,
-        isSupported,
-        isPermissionDenied,
-        transcript,
-        error,
-        toggleListening,
-    } = useSpeechToText({
-        lang,
-        continuous: true,
-        interimResults: true,
-        onTranscript: handleTranscript,
-        onError: handleError,
-    } as UseSpeechToTextOptions)
+            if (audioBlob && audioBlob.size > 0) {
+                const transcript = await transcribe(audioBlob)
 
+                if (transcript) {
+                    // Formatear: Capitalizar primera letra
+                    const formattedText = transcript.trim().charAt(0).toUpperCase() + transcript.trim().slice(1)
+                    onTranscript(formattedText)
+                    setStatusMessage(null)
+                } else {
+                    setStatusMessage(null)
+                    showToast.error('Error', {
+                        description: transcriptionError || 'No se pudo transcribir el audio',
+                        duration: 4000,
+                    })
+                }
+            } else {
+                setStatusMessage(null)
+            }
+        } else {
+            // Iniciar grabación
+            setStatusMessage(null)
+            await startRecording()
+        }
+    }, [isRecording, stopRecording, startRecording, transcribe, onTranscript, transcriptionError])
 
-    // Si no está soportado, no mostrar el botón
+    // Si no está soportado (no hay MediaRecorder), mostrar botón deshabilitado
     if (!isSupported) {
         return (
             <TooltipProvider>
@@ -89,12 +87,15 @@ export function VoiceInputButton({
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>Tu navegador no soporta entrada de voz</p>
+                        <p>Tu navegador no soporta grabación de audio</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
         )
     }
+
+    const isProcessing = isTranscribing
+    const showRecordingIndicator = isRecording || isProcessing
 
     return (
         <TooltipProvider>
@@ -103,21 +104,31 @@ export function VoiceInputButton({
                     <div className="relative">
                         <Button
                             type="button"
-                            variant={isListening ? 'destructive' : 'outline'}
+                            variant={isRecording ? 'destructive' : 'outline'}
                             size={size}
-                            disabled={disabled}
-                            onClick={toggleListening}
+                            disabled={disabled || isProcessing}
+                            onClick={handleToggle}
                             className={cn(
                                 'relative transition-all duration-200',
-                                isListening && 'ring-2 ring-red-500/50 ring-offset-2 ring-offset-background',
+                                isRecording && 'ring-2 ring-red-500/50 ring-offset-2 ring-offset-background',
                                 className
                             )}
-                            aria-label={isListening ? 'Detener dictado' : 'Iniciar dictado por voz'}
+                            aria-label={isRecording ? 'Detener grabación' : 'Iniciar grabación de voz'}
                         >
                             <AnimatePresence mode="wait">
-                                {isListening ? (
+                                {isProcessing ? (
                                     <motion.div
-                                        key="listening"
+                                        key="processing"
+                                        initial={{ scale: 0, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0, opacity: 0 }}
+                                        transition={{ duration: 0.15 }}
+                                    >
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    </motion.div>
+                                ) : isRecording ? (
+                                    <motion.div
+                                        key="recording"
                                         initial={{ scale: 0, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
                                         exit={{ scale: 0, opacity: 0 }}
@@ -152,18 +163,18 @@ export function VoiceInputButton({
                 </TooltipTrigger>
                 <TooltipContent side="top">
                     <p>
-                        {isPermissionDenied
-                            ? 'Permiso de micrófono denegado'
-                            : isListening
+                        {isProcessing
+                            ? 'Transcribiendo...'
+                            : isRecording
                                 ? 'Toca para detener'
                                 : 'Dictar por voz'}
                     </p>
                 </TooltipContent>
             </Tooltip>
 
-            {/* Indicador flotante de transcripción en progreso */}
+            {/* Indicador flotante de estado */}
             <AnimatePresence>
-                {isListening && transcript && (
+                {showRecordingIndicator && (
                     <motion.div
                         initial={{ opacity: 0, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -177,7 +188,9 @@ export function VoiceInputButton({
                     >
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                            <span className="italic truncate">{transcript}</span>
+                            <span className="italic truncate">
+                                {statusMessage || (isRecording ? 'Grabando...' : 'Procesando...')}
+                            </span>
                         </div>
                     </motion.div>
                 )}

@@ -94,8 +94,8 @@ class OfflineSyncService {
                 const registration = await navigator.serviceWorker.ready
                 // @ts-expect-error - sync solo existe en navegadores compatibles con Background Sync
                 await registration.sync.register('sync-pending-actions')
-            } catch (err) {
-                console.warn('Background Sync no pudo ser registrado:', err)
+            } catch {
+                // Background Sync no disponible - fallback silencioso, la app sincronizará cuando haya conexión
             }
         }
 
