@@ -43,7 +43,8 @@ export function useTranscription(): UseTranscriptionReturn {
                 throw new Error('No hay sesión activa')
             }
 
-            const response = await fetch('/api/transcribe', {
+            const API_URL = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${API_URL}/api/transcribe`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
