@@ -1,4 +1,8 @@
 import { useCallback, useState } from 'react'
+import { createLogger } from '@/utils/logger'
+
+const logger = createLogger('Transcription')
+
 
 interface TranscriptionResponse {
     transcript: string
@@ -86,7 +90,7 @@ export function useTranscription(): UseTranscriptionReturn {
             }
 
             setError(message)
-            console.error('Transcription error:', err)
+            logger.error('Transcription error', err)
             return null
         } finally {
             setIsTranscribing(false)

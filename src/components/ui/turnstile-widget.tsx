@@ -37,6 +37,9 @@ interface TurnstileWidgetProps {
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
+import { createLogger } from '@/utils/logger';
+const logger = createLogger('TurnstileWidget');
+
 /**
  * Componente de Cloudflare Turnstile para verificación anti-bot.
  * Renderiza un widget invisible o visible que genera un token de verificación.
@@ -83,14 +86,13 @@ export function TurnstileWidget({
         // Bypass para desarrollo si se usa la clave de prueba de Cloudflare
         // Site key: 1x00000000000000000000AA
         if (SITE_KEY === '1x00000000000000000000AA') {
-            console.log('TurnstileWidget: Bypass detectado (usando clave de prueba de Cloudflare)');
             onVerifyRef.current('dummy-dev-token');
             return;
         }
 
         // Verificar que tenemos la site key
         if (!SITE_KEY) {
-            console.error('TurnstileWidget: VITE_TURNSTILE_SITE_KEY no está configurada');
+            logger.error('VITE_TURNSTILE_SITE_KEY no está configurada');
             return;
         }
 
@@ -135,7 +137,7 @@ export function TurnstileWidget({
                     window.onTurnstileLoad = renderWidget;
 
                     script.onerror = () => {
-                        console.error(`TurnstileWidget: Error al cargar el script de Turnstile (Intento ${retryCountRef.current + 1}/${maxRetries})`);
+                        logger.error(`Error al cargar el script de Turnstile (Intento ${retryCountRef.current + 1}/${maxRetries})`);
                         script.remove(); // Limpiar script fallido
 
                         if (retryCountRef.current < maxRetries) {

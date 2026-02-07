@@ -43,7 +43,6 @@ self.addEventListener('sync', (event) => {
 })
 
 async function syncPendingActions() {
-    console.log('[SW] Iniciando sincronización en segundo plano...')
     // Nota: Dado que el SW no tiene acceso directo a los servicios de la app
     // por cuestiones de bundling/modulos en Vite, usualmente se envía un mensaje
     // a los clientes activos o se utiliza una implementación compartida de IDB.

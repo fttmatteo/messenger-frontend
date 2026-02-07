@@ -20,6 +20,10 @@ import { TablePagination } from "@/components/ui/table-pagination"
 import { Map } from "@/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, X, ExternalLink } from "lucide-react"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('Concesionarios')
+
 
 /**
  * Componente que renderiza un marcador personalizado en el mapa para la ubicación de un concesionario.
@@ -95,7 +99,7 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
                     setLoading(false)
                 }
             } catch (err) {
-                console.error('Reverse geocode error:', err)
+                logger.error('Reverse geocode error', err)
                 if (isMounted) {
                     setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
                     setLoading(false)

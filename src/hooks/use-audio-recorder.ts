@@ -1,4 +1,8 @@
 import { useState, useRef, useCallback } from 'react'
+import { createLogger } from '@/utils/logger'
+
+const logger = createLogger('AudioRecorder')
+
 
 interface UseAudioRecorderReturn {
     isRecording: boolean
@@ -90,7 +94,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
             }
 
             setError(message)
-            console.error('Error starting recording:', err)
+            logger.error('Error starting recording', err)
         }
     }, [isSupported])
 

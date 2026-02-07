@@ -16,6 +16,10 @@ import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
 import { Badge } from "@/components/ui/badge"
 import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
 import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('CreateConcesionario')
+
 
 /**
  * Marcador personalizado para mostrar la ubicación previa del concesionario en el mapa.
@@ -119,7 +123,7 @@ export default function CreateConcesionario() {
                 setError("No se encontraron coordenadas para esta dirección. Intenta ser más específico.")
             }
         } catch (error) {
-            console.error("Geocoding error", error)
+            logger.error("Geocoding error", error)
             setError("Error obteniendo ubicación. Verifica tu conexión a internet.")
         } finally {
             setGeocoding(false)
@@ -139,7 +143,7 @@ export default function CreateConcesionario() {
                 await dealershipService.geocode(created.idDealership)
                 setSuccess("Concesionario creado y ubicado exitosamente")
             } catch (geocodeError) {
-                console.error(geocodeError)
+                logger.error("Auto geocoding failed", geocodeError)
                 setSuccess("Concesionario creado, pero falló la geocodificación automática")
             }
 
