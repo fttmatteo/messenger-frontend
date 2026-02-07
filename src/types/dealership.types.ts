@@ -10,6 +10,7 @@ export interface Dealership {
     latitude?: number
     longitude?: number
     isGeolocated?: boolean
+    whatsappPin?: string
 }
 
 /**
@@ -20,6 +21,7 @@ export interface CreateDealershipRequest {
     address: string
     phone: string
     zone: string
+    whatsappPin?: string
 }
 
 export type UpdateDealershipRequest = CreateDealershipRequest

@@ -84,6 +84,7 @@ export default function CreateConcesionario() {
             address: "",
             phone: "",
             zone: "",
+            whatsappPin: "",
         },
     })
 
@@ -137,6 +138,7 @@ export default function CreateConcesionario() {
                 address: capitalizeWords(data.address.trim()),
                 phone: data.phone,
                 zone: data.zone,
+                whatsappPin: data.whatsappPin,
             })
 
             try {

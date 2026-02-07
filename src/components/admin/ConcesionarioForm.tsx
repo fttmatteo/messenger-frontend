@@ -89,6 +89,23 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
                     <p className="text-sm text-red-500">{errors.zone.message}</p>
                 )}
             </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="whatsappPin">PIN de WhatsApp (4 dígitos)</Label>
+                <Input
+                    id="whatsappPin"
+                    placeholder="1234"
+                    maxLength={4}
+                    disabled={disabled}
+                    {...register("whatsappPin")}
+                />
+                {errors.whatsappPin && (
+                    <p className="text-sm text-red-500">{errors.whatsappPin.message}</p>
+                )}
+                <p className="text-[10px] text-muted-foreground italic">
+                    PIN requerido para que los asesores se autentiquen en el bot de WhatsApp.
+                </p>
+            </div>
         </div>
     )
 }

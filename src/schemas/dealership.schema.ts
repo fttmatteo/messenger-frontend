@@ -18,6 +18,7 @@ export const dealershipSchema = z.object({
     address: z.string().min(1, "La dirección es requerida").min(10, "La dirección debe ser más detallada"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
     zone: z.string().min(1, "La zona es requerida"),
+    whatsappPin: z.string().optional().or(z.string().regex(/^\d{4}$/, "El PIN debe ser de 4 dígitos").optional()),
 })
 
 export type DealershipFormValues = z.infer<typeof dealershipSchema>
