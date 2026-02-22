@@ -85,7 +85,11 @@ export function TurnstileWidget({
     useEffect(() => {
         // Bypass para desarrollo si se usa la clave de prueba de Cloudflare
         // Site key: 1x00000000000000000000AA
-        if (SITE_KEY === '1x00000000000000000000AA') {
+        const isTestKey = SITE_KEY?.trim().startsWith('1x00000000');
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        if (isTestKey || (isLocalhost && !SITE_KEY)) {
+            logger.info('Bypass de Turnstile activado (entorno de desarrollo/local)');
             onVerifyRef.current('dummy-dev-token');
             return;
         }
