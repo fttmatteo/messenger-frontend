@@ -197,7 +197,18 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Requerido para funcionalidad de mapas |
 
-### 🔧 Desarrollo Local
+### 🚀 Inicio Rápido (Docker)
+
+Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
+
+1. Ve a la carpeta del backend: `cd ../messenger-backend`
+2. Ejecuta: `docker-compose up --build`
+
+Esto compilará el frontend y lo servirá en `http://localhost`.
+
+---
+
+### 🔧 Desarrollo Local (Manual)
 
 ```bash
 # 1. Clonar el repositorio
