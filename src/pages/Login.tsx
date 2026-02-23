@@ -171,7 +171,7 @@ export default function Login() {
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
-            <div className="flex items-center justify-center h-screen bg-background p-2 sm:p-4 overflow-auto">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-2 sm:p-4 overflow-auto">
                 <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
                     <div className="absolute top-3 left-3 z-10">
                         <Button
