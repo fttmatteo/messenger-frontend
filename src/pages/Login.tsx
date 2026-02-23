@@ -289,6 +289,11 @@ export default function Login() {
                     </CardContent>
                 </Card>
 
+                <div className="mt-6 text-center text-[10px] text-muted-foreground max-w-[350px] leading-relaxed">
+                    PLAK es un software desarrollado y operado legalmente por Mateo Valencia Ardila | NIT 1000413081-0
+                </div>
+
+
                 <div className="fixed bottom-4 left-4 z-50">
                     <TurnstileWidget
                         onVerify={handleTurnstileVerify}
