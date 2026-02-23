@@ -171,7 +171,7 @@ export default function Login() {
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
-            <div className="flex items-center justify-center h-screen bg-background p-2 sm:p-4 overflow-auto">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-2 sm:p-4 overflow-auto">
                 <Card className="w-full max-w-[380px] max-h-[90vh] relative shadow-lg border-border/50">
                     <div className="absolute top-3 left-3 z-10">
                         <Button
@@ -288,6 +288,11 @@ export default function Login() {
                         </form>
                     </CardContent>
                 </Card>
+
+                <div className="mt-6 text-center text-[10px] text-muted-foreground max-w-[350px] leading-relaxed">
+                    PLAK es un software desarrollado y operado legalmente por Mateo Valencia Ardila | NIT 1000413081-0
+                </div>
+
 
                 <div className="fixed bottom-4 left-4 z-50">
                     <TurnstileWidget
