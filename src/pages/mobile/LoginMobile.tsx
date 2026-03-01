@@ -141,7 +141,7 @@ export default function LoginMobile() {
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-3 overflow-hidden">
+            <div className="flex flex-col items-center justify-center h-[100dvh] bg-background p-3 overflow-hidden">
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                     <div className="absolute top-2 left-2 z-10">
                         <Button
