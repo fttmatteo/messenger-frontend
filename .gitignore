@@ -31,3 +31,12 @@ coverage/
 
 # Build Stats
 stats.html
+
+# Capacitor
+.capacitor/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+ios/App/public/
+ios/App/App/public/
