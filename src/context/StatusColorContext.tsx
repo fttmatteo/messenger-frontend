@@ -66,12 +66,13 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
             })
             saveCustomColors(customColors, userId)
 
-            const role = authService.getRole()
-            if (role === 'ADMIN') {
-                configService.updateStatusColors(newColors).catch(err => {
-                    logger.error('Error al sincronizar colores al backend:', err)
-                })
-            }
+            Promise.resolve(authService.getRoleAsync()).then(role => {
+                if (role === 'ADMIN') {
+                    configService.updateStatusColors(newColors).catch(err => {
+                        logger.error('Error al sincronizar colores al backend:', err)
+                    })
+                }
+            })
 
             return newColors
         })
@@ -81,7 +82,7 @@ export function StatusColorProvider({ children, userId }: StatusColorProviderPro
         clearCustomColors(userId)
         setColors({ ...DEFAULT_STATUS_COLORS })
 
-        const role = authService.getRole()
+        const role = await authService.getRoleAsync()
         if (role === 'ADMIN') {
             configService.updateStatusColors(DEFAULT_STATUS_COLORS).catch(err => {
                 logger.error('Error al restablecer colores en el backend:', err)

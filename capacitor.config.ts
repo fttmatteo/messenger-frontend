@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
     appName: 'PLAK',
     webDir: 'dist',
     server: {
-        cleartext: true,
-        androidScheme: 'http'
+        cleartext: false,
+        androidScheme: 'https'
     },
     plugins: {
         PushNotifications: {

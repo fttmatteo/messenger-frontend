@@ -32,11 +32,25 @@ export const handlers: RequestHandler[] = [
     }),
     http.get(new RegExp('.*/services/findByServiceId/.*'), ({ request }) => {
         const id = request.url.split('/').pop()?.split('?')[0];
+        if (id === '999') {
+            return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
+        }
         return HttpResponse.json({
             idServiceDelivery: Number(id),
             currentStatus: 'PENDING',
-            plate: { plateNumber: 'ABC-123', plateType: 'PARTICULAR' },
-            dealership: { name: 'Test Dealership' },
+            createdAt: new Date().toISOString(),
+            plate: {
+                idPlate: 1,
+                plateNumber: 'ABC-123',
+                plateType: 'CAR'
+            },
+            dealership: {
+                idDealership: 1,
+                name: 'Test Dealership',
+                address: '123 Test St',
+                phone: '555-0123',
+                zone: 'NORTH'
+            },
             history: []
         });
     }),
@@ -57,8 +71,8 @@ export const handlers: RequestHandler[] = [
             content: [
                 {
                     idServiceDelivery: 1,
-                    plate: { plateNumber: 'ADM-001', plateType: 'PARTICULAR' },
-                    dealership: { name: 'Admin Dealer' },
+                    plate: { idPlate: 1, plateNumber: 'ADM-001', plateType: 'CAR' },
+                    dealership: { idDealership: 1, name: 'Admin Dealer', address: '123 St', phone: '555-5555', zone: 'NORTH' },
                     messenger: { fullName: 'Test Messenger' },
                     currentStatus: 'ASSIGNED',
                     createdAt: new Date().toISOString()
@@ -71,5 +85,17 @@ export const handlers: RequestHandler[] = [
             first: true,
             last: true
         });
+    }),
+    http.get(new RegExp('.*/dealerships/allDealerships.*'), () => {
+        return HttpResponse.json([
+            {
+                idDealership: 1,
+                name: 'Test Dealership',
+                address: '123 Test St',
+                phone: '555-0123',
+                zone: 'NORTH',
+                status: true
+            }
+        ]);
     })
 ];

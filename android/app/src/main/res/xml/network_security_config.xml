@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Permite tráfico HTTP normal solo para el emulador (10.0.2.2) y localhost durante el desarrollo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <!-- SSL Pinning para el backend de producción. Previene ataques MitM. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">messenger-backend-190705671004.us-central1.run.app</domain>
+        <pin-set expiration="2027-01-01">
+            <!-- GlobalSign Root CA (usado por Google Cloud) -->
+            <pin digest="SHA-256">K87oWEp09wN8E12A1uF8iWd1l4v2k0G8J6v1e3b/cK8=</pin>
+            <!-- GTS Root R1 (usado por Google Cloud) -->
+            <pin digest="SHA-256">hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=</pin>
+        </pin-set>
+    </domain-config>
+    
+    <!-- Para cualquier otro dominio, bloquea el tráfico HTTP y exige HTTPS -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

@@ -9,24 +9,26 @@ import { AuthContext } from './AuthContextDef'
  * Gestiona el estado de sesión del usuario, login, logout y persistencia en storage.
  */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(() => {
-        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-        if (storedUser) {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    React.useEffect(() => {
+        const loadUser = async () => {
             try {
-                return JSON.parse(storedUser);
+                const currentUser = await authService.getCurrentUserAsync() as User | null;
+                setUser(currentUser);
             } catch (e) {
-                logger.error("Error al parsear usuario almacenado", e);
-                return null;
+                logger.error("Error al cargar usuario inicial", e);
+            } finally {
+                setIsLoading(false);
             }
-        }
-        return null;
-    });
-    const [isLoading] = useState(false);
+        };
+        loadUser();
+    }, []);
 
     const login = async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
-
 
         const oppositeStorage = credentials.rememberMe ? sessionStorage : localStorage;
         oppositeStorage.removeItem('role');
@@ -41,9 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isOnline: data.role === 'MESSENGER'
         };
 
-
+        // Guardar local web fallback
         storage.setItem('role', data.role);
         storage.setItem('user', JSON.stringify(userObj));
+
+        // Guardar nativo de capacitor
+        import('@capacitor/preferences').then(({ Preferences }) => {
+            Preferences.set({ key: 'role', value: data.role });
+            Preferences.set({ key: 'user', value: JSON.stringify(userObj) });
+        }).catch(() => { });
 
         setUser(userObj);
     };
@@ -53,12 +61,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const updatedUser = { ...user, ...data };
         setUser(updatedUser);
 
+        const updatedUserStr = JSON.stringify(updatedUser);
+
         if (localStorage.getItem('user')) {
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            localStorage.setItem('user', updatedUserStr);
         }
         if (sessionStorage.getItem('user')) {
-            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+            sessionStorage.setItem('user', updatedUserStr);
         }
+
+        import('@capacitor/preferences').then(({ Preferences }) => {
+            Preferences.set({ key: 'user', value: updatedUserStr });
+        }).catch(() => { });
     };
 
     const logout = () => {

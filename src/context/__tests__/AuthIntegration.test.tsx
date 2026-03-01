@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../AuthContext'
 import type { ReactNode } from 'react'
 
@@ -84,6 +84,10 @@ describe('AuthIntegration (MSW)', () => {
         localStorage.setItem('role', storedUser.role)
 
         const { result } = renderHook(() => useAuth(), { wrapper })
+
+        await waitFor(() => {
+            expect(result.current.isLoading).toBe(false)
+        })
 
         expect(result.current.isAuthenticated).toBe(true)
         expect(result.current.user).toEqual(storedUser)
