@@ -55,7 +55,7 @@ export function useSmartLocation() {
                     const position = await Geolocation.getCurrentPosition({
                         enableHighAccuracy: true,
                         timeout: 20000,
-                        maximumAge: 30000
+                        maximumAge: 0 // Fuerza siempre a calcular coordenadas nuevas (evita saltos)
                     })
 
                     trackingService.setLastLocation(position.coords.latitude, position.coords.longitude)
@@ -101,7 +101,7 @@ export function useSmartLocation() {
                         {
                             enableHighAccuracy: true,
                             timeout: 20000,
-                            maximumAge: 30000
+                            maximumAge: 0 // Fuerza re-cálculo fresco sin caché
                         }
                     )
                 })
