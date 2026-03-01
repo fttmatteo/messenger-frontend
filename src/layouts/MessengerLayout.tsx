@@ -179,7 +179,29 @@ export default function MessengerLayout() {
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
-                            showToast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
+                            // Fallback: reintentar sin alta precisión (WiFi/celular)
+                            navigator.geolocation.getCurrentPosition(
+                                (fallbackPos) => {
+                                    const { latitude, longitude, speed, heading, accuracy } = fallbackPos.coords
+                                    if (latitude && longitude && latitude !== 0 && longitude !== 0) {
+                                        trackingService.sendUpdate({
+                                            messengerId: userId,
+                                            latitude,
+                                            longitude,
+                                            speed: speed || 0,
+                                            heading: heading || 0,
+                                            accuracy,
+                                            status: 'ACTIVE'
+                                        })
+                                        trackingService.setLastLocation(latitude, longitude)
+                                    }
+                                },
+                                () => {
+                                    // Si también falla el fallback, ahí sí notificar
+                                    showToast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
+                                },
+                                { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
+                            )
                         } else if (error.code === 3) {
                             showToast.warning('GPS tardando en responder. Reintentando...', { id: 'messenger-gps-timeout' })
                         }
