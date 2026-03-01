@@ -122,9 +122,10 @@ export function useCameraCapture(): UseCameraCaptureReturn {
                     return file
                 }
                 return null
-            } catch (error: any) {
+            } catch (error) {
+                const err = error as { message?: string };
                 // El usuario puede cancelar la cámara
-                if (error?.message === 'User cancelled photos app') {
+                if (err?.message === 'User cancelled photos app') {
                     stopCamera()
                     return null
                 }

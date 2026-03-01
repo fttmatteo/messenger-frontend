@@ -22,7 +22,7 @@ let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined = undefined;
 
 if (isNative()) {
   logger.info('App ejecutándose en modo nativo (Capacitor), inicializando SafeArea y omitiendo Service Worker');
-  (SafeArea as any).getSafeAreaInsets().then((result: any) => {
+  (SafeArea as unknown as { getSafeAreaInsets: () => Promise<{ insets?: { top: number; bottom: number; left: number; right: number } }> }).getSafeAreaInsets().then((result) => {
     const insets = result.insets || { top: 0, bottom: 0, left: 0, right: 0 };
     logger.info('SafeArea insets aplicados nativamente:', insets)
     document.documentElement.style.setProperty('--safe-area-top', `${insets.top}px`);
@@ -63,7 +63,7 @@ if (isNative()) {
 }
 
 // Exponer la función de actualización globalmente para uso de NetworkContext
-window.__updateSW = updateSW as any
+(window as Window & typeof globalThis & { __updateSW?: typeof updateSW }).__updateSW = updateSW;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -1,7 +1,7 @@
 {
   "name": "plak-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
@@ -15,6 +15,7 @@
     "preview:staging": "vite preview --mode staging",
     "preview:dev": "vite preview --mode development",
     "test": "vitest",
+    "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "cap:build": "npm run build && npx cap sync",

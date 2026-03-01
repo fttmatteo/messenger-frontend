@@ -64,8 +64,9 @@ export function useSmartLocation() {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     }
-                } catch (nativeError: any) {
-                    throw new Error(nativeError?.message || "Error al obtener ubicación nativa")
+                } catch (nativeError) {
+                    const err = nativeError as { message?: string };
+                    throw new Error(err?.message || "Error al obtener ubicación nativa")
                 }
             } else {
                 // Modo Navegador/PWA (Web)
