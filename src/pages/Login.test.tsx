@@ -10,6 +10,16 @@ vi.mock('@/services/auth.service', () => ({
     authService: {
         login: vi.fn(),
         logout: vi.fn(),
+        getCurrentUserAsync: vi.fn().mockImplementation(async () => {
+            const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+            return userStr ? JSON.parse(userStr) : null;
+        }),
+        getRoleAsync: vi.fn().mockImplementation(async () => {
+            return localStorage.getItem('role') || sessionStorage.getItem('role');
+        }),
+        getTokenAsync: vi.fn().mockImplementation(async () => {
+            return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        }),
     },
 }));
 

@@ -18,6 +18,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescri
 import { Separator } from "@/components/ui/separator"
 import { openSupportEmail, APP_CONFIG } from "@/lib/app-config"
 import { cn } from "@/lib/utils"
+import { isNative } from "@/lib/capacitor"
+import { registerPlugin } from "@capacitor/core"
+import type { BackgroundGeolocationPlugin } from "@capacitor-community/background-geolocation"
+
+const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation")
 
 const logger = createLogger('MessengerLayout')
 
@@ -37,7 +42,7 @@ export default function MessengerLayout() {
     const previousPathnameRef = useRef(location.pathname) // Rastrea la ruta anterior para el cierre del sidebar
     const wasSubPageRef = useRef(false) // Rastrea si venimos de una subpágina para añadir un bloqueo más largo
     const isOnline = user?.isOnline || false
-    const watchIdRef = useRef<number | null>(null)
+    const watchIdRef = useRef<number | string | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
 
 
@@ -130,7 +135,49 @@ export default function MessengerLayout() {
 
             startTracking()
 
-            if ('geolocation' in navigator) {
+            if (isNative()) {
+                // NATIVE BACKGROUND TRACKING (APK)
+                BackgroundGeolocation.addWatcher(
+                    {
+                        backgroundMessage: "Manteniendo tu ubicación actualizada para la central.",
+                        backgroundTitle: "Rastreando ubicación activa",
+                        requestPermissions: true,
+                        stale: false, // Forzar puntos nuevos (mejora de precisión)
+                        distanceFilter: 5 // Min 5 metros para disparar actualización
+                    },
+                    function callback(loc, error) {
+                        if (error) {
+                            if (error.code === "NOT_AUTHORIZED") {
+                                showToast.error('La ubicación de fondo fue denegada. Revisa los permisos de la app.');
+                            }
+                            return;
+                        }
+
+                        if (loc) {
+                            // Filtro de ruido: Ignorar lecturas con precisión peor a 50 metros
+                            if (loc.accuracy && loc.accuracy > 50) {
+                                logger.debug('Ignorando lectura de GPS imprecisa:', loc.accuracy);
+                                return;
+                            }
+
+                            trackingService.sendUpdate({
+                                messengerId: userId,
+                                latitude: loc.latitude,
+                                longitude: loc.longitude,
+                                speed: loc.speed || 0,
+                                heading: loc.bearing || 0,
+                                accuracy: loc.accuracy || 0,
+                                status: 'ACTIVE'
+                            });
+                            trackingService.setLastLocation(loc.latitude, loc.longitude);
+                        }
+                    }
+                ).then(function (watcher_id) {
+                    watchIdRef.current = watcher_id;
+                });
+
+            } else if ('geolocation' in navigator) {
+                // WEB FALLBACK TRACKING (Browsers, PWA)
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
@@ -159,6 +206,9 @@ export default function MessengerLayout() {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
 
                         if (latitude && longitude && latitude !== 0 && longitude !== 0) {
+                            // Filtro de ruido para PWA web
+                            if (accuracy && accuracy > 50) return;
+
                             trackingService.sendUpdate({
                                 messengerId: userId,
                                 latitude,
@@ -209,7 +259,7 @@ export default function MessengerLayout() {
                     {
                         enableHighAccuracy: true,
                         timeout: 15000, // Reducido de 30s a 15s para feedback más rápido
-                        maximumAge: 5000 // Permitir cache de 5s para mejor rendimiento
+                        maximumAge: 0 // Cambiado a 0 para forzar lecturas frescas (mejora de precisión)
                     }
                 )
             } else {
@@ -219,7 +269,11 @@ export default function MessengerLayout() {
         } else {
 
             if (watchIdRef.current !== null) {
-                navigator.geolocation.clearWatch(watchIdRef.current)
+                if (typeof watchIdRef.current === 'string') {
+                    BackgroundGeolocation.removeWatcher({ id: watchIdRef.current })
+                } else {
+                    navigator.geolocation.clearWatch(watchIdRef.current)
+                }
                 watchIdRef.current = null
             }
 
@@ -240,7 +294,11 @@ export default function MessengerLayout() {
 
         return () => {
             if (watchIdRef.current !== null) {
-                navigator.geolocation.clearWatch(watchIdRef.current)
+                if (typeof watchIdRef.current === 'string') {
+                    BackgroundGeolocation.removeWatcher({ id: watchIdRef.current })
+                } else {
+                    navigator.geolocation.clearWatch(watchIdRef.current)
+                }
             }
         }
     }, [isOnline, user, logout, navigate, updateUser])

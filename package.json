@@ -1,7 +1,7 @@
 {
   "name": "plak-frontend",
   "private": true,
-  "version": "1.7.0",
+  "version": "1.7.1",
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
@@ -24,12 +24,14 @@
     "cap:run": "npx cap run android"
   },
   "dependencies": {
+    "@capacitor-community/background-geolocation": "^1.2.26",
     "@capacitor-community/safe-area": "^8.0.1",
     "@capacitor/android": "^8.1.0",
     "@capacitor/camera": "^8.0.1",
     "@capacitor/core": "^8.1.0",
     "@capacitor/device": "^8.0.1",
     "@capacitor/geolocation": "^8.1.0",
+    "@capacitor/preferences": "^8.0.1",
     "@capacitor/status-bar": "^8.0.1",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
