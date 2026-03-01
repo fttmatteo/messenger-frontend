@@ -1,0 +1,22 @@
+// ¡NO EDITES ESTE ARCHIVO! SE GENERA CADA VEZ QUE SE EJECUTA "capacitor update"
+
+android {
+  compileOptions {
+      sourceCompatibility JavaVersion.VERSION_21
+      targetCompatibility JavaVersion.VERSION_21
+  }
+}
+
+apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
+dependencies {
+    implementation project(':capacitor-camera')
+    implementation project(':capacitor-device')
+    implementation project(':capacitor-geolocation')
+    implementation project(':capacitor-status-bar')
+
+}
+
+
+if (hasProperty('postBuildExtras')) {
+  postBuildExtras()
+}

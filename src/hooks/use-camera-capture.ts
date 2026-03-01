@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from "react"
 import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+import { isNative } from "@/lib/capacitor"
 
 interface UseCameraCaptureReturn {
     cameraActive: boolean
@@ -12,14 +14,14 @@ interface UseCameraCaptureReturn {
 
     startCamera: () => Promise<void>
     stopCamera: () => void
-    capturePhoto: () => File | null
+    capturePhoto: () => Promise<File | null>
     setImageFromFile: (file: File) => void
     clearImage: () => void
 }
 
 /**
  * Hook para gestionar la captura de fotos desde la cámara del dispositivo.
- * Proporciona control sobre el stream de video, vista previa y captura de archivos.
+ * Soporta Capacitor (modo nativo) y WebRTC (modo navegador/PWA).
  */
 export function useCameraCapture(): UseCameraCaptureReturn {
     const [cameraActive, setCameraActive] = useState(false)
@@ -29,13 +31,16 @@ export function useCameraCapture(): UseCameraCaptureReturn {
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
+
     const stopCamera = useCallback(() => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop())
-            streamRef.current = null
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null
+        if (!isNative()) {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop())
+                streamRef.current = null
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null
+            }
         }
         setCameraActive(false)
         setCameraReady(false)
@@ -47,30 +52,39 @@ export function useCameraCapture(): UseCameraCaptureReturn {
             setCameraReady(false)
             setCameraActive(true)
 
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: { ideal: 'environment' },
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                },
-                audio: false
-            })
+            if (isNative()) {
+                // En nativo, no iniciamos stream de video en el DOM, 
+                // solo marcamos como lista, y el modal mostrará un placeholder 
+                // o disparará la captura nativa directamente.
+                setCameraReady(true)
+                showToast.success("Cámara lista", { duration: 1500 })
+            } else {
+                // Modo Web PWA
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                })
 
-            streamRef.current = stream
+                streamRef.current = stream
 
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream
 
-                videoRef.current.onloadedmetadata = () => {
-                    if (videoRef.current) {
-                        videoRef.current.play()
-                            .then(() => {
-                                setCameraReady(true)
-                                showToast.success("Cámara lista", { duration: 1500 })
-                            })
-                            .catch(() => {
-                                setCameraError('Error al reproducir video')
-                            })
+                    videoRef.current.onloadedmetadata = () => {
+                        if (videoRef.current) {
+                            videoRef.current.play()
+                                .then(() => {
+                                    setCameraReady(true)
+                                    showToast.success("Cámara lista", { duration: 1500 })
+                                })
+                                .catch(() => {
+                                    setCameraError('Error al reproducir video')
+                                })
+                        }
                     }
                 }
             }
@@ -83,73 +97,111 @@ export function useCameraCapture(): UseCameraCaptureReturn {
         }
     }, [])
 
-    const capturePhoto = useCallback((): File | null => {
-        const video = videoRef.current
-        const canvas = canvasRef.current
+    const capturePhoto = useCallback(async (): Promise<File | null> => {
+        if (isNative()) {
+            try {
+                // Captura Nativa Capacitor
+                const photo = await Camera.getPhoto({
+                    resultType: CameraResultType.Uri,
+                    source: CameraSource.Camera,
+                    quality: 90
+                });
 
-        if (!video || !canvas) {
-            showToast.error("Error", { description: "Componentes no disponibles" })
-            return null
-        }
+                if (photo.webPath) {
+                    setImagePreview(photo.webPath)
 
-        if (video.videoWidth === 0 || video.videoHeight === 0) {
-            showToast.error("Error", { description: "El video aún no está listo" })
-            return null
-        }
+                    // Convertir la URI del WebPath a un objeto File para subirlo
+                    const response = await fetch(photo.webPath);
+                    const blob = await response.blob();
+                    const file = new File([blob], `placa_${Date.now()}.${photo.format}`, {
+                        type: `image/${photo.format}`
+                    });
 
-        // Relación de aspecto objetivo (16:9)
-        const targetAspectRatio = 16 / 9
-        const videoWidth = video.videoWidth
-        const videoHeight = video.videoHeight
-        const videoAspectRatio = videoWidth / videoHeight
-
-        let sourceX = 0
-        let sourceY = 0
-        let sourceWidth = videoWidth
-        let sourceHeight = videoHeight
-
-        if (videoAspectRatio > targetAspectRatio) {
-            sourceWidth = videoHeight * targetAspectRatio
-            sourceX = (videoWidth - sourceWidth) / 2
-        } else {
-            sourceHeight = videoWidth / targetAspectRatio
-            sourceY = (videoHeight - sourceHeight) / 2
-        }
-
-        canvas.width = sourceWidth
-        canvas.height = sourceHeight
-
-        const ctx = canvas.getContext('2d', { alpha: false })
-        if (!ctx) {
-            showToast.error("Error", { description: "No se pudo crear contexto de canvas" })
-            return null
-        }
-
-        ctx.imageSmoothingEnabled = true
-        ctx.imageSmoothingQuality = 'high'
-        ctx.drawImage(
-            video,
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, sourceWidth, sourceHeight
-        )
-
-        let capturedFile: File | null = null
-
-        canvas.toBlob((blob) => {
-            if (blob) {
-                capturedFile = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
-
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
-                setImagePreview(dataUrl)
-
-                stopCamera()
-                showToast.success("Foto capturada exitosamente")
-            } else {
-                showToast.error("Error al capturar foto")
+                    stopCamera()
+                    showToast.success("Foto capturada exitosamente")
+                    return file
+                }
+                return null
+            } catch (error: any) {
+                // El usuario puede cancelar la cámara
+                if (error?.message === 'User cancelled photos app') {
+                    stopCamera()
+                    return null
+                }
+                showToast.error("Error al capturar foto nativa", { description: getErrorMessage(error) })
+                return null
             }
-        }, 'image/jpeg', 0.9)
+        } else {
+            // Captura WebRTC (Navegador)
+            const video = videoRef.current
+            const canvas = canvasRef.current
 
-        return capturedFile
+            if (!video || !canvas) {
+                showToast.error("Error", { description: "Componentes no disponibles" })
+                return null
+            }
+
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                showToast.error("Error", { description: "El video aún no está listo" })
+                return null
+            }
+
+            // Relación de aspecto objetivo (16:9)
+            const targetAspectRatio = 16 / 9
+            const videoWidth = video.videoWidth
+            const videoHeight = video.videoHeight
+            const videoAspectRatio = videoWidth / videoHeight
+
+            let sourceX = 0
+            let sourceY = 0
+            let sourceWidth = videoWidth
+            let sourceHeight = videoHeight
+
+            if (videoAspectRatio > targetAspectRatio) {
+                sourceWidth = videoHeight * targetAspectRatio
+                sourceX = (videoWidth - sourceWidth) / 2
+            } else {
+                sourceHeight = videoWidth / targetAspectRatio
+                sourceY = (videoHeight - sourceHeight) / 2
+            }
+
+            canvas.width = sourceWidth
+            canvas.height = sourceHeight
+
+            const ctx = canvas.getContext('2d', { alpha: false })
+            if (!ctx) {
+                showToast.error("Error", { description: "No se pudo crear contexto de canvas" })
+                return null
+            }
+
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+            ctx.drawImage(
+                video,
+                sourceX, sourceY, sourceWidth, sourceHeight,
+                0, 0, sourceWidth, sourceHeight
+            )
+
+            let capturedFile: File | null = null
+
+            return new Promise((resolve) => {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        capturedFile = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
+                        setImagePreview(dataUrl)
+
+                        stopCamera()
+                        showToast.success("Foto capturada exitosamente")
+                        resolve(capturedFile)
+                    } else {
+                        showToast.error("Error al capturar foto")
+                        resolve(null)
+                    }
+                }, 'image/jpeg', 0.9)
+            })
+        }
     }, [stopCamera])
 
     const setImageFromFile = useCallback((file: File) => {

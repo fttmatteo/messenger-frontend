@@ -1,0 +1,29 @@
+// Archivo de compilación principal donde puedes agregar opciones de configuración comunes a todos los sub-proyectos/módulos.
+
+buildscript {
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+
+        // NOTA: No coloques las dependencias de tu aplicación aquí; pertenecen
+        // a los archivos build.gradle individuales de cada módulo
+    }
+}
+
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

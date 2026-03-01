@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
 
   return {
+    base: './', // CRÍTICO: Necesario para que Capacitor cargue los assets correctamente
     plugins: [
       react(),
       tailwindcss(),

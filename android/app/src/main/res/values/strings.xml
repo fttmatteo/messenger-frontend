@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PLAK</string>
+    <string name="title_activity_main">PLAK</string>
+    <string name="package_name">com.plak.messenger</string>
+    <string name="custom_url_scheme">com.plak.messenger</string>
+</resources>

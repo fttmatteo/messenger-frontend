@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { trackingService } from '@/services/tracking.service'
 import { createLogger } from '@/utils/logger'
 import { showToast } from '@/config/toast-config'
+import { Geolocation } from '@capacitor/geolocation'
+import { isNative } from '@/lib/capacitor'
 
 const logger = createLogger('useSmartLocation')
 
@@ -17,7 +19,7 @@ export interface LocationResult {
 
 /**
  * Hook para obtener la ubicación actual del dispositivo de forma optimizada.
- * Intenta usar una ubicación reciente del caché antes de solicitar una nueva.
+ * Soporta modo Nativo (Capacitor) y Web.
  */
 export function useSmartLocation() {
     const [loading, setLoading] = useState(false)
@@ -38,42 +40,71 @@ export function useSmartLocation() {
                 return { latitude: lastKnown.latitude, longitude: lastKnown.longitude }
             }
 
-            return await new Promise<LocationResult>((resolve, reject) => {
-                if (!navigator.geolocation) {
-                    reject(new Error("La geolocalización no es soportada por este navegador."))
-                    return
-                }
+            if (isNative()) {
+                // Modo Capacitor (Nativo)
+                try {
+                    // Verificar permisos primero
+                    const permissions = await Geolocation.checkPermissions()
+                    if (permissions.location !== 'granted') {
+                        const request = await Geolocation.requestPermissions()
+                        if (request.location !== 'granted') {
+                            throw new Error("Permiso de ubicación denegado permanentemente")
+                        }
+                    }
 
-                const timeoutId = setTimeout(() => {
-                    reject(new Error("Tiempo de espera agotado (Timeout)"))
-                }, 20000)
-
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        clearTimeout(timeoutId)
-                        // Guardar en caché para uso futuro inmediato
-                        trackingService.setLastLocation(pos.coords.latitude, pos.coords.longitude)
-
-                        resolve({
-                            latitude: pos.coords.latitude,
-                            longitude: pos.coords.longitude
-                        })
-                    },
-                    (err) => {
-                        clearTimeout(timeoutId)
-                        let msg = err.message
-                        if (err.code === 1) msg = "Permiso de ubicación denegado"
-                        else if (err.code === 2) msg = "Ubicación no disponible"
-                        else if (err.code === 3) msg = "Tiempo de espera agotado"
-                        reject(new Error(msg))
-                    },
-                    {
+                    const position = await Geolocation.getCurrentPosition({
                         enableHighAccuracy: true,
                         timeout: 20000,
                         maximumAge: 30000
+                    })
+
+                    trackingService.setLastLocation(position.coords.latitude, position.coords.longitude)
+
+                    return {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
                     }
-                )
-            })
+                } catch (nativeError: any) {
+                    throw new Error(nativeError?.message || "Error al obtener ubicación nativa")
+                }
+            } else {
+                // Modo Navegador/PWA (Web)
+                return await new Promise<LocationResult>((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        reject(new Error("La geolocalización no es soportada por este navegador."))
+                        return
+                    }
+
+                    const timeoutId = setTimeout(() => {
+                        reject(new Error("Tiempo de espera agotado (Timeout)"))
+                    }, 20000)
+
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            clearTimeout(timeoutId)
+                            trackingService.setLastLocation(pos.coords.latitude, pos.coords.longitude)
+
+                            resolve({
+                                latitude: pos.coords.latitude,
+                                longitude: pos.coords.longitude
+                            })
+                        },
+                        (err) => {
+                            clearTimeout(timeoutId)
+                            let msg = err.message
+                            if (err.code === 1) msg = "Permiso de ubicación denegado"
+                            else if (err.code === 2) msg = "Ubicación no disponible"
+                            else if (err.code === 3) msg = "Tiempo de espera agotado"
+                            reject(new Error(msg))
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 20000,
+                            maximumAge: 30000
+                        }
+                    )
+                })
+            }
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Error desconocido"
             logger.error("Error al obtener ubicación inteligente", error)

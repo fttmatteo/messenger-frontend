@@ -1,5 +1,7 @@
 import { get, set, del } from 'idb-keyval'
 
+import { isNative } from '@/lib/capacitor'
+
 const PENDING_ACTIONS_KEY = 'pending_offline_actions'
 const MAX_RETRY_COUNT = 3
 
@@ -88,8 +90,8 @@ class OfflineSyncService {
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
 
-        // Intentar registrar Background Sync si está disponible
-        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        // Intentar registrar Background Sync si está disponible, y NO estamos en modo nativo Capacitor.
+        if (!isNative() && 'serviceWorker' in navigator && 'SyncManager' in window) {
             try {
                 const registration = await navigator.serviceWorker.ready
                 // @ts-expect-error - sync solo existe en navegadores compatibles con Background Sync
@@ -111,7 +113,7 @@ class OfflineSyncService {
      * Configura la escucha de mensajes desde el Service Worker
      */
     setupBackgroundSyncListener(): void {
-        if ('serviceWorker' in navigator) {
+        if (!isNative() && 'serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'SYNC_PENDING_ACTIONS') {
                     void this.syncAll()
