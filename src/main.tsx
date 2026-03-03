@@ -22,6 +22,8 @@ let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined = undefined;
 
 if (isNative()) {
   logger.info('App ejecutándose en modo nativo (Capacitor), inicializando SafeArea y omitiendo Service Worker');
+  // Marcar el HTML como app nativa para aplicar estilos específicos via CSS
+  document.documentElement.classList.add('native-app');
   (SafeArea as unknown as { getSafeAreaInsets: () => Promise<{ insets?: { top: number; bottom: number; left: number; right: number } }> }).getSafeAreaInsets().then((result) => {
     const insets = result.insets || { top: 0, bottom: 0, left: 0, right: 0 };
     logger.info('SafeArea insets aplicados nativamente:', insets)
@@ -29,12 +31,6 @@ if (isNative()) {
     document.documentElement.style.setProperty('--safe-area-bottom', `${insets.bottom}px`);
     document.documentElement.style.setProperty('--safe-area-left', `${insets.left}px`);
     document.documentElement.style.setProperty('--safe-area-right', `${insets.right}px`);
-
-    // Aplicar padding al body
-    document.body.style.paddingTop = 'var(--safe-area-top, 0px)';
-    document.body.style.paddingBottom = 'var(--safe-area-bottom, 0px)';
-    document.body.style.paddingLeft = 'var(--safe-area-left, 0px)';
-    document.body.style.paddingRight = 'var(--safe-area-right, 0px)';
   });
 } else {
   // Configuración Web/PWA original
