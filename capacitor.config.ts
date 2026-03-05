@@ -17,6 +17,9 @@ const config: CapacitorConfig = {
         },
         StatusBar: {
             overlaysWebView: true
+        },
+        CapacitorHttp: {
+            enabled: true
         }
     },
 };

@@ -20,13 +20,15 @@ import { openSupportEmail, APP_CONFIG } from "@/lib/app-config"
 import { cn } from "@/lib/utils"
 import { isNative } from "@/lib/capacitor"
 import { registerPlugin } from "@capacitor/core"
-import type { BackgroundGeolocationPlugin } from "@capacitor-community/background-geolocation"
 
-const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation")
+// Plugin nativo para Foreground Service de ubicación persistente (solo APK)
+interface LocationServicePlugin {
+    startService(options: { messengerId: number; backendUrl: string; authCookie: string }): Promise<{ started: boolean }>;
+    stopService(): Promise<{ stopped: boolean }>;
+}
+const LocationService = registerPlugin<LocationServicePlugin>("LocationService")
 
 const logger = createLogger('MessengerLayout')
-
-
 /**
  * Layout principal para la aplicación móvil del mensajero.
  * Gestiona el ciclo de vida del rastreo GPS en tiempo real, el estado de conexión (offline)
@@ -136,44 +138,21 @@ export default function MessengerLayout() {
             startTracking()
 
             if (isNative()) {
-                // NATIVE BACKGROUND TRACKING (APK)
-                BackgroundGeolocation.addWatcher(
-                    {
-                        backgroundMessage: "Manteniendo tu ubicación actualizada para la central.",
-                        backgroundTitle: "Rastreando ubicación activa",
-                        requestPermissions: true,
-                        stale: false, // Forzar puntos nuevos (mejora de precisión)
-                        distanceFilter: 5 // Min 5 metros para disparar actualización
-                    },
-                    function callback(loc, error) {
-                        if (error) {
-                            if (error.code === "NOT_AUTHORIZED") {
-                                showToast.error('La ubicación de fondo fue denegada. Revisa los permisos de la app.');
-                            }
-                            return;
-                        }
+                // NATIVE PERSISTENT TRACKING (APK) — Foreground Service
+                // El servicio nativo sobrevive al cierre de la app desde recientes
+                const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+                const authToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || '';
 
-                        if (loc) {
-                            // Filtro de ruido: Ignorar lecturas con precisión peor a 50 metros
-                            if (loc.accuracy && loc.accuracy > 50) {
-                                logger.debug('Ignorando lectura de GPS imprecisa:', loc.accuracy);
-                                return;
-                            }
-
-                            trackingService.sendUpdate({
-                                messengerId: userId,
-                                latitude: loc.latitude,
-                                longitude: loc.longitude,
-                                speed: loc.speed || 0,
-                                heading: loc.bearing || 0,
-                                accuracy: loc.accuracy || 0,
-                                status: 'ACTIVE'
-                            });
-                            trackingService.setLastLocation(loc.latitude, loc.longitude);
-                        }
-                    }
-                ).then(function (watcher_id) {
-                    watchIdRef.current = watcher_id;
+                LocationService.startService({
+                    messengerId: userId,
+                    backendUrl: backendUrl,
+                    authCookie: `Bearer ${authToken}` // El servicio Java lo envía como header Authorization
+                }).then(() => {
+                    logger.info('Servicio de ubicación nativo iniciado');
+                    watchIdRef.current = 'native-service';
+                }).catch((error) => {
+                    logger.error('Error iniciando servicio de ubicación nativo:', error);
+                    showToast.error('Error iniciando rastreo de ubicación');
                 });
 
             } else if ('geolocation' in navigator) {
@@ -269,9 +248,9 @@ export default function MessengerLayout() {
         } else {
 
             if (watchIdRef.current !== null) {
-                if (typeof watchIdRef.current === 'string') {
-                    BackgroundGeolocation.removeWatcher({ id: watchIdRef.current })
-                } else {
+                if (watchIdRef.current === 'native-service') {
+                    LocationService.stopService().catch(e => logger.warn('Error deteniendo servicio nativo:', e));
+                } else if (typeof watchIdRef.current === 'number') {
                     navigator.geolocation.clearWatch(watchIdRef.current)
                 }
                 watchIdRef.current = null
@@ -294,9 +273,9 @@ export default function MessengerLayout() {
 
         return () => {
             if (watchIdRef.current !== null) {
-                if (typeof watchIdRef.current === 'string') {
-                    BackgroundGeolocation.removeWatcher({ id: watchIdRef.current })
-                } else {
+                if (watchIdRef.current === 'native-service') {
+                    // No detener el servicio en cleanup del efecto — solo en logout explícito
+                } else if (typeof watchIdRef.current === 'number') {
                     navigator.geolocation.clearWatch(watchIdRef.current)
                 }
             }
@@ -403,6 +382,10 @@ export default function MessengerLayout() {
                 messengerId: user.id,
                 status: 'OFFLINE'
             })
+        }
+        // Detener el servicio de ubicación nativo si está corriendo
+        if (isNative()) {
+            LocationService.stopService().catch(e => logger.warn('Error deteniendo servicio al cerrar sesión:', e));
         }
         logout()
         navigate("/login")

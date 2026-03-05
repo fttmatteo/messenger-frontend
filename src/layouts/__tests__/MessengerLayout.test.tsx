@@ -30,17 +30,17 @@ vi.mock('@/services/auth.service', () => ({
     }
 }))
 
-const { mockAddWatcher, mockRemoveWatcher } = vi.hoisted(() => {
+const { mockStartService, mockStopService } = vi.hoisted(() => {
     return {
-        mockAddWatcher: vi.fn().mockResolvedValue('test-watcher-id'),
-        mockRemoveWatcher: vi.fn().mockResolvedValue(undefined)
+        mockStartService: vi.fn().mockResolvedValue({ started: true }),
+        mockStopService: vi.fn().mockResolvedValue({ stopped: true })
     }
 });
 
 vi.mock('@capacitor/core', () => ({
     registerPlugin: () => ({
-        addWatcher: mockAddWatcher,
-        removeWatcher: mockRemoveWatcher
+        startService: mockStartService,
+        stopService: mockStopService
     })
 }))
 
@@ -120,17 +120,17 @@ describe('MessengerLayout Background Tracking', () => {
         );
     }
 
-    it('should use BackgroundGeolocation Native plugin when isNative() is true', async () => {
+    it('should use LocationService native plugin when isNative() is true', async () => {
         vi.mocked(capacitorLib.isNative).mockReturnValue(true);
 
         renderLayout();
 
         await waitFor(() => {
-            expect(mockAddWatcher).toHaveBeenCalled();
-            expect(mockAddWatcher.mock.calls[0][0]).toMatchObject({
-                backgroundMessage: expect.any(String),
-                requestPermissions: true,
-                stale: false
+            expect(mockStartService).toHaveBeenCalled();
+            expect(mockStartService.mock.calls[0][0]).toMatchObject({
+                messengerId: 1,
+                backendUrl: expect.any(String),
+                authCookie: expect.any(String)
             });
             expect(mockWatchPosition).not.toHaveBeenCalled();
             expect(mockGetCurrentPosition).not.toHaveBeenCalled();
@@ -147,29 +147,26 @@ describe('MessengerLayout Background Tracking', () => {
             expect(mockWatchPosition).toHaveBeenCalled();
             expect(mockWatchPosition.mock.calls[0][2]).toMatchObject({
                 enableHighAccuracy: true,
-                maximumAge: 0 // New strict logic
+                maximumAge: 0
             });
-            expect(mockAddWatcher).not.toHaveBeenCalled();
+            expect(mockStartService).not.toHaveBeenCalled();
         });
     })
 
-    it('should disconnect plugin watchers on unmount if native', async () => {
+    it('should not stop native service on unmount (only on logout)', async () => {
         vi.mocked(capacitorLib.isNative).mockReturnValue(true);
 
         const { unmount } = renderLayout();
 
-        // Wait for watcher to register
         await waitFor(() => {
-            expect(mockAddWatcher).toHaveBeenCalled();
+            expect(mockStartService).toHaveBeenCalled();
         });
 
-        // Unmounting should clear the watcher and also the offline lifecycle unmounts
         unmount();
 
-        await waitFor(() => {
-            expect(mockRemoveWatcher).toHaveBeenCalledWith({ id: 'test-watcher-id' });
-            expect(mockClearWatch).not.toHaveBeenCalled();
-        });
+        // El servicio nativo NO se detiene al desmontar, solo al cerrar sesión
+        expect(mockStopService).not.toHaveBeenCalled();
+        expect(mockClearWatch).not.toHaveBeenCalled();
     })
 
     it('should call clearWatch on unmount if web', async () => {
@@ -185,7 +182,8 @@ describe('MessengerLayout Background Tracking', () => {
 
         await waitFor(() => {
             expect(mockClearWatch).toHaveBeenCalledWith(12345);
-            expect(mockRemoveWatcher).not.toHaveBeenCalled();
+            expect(mockStopService).not.toHaveBeenCalled();
         });
     })
 })
+

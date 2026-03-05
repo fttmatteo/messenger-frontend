@@ -2,6 +2,26 @@ import '@testing-library/jest-dom';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './mocks/server';
 
+// Mock de Capacitor core (plugins nativos no disponibles en entorno de test)
+vi.mock('@capacitor/core', async () => {
+    const actual = await vi.importActual('@capacitor/core');
+    return {
+        ...actual,
+        registerPlugin: (name: string) => {
+            if (name === 'LocationService') {
+                return {
+                    startService: vi.fn().mockResolvedValue({ started: true }),
+                    stopService: vi.fn().mockResolvedValue({ stopped: true }),
+                };
+            }
+            // Fallback para otros plugins
+            return new Proxy({}, {
+                get: () => vi.fn().mockResolvedValue({}),
+            });
+        },
+    };
+});
+
 /**
  * Configuración global para el entorno de pruebas unitarias y de integración.
  * Configura MSW para interceptar peticiones de red y define mocks para APIs del navegador.
