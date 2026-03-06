@@ -40,6 +40,7 @@
 ---
 
 ## 📸 Screenshots
+<details>
 
 ### 🖥️ Admin Dashboard
 
@@ -71,10 +72,12 @@
 |:---:|:---:|:---:|
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
 | *Complete information & navigation* | *Service status history* | *App preferences* |
+</details>
 
 ---
 
 ## ✨ Key Features
+<details>
 
 ### 🛡️ Robustness & Resilience (Offline-First)
 
@@ -101,10 +104,12 @@
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
+</details>
 
 ---
 
 ## 🧪 Quality Strategy & Testing
+<details>
 
 This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
 
@@ -140,10 +145,12 @@ npm run test:ui
 # Coverage report
 npm run test:coverage
 ```
+</details>
 
 ---
 
 ## 🛠 Tech Stack
+<details>
 
 The architecture is designed for **scalability**, **maintainability**, and **long-term performance**.
 
@@ -159,10 +166,12 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 | **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
 | **Animation** | `Framer Motion` | Fluid animations and transitions |
 | **Charts** | `Recharts` | Data visualization components |
+</details>
 
 ---
 
 ## 🏗 Project Architecture
+<details>
 
 The codebase follows **Clean Architecture** principles adapted for frontend development:
 
@@ -185,10 +194,12 @@ src/
 ├── types/               # 🏷️ TypeScript Type Definitions
 └── utils/               # 🔧 Utility Functions
 ```
+</details>
 
 ---
 
 ## 🚀 Installation & Deployment
+<details>
 
 ### Prerequisites
 
@@ -259,10 +270,12 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | `npm run test:run` | Run Vitest once |
 | `npm run test:ui` | Open Vitest UI |
 | `npm run test:coverage` | Generate coverage report |
+</details>
 
 ---
 
 ## 🔒 Security
+<details>
 
 | Feature | Implementation |
 |:---|:---|
@@ -273,22 +286,19 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | **Input Validation** | All user inputs validated with Zod schemas |
 | **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
 | **Rate Limiting** | Client-side handling of 429 errors from the backend |
+</details>
 
 ---
 
-## 📞 Contact
+## 📧 Contact
 
 For inquiries about this project:
-
+- **Repository**: `messenger-frontend`
+- **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
-- **Website**: [plak.digital](https://plak.digital)
+- **Website**: [plak.digital](https://www.plak.digital)
 
 ---
-
-<div align="center">
-
-**Built with ❤️ by Mateo Valencia Ardila**
 
 > **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
 
-</div>

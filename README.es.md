@@ -40,6 +40,7 @@
 ---
 
 ## 📸 Capturas de Pantalla
+<details>
 
 ### 🖥️ Admin Dashboard
 
@@ -71,10 +72,12 @@
 |:---:|:---:|:---:|
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
 | *Información completa y navegación* | *Servicios con cambio de estado* | *Preferencias de la app* |
+</details>
 
 ---
 
 ## ✨ Características Principales
+<details>
 
 ### 🛡️ Robustez y Resiliencia (Offline-First)
 
@@ -101,10 +104,12 @@
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
 | **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
+</details>
 
 ---
 
 ## 🧪 Estrategia de Calidad y Pruebas
+<details>
 
 Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confianza en el despliegue sobre métricas de cobertura vanidosas.
 
@@ -139,10 +144,12 @@ npm run test:ui
 # Reporte de cobertura
 npm run test:coverage
 ```
+</details>
 
 ---
 
 ## 🛠 Stack Tecnológico
+<details>
 
 La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **rendimiento a largo plazo**.
 
@@ -158,10 +165,12 @@ La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **r
 | **Tiempo Real** | `@stomp/stompjs` | Mensajería WebSocket para rastreo en vivo |
 | **Animaciones** | `Framer Motion` | Animaciones y transiciones fluidas |
 | **Gráficos** | `Recharts` | Componentes de visualización de datos |
+</details>
 
 ---
 
 ## 🏗 Arquitectura del Proyecto
+<details>
 
 El código sigue principios de **Clean Architecture** adaptados para desarrollo frontend:
 
@@ -184,10 +193,12 @@ src/
 ├── types/               # 🏷️ Definiciones de Tipos TypeScript
 └── utils/               # 🔧 Funciones Utilitarias
 ```
+</details>
 
 ---
 
 ## 🚀 Instalación y Despliegue
+<details>
 
 ### Prerrequisitos
 
@@ -258,10 +269,12 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 | `npm run test:run` | Ejecutar Vitest una vez |
 | `npm run test:ui` | Abrir UI de Vitest |
 | `npm run test:coverage` | Generar reporte de cobertura |
+</details>
 
 ---
 
 ## 🔒 Seguridad
+<details>
 
 | Característica | Implementación |
 |:---|:---|
@@ -272,22 +285,18 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 | **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod |
 | **Protección contra Bots** | Cloudflare Turnstile integrado en todos los flujos de login |
 | **Rate Limiting** | Manejo del lado del cliente de errores 429 desde el backend |
+</details>
 
 ---
 
-## 📞 Contacto
+## 📧 Contacto
 
 Para consultas sobre este proyecto:
-
+- **Repositorio**: `messenger-frontend`
+- **Autor**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Sitio Web**: [plak.digital](https://plak.digital)
 
 ---
 
-<div align="center">
-
-**Construido con ❤️ por Mateo Valencia Ardila**
-
 > **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
-
-</div>
