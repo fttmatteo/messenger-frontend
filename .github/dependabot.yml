@@ -39,6 +39,13 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      todas-las-dependencias:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
