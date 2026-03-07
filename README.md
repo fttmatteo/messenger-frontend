@@ -28,6 +28,13 @@
 
 **PLAK Messenger Frontend** is the mission-critical user interface for urban logistics operations. Built with enterprise-grade architecture, it orchestrates real-time fleet management while ensuring business continuity even under adverse network conditions.
 
+### 📱 Native App (Android)
+
+The messenger experience is fully optimized as a standalone Android application. By installing the native APK, users get:
+- **Instant Access**: Launch directly from the home screen.
+- **Immersive Experience**: True full-screen interface without browser navigation bars.
+- **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
+
 ### 🎯 Two Optimized Experiences
 
 | 🖥️ **Command Center** | 📱 **Field App** |
@@ -162,6 +169,7 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 | **State** | `React Query`, `Context API` | Server state caching + global client state |
 | **Forms** | `React Hook Form`, `Zod 4` | High-performance forms with schema validation |
 | **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline capabilities and local persistence |
+| **Mobile** | `Capacitor 6` | Native Android app generation and native APIs access |
 | **Maps** | `@react-google-maps/api` | Deep integration with Google Maps Platform |
 | **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
 | **Animation** | `Framer Motion` | Fluid animations and transitions |
