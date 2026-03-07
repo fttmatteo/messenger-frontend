@@ -22,17 +22,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Keep major updates separate for review
-      major:
-        patterns:
-          - "*"
-        update-types:
-          - "major"
     ignore:
-      # Ignore major version updates for React (requires careful migration)
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react-dom"
+      # Ignore major version updates for all dependencies (requires careful migration)
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
   # GitHub Actions
@@ -47,3 +39,6 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
