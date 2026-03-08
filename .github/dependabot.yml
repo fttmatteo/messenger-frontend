@@ -32,8 +32,9 @@ updates:
     directory: "/"
     target-branch: "develop"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "daily"
+      time: "09:00"
+      timezone: "America/Bogota"
     commit-message:
       prefix: "ci"
     labels:
