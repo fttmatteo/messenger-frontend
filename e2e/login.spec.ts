@@ -8,7 +8,7 @@ test.describe('Login E2E Flow', () => {
         // Setup de mocks antes de navegar
         /* eslint-disable @typescript-eslint/no-explicit-any */
         await page.addInitScript(() => {
-            // @ts-ignore
+            // @ts-expect-error - Mocking global object
             window.turnstile = {
                 render: (_container: any, options: any) => {
                     setTimeout(() => { if (options && options.callback) options.callback('mock-playwright-token'); }, 50);

@@ -25,7 +25,7 @@ test.describe('Offline Resilience & Sync', () => {
             // Set camera mock flag for SignatureCameraCapture
             (window as any).e2eTestCameraMock = true;
 
-            // @ts-ignore
+            // @ts-expect-error - Mocking global object
             window.turnstile = {
                 render: (_c: any, o: any) => { setTimeout(() => { if (o && o.callback) o.callback('tok'); }, 50); return 'id'; },
                 reset: () => { }, remove: () => { }, getResponse: () => 'tok'
