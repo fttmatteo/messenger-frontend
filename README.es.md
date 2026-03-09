@@ -121,35 +121,36 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confianza en el despliegue sobre métricas de cobertura vanidosas.
 
 ```
-    ╭────────────────────╮
-    │  Integración (MSW) │  ← Componente + capa API
-    ├────────────────────┤
-    │   Unitarias (Vitest)│  ← Lógica de negocio
-    ├────────────────────┤
+    ╭──────────────────────╮
+    │  E2E (Playwright)    │  ← Flujos de usuario completos
+    ├──────────────────────┤
+    │  Integración (MSW)   │  ← Componente + capa API
+    ├──────────────────────┤
+    │   Unitarias (Vitest) │  ← Lógica de negocio (~89% cobertura)
+    ├──────────────────────┤
     │  Estático (TS/ESLint)│ ← Seguridad en compilación
-    ╰────────────────────╯
+    ╰──────────────────────╯
 ```
 
-| Nivel | Herramientas | Enfoque |
-|:---|:---|:---|
+| **E2E** | `Playwright` | Pruebas de flujos críticos (Login, Entrega, Offline) con bypass de seguridad (Turnstile) |
 | **Integración** | `Vitest` + `MSW` | Pruebas de página completa con capa de red mockeada via Mock Service Worker |
-| **Unitarias** | `Vitest` | Lógica de negocio aislada, utilidades y hooks complejos |
+| **Unitarias** | `Vitest` | Lógica de negocio (~89% de cobertura en servicios), utilidades y hooks complejos |
 | **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
 
 ### 🧪 Ejecutar Pruebas
 
 ```bash
-# Pruebas unitarias e integración
+# Pruebas unitarias e integración (Vitest)
 npm run test:run
-
-# Pruebas unitarias en modo watch
-npm run test
-
-# Pruebas unitarias con UI
-npm run test:ui
 
 # Reporte de cobertura
 npm run test:coverage
+
+# Pruebas E2E (Playwright)
+npx playwright test
+
+# Pruebas E2E con UI
+npx playwright test --ui
 ```
 </details>
 

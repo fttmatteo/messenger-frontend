@@ -19,6 +19,7 @@ Al igual que en el backend, el repositorio tiene activadas reglas de protección
 3. **Pull Requests (PR):** Todo cambio debe pasar por un proceso de revisión.
 4. **Revisión Obligatoria:** Los PR requieren la aprobación de **@fttmatteo** (Code Owner) para ser integrados.
 5. **Conversaciones Resueltas:** Asegúrate de responder y resolver todos los comentarios del revisor antes del merge.
+6. **Pruebas Obligatorias:** Todo Pull Request debe pasar la suite de pruebas completa (`npm run test:run` y `npx playwright test`) sin fallos.
 
 ## 🚀 Pasos para colaborar
 1. Clona el repositorio.

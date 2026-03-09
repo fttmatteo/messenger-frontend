@@ -17,7 +17,7 @@ docker-compose -f docker-compose.local.yml up --build -d
 El frontend estará disponible automáticamente en:
 - **URL**: [http://localhost](http://localhost) (Puerto 80)
 
-### 🔥 Con Hot Reloading (Desarrollo activo)
+### 1.1. Con Hot Reloading (Desarrollo activo)
 Para desarrollo activo con recarga automática al guardar cambios:
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
@@ -38,9 +38,3 @@ docker run -d -p 80:80 --name messenger-frontend messenger-frontend
 
 > [!TIP]
 > **Zero-Config**: La imagen de Docker ya viene pre-configurada para conectarse al backend en `localhost:8080` y tiene un bypass automático para **Cloudflare Turnstile**, facilitando las pruebas sin configurar llaves externas.
-
----
-
-> [!NOTE]
-> **📱 ¿Buscas la App de Mensajeros?**
-> Para la experiencia real de los mensajeros en la calle, el sistema cuenta con una **Aplicación Nativa para Android**. Esta versión (instalable vía APK) ofrece trabajo offline, pantalla completa real y tracking en segundo plano constante.

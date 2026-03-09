@@ -44,9 +44,15 @@ describe('AuthContext', () => {
 
     describe('hook useAuth', () => {
         it('debe lanzar un error cuando se usa fuera de AuthProvider', () => {
+            // Silenciar console.error para este test ya que tirará uno intencionalmente por React
+            const originalError = console.error
+            console.error = vi.fn()
+
             expect(() => {
                 renderHook(() => useAuth())
             }).toThrow('useAuth debe ser usado dentro de un AuthProvider')
+
+            console.error = originalError
         })
 
         it('debe devolver el estado inicial no autenticado', async () => {

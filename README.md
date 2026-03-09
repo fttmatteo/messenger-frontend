@@ -121,36 +121,36 @@ The messenger experience is fully optimized as a standalone Android application.
 This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
 
 ```
-    ╭────────────────────╮
+    ╭────────────────────╮    
+    │  E2E (Playwright)  │  ← Full user flows
+    ├────────────────────┤
     │  Integration (MSW) │  ← Component + API layer
     ├────────────────────┤
-    │   Unit (Vitest)    │  ← Business logic
+    │   Unit (Vitest)    │  ← Business logic (~89% coverage)
     ├────────────────────┤
     │  Static (TS/ESLint)│  ← Compile-time safety
     ╰────────────────────╯
 ```
 
-| Level | Tools | Focus |
-|:---|:---|:---|
+| **E2E** | `Playwright` | Critical flow tests (Login, Delivery, Offline) with security bypass (Turnstile) |
 | **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
-| **Unit** | `Vitest` | Isolated business logic, utilities, and complex hooks |
-| **Visual** | `Playwright Snapshots` | Automatic detection of design regressions (pixel-perfect diffing) |
+| **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
 
 ### 🧪 Running Tests
 
 ```bash
-# Unit & Integration tests
+# Unit & Integration tests (Vitest)
 npm run test:run
-
-# Unit tests with watch mode
-npm run test
-
-# Unit tests with UI
-npm run test:ui
 
 # Coverage report
 npm run test:coverage
+
+# E2E tests (Playwright)
+npx playwright test
+
+# E2E tests with UI
+npx playwright test --ui
 ```
 </details>
 

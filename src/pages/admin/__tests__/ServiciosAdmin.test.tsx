@@ -7,6 +7,14 @@ import { StatusColorProvider } from '@/context/StatusColorContext'
 import { AuthProvider } from '@/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
+import { showToast } from '@/config/toast-config'
+
+vi.mock('@/config/toast-config', () => ({
+    showToast: {
+        error: vi.fn(),
+        success: vi.fn()
+    }
+}))
 
 // Mock de useOutletContext para query de búsqueda
 vi.mock('react-router-dom', async () => {
@@ -109,6 +117,26 @@ describe('Servicios Admin Page Integration', () => {
 
         renderPage()
 
+        expect(await screen.findByText(/Sin servicios/i)).toBeInTheDocument()
+    })
+
+    it('should show error message when API fails (500)', async () => {
+        server.use(
+            http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
+                return new HttpResponse(null, { status: 500, statusText: 'Internal Server Error' })
+            })
+        )
+
+        renderPage()
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('service-skeleton-0')).not.toBeInTheDocument()
+        }, { timeout: 4000 })
+
+        // El componente UI debe manejar el rechazo lanzando un Toast (gestionado por el hook useServices)
+        expect(showToast.error).toHaveBeenCalledWith("Error al cargar servicios", expect.any(Object))
+
+        // La tabla debe mostrarse vacía
         expect(await screen.findByText(/Sin servicios/i)).toBeInTheDocument()
     })
 })

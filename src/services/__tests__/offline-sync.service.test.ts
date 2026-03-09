@@ -1,12 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { offlineSyncService, type OfflineAction } from '../offline-sync.service'
 import { get, set } from 'idb-keyval'
+import { isNative } from '@/lib/capacitor'
 
 // Mock de idb-keyval
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),
     set: vi.fn(),
     del: vi.fn(),
+}))
+
+vi.mock('@/lib/capacitor', () => ({
+    isNative: vi.fn(),
 }))
 
 // Mock de crypto.randomUUID
@@ -222,4 +227,63 @@ describe('OfflineSyncService', () => {
         expect(syncedCount).toBe(0)
         expect(handler).not.toHaveBeenCalled()
     })
-})
+
+    describe('advanced sync logic', () => {
+        it('should attempt to register background sync if not native', async () => {
+            vi.mocked(get).mockResolvedValue([])
+            vi.mocked(isNative).mockReturnValue(false)
+
+            const mockSyncRegister = vi.fn().mockResolvedValue(undefined)
+            const mockRegistration = { sync: { register: mockSyncRegister } }
+
+            Object.defineProperty(navigator, 'serviceWorker', {
+                configurable: true,
+                value: { ready: Promise.resolve(mockRegistration) }
+            })
+
+            await offlineSyncService.queueAction('UPDATE_STATUS', {})
+            expect(mockSyncRegister).toHaveBeenCalledWith('sync-pending-actions')
+        })
+
+        it('should setup background sync listener', async () => {
+            vi.mocked(isNative).mockReturnValue(false)
+            const addEventListenerSpy = vi.fn()
+
+            Object.defineProperty(navigator, 'serviceWorker', {
+                configurable: true,
+                value: { addEventListener: addEventListenerSpy }
+            })
+
+            offlineSyncService.setupBackgroundSyncListener()
+            expect(addEventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function))
+        })
+
+        it('should use generic sync if no handler but endpoint exists', async () => {
+            const mockFetch = vi.fn().mockResolvedValue({ ok: true })
+            vi.stubGlobal('fetch', mockFetch)
+
+            // Unregister handler for this test
+            offlineSyncService.registerHandler('UPDATE_STATUS', undefined as any)
+
+            const mockActions: OfflineAction[] = [
+                { id: '1', type: 'UPDATE_STATUS', payload: { data: 1 }, timestamp: Date.now(), retryCount: 0, endpoint: '/api/test', method: 'POST' }
+            ]
+            vi.mocked(get).mockResolvedValue(mockActions)
+
+            await offlineSyncService.syncAll()
+
+            expect(mockFetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+                method: 'POST',
+                body: JSON.stringify({ data: 1 })
+            }))
+        })
+
+        it('should return false if hasPendingActions is called with data', async () => {
+            vi.mocked(get).mockResolvedValue([{ id: '1' } as any])
+            expect(await offlineSyncService.hasPendingActions()).toBe(true)
+
+            vi.mocked(get).mockResolvedValue([])
+            expect(await offlineSyncService.hasPendingActions()).toBe(false)
+        })
+    })
+});
