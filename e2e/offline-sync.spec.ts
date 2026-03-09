@@ -74,15 +74,18 @@ test.describe('Offline Resilience & Sync', () => {
         // Open signature dialog
         await page.getByText(/toca para firmar/i).first().click();
 
-        // Wait for canvas and draw
+        // Wait for canvas and draw programmatically to avoid headless bounding box flakiness
         const canvas = page.locator('canvas.touch-none').first();
-        const box = await canvas.boundingBox();
-        if (box) {
-            await page.mouse.move(box.x + box.width / 4, box.y + box.height / 4);
-            await page.mouse.down();
-            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-            await page.mouse.up();
-        }
+        await expect(canvas).toBeVisible({ timeout: 15000 });
+
+        await canvas.evaluate((node) => {
+            const evStart = new MouseEvent('mousedown', { clientX: 10, clientY: 10, bubbles: true });
+            node.dispatchEvent(evStart);
+            const evMove = new MouseEvent('mousemove', { clientX: 50, clientY: 50, bubbles: true });
+            node.dispatchEvent(evMove);
+            const evEnd = new MouseEvent('mouseup', { bubbles: true });
+            node.dispatchEvent(evEnd);
+        });
 
         // Wait for GIF processing (if camera enabled)
         const confirmSignatureBtn = page.getByRole('button', { name: /confirmar firma/i });
