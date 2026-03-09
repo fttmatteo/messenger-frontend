@@ -121,35 +121,36 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confianza en el despliegue sobre métricas de cobertura vanidosas.
 
 ```
-    ╭────────────────────╮
-    │  Integración (MSW) │  ← Componente + capa API
-    ├────────────────────┤
-    │   Unitarias (Vitest)│  ← Lógica de negocio
-    ├────────────────────┤
+    ╭──────────────────────╮
+    │  E2E (Playwright)    │  ← Flujos de usuario completos
+    ├──────────────────────┤
+    │  Integración (MSW)   │  ← Componente + capa API
+    ├──────────────────────┤
+    │   Unitarias (Vitest) │  ← Lógica de negocio (~89% cobertura)
+    ├──────────────────────┤
     │  Estático (TS/ESLint)│ ← Seguridad en compilación
-    ╰────────────────────╯
+    ╰──────────────────────╯
 ```
 
-| Nivel | Herramientas | Enfoque |
-|:---|:---|:---|
+| **E2E** | `Playwright` | Pruebas de flujos críticos (Login, Entrega, Offline) con bypass de seguridad (Turnstile) |
 | **Integración** | `Vitest` + `MSW` | Pruebas de página completa con capa de red mockeada via Mock Service Worker |
-| **Unitarias** | `Vitest` | Lógica de negocio aislada, utilidades y hooks complejos |
+| **Unitarias** | `Vitest` | Lógica de negocio (~89% de cobertura en servicios), utilidades y hooks complejos |
 | **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
 
 ### 🧪 Ejecutar Pruebas
 
 ```bash
-# Pruebas unitarias e integración
+# Pruebas unitarias e integración (Vitest)
 npm run test:run
-
-# Pruebas unitarias en modo watch
-npm run test
-
-# Pruebas unitarias con UI
-npm run test:ui
 
 # Reporte de cobertura
 npm run test:coverage
+
+# Pruebas E2E (Playwright)
+npx playwright test
+
+# Pruebas E2E con UI
+npx playwright test --ui
 ```
 </details>
 
@@ -221,9 +222,20 @@ src/
 Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
 
 1. Ve a la carpeta del backend: `cd ../messenger-backend`
-2. Ejecuta: `docker-compose up --build`
+2. Ejecuta: `docker-compose -f docker-compose.local.yml up --build`
 
 Esto compilará el frontend y lo servirá en `http://localhost`.
+
+### 🔥 Desarrollo con Hot Reloading (Docker)
+
+Para desarrollo activo con recarga automática de código:
+
+```bash
+cd ../messenger-backend
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+El servidor de desarrollo del frontend (Vite HMR) estará disponible en `http://localhost:5173` — los cambios se reflejan instantáneamente al guardar.
 
 ---
 

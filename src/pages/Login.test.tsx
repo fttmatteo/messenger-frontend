@@ -38,11 +38,16 @@ vi.mock('@/assets/logo.png', () => ({
     default: 'logo.png',
 }));
 
+import { useEffect } from 'react';
+
 // Mock de TurnstileWidget
 vi.mock('@/components/ui/turnstile-widget', () => ({
     TurnstileWidget: ({ onVerify }: { onVerify: (token: string) => void }) => {
         // Ejecutar onVerify inmediatamente para simular verificación exitosa en tests
-        setTimeout(() => onVerify('test-token'), 0);
+        // Usamos useEffect para evitar warnings de actualización durante el renderizado
+        useEffect(() => {
+            onVerify('test-token');
+        }, [onVerify]);
         return <div data-testid="turnstile-widget" />;
     },
 }));
@@ -61,13 +66,15 @@ describe('Login Page', () => {
     /**
      * Verifica que el formulario de login se renderiza correctamente con todos sus elementos.
      */
-    it('should render login form', () => {
+    it('should render login form', async () => {
         renderWithProviders(<Login />);
 
-        expect(screen.getByText('Inicio de sesión')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Ingrese su número de documento')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Ingrese su contraseña')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText('Inicio de sesión')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Ingrese su número de documento')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Ingrese su contraseña')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument();
+        });
     });
 
     /**

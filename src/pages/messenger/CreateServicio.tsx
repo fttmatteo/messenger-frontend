@@ -303,7 +303,6 @@ export default function MessengerCreateServicio() {
                                                 ocrSuccess === true ? 'Placa detectada' : 'Ingresa la placa'}
                                         </h3>
                                     </div>
-
                                     {extractingPlate ? (
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -311,16 +310,6 @@ export default function MessengerCreateServicio() {
                                         </div>
                                     ) : (
                                         <>
-                                            {ocrSuccess === true && (
-                                                <p className="text-xs text-green-600 dark:text-green-400 mb-3">
-                                                    Verifica que la placa sea correcta. Puedes editarla si es necesario.
-                                                </p>
-                                            )}
-                                            {ocrSuccess === false && (
-                                                <p className="text-xs text-amber-600 dark:text-amber-400 mb-3">
-                                                    No se pudo detectar la placa automáticamente. Por favor ingrésala manualmente.
-                                                </p>
-                                            )}
                                             <FormField
                                                 control={form.control}
                                                 name="manualPlateNumber"
@@ -328,10 +317,21 @@ export default function MessengerCreateServicio() {
                                                     <FormItem>
                                                         <FormControl>
                                                             <Input
-                                                                placeholder="ABC123"
-                                                                {...field}
-                                                                className={`h-12 font-mono uppercase touch-manipulation text-xl tracking-widest text-center font-bold ${ocrSuccess === true ? 'border-green-500/50' : 'border-amber-500/50'
-                                                                    }`}
+                                                                name={field.name}
+                                                                ref={field.ref}
+                                                                onBlur={field.onBlur}
+                                                                value={field.value ? field.value.replace(/\s/g, '').replace(/^(.{3})(.+)$/, '$1 $2') : ''}
+                                                                onChange={(e) => {
+                                                                    const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+                                                                    field.onChange(raw)
+                                                                }}
+                                                                className="h-14 font-mono font-black uppercase touch-manipulation !text-4xl tracking-wider text-center
+                                                                    bg-yellow-400 dark:bg-yellow-500 text-black dark:text-white
+                                                                    border-2 border-black dark:border-white dark:ring-2 dark:ring-inset dark:ring-black
+                                                                    rounded-lg shadow-sm
+                                                                    placeholder:text-black/30 dark:placeholder:text-white/30
+                                                                    focus-visible:ring-yellow-500/50
+                                                                    dark:[text-shadow:1px_1px_0_#000,-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000]"
                                                                 maxLength={7}
                                                                 autoComplete="off"
                                                             />

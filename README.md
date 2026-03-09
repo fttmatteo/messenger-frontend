@@ -121,36 +121,36 @@ The messenger experience is fully optimized as a standalone Android application.
 This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
 
 ```
-    ╭────────────────────╮
+    ╭────────────────────╮    
+    │  E2E (Playwright)  │  ← Full user flows
+    ├────────────────────┤
     │  Integration (MSW) │  ← Component + API layer
     ├────────────────────┤
-    │   Unit (Vitest)    │  ← Business logic
+    │   Unit (Vitest)    │  ← Business logic (~89% coverage)
     ├────────────────────┤
     │  Static (TS/ESLint)│  ← Compile-time safety
     ╰────────────────────╯
 ```
 
-| Level | Tools | Focus |
-|:---|:---|:---|
+| **E2E** | `Playwright` | Critical flow tests (Login, Delivery, Offline) with security bypass (Turnstile) |
 | **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
-| **Unit** | `Vitest` | Isolated business logic, utilities, and complex hooks |
-| **Visual** | `Playwright Snapshots` | Automatic detection of design regressions (pixel-perfect diffing) |
+| **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
 
 ### 🧪 Running Tests
 
 ```bash
-# Unit & Integration tests
+# Unit & Integration tests (Vitest)
 npm run test:run
-
-# Unit tests with watch mode
-npm run test
-
-# Unit tests with UI
-npm run test:ui
 
 # Coverage report
 npm run test:coverage
+
+# E2E tests (Playwright)
+npx playwright test
+
+# E2E tests with UI
+npx playwright test --ui
 ```
 </details>
 
@@ -222,9 +222,20 @@ src/
 If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
 
 1. Go to the backend folder: `cd ../messenger-backend`
-2. Run: `docker-compose up --build`
+2. Run: `docker-compose -f docker-compose.local.yml up --build`
 
 This will build the frontend and serve it at `http://localhost`.
+
+### 🔥 Development with Hot Reloading (Docker)
+
+For active development with automatic code reloading:
+
+```bash
+cd ../messenger-backend
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+The frontend dev server (Vite HMR) will be available at `http://localhost:5173` — changes are reflected instantly on save.
 
 ---
 

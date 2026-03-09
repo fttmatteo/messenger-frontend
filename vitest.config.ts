@@ -7,19 +7,26 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        exclude: [...configDefaults.exclude],
+        exclude: [...configDefaults.exclude, 'e2e/**'],
         setupFiles: './src/test/setup.ts',
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
-            include: ['src/lib/**', 'src/hooks/**', 'src/services/**', 'src/components/**'],
-            exclude: ['node_modules/**', 'src/test/**', 'src/components/ui/*.test.tsx'],
+            exclude: [
+                'src/main.tsx',
+                'src/vite-env.d.ts',
+                'src/types/**/*',
+                'src/config/**/*',
+                'src/test/**/*',
+                '**/index.ts',
+                '**/*.d.ts',
+            ],
             thresholds: {
-                statements: 11,
-                branches: 9,
-                functions: 11,
-                lines: 11,
-            },
+                statements: 20,
+                branches: 20,
+                functions: 20,
+                lines: 20,
+            }
         },
     },
     resolve: {

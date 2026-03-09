@@ -113,23 +113,76 @@ describe('useSmartLocation', () => {
         expect(trackingService.setLastLocation).toHaveBeenCalledWith(50, 50);
     })
 
-    it('should fetch from Web API with maximumAge 0 if isNative is false', async () => {
+    it('should request permissions if location is not granted initially (Native)', async () => {
         vi.mocked(trackingService.getLastKnownLocation).mockReturnValue(null);
-        vi.mocked(capacitorLib.isNative).mockReturnValue(false);
-
-        const { result } = renderHook(() => useSmartLocation())
-
-        let location;
-        await act(async () => {
-            location = await result.current.getCurrentLocation();
+        vi.mocked(capacitorLib.isNative).mockReturnValue(true);
+        vi.mocked(Geolocation.checkPermissions).mockResolvedValue({ location: 'prompt', coarseLocation: 'prompt' });
+        vi.mocked(Geolocation.requestPermissions).mockResolvedValue({ location: 'granted', coarseLocation: 'granted' });
+        vi.mocked(Geolocation.getCurrentPosition).mockResolvedValue({
+            coords: { latitude: 50, longitude: 50, accuracy: 10, altitude: null, altitudeAccuracy: null, heading: null, speed: null },
+            timestamp: 123
         });
 
-        expect(location).toEqual({ latitude: 40, longitude: -70 });
+        const { result } = renderHook(() => useSmartLocation())
+        await act(async () => {
+            await result.current.getCurrentLocation();
+        });
 
-        // Ensure standard navigator gets called
-        expect(window.navigator.geolocation.getCurrentPosition).toHaveBeenCalled();
+        expect(Geolocation.requestPermissions).toHaveBeenCalled();
+    })
 
-        // Assert tracking service saves last location
-        expect(trackingService.setLastLocation).toHaveBeenCalledWith(40, -70);
+    it('should throw error if native permission is denied permanentely', async () => {
+        vi.mocked(capacitorLib.isNative).mockReturnValue(true);
+        vi.mocked(Geolocation.checkPermissions).mockResolvedValue({ location: 'denied', coarseLocation: 'denied' });
+        vi.mocked(Geolocation.requestPermissions).mockResolvedValue({ location: 'denied', coarseLocation: 'denied' });
+
+        const { result } = renderHook(() => useSmartLocation())
+        await expect(act(async () => {
+            await result.current.getCurrentLocation();
+        })).rejects.toThrow("Permiso de ubicación denegado permanentemente");
+    })
+
+    it('should handle native geolocation errors', async () => {
+        vi.mocked(capacitorLib.isNative).mockReturnValue(true);
+        vi.mocked(Geolocation.checkPermissions).mockResolvedValue({ location: 'granted', coarseLocation: 'granted' });
+        vi.mocked(Geolocation.getCurrentPosition).mockRejectedValue(new Error("GPS Signal Lost"));
+
+        const { result } = renderHook(() => useSmartLocation())
+        await expect(act(async () => {
+            await result.current.getCurrentLocation();
+        })).rejects.toThrow("GPS Signal Lost");
+    })
+
+    it('should handle web geolocation error codes', async () => {
+        vi.mocked(capacitorLib.isNative).mockReturnValue(false);
+
+        const mockErrorCallback = vi.fn().mockImplementation((_, error) =>
+            error({ code: 1, message: "User denied" })
+        );
+
+        Object.defineProperty(window.navigator, 'geolocation', {
+            configurable: true,
+            value: {
+                getCurrentPosition: mockErrorCallback,
+            }
+        });
+
+        const { result } = renderHook(() => useSmartLocation())
+        await expect(act(async () => {
+            await result.current.getCurrentLocation();
+        })).rejects.toThrow("Permiso de ubicación denegado");
+    })
+
+    it('should handle browser without geolocation support', async () => {
+        vi.mocked(capacitorLib.isNative).mockReturnValue(false);
+        Object.defineProperty(window.navigator, 'geolocation', {
+            configurable: true,
+            value: undefined
+        });
+
+        const { result } = renderHook(() => useSmartLocation())
+        await expect(act(async () => {
+            await result.current.getCurrentLocation();
+        })).rejects.toThrow("La geolocalización no es soportada por este navegador.");
     })
 })
