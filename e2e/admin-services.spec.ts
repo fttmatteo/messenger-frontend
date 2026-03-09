@@ -3,9 +3,10 @@ import { test, expect, devices } from '@playwright/test';
 test.use({ ...devices['Pixel 5'] });
 
 test.describe('Service Creation Flow', () => {
-    test.beforeEach(async ({ context, page }) => {
+    test.beforeEach(async ({ page }) => {
         // Aggressive auth injection
-        await context.addInitScript(() => {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        await page.addInitScript(() => {
             const mockUser = {
                 document: 123,
                 role: 'MESSENGER',
@@ -13,20 +14,25 @@ test.describe('Service Creation Flow', () => {
                 name: 'E2E Creator',
                 isOnline: true
             };
+            const userStr = JSON.stringify(mockUser);
             window.localStorage.setItem('role', 'MESSENGER');
-            window.localStorage.setItem('user', JSON.stringify(mockUser));
+            window.localStorage.setItem('user', userStr);
             window.localStorage.setItem('accessToken', 'mock-messenger-token');
 
-            // Mock Turnstile globally
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).turnstile = {
-                render: (_c: unknown, o: { callback?: (t: string) => void }) => {
-                    console.log('Turnstile mock render');
-                    setTimeout(() => { if (o.callback) o.callback('mock-tok'); }, 50);
-                    return 'mock-id';
-                },
-                reset: () => { }, remove: () => { }, getResponse: () => 'mock-tok'
+            window.sessionStorage.setItem('role', 'MESSENGER');
+            window.sessionStorage.setItem('user', userStr);
+            window.sessionStorage.setItem('accessToken', 'mock-messenger-token');
+
+            // @ts-ignore
+            window.turnstile = {
+                render: (_c: any, o: any) => { setTimeout(() => { if (o && o.callback) o.callback('tok'); }, 50); return 'id'; },
+                reset: () => { }, remove: () => { }, getResponse: () => 'tok'
             };
+        });
+        /* eslint-enable @typescript-eslint/no-explicit-any */
+
+        await page.route('**/settings/status-colors', async route => {
+            await route.fulfill({ json: { PENDING: '#6b7280', DELIVERED: '#10b981' } });
         });
 
         await page.route('**/services/pending**', async route => {
@@ -35,14 +41,25 @@ test.describe('Service Creation Flow', () => {
 
         await page.route('**/dealerships/allDealerships', async route => {
             await route.fulfill({
-                json: [{ idDealership: 1, name: 'Test Dealership', zone: 'Z1' }]
+                json: [{
+                    idDealership: 1,
+                    name: 'Test Dealership',
+                    address: 'Calle 123',
+                    phone: '555-1234',
+                    zone: 'Norte'
+                }]
             });
         });
 
         await page.route('**/services/createService', async route => {
             await route.fulfill({
-                status: 201,
-                json: { idServiceDelivery: 999, currentStatus: 'PENDING' }
+                json: {
+                    idServiceDelivery: 202,
+                    plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
+                    dealership: { idDealership: 1, name: 'Test Dealership', address: 'Calle 123', phone: '555-1234', zone: 'Norte' },
+                    currentStatus: 'PENDING',
+                    createdAt: new Date().toISOString()
+                }
             });
         });
 
@@ -71,12 +88,10 @@ test.describe('Service Creation Flow', () => {
         await option.click();
 
         // Photo Upload mock interaction
-        const [fileChooser] = await Promise.all([
-            page.waitForEvent('filechooser'),
-            page.locator('input[type="file"]').first().click({ force: true }),
-        ]);
-        await fileChooser.setFiles({
-            name: 'plate.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('fake-image-content'),
+        await page.locator('input[type="file"]').first().setInputFiles({
+            name: 'plate.jpg',
+            mimeType: 'image/jpeg',
+            buffer: Buffer.from('fake-image-content'),
         });
 
         // Wait for OCR mock (manual entry fallback)

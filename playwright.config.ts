@@ -7,6 +7,7 @@ export default defineConfig({
     testDir: './e2e',
     /* Run tests in files in parallel */
     fullyParallel: false,
+    reporter: [['html', { open: 'never' }], ['list']],
     workers: 1,
     timeout: 120000,
     expect: {
@@ -18,6 +19,14 @@ export default defineConfig({
         baseURL: 'http://localhost:5173',
         actionTimeout: 30000,
         navigationTimeout: 60000,
+
+        launchOptions: {
+            args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
+        },
+
+        /* Geolocation permissions for messenger tracking */
+        permissions: ['geolocation', 'camera', 'microphone'],
+        geolocation: { latitude: 4.6097, longitude: -74.0817 },
 
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',

@@ -3,8 +3,9 @@ import { test, expect, devices } from '@playwright/test';
 test.use({ ...devices['Pixel 5'] });
 
 test.describe('Offline Resilience & Sync', () => {
-    test.beforeEach(async ({ context, page }) => {
-        await context.addInitScript(() => {
+    test.beforeEach(async ({ page }) => {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        await page.addInitScript(() => {
             const mockUser = {
                 document: 789,
                 role: 'MESSENGER',
@@ -12,31 +13,47 @@ test.describe('Offline Resilience & Sync', () => {
                 name: 'Offline User',
                 isOnline: true
             };
+            const userStr = JSON.stringify(mockUser);
             window.localStorage.setItem('role', 'MESSENGER');
-            window.localStorage.setItem('user', JSON.stringify(mockUser));
+            window.localStorage.setItem('user', userStr);
             window.localStorage.setItem('accessToken', 'offline-test-token');
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).turnstile = {
-                render: (_c: unknown, o: { callback?: (t: string) => void }) => { setTimeout(() => { if (o.callback) o.callback('tok'); }, 50); return 'id'; },
+            window.sessionStorage.setItem('role', 'MESSENGER');
+            window.sessionStorage.setItem('user', userStr);
+            window.sessionStorage.setItem('accessToken', 'offline-test-token');
+
+            // @ts-ignore
+            window.turnstile = {
+                render: (_c: any, o: any) => { setTimeout(() => { if (o && o.callback) o.callback('tok'); }, 50); return 'id'; },
                 reset: () => { }, remove: () => { }, getResponse: () => 'tok'
             };
         });
+        /* eslint-enable @typescript-eslint/no-explicit-any */
 
         await page.route('**/services/findByServiceId/202', async route => {
             await route.fulfill({
                 json: {
                     idServiceDelivery: 202,
+                    plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
+                    dealership: {
+                        idDealership: 2,
+                        name: 'Concesionario Norte',
+                        address: 'Calle 100 #15-20',
+                        phone: '7654321',
+                        zone: 'Norte'
+                    },
                     currentStatus: 'PENDING',
-                    plate: { plateNumber: 'OFF-123', plateType: 'CAR' },
-                    dealership: { name: 'Offline Dealership' },
-                    photos: [], history: [], createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString()
                 }
             });
         });
 
         await page.route('**/settings/status-colors', async route => {
             await route.fulfill({ json: { PENDING: '#6b7280', DELIVERED: '#10b981' } });
+        });
+
+        await page.route('**/services/updateStatus/**', async route => {
+            await route.fulfill({ json: { message: 'Success' } });
         });
 
         await page.goto('/messenger/servicio/202/actualizar');
@@ -52,7 +69,24 @@ test.describe('Offline Resilience & Sync', () => {
         await context.setOffline(true);
 
         await deliveredBtn.click();
-        await page.getByRole('button', { name: /simular/i }).first().click();
+
+        // Open signature dialog
+        await page.getByText(/toca para firmar/i).first().click();
+
+        // Wait for canvas and draw
+        const canvas = page.locator('canvas.touch-none').first();
+        const box = await canvas.boundingBox();
+        if (box) {
+            await page.mouse.move(box.x + box.width / 4, box.y + box.height / 4);
+            await page.mouse.down();
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            await page.mouse.up();
+        }
+
+        // Wait for GIF processing (if camera enabled)
+        await page.waitForTimeout(2000); // Give some time for our fake camera to "capture"
+
+        await page.getByRole('button', { name: /confirmar firma/i }).click();
 
         const confirmBtn = page.getByRole('button', { name: /confirmar/i }).first();
         await confirmBtn.click();

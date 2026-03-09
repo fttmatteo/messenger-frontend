@@ -6,17 +6,19 @@ test.describe('Login E2E Flow', () => {
         await page.route('https://challenges.cloudflare.com/**', route => route.abort());
 
         // Setup de mocks antes de navegar
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         await page.addInitScript(() => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).turnstile = {
-                render: (_container: unknown, options: { callback: (token: string) => void }) => {
-                    setTimeout(() => options.callback('mock-playwright-token'), 50);
+            // @ts-ignore
+            window.turnstile = {
+                render: (_container: any, options: any) => {
+                    setTimeout(() => { if (options && options.callback) options.callback('mock-playwright-token'); }, 50);
                     return 'mock-widget-id';
                 },
                 reset: () => { },
                 remove: () => { }
             };
         });
+        /* eslint-enable @typescript-eslint/no-explicit-any */
 
         await page.goto('/login');
     });
