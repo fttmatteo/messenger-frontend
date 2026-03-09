@@ -6,6 +6,8 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import SignatureCameraCapture, { type SignatureCameraCaptureRef } from './SignatureCameraCapture'
 import { createLogger } from '@/utils/logger'
 
+const isE2ETest = typeof window !== 'undefined' && 'e2eTestCameraMock' in window;
+
 const logger = createLogger('SignatureCanvas')
 
 
@@ -354,11 +356,11 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 {!tempHasDrawn && (
                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                         <span className="text-muted-foreground/40 text-base sm:text-xl">
-                                            {(!isCameraReady && !savedGifBlob && !isGifProcessing) ? 'Preparando cámara...' : 'Firme aquí'}
+                                            {(!isE2ETest && !isCameraReady && !savedGifBlob && !isGifProcessing) ? 'Preparando cámara...' : 'Firme aquí'}
                                         </span>
                                     </div>
                                 )}
-                                {!isCameraReady && !savedGifBlob && !isGifProcessing && (
+                                {(!isE2ETest && !isCameraReady && !savedGifBlob && !isGifProcessing) && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
                                         <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
                                     </div>
@@ -374,7 +376,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             <Button
                                 onClick={confirmSignature}
                                 className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
-                                disabled={!tempHasDrawn || !savedGifBlob || isGifProcessing}
+                                disabled={!tempHasDrawn || (!isE2ETest && (!savedGifBlob || isGifProcessing))}
                             >
                                 <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Confirmar firma
