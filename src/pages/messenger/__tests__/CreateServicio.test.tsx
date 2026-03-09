@@ -84,7 +84,7 @@ describe('CreateServicio Page', () => {
 
         // Debería aparecer la sección de placa detectada con los datos del mock
         expect(await screen.findByText(/Placa detectada/i)).toBeInTheDocument();
-        expect(screen.getByDisplayValue('ABC123')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('ABC 123')).toBeInTheDocument();
         expect(screen.getByText(/Confirma o edita la placa/i)).toBeInTheDocument();
     });
 
