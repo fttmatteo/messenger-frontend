@@ -51,17 +51,17 @@ describe('authService', () => {
             };
             vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
 
-            const result = await authService.login({ document: 12345, password: 'password' });
+            const result = await authService.login({ document: 12345, password: 'password', turnstileToken: 'mock-token' });
 
             expect(result).toEqual(mockResponse.data);
-            expect(apiClient.post).toHaveBeenCalledWith('/auth/login', { document: 12345, password: 'password' });
+            expect(apiClient.post).toHaveBeenCalledWith('/auth/login', { document: 12345, password: 'password', turnstileToken: 'mock-token' });
         });
 
         it('should throw error if response schema is invalid', async () => {
             const mockResponse = { data: { invalid: 'data' } };
             vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
 
-            await expect(authService.login({ document: 12345, password: 'password' }))
+            await expect(authService.login({ document: 12345, password: 'password', turnstileToken: 'mock-token' }))
                 .rejects.toThrow('Formato de respuesta del servidor inválido');
             expect(logger.error).toHaveBeenCalled();
         });
