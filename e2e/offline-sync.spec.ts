@@ -97,6 +97,7 @@ test.describe('Offline Resilience & Sync', () => {
 
         // Go offline right before making the final submit request
         await context.setOffline(true);
+        await expect(page.getByText(/sin conexión/i).first()).toBeVisible({ timeout: 15000 });
 
         await page.getByRole('button', { name: /^Confirmar$/ }).click();
 
@@ -109,7 +110,8 @@ test.describe('Offline Resilience & Sync', () => {
         });
 
         await context.setOffline(false);
-        await page.evaluate(() => window.dispatchEvent(new Event('online')));
+
+        await expect(page.getByText(/conexión restaurada/i).first()).toBeVisible({ timeout: 15000 });
 
         await expect.poll(() => syncCalled, { timeout: 30000 }).toBeTruthy();
     });
