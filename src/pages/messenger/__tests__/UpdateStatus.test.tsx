@@ -137,7 +137,7 @@ describe('UpdateStatus Page Integration', () => {
     }
 
     it('should submit successfully when online', async () => {
-        const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as any)
+        const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as unknown as import('@/types/service.types').ServiceDelivery)
 
         renderWithRouter('123')
         await screen.findByText(/ABC/i)

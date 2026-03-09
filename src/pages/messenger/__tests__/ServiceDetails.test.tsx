@@ -4,10 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import ServiceDetails from '../ServiceDetails'
 import { serviceDeliveryService } from '@/services/service.service'
-import { useNetwork } from '@/hooks/use-network'
-import { useStatusColors } from '@/hooks/use-status-colors'
 import { openMaps } from '@/lib/navigation-utils'
 import { trackingService } from '@/services/tracking.service'
+import type { ServiceDelivery } from '@/types/service.types'
 
 // Mock dependencies
 vi.mock('@/hooks/use-network', () => ({
@@ -40,33 +39,33 @@ vi.mock('@/services/service.service', () => ({
 }))
 
 describe('ServiceDetails Page Integration', () => {
-    const mockService = {
+    const mockService: ServiceDelivery = {
         idServiceDelivery: 1,
         currentStatus: 'ASSIGNED',
         plate: { plateNumber: 'XYZ-789', plateType: 'MOTORCYCLE', idPlate: 123 },
         dealership: {
-            idDealersip: 1,
+            idDealership: 1,
             name: 'Main Dealership',
             address: '123 Main St',
+            phone: '555-0199',
+            zone: 'NORTH',
             latitude: 10,
-            longitude: 10,
-            contactPhone: '555-0199'
+            longitude: 10
         },
-        contactName: 'John Doe',
-        contactPhone: '555-1234',
-        observation: 'Test observation',
-        photos: []
+        photos: [],
+        createdAt: '2023-01-01T00:00:00Z',
+        history: []
     }
 
     beforeEach(() => {
         vi.clearAllMocks()
-        vi.mocked(serviceDeliveryService.getById).mockResolvedValue(mockService as any)
+        vi.mocked(serviceDeliveryService.getById).mockResolvedValue(mockService)
         vi.mocked(trackingService.getLastKnownLocation).mockReturnValue(null)
 
         // Ensure navigator.geolocation exists for spying/mocking
         const mockGeo = {
-            getCurrentPosition: vi.fn((success) => {
-                success({ coords: { latitude: 10, longitude: 10 } } as any)
+            getCurrentPosition: vi.fn((success: PositionCallback) => {
+                success({ coords: { latitude: 10, longitude: 10 } } as GeolocationPosition)
             })
         };
 
@@ -107,11 +106,12 @@ describe('ServiceDetails Page Integration', () => {
 
     it('should handle geolocation fallback if high accuracy fails', async () => {
         const getCurrentPositionSpy = vi.mocked(navigator.geolocation.getCurrentPosition)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .mockImplementation((success: any, error: any, options: any) => {
                 if (options?.enableHighAccuracy) {
-                    error({ code: 3, message: 'Timeout' } as any)
+                    error({ code: 3, message: 'Timeout' } as GeolocationPositionError)
                 } else {
-                    success({ coords: { latitude: 5, longitude: 5 } } as any)
+                    success({ coords: { latitude: 5, longitude: 5 } } as GeolocationPosition)
                 }
             });
 
@@ -141,7 +141,7 @@ describe('ServiceDetails Page Integration', () => {
     })
 
     it('should show not found message if service is null', async () => {
-        vi.mocked(serviceDeliveryService.getById).mockResolvedValue(null as any)
+        vi.mocked(serviceDeliveryService.getById).mockResolvedValue(null as unknown as ServiceDelivery)
 
         renderWithRouter('1')
 
@@ -156,7 +156,7 @@ describe('ServiceDetails Page Integration', () => {
                 photoType: 'PLATE_DETECTION',
                 photoPath: 'http://example.com/photo.jpg'
             }]
-        } as any)
+        })
 
         renderWithRouter('1')
 

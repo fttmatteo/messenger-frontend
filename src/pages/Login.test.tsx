@@ -38,12 +38,13 @@ vi.mock('@/assets/logo.png', () => ({
     default: 'logo.png',
 }));
 
+import { useEffect } from 'react';
+
 // Mock de TurnstileWidget
 vi.mock('@/components/ui/turnstile-widget', () => ({
     TurnstileWidget: ({ onVerify }: { onVerify: (token: string) => void }) => {
         // Ejecutar onVerify inmediatamente para simular verificación exitosa en tests
         // Usamos useEffect para evitar warnings de actualización durante el renderizado
-        const { useEffect } = require('react');
         useEffect(() => {
             onVerify('test-token');
         }, [onVerify]);

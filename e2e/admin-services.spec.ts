@@ -18,8 +18,9 @@ test.describe('Service Creation Flow', () => {
             window.localStorage.setItem('accessToken', 'mock-messenger-token');
 
             // Mock Turnstile globally
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (window as any).turnstile = {
-                render: (_c: any, o: any) => {
+                render: (_c: unknown, o: { callback?: (t: string) => void }) => {
                     console.log('Turnstile mock render');
                     setTimeout(() => { if (o.callback) o.callback('mock-tok'); }, 50);
                     return 'mock-id';

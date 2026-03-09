@@ -34,14 +34,26 @@ describe('employeeService', () => {
 
     it('create should call API', async () => {
         vi.mocked(apiClient.post).mockResolvedValue({ data: mockEmployee });
-        const result = await employeeService.create({ fullName: 'New', document: 555 } as any);
+        const result = await employeeService.create({
+            fullName: 'New',
+            document: '555',
+            phone: '123',
+            role: 'MESSENGER',
+            password: 'pass'
+        });
         expect(result).toEqual(mockEmployee);
         expect(apiClient.post).toHaveBeenCalledWith('/employees/createEmployee', expect.anything());
     });
 
     it('update should call API', async () => {
         vi.mocked(apiClient.put).mockResolvedValue({ data: mockEmployee });
-        const result = await employeeService.update(1, { fullName: 'Updated' } as any);
+        const result = await employeeService.update(1, {
+            fullName: 'Updated',
+            document: '123',
+            phone: '123',
+            role: 'MESSENGER',
+            password: 'pass'
+        });
         expect(result).toEqual(mockEmployee);
         expect(apiClient.put).toHaveBeenCalledWith('/employees/updateEmployee/1', expect.anything());
     });

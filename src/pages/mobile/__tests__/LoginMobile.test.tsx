@@ -9,7 +9,7 @@ import { openSupportEmail } from '@/lib/app-config'
 // Mock dependencies
 vi.mock('@/context/AuthContext', () => ({
     useAuth: vi.fn(),
-    AuthProvider: ({ children }: any) => <>{children}</>
+    AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
 vi.mock('@/config/toast-config', () => ({
@@ -56,14 +56,14 @@ vi.mock('react-router-dom', async () => {
 
 // Mock Turnstile
 vi.mock('@/components/ui/turnstile-widget', () => ({
-    TurnstileWidget: ({ onVerify }: any) => {
+    TurnstileWidget: ({ onVerify }: { onVerify: (t: string) => void }) => {
         return <button onClick={() => onVerify('fake-token')}>Verify Turnstile</button>
     }
 }))
 
 // Mock Lucide icons
 vi.mock('lucide-react', async (importOriginal) => {
-    const actual: any = await importOriginal()
+    const actual = await importOriginal<typeof import('lucide-react')>()
     return {
         ...actual,
         Package: () => <div data-testid="package-icon" />,
@@ -86,7 +86,7 @@ describe('LoginMobile Page', () => {
             logout: vi.fn(),
             checkAuth: vi.fn(),
             refresh: vi.fn()
-        } as any)
+        } as unknown as ReturnType<typeof useAuth>)
     })
 
     afterEach(() => {

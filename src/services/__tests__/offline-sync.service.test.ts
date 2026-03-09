@@ -263,7 +263,7 @@ describe('OfflineSyncService', () => {
             vi.stubGlobal('fetch', mockFetch)
 
             // Unregister handler for this test
-            offlineSyncService.registerHandler('UPDATE_STATUS', undefined as any)
+            offlineSyncService.registerHandler('UPDATE_STATUS', undefined as unknown as (a: OfflineAction) => Promise<boolean>)
 
             const mockActions: OfflineAction[] = [
                 { id: '1', type: 'UPDATE_STATUS', payload: { data: 1 }, timestamp: Date.now(), retryCount: 0, endpoint: '/api/test', method: 'POST' }
@@ -279,7 +279,7 @@ describe('OfflineSyncService', () => {
         })
 
         it('should return false if hasPendingActions is called with data', async () => {
-            vi.mocked(get).mockResolvedValue([{ id: '1' } as any])
+            vi.mocked(get).mockResolvedValue([{ id: '1' } as unknown as OfflineAction])
             expect(await offlineSyncService.hasPendingActions()).toBe(true)
 
             vi.mocked(get).mockResolvedValue([])

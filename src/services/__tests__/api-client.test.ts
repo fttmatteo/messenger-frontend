@@ -10,6 +10,8 @@ vi.mock('../auth.service', () => ({
     }
 }));
 
+import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+
 describe('api-client interceptors', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -20,9 +22,9 @@ describe('api-client interceptors', () => {
     it('should inject correlation ID into request headers', async () => {
         // En lugar de interceptores, podemos probar la configuración directamente de axios
         // instanciando la promesa
-        const requestInterceptor = (apiClient.interceptors.request as any).handlers[0].fulfilled;
+        const requestInterceptor = (apiClient.interceptors.request as unknown as { handlers: { fulfilled: (c: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> }[] }).handlers[0].fulfilled;
 
-        const config = { headers: {} };
+        const config = { headers: {} as unknown as InternalAxiosRequestConfig['headers'] } as InternalAxiosRequestConfig;
         const result = await requestInterceptor(config);
 
         expect(result.headers['X-Correlation-Id']).toBeDefined();
@@ -31,25 +33,25 @@ describe('api-client interceptors', () => {
     });
 
     it('should inject accessToken from localStorage as fallback', async () => {
-        const requestInterceptor = (apiClient.interceptors.request as any).handlers[0].fulfilled;
+        const requestInterceptor = (apiClient.interceptors.request as unknown as { handlers: { fulfilled: (c: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> }[] }).handlers[0].fulfilled;
         localStorage.setItem('accessToken', 'test-token');
 
-        const config = { headers: {} };
+        const config = { headers: {} as unknown as InternalAxiosRequestConfig['headers'] } as InternalAxiosRequestConfig;
         const result = await requestInterceptor(config);
 
         expect(result.headers['Authorization']).toBe('Bearer test-token');
     });
 
     it('should extract and save tokens from response body', async () => {
-        const responseInterceptor = (apiClient.interceptors.response as any).handlers[0].fulfilled;
+        const responseInterceptor = (apiClient.interceptors.response as unknown as { handlers: { fulfilled: (r: AxiosResponse) => Promise<AxiosResponse> }[] }).handlers[0].fulfilled;
 
         const mockResponse = {
-            config: { url: '/auth/login' },
+            config: { url: '/auth/login' } as InternalAxiosRequestConfig,
             data: {
                 accessToken: 'new-access',
                 refreshToken: 'new-refresh'
             }
-        };
+        } as AxiosResponse;
 
         await responseInterceptor(mockResponse);
 
@@ -59,18 +61,18 @@ describe('api-client interceptors', () => {
 
     describe('401 Refresh logic', () => {
         it('should handle 401 error and trigger token refresh', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as any).handlers[1].rejected;
+            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
             vi.mocked(authService.refreshToken).mockResolvedValue();
 
             // Mockeamos el fallback a apiClient
             const originalRequest = { _retry: false, url: '/services/all' };
             const mockError = {
-                config: originalRequest,
+                config: originalRequest as unknown as InternalAxiosRequestConfig,
                 response: { status: 401 }
             };
 
             // Hacemos mock de apiClient en sí mismo para la repetición
-            vi.spyOn(apiClient, 'request').mockResolvedValue('retry-success' as any);
+            vi.spyOn(apiClient, 'request').mockResolvedValue('retry-success');
 
             try {
                 await errorInterceptor(mockError);
@@ -83,11 +85,11 @@ describe('api-client interceptors', () => {
         });
 
         it('should avoid loop if endpoint is login', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as any).handlers[1].rejected;
+            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
 
             const originalRequest = { _retry: false, url: '/auth/login' };
             const mockError = {
-                config: originalRequest,
+                config: originalRequest as unknown as InternalAxiosRequestConfig,
                 response: { status: 401 }
             };
 
@@ -96,12 +98,12 @@ describe('api-client interceptors', () => {
         });
 
         it('should logout on refresh failure', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as any).handlers[1].rejected;
+            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
             vi.mocked(authService.refreshToken).mockRejectedValue(new Error('Refresh failed'));
 
             const originalRequest = { _retry: false, url: '/services/all' };
             const mockError = {
-                config: originalRequest,
+                config: originalRequest as unknown as InternalAxiosRequestConfig,
                 response: { status: 401 }
             };
 

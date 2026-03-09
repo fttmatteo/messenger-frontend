@@ -7,8 +7,9 @@ test.describe('Login E2E Flow', () => {
 
         // Setup de mocks antes de navegar
         await page.addInitScript(() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (window as any).turnstile = {
-                render: (_container: any, options: { callback: (token: string) => void }) => {
+                render: (_container: unknown, options: { callback: (token: string) => void }) => {
                     setTimeout(() => options.callback('mock-playwright-token'), 50);
                     return 'mock-widget-id';
                 },

@@ -34,14 +34,14 @@ describe('dealershipService', () => {
 
     it('create should call API', async () => {
         vi.mocked(apiClient.post).mockResolvedValue({ data: mockDealership });
-        const result = await dealershipService.create({ name: 'New' } as any);
+        const result = await dealershipService.create({ name: 'New', address: 'Add', phone: '123', zone: 'Z1' });
         expect(result).toEqual(mockDealership);
         expect(apiClient.post).toHaveBeenCalledWith('/dealerships/createDealership', expect.anything());
     });
 
     it('update should call API', async () => {
         vi.mocked(apiClient.put).mockResolvedValue({ data: mockDealership });
-        const result = await dealershipService.update(1, { name: 'Updated' } as any);
+        const result = await dealershipService.update(1, { name: 'Updated', address: 'Add', phone: '123', zone: 'Z1' });
         expect(result).toEqual(mockDealership);
         expect(apiClient.put).toHaveBeenCalledWith('/dealerships/updateDealership/1', expect.anything());
     });

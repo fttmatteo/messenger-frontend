@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { serviceDeliveryService } from '../service.service';
 import apiClient from '../api-client';
-import { ServiceStatus } from '@/types/service.types';
-import { z } from 'zod';
+import type { ServiceStatus } from '@/types/service.types';
 
 vi.mock('../api-client', () => ({
     default: {

@@ -15,7 +15,7 @@ describe('OfflineCacheService', () => {
 
     describe('cacheServices', () => {
         it('should cache services and update metadata', async () => {
-            const mockServices = [{ idServiceDelivery: 1 } as any]
+            const mockServices = [{ idServiceDelivery: 1 } as unknown as import('@/types/service.types').ServiceDelivery]
             await offlineCacheService.cacheServices(mockServices)
 
             expect(set).toHaveBeenCalledWith('messenger_services', mockServices)

@@ -16,7 +16,9 @@ vi.mock("@/config/toast-config", () => ({
     }
 }))
 
-const mockService: any = {
+import type { ServiceDelivery } from "@/types/service.types"
+
+const mockService: ServiceDelivery = {
     idServiceDelivery: 1,
     plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
     dealership: { idDealership: 1, name: 'Test', address: 'Add', phone: '123', zone: 'Z' },

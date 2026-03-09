@@ -16,8 +16,9 @@ test.describe('Offline Resilience & Sync', () => {
             window.localStorage.setItem('user', JSON.stringify(mockUser));
             window.localStorage.setItem('accessToken', 'offline-test-token');
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (window as any).turnstile = {
-                render: (_c: any, o: any) => { setTimeout(() => { if (o.callback) o.callback('tok'); }, 50); return 'id'; },
+                render: (_c: unknown, o: { callback?: (t: string) => void }) => { setTimeout(() => { if (o.callback) o.callback('tok'); }, 50); return 'id'; },
                 reset: () => { }, remove: () => { }, getResponse: () => 'tok'
             };
         });
