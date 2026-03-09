@@ -141,7 +141,7 @@ export default function LoginMobile() {
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-3 overflow-hidden">
+            <div className="flex flex-col items-center justify-center h-[100dvh] bg-background p-3 overflow-hidden">
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                     <div className="absolute top-2 left-2 z-10">
                         <Button
@@ -158,29 +158,29 @@ export default function LoginMobile() {
                     <div className="absolute top-2 right-2 z-10">
                         <ModeToggle showLabel={false} />
                     </div>
-                    <CardHeader className="space-y-0.5 pb-2 pt-8">
-                        <div className="flex flex-col items-center justify-center mb-1">
+                    <CardHeader className="space-y-0 pb-1.5 pt-8">
+                        <div className="flex flex-col items-center justify-center mb-0.5">
                             {(!logoLoaded || logoError) && (
-                                <div className="h-10 w-10 flex items-center justify-center bg-primary/10 rounded-lg">
-                                    <Package className="h-6 w-6 text-primary" />
+                                <div className="h-9 w-9 flex items-center justify-center bg-primary/10 rounded-lg">
+                                    <Package className="h-5 w-5 text-primary" />
                                 </div>
                             )}
                             <img
                                 src={logo}
                                 alt="PLAK Logo"
-                                className={`h-10 w-10 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
+                                className={`h-9 w-9 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
                                 onLoad={() => setLogoLoaded(true)}
                                 onError={() => setLogoError(true)}
                             />
-                            <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1">v{APP_CONFIG.version}</span>
+                            <span className="text-[10px] font-medium text-muted-foreground leading-none mt-0.5">v{APP_CONFIG.version}</span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <CardTitle className="text-xl font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
                     </CardHeader>
-                    <CardContent className="pb-3">
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                            <div className="space-y-1">
+                    <CardContent className="pb-3 pt-0">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1.5">
+                            <div className="space-y-0.5">
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="document" className="text-sm font-medium text-foreground/90">Documento</Label>
                                     {errors.document && (
@@ -194,11 +194,11 @@ export default function LoginMobile() {
                                     placeholder="Ingrese su número de documento"
                                     autoComplete="username"
                                     {...register("document")}
-                                    className="h-11 text-base"
+                                    className="h-10 text-base"
                                 />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-0.5">
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="password" className="text-sm font-medium text-foreground/90">Contraseña</Label>
                                     {errors.password && (
@@ -212,7 +212,7 @@ export default function LoginMobile() {
                                         placeholder="Ingrese su contraseña"
                                         autoComplete="current-password"
                                         {...register("password")}
-                                        className="pr-10 h-11 text-base"
+                                        className="pr-10 h-10 text-base"
                                     />
                                     <Button
                                         type="button"
@@ -231,7 +231,7 @@ export default function LoginMobile() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between pt-0.5">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-1.5">
                                     <Controller
                                         name="rememberMe"
@@ -252,9 +252,20 @@ export default function LoginMobile() {
                                 </div>
                             </div>
 
+                            <div className="flex justify-center">
+                                <TurnstileWidget
+                                    onVerify={handleTurnstileVerify}
+                                    onError={handleTurnstileError}
+                                    onExpire={handleTurnstileExpire}
+                                    onWidgetId={setTurnstileWidgetId}
+                                    theme="auto"
+                                    size="normal"
+                                />
+                            </div>
+
                             <Button
                                 type="submit"
-                                className="w-full h-11 text-base font-medium mt-1"
+                                className="w-full h-10 text-base font-medium"
                                 disabled={isSubmitting || !turnstileToken}
                             >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
@@ -263,21 +274,11 @@ export default function LoginMobile() {
                     </CardContent>
                 </Card>
 
-                <div className="mt-4 text-center text-[10px] text-muted-foreground max-w-[300px] px-4 leading-tight">
+                <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight">
                     PLAK es un software desarrollado y operado legalmente por Mateo Valencia Ardila | NIT 1000413081-0
                 </div>
 
 
-                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-                    <TurnstileWidget
-                        onVerify={handleTurnstileVerify}
-                        onError={handleTurnstileError}
-                        onExpire={handleTurnstileExpire}
-                        onWidgetId={setTurnstileWidgetId}
-                        theme="auto"
-                        size="normal"
-                    />
-                </div>
             </div>
         </>
     )
