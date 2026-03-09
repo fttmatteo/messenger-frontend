@@ -221,9 +221,20 @@ src/
 Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
 
 1. Ve a la carpeta del backend: `cd ../messenger-backend`
-2. Ejecuta: `docker-compose up --build`
+2. Ejecuta: `docker-compose -f docker-compose.local.yml up --build`
 
 Esto compilará el frontend y lo servirá en `http://localhost`.
+
+### 🔥 Desarrollo con Hot Reloading (Docker)
+
+Para desarrollo activo con recarga automática de código:
+
+```bash
+cd ../messenger-backend
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+El servidor de desarrollo del frontend (Vite HMR) estará disponible en `http://localhost:5173` — los cambios se reflejan instantáneamente al guardar.
 
 ---
 
