@@ -317,6 +317,9 @@ export default function MessengerCreateServicio() {
                                                     <FormItem>
                                                         <FormControl>
                                                             <Input
+                                                                name={field.name}
+                                                                ref={field.ref}
+                                                                onBlur={field.onBlur}
                                                                 value={field.value ? field.value.replace(/\s/g, '').replace(/^(.{3})(.+)$/, '$1 $2') : ''}
                                                                 onChange={(e) => {
                                                                     const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)

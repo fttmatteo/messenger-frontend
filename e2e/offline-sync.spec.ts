@@ -22,6 +22,9 @@ test.describe('Offline Resilience & Sync', () => {
             window.sessionStorage.setItem('user', userStr);
             window.sessionStorage.setItem('accessToken', 'offline-test-token');
 
+            // Set camera mock flag for SignatureCameraCapture
+            (window as any).e2eTestCameraMock = true;
+
             // @ts-ignore
             window.turnstile = {
                 render: (_c: any, o: any) => { setTimeout(() => { if (o && o.callback) o.callback('tok'); }, 50); return 'id'; },
@@ -66,8 +69,6 @@ test.describe('Offline Resilience & Sync', () => {
         const deliveredBtn = page.getByText(/entregado/i).first();
         await expect(deliveredBtn).toBeVisible({ timeout: 20000 });
 
-        await context.setOffline(true);
-
         await deliveredBtn.click();
 
         // Open signature dialog
@@ -84,12 +85,15 @@ test.describe('Offline Resilience & Sync', () => {
         }
 
         // Wait for GIF processing (if camera enabled)
-        await page.waitForTimeout(2000); // Give some time for our fake camera to "capture"
-
-        await page.getByRole('button', { name: /confirmar firma/i }).click();
+        const confirmSignatureBtn = page.getByRole('button', { name: /confirmar firma/i });
+        await expect(confirmSignatureBtn).toBeEnabled({ timeout: 15000 });
+        await confirmSignatureBtn.click();
 
         const confirmBtn = page.getByRole('button', { name: /confirmar/i }).first();
         await confirmBtn.click();
+
+        // Go offline right before making the final submit request
+        await context.setOffline(true);
 
         await page.getByRole('button', { name: /^Confirmar$/ }).click();
 

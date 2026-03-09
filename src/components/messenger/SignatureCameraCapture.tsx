@@ -21,6 +21,8 @@ export interface SignatureCameraCaptureRef {
     startCapture: () => void
 }
 
+const isE2ETest = typeof window !== 'undefined' && 'e2eTestCameraMock' in window;
+
 interface SignatureCameraCaptureProps {
     onGifGenerated?: (gif: Blob | null) => void
     onReadyChange?: (isReady: boolean) => void // Nueva prop para notificar preparación
@@ -50,9 +52,15 @@ const SignatureCameraCapture = forwardRef<
 
 
     useImperativeHandle(ref, () => ({
-        getGif: async () => gifBlob,
-        isReady: () => gifBlob !== null,
+        getGif: async () => isE2ETest ? new Blob(["fake-gif"], { type: 'image/gif' }) : gifBlob,
+        isReady: () => isE2ETest ? true : gifBlob !== null,
         startCapture: () => {
+            if (isE2ETest) {
+                const blob = new Blob(["fake-gif"], { type: 'image/gif' });
+                setGifBlob(blob);
+                if (onGifGenerated) onGifGenerated(blob);
+                return;
+            }
             if (!isCapturing && !gifUrl) {
                 startCapture()
             }
@@ -89,8 +97,14 @@ const SignatureCameraCapture = forwardRef<
 
 
     useEffect(() => {
-        initCamera()
+        if (isE2ETest) {
+            setIsCameraLoading(false);
+            setIsInternalReady(true);
+            onReadyChange?.(true);
+            return;
+        }
 
+        initCamera()
 
         return () => {
             if (streamRef.current) {

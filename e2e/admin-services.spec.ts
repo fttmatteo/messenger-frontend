@@ -63,6 +63,12 @@ test.describe('Service Creation Flow', () => {
             });
         });
 
+        await page.route('**/services/extractPlate', async route => {
+            await route.fulfill({
+                json: { success: false, message: 'OCR Fallback' }
+            });
+        });
+
         await page.goto('/messenger');
         await page.waitForLoadState('networkidle');
     });
