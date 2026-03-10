@@ -4,48 +4,36 @@ export type SortDirection = "asc" | "desc"
 
 type ComparableValue = string | number | boolean | Date | null | undefined
 
+/**
+ * Interfaz de opciones para useDataList.
+ */
 export interface UseDataListOptions<T> {
     data: T[]
     searchQuery: string
-    /**
-     * Función para verificar si un ítem coincide con la consulta de búsqueda.
-     * Devuelve true si coincide, false en caso contrario.
-     */
     searchFilter: (item: T, query: string) => boolean
-    /**
-     * Función de filtrado personalizada opcional para filtrado adicional (ej. por estado o rol).
-     * Devuelve true si coincide, false en caso contrario.
-     */
     customFilter?: (item: T) => boolean
-    /**
-     * Mapa de campos de ordenación a funciones que devuelven el valor por el cual ordenar.
-     * Use esto para propiedades anidadas o lógica de ordenación personalizada.
-     * Ejemplo: { 'plateNumber': (item) => item.plate.plateNumber }
-     */
     sortValueResolvers?: Record<string, (item: T) => ComparableValue>
     initialItemsPerPage?: number
     defaultSortField?: string | null
     defaultSortDirection?: SortDirection
 }
 
+/**
+ * Interfaz de retorno para useDataList.
+ */
 export interface UseDataListReturn<T> {
-    // Datos Procesados
     filteredAndSortedData: T[]
     paginatedData: T[]
 
-    // Paginación
     currentPage: number
     totalPages: number
     itemsPerPage: number
     setCurrentPage: (page: number) => void
     setItemsPerPage: (items: number) => void
 
-    // Ordenación
     sortField: string | null
     sortDirection: SortDirection
     handleSort: (field: string) => void
-
-    // Setters de Ordenación Explícitos
     setSortField: (field: string | null) => void
     setSortDirection: (direction: SortDirection) => void
 }
@@ -136,7 +124,7 @@ export function useDataList<T>({
                 setSortDirection("desc")
             } else {
                 setSortField(null)
-                setSortDirection("asc") // Reiniciar dirección para el siguiente uso
+                setSortDirection("asc")
             }
         } else {
             setSortField(field)

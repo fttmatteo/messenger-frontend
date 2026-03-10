@@ -43,11 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isOnline: data.role === 'MESSENGER'
         };
 
-        // Guardar local web fallback
         storage.setItem('role', data.role);
         storage.setItem('user', JSON.stringify(userObj));
 
-        // Guardar nativo de capacitor
         import('@capacitor/preferences').then(({ Preferences }) => {
             Preferences.set({ key: 'role', value: data.role });
             Preferences.set({ key: 'user', value: JSON.stringify(userObj) });
@@ -100,7 +98,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 /**
  * Hook para acceder al estado y funciones de autenticación.
- * @returns {AuthContextType} Contexto de autenticación.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {

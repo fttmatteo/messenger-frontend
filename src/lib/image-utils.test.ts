@@ -8,12 +8,10 @@ import { getImageUrl } from './image-utils'
  */
 describe('image-utils', () => {
     beforeEach(() => {
-        // Limpiar mocks
         vi.clearAllMocks()
     })
 
     afterEach(() => {
-        // Restaurar env original
         vi.unstubAllEnvs()
     })
 
@@ -57,7 +55,6 @@ describe('image-utils', () => {
             const pathWithApi = '/api/uploads/images/photo.jpg'
             const result = getImageUrl(pathWithApi)
 
-            // No debería tener doble /api/api
             expect(result).not.toContain('/api/api')
             expect(result).toContain('/uploads/images/photo.jpg')
         })
@@ -66,7 +63,6 @@ describe('image-utils', () => {
             const pathWithApi = '/api/photos/123.jpg'
             const result = getImageUrl(pathWithApi)
 
-            // El prefijo /api/ debería ser removido
             expect(result).toContain('/photos/123.jpg')
         })
 

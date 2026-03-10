@@ -7,7 +7,6 @@ import { trackingService } from '@/services/tracking.service'
 import * as capacitorLib from '@/lib/capacitor'
 import * as authContext from '@/context/AuthContext'
 
-// Mocks
 vi.mock('@/context/AuthContext', () => ({
     useAuth: vi.fn(),
     AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
@@ -164,7 +163,6 @@ describe('MessengerLayout Background Tracking', () => {
 
         unmount();
 
-        // El servicio nativo NO se detiene al desmontar, solo al cerrar sesión
         expect(mockStopService).not.toHaveBeenCalled();
         expect(mockClearWatch).not.toHaveBeenCalled();
     })

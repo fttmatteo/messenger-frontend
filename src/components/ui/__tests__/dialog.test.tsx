@@ -43,7 +43,6 @@ describe('Dialog Component', () => {
 
         await userEvent.click(trigger)
 
-        // Radix portals the content out of the root, so it exists in document body
         const title = await screen.findByText('Dialog Title')
         expect(title).toBeInTheDocument()
 
@@ -55,17 +54,13 @@ describe('Dialog Component', () => {
     it('should close dialog when X button is clicked', async () => {
         render(<TestDialog />)
 
-        // Open Dialog
         await userEvent.click(screen.getByRole('button', { name: /Open Dialog/i }))
         await screen.findByRole('dialog')
 
-        // Find close button (usually rendered by default inside DialogContent if showCloseButton is true)
         const closeBtn = screen.getByRole('button', { name: /close/i })
 
-        // Click close
         await userEvent.click(closeBtn)
 
-        // Wait for the animation to finish and unmount
         await waitFor(() => {
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
         })

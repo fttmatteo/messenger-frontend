@@ -5,13 +5,9 @@ import { showToast } from '@/config/toast-config';
  * Estructura del contexto de UI para administradores.
  */
 interface AdminUIContextType {
-    /** Muestra un mensaje de error mediante una notificación toast. */
     setError: (error: string | null, id?: string) => void;
-    /** Muestra un mensaje de éxito mediante una notificación toast. */
     setSuccess: (success: string | null, id?: string) => void;
-    /** Cierra todas las notificaciones de error activas. */
     clearError: () => void;
-    /** Cierra todas las notificaciones de éxito activas. */
     clearSuccess: () => void;
 }
 

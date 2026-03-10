@@ -44,7 +44,6 @@ describe('AuthContext', () => {
 
     describe('hook useAuth', () => {
         it('debe lanzar un error cuando se usa fuera de AuthProvider', () => {
-            // Silenciar console.error para este test ya que tirará uno intencionalmente por React
             const originalError = console.error
             console.error = vi.fn()
 

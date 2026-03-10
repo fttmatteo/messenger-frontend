@@ -11,7 +11,6 @@ export const APP_CONFIG = {
 
 /**
  * Abre el cliente de correo con un borrador pre-configurado para soporte.
- * @param subject - Asunto del correo (opcional)
  */
 export function openSupportEmail(subject?: string): void {
     const email = APP_CONFIG.supportEmail
