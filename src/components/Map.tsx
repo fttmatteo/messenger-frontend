@@ -51,7 +51,6 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     }, [onUnmount])
 
     const getColorScheme = useCallback((): ColorScheme => {
-        // Siempre forzar modo explícito basado en resolvedTheme para asegurar la reactividad
         return resolvedTheme === 'dark' ? 'DARK' : 'LIGHT'
     }, [resolvedTheme])
 

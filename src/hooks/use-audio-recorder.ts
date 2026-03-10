@@ -25,7 +25,6 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
     const chunksRef = useRef<Blob[]>([])
 
-    // Verificar soporte
     const isSupported = typeof navigator !== 'undefined' &&
         !!navigator.mediaDevices?.getUserMedia &&
         typeof MediaRecorder !== 'undefined'
@@ -40,7 +39,6 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
             setError(null)
             chunksRef.current = []
 
-            // Solicitar acceso al micrófono
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     echoCancellation: true,
@@ -49,7 +47,6 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
                 }
             })
 
-            // Determinar el mejor formato soportado
             const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
                 ? 'audio/webm;codecs=opus'
                 : MediaRecorder.isTypeSupported('audio/webm')
@@ -70,10 +67,9 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
                 setIsRecording(false)
             }
 
-            mediaRecorder.start(100) // Capturar cada 100ms
+            mediaRecorder.start(100)
             setIsRecording(true)
 
-            // Vibración de feedback
             if (navigator.vibrate) {
                 navigator.vibrate(15)
             }
@@ -109,10 +105,8 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
             }
 
             mediaRecorder.onstop = () => {
-                // Detener todos los tracks del stream
                 mediaRecorder.stream.getTracks().forEach(track => track.stop())
 
-                // Crear blob con todos los chunks
                 const blob = new Blob(chunksRef.current, {
                     type: mediaRecorder.mimeType
                 })
@@ -120,7 +114,6 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
                 setAudioBlob(blob)
                 setIsRecording(false)
 
-                // Vibración de feedback
                 if (navigator.vibrate) {
                     navigator.vibrate(10)
                 }

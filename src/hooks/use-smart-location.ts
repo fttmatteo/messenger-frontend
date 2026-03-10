@@ -11,9 +11,7 @@ const logger = createLogger('useSmartLocation')
  * Estructura de coordenadas geográficas simples.
  */
 export interface LocationResult {
-    /** Latitud en grados decimales. */
     latitude: number
-    /** Longitud en grados decimales. */
     longitude: number
 }
 
@@ -28,7 +26,6 @@ export function useSmartLocation() {
      * Obtiene las coordenadas actuales con lógica de optimización.
      * Prioriza el último punto conocido por el servicio de rastreo si es reciente (menos de 5 min)
      * para ahorrar batería y mejorar la respuesta en zonas de baja señal.
-     * @returns Promesa con las coordenadas del dispositivo.
      */
     const getCurrentLocation = useCallback(async (): Promise<LocationResult> => {
         setLoading(true)
@@ -41,9 +38,7 @@ export function useSmartLocation() {
             }
 
             if (isNative()) {
-                // Modo Capacitor (Nativo)
                 try {
-                    // Verificar permisos primero
                     const permissions = await Geolocation.checkPermissions()
                     if (permissions.location !== 'granted') {
                         const request = await Geolocation.requestPermissions()
@@ -55,7 +50,7 @@ export function useSmartLocation() {
                     const position = await Geolocation.getCurrentPosition({
                         enableHighAccuracy: true,
                         timeout: 20000,
-                        maximumAge: 0 // Fuerza siempre a calcular coordenadas nuevas (evita saltos)
+                        maximumAge: 0
                     })
 
                     trackingService.setLastLocation(position.coords.latitude, position.coords.longitude)
@@ -69,7 +64,6 @@ export function useSmartLocation() {
                     throw new Error(err?.message || "Error al obtener ubicación nativa")
                 }
             } else {
-                // Modo Navegador/PWA (Web)
                 return await new Promise<LocationResult>((resolve, reject) => {
                     if (!navigator.geolocation) {
                         reject(new Error("La geolocalización no es soportada por este navegador."))
@@ -101,7 +95,7 @@ export function useSmartLocation() {
                         {
                             enableHighAccuracy: true,
                             timeout: 20000,
-                            maximumAge: 0 // Fuerza re-cálculo fresco sin caché
+                            maximumAge: 0
                         }
                     )
                 })

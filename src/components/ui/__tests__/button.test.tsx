@@ -9,7 +9,7 @@ describe('Button Component', () => {
         render(<Button>Click me</Button>)
         const button = screen.getByRole('button', { name: /click me/i })
         expect(button).toBeInTheDocument()
-        expect(button).toHaveClass('bg-primary') // Check default variant
+        expect(button).toHaveClass('bg-primary')
     })
 
     it('should apply the correct variant classes', () => {
@@ -39,7 +39,6 @@ describe('Button Component', () => {
     })
 
     it('should render as a child custom element when asChild is true', () => {
-        // If asChild is true, it renders the child element but passes the button classes to it
         const CustomLink = forwardRef<HTMLAnchorElement, React.ComponentProps<'a'>>((props, ref) => (
             <a ref={ref} {...props} data-custom="true">Link</a>
         ))
@@ -54,7 +53,6 @@ describe('Button Component', () => {
         const link = screen.getByRole('link', { name: /link/i })
         expect(link).toHaveAttribute('href', '/home')
         expect(link).toHaveAttribute('data-custom', 'true')
-        // Should have outline variant class instead of default
         expect(link).toHaveClass('border')
     })
 

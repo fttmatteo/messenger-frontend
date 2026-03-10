@@ -51,8 +51,6 @@ export function useMessengerServices(): UseMessengerServicesReturn {
             setLoading(true)
             setError(null)
 
-            // Usamos la versión paginada con un tamaño generoso para el mensajero (ej. 100 últimos servicios)
-            // en lugar de traer los miles de registros históricos de una vez.
             const response = await serviceDeliveryService.getAllPaginated({
                 page: 0,
                 size: 100,

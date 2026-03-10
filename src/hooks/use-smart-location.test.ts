@@ -5,7 +5,6 @@ import { trackingService } from '@/services/tracking.service'
 import { Geolocation } from '@capacitor/geolocation'
 import * as capacitorLib from '@/lib/capacitor'
 
-// Mocks
 vi.mock('@/services/tracking.service', () => ({
     trackingService: {
         getLastKnownLocation: vi.fn(),
@@ -47,7 +46,6 @@ describe('useSmartLocation', () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Mock web geolocation
         const mockGetCurrentPosition = vi.fn().mockImplementation((success) =>
             success({ coords: { latitude: 40, longitude: -70 } })
         );
@@ -61,7 +59,6 @@ describe('useSmartLocation', () => {
     })
 
     afterEach(() => {
-        // Restore
         if (mockGeolocation) {
             Object.defineProperty(window.navigator, 'geolocation', {
                 configurable: true,
@@ -74,7 +71,7 @@ describe('useSmartLocation', () => {
         vi.mocked(trackingService.getLastKnownLocation).mockReturnValue({
             latitude: 10,
             longitude: 20,
-            timestamp: Date.now() - 1000 // 1 sec ago (recent)
+            timestamp: Date.now() - 1000
         });
 
         const { result } = renderHook(() => useSmartLocation())
@@ -85,7 +82,7 @@ describe('useSmartLocation', () => {
         });
 
         expect(location).toEqual({ latitude: 10, longitude: 20 });
-        expect(capacitorLib.isNative).not.toHaveBeenCalled(); // Should not even check native
+        expect(capacitorLib.isNative).not.toHaveBeenCalled();
     })
 
     it('should fetch from Capacitor Geolocation with maximumAge 0 if isNative is true', async () => {
@@ -108,7 +105,7 @@ describe('useSmartLocation', () => {
         expect(Geolocation.getCurrentPosition).toHaveBeenCalledWith({
             enableHighAccuracy: true,
             timeout: 20000,
-            maximumAge: 0 // Verifying the fresh coordinate requirement
+            maximumAge: 0
         });
         expect(trackingService.setLastLocation).toHaveBeenCalledWith(50, 50);
     })

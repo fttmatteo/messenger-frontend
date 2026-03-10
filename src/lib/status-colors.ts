@@ -16,8 +16,6 @@ const STORAGE_KEY_PREFIX = 'status-colors-'
 
 /**
  * Obtiene la clave de almacenamiento para un usuario específico en localStorage.
- * @param userId - ID único del usuario (opcional).
- * @returns Clave de almacenamiento formateada.
  */
 function getStorageKey(userId?: number | string): string {
     if (!userId) {

@@ -49,7 +49,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         const canvasInitializedRef = useRef(false)
         const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
         const [isGifProcessing, setIsGifProcessing] = useState(false)
-        const [isCameraReady, setIsCameraReady] = useState(!enableCamera) // Si no hay cámara, está listo
+        const [isCameraReady, setIsCameraReady] = useState(!enableCamera)
 
 
         useEffect(() => {
@@ -104,8 +104,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 return
             }
 
-            // Inicializar canvas cuando se abre el diálogo
-
             const attempts = [50, 150, 300]
             const timers = attempts.map(delay =>
                 setTimeout(initFullscreenCanvas, delay)
@@ -147,7 +145,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
 
             if (enableCamera && cameraRef.current) {
-                // Solo reiniciar si no hay un GIF guardado y no se está procesando ya uno
                 if (!savedGifBlob && !isGifProcessing) {
                     setIsGifProcessing(true)
                     setSavedGifBlob(null)
@@ -245,7 +242,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             clear,
             getSignature,
             getGifFile: async () => {
-                // Primero intenta con el blob guardado, si no, usa el fallback a la referencia de la cámara
                 const blob = savedGifBlob ?? await cameraRef.current?.getGif()
                 if (!blob) {
                     logger.warn('getGifFile retornó null', { hasSavedBlob: !!savedGifBlob })
@@ -301,7 +297,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
 
                 <Dialog open={isOpen} onOpenChange={(open) => {
                     if (!open && !hasDrawn) {
-                        // BUG FIX: Limpiar estado si se cierra sin confirmar
                         setSavedGifBlob(null)
                         if (enableCamera) setIsCameraReady(false)
                     }
@@ -331,9 +326,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                             onGifGenerated?.(gif)
                                         }}
                                         onRetry={() => {
-                                            setIsGifProcessing(true) // Se está iniciando uno nuevo automáticamente
+                                            setIsGifProcessing(true)
                                             setSavedGifBlob(null)
-                                            // No limpiamos la firma para que el usuario no tenga que volver a firmar
                                         }}
                                         className="h-full"
                                     />

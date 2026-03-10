@@ -40,9 +40,9 @@ export default function MessengerLayout() {
     const location = useLocation()
     const [showLogoutDialog, setShowLogoutDialog] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const sidebarBlockedRef = useRef(false) // Bloquea la apertura del sidebar brevemente después de la navegación
-    const previousPathnameRef = useRef(location.pathname) // Rastrea la ruta anterior para el cierre del sidebar
-    const wasSubPageRef = useRef(false) // Rastrea si venimos de una subpágina para añadir un bloqueo más largo
+    const sidebarBlockedRef = useRef(false)
+    const previousPathnameRef = useRef(location.pathname)
+    const wasSubPageRef = useRef(false)
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | string | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
@@ -87,7 +87,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('actualizar')) return 'Actualizar estado'
         if (location.pathname.includes('servicio/')) return 'Detalle servicio'
         if (location.pathname.includes('crear')) return 'Nuevo servicio'
-        return null // Mostrará el logo en su lugar
+        return null
     }
 
     const pageTitle = getPageTitle()
@@ -138,15 +138,13 @@ export default function MessengerLayout() {
             startTracking()
 
             if (isNative()) {
-                // NATIVE PERSISTENT TRACKING (APK) — Foreground Service
-                // El servicio nativo sobrevive al cierre de la app desde recientes
                 const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
                 const authToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || '';
 
                 LocationService.startService({
                     messengerId: userId,
                     backendUrl: backendUrl,
-                    authCookie: `Bearer ${authToken}` // El servicio Java lo envía como header Authorization
+                    authCookie: `Bearer ${authToken}`
                 }).then(() => {
                     logger.info('Servicio de ubicación nativo iniciado');
                     watchIdRef.current = 'native-service';
@@ -156,7 +154,6 @@ export default function MessengerLayout() {
                 });
 
             } else if ('geolocation' in navigator) {
-                // WEB FALLBACK TRACKING (Browsers, PWA)
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
@@ -185,7 +182,6 @@ export default function MessengerLayout() {
                         const { latitude, longitude, speed, heading, accuracy } = position.coords
 
                         if (latitude && longitude && latitude !== 0 && longitude !== 0) {
-                            // Filtro de ruido para PWA web
                             if (accuracy && accuracy > 50) return;
 
                             trackingService.sendUpdate({
@@ -208,7 +204,6 @@ export default function MessengerLayout() {
                             logout()
                             navigate("/login")
                         } else if (error.code === 2) {
-                            // Fallback: reintentar sin alta precisión (WiFi/celular)
                             navigator.geolocation.getCurrentPosition(
                                 (fallbackPos) => {
                                     const { latitude, longitude, speed, heading, accuracy } = fallbackPos.coords
@@ -226,7 +221,6 @@ export default function MessengerLayout() {
                                     }
                                 },
                                 () => {
-                                    // Si también falla el fallback, ahí sí notificar
                                     showToast.warning('Señal GPS débil. Buscando ubicación...', { id: 'messenger-gps-weak' })
                                 },
                                 { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
@@ -237,8 +231,8 @@ export default function MessengerLayout() {
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 15000, // Reducido de 30s a 15s para feedback más rápido
-                        maximumAge: 0 // Cambiado a 0 para forzar lecturas frescas (mejora de precisión)
+                        timeout: 15000,
+                        maximumAge: 0
                     }
                 )
             } else {
@@ -285,11 +279,11 @@ export default function MessengerLayout() {
     useEffect(() => {
         if (!isOnline || !user?.id) return
 
-        const userId = user.id // TypeScript sabe que no es undefined aquí
+        const userId = user.id
 
         const heartbeatInterval = setInterval(() => {
             trackingService.sendHeartbeat(userId)
-        }, 30000) // 30 segundos
+        }, 30000)
 
         return () => clearInterval(heartbeatInterval)
     }, [isOnline, user?.id])
@@ -349,19 +343,15 @@ export default function MessengerLayout() {
     }, [location.pathname]);
 
     const handleSidebarOpenChange = (open: boolean) => {
-        // Bloquear completamente la apertura durante el período de bloqueo
         if (open && sidebarBlockedRef.current) {
             return;
         }
         setIsSidebarOpen(open);
     };
 
-    // Estado derivado para bloquear el Sheet completamente durante navegación
     const [isSheetBlocked, setIsSheetBlocked] = useState(false);
 
     useEffect(() => {
-        // Bloquear el Sheet durante la navegación para evitar que responda a gestos
-        // Usamos setTimeout para evitar setState síncrono que causa renders en cascada
         const startTimer = setTimeout(() => {
             setIsSheetBlocked(true);
         }, 0);
@@ -383,7 +373,6 @@ export default function MessengerLayout() {
                 status: 'OFFLINE'
             })
         }
-        // Detener el servicio de ubicación nativo si está corriendo
         if (isNative()) {
             LocationService.stopService().catch(e => logger.warn('Error deteniendo servicio al cerrar sesión:', e));
         }
