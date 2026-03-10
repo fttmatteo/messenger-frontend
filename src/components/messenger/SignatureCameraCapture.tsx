@@ -25,7 +25,7 @@ const isE2ETest = typeof window !== 'undefined' && 'e2eTestCameraMock' in window
 
 interface SignatureCameraCaptureProps {
     onGifGenerated?: (gif: Blob | null) => void
-    onReadyChange?: (isReady: boolean) => void // Nueva prop para notificar preparación
+    onReadyChange?: (isReady: boolean) => void
     onRetry?: () => void
     className?: string
 }
@@ -67,7 +67,6 @@ const SignatureCameraCapture = forwardRef<
         }
     }))
 
-    // Monitorear preparación real de la cámara
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>
         if (!gifUrl && !isCapturing && !cameraError && !isCameraLoading) {
@@ -84,7 +83,6 @@ const SignatureCameraCapture = forwardRef<
                 }
             }, 100)
         } else if (gifUrl || isCapturing) {
-            // Mientras captura o si ya hay GIF, no estamos "listos para iniciar"
             if (isInternalReady) {
                 setIsInternalReady(false)
                 onReadyChange?.(false)
@@ -132,7 +130,6 @@ const SignatureCameraCapture = forwardRef<
 
             if (videoRef.current) {
                 videoRef.current.srcObject = stream
-                // Esperar a que el video esté listo para reproducir antes de quitar el loading
                 videoRef.current.onloadedmetadata = () => {
                     videoRef.current?.play()
                         .then(() => {
@@ -180,7 +177,7 @@ const SignatureCameraCapture = forwardRef<
                 })
 
                 capturedFrames.forEach(frame => {
-                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS }) // Velocidad de la captura real
+                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS })
                 })
 
                 gif.on('finished', (blob: Blob) => {
@@ -247,7 +244,7 @@ const SignatureCameraCapture = forwardRef<
 
 
         let streamWaitdAttempts = 0
-        while (!video.srcObject && streamWaitdAttempts < 30) { // Máximo 3 segundos para permiso/inicialización
+        while (!video.srcObject && streamWaitdAttempts < 30) {
             await new Promise(r => setTimeout(r, 100))
             streamWaitdAttempts++
         }
@@ -258,7 +255,7 @@ const SignatureCameraCapture = forwardRef<
 
 
         let attempts = 0
-        const maxAttempts = 30 // Máximo 3 segundos de espera
+        const maxAttempts = 30
 
 
         while ((video.readyState < 2 || video.currentTime === 0) && attempts < maxAttempts) {
@@ -291,11 +288,8 @@ const SignatureCameraCapture = forwardRef<
         })
 
 
-        // Relación de aspecto objetivo (GIF_WIDTH / GIF_HEIGHT = 4/3)
         const targetAspectRatio = GIF_WIDTH / GIF_HEIGHT
 
-        // Todos los frames usan el mismo delay para evitar capturar una imagen negra
-        // El primer frame necesita esperar para que el video renderice un frame válido
         for (let i = 0; i < FRAME_COUNT; i++) {
             await new Promise(resolve => setTimeout(resolve, CAPTURE_INTERVAL_MS))
 
@@ -341,13 +335,11 @@ const SignatureCameraCapture = forwardRef<
         setGifBlob(null)
         setGifUrl(null)
         onRetry?.()
-        // Reiniciar la captura automáticamente después de un breve delay para que el estado se limpie
         setTimeout(() => startCapture(), 100)
     }
 
 
     useEffect(() => {
-        // Asegurar que el video se mantenga conectado al stream si se cambia de estado
         if (!gifUrl && videoRef.current && streamRef.current && !videoRef.current.srcObject) {
             videoRef.current.srcObject = streamRef.current
         }

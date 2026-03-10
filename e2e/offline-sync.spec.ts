@@ -22,7 +22,6 @@ test.describe('Offline Resilience & Sync', () => {
             window.sessionStorage.setItem('user', userStr);
             window.sessionStorage.setItem('accessToken', 'offline-test-token');
 
-            // Set camera mock flag for SignatureCameraCapture
             (window as any).e2eTestCameraMock = true;
 
             // @ts-expect-error - Mocking global object
@@ -71,10 +70,8 @@ test.describe('Offline Resilience & Sync', () => {
 
         await deliveredBtn.click();
 
-        // Open signature dialog
         await page.getByText(/toca para firmar/i).first().click();
 
-        // Wait for canvas and draw programmatically to avoid headless bounding box flakiness
         const canvas = page.locator('canvas.touch-none').first();
         await expect(canvas).toBeVisible({ timeout: 15000 });
 
@@ -87,7 +84,6 @@ test.describe('Offline Resilience & Sync', () => {
             node.dispatchEvent(evEnd);
         });
 
-        // Wait for GIF processing (if camera enabled)
         const confirmSignatureBtn = page.getByRole('button', { name: /confirmar firma/i });
         await expect(confirmSignatureBtn).toBeEnabled({ timeout: 15000 });
         await confirmSignatureBtn.click();
@@ -95,7 +91,6 @@ test.describe('Offline Resilience & Sync', () => {
         const confirmBtn = page.getByRole('button', { name: /confirmar/i }).first();
         await confirmBtn.click();
 
-        // Go offline right before making the final submit request
         await context.setOffline(true);
         await expect(page.getByText(/sin conexión/i).first()).toBeVisible({ timeout: 15000 });
 

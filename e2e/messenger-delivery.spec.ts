@@ -4,9 +4,7 @@ test.use({ ...devices['Pixel 5'] });
 
 test.describe('Messenger Delivery Execution', () => {
     test.beforeEach(async ({ page }) => {
-        // Catch console logs to debug silent Zod errors
         page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-        // Catch network logs to trace API routes
         page.on('request', req => console.log('>> REQ:', req.method(), req.url()));
         page.on('response', res => console.log('<< RES:', res.status(), res.url()));
 
@@ -28,7 +26,6 @@ test.describe('Messenger Delivery Execution', () => {
             window.sessionStorage.setItem('user', userStr);
             window.sessionStorage.setItem('accessToken', 'mock-messenger-token');
 
-            // Set camera mock flag for SignatureCameraCapture
             (window as any).e2eTestCameraMock = true;
 
             // @ts-expect-error - Mocking global object
@@ -120,10 +117,8 @@ test.describe('Messenger Delivery Execution', () => {
 
         await page.getByText(/entregado/i).first().click();
 
-        // Open signature dialog
         await page.getByText(/toca para firmar/i).first().click();
 
-        // Wait for canvas and draw programmatically to avoid headless bounding box flakiness
         const canvas = page.locator('canvas.touch-none').first();
         await expect(canvas).toBeVisible({ timeout: 15000 });
 
@@ -136,7 +131,6 @@ test.describe('Messenger Delivery Execution', () => {
             node.dispatchEvent(evEnd);
         });
 
-        // Wait for GIF processing (if camera enabled)
         const confirmBtn = page.getByRole('button', { name: /confirmar firma/i });
         await expect(confirmBtn).toBeEnabled({ timeout: 15000 });
         await confirmBtn.click();
