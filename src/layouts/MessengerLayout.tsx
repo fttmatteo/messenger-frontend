@@ -105,6 +105,7 @@ export default function MessengerLayout() {
             }
 
             if (!user?.id) {
+                // Usando document como fallback para messengerId
             }
 
 
@@ -267,6 +268,7 @@ export default function MessengerLayout() {
         return () => {
             if (watchIdRef.current !== null) {
                 if (watchIdRef.current === 'native-service') {
+                    // No detener el servicio en cleanup del efecto — solo en logout explícito
                 } else if (typeof watchIdRef.current === 'number') {
                     navigator.geolocation.clearWatch(watchIdRef.current)
                 }
