@@ -2,13 +2,9 @@ import type { ServiceStatus } from "@/types/service.types"
 import { Car, Bike, Truck } from "lucide-react"
 import { getStatusHexColor, getStatusLabel, getMergedColors, getStatusPillBackground } from "@/lib/status-colors"
 
-/** Configuración visual para una insignia de estado. */
 interface StatusBadgeConfig {
-    /** Etiqueta descriptiva del estado. */
     label: string
-    /** Clases de Tailwind adicionales. */
     className: string
-    /** Estilos CSS en línea (colores dinámicos). */
     style?: React.CSSProperties
 }
 
@@ -25,19 +21,12 @@ export function getStatusBadge(status: ServiceStatus | string, customColors?: Re
     }
 }
 
-/** Configuración visual para la representación de estado con icono. */
 interface StatusIconConfig {
-    /** Etiqueta descriptiva. */
     label: string
-    /** @deprecated Usar dotStyle para el color del punto. */
     dotColor: string
-    /** @deprecated Usar textStyle para el color del texto. */
     textColor: string
-    /** Estilo del punto indicador. */
     dotStyle: React.CSSProperties
-    /** Estilo del texto de la etiqueta. */
     textStyle: React.CSSProperties
-    /** Estilo de fondo para el contenedor tipo pastilla. */
     pillBackground: string
 }
 
@@ -85,11 +74,8 @@ export function getPlateTypeIcon(plateType: string): typeof Car | typeof Bike | 
 
 type UserRole = 'ADMIN' | 'MESSENGER'
 
-/** Representación de una opción de estado disponible. */
 interface AvailableStatus {
-    /** Valor técnico del estado. */
     value: ServiceStatus
-    /** Etiqueta amigable para el usuario. */
     label: string
 }
 

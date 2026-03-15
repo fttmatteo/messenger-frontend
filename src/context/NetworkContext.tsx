@@ -31,7 +31,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             try {
                 const payload = action.payload as UpdateStatusWithFilesPayload
 
-                // Convertir base64 de vuelta a archivos (Files)
                 let signature: File | undefined
                 if (payload.signatureBase64) {
                     signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')

@@ -125,25 +125,21 @@ describe("useServices", () => {
         const { result } = renderHook(() => useServices())
         await waitFor(() => expect(result.current.loading).toBe(false))
 
-        // Initial: createdAt / desc
         expect(result.current.sortField).toBe("createdAt")
         expect(result.current.sortDirection).toBe("desc")
 
-        // Sort by different field: field / asc
         act(() => {
             result.current.handleSort("plate")
         })
         expect(result.current.sortField).toBe("plate")
         expect(result.current.sortDirection).toBe("asc")
 
-        // Click same field while asc: field / desc
         act(() => {
             result.current.handleSort("plate")
         })
         expect(result.current.sortField).toBe("plate")
         expect(result.current.sortDirection).toBe("desc")
 
-        // Click same field while desc: null / desc
         act(() => {
             result.current.handleSort("plate")
         })
@@ -171,7 +167,6 @@ describe("useServices", () => {
             }))
         })
 
-        // Rerender with different search
         rerender({ search: "new" })
         await waitFor(() => {
             expect(serviceDeliveryService.getAllPaginated).toHaveBeenLastCalledWith(expect.objectContaining({

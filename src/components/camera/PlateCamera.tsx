@@ -143,7 +143,6 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
             return
         }
 
-        // Relación de aspecto del contenedor (4:3 como se define en la clase aspect-[4/3])
         const targetAspectRatio = 4 / 3
 
         const videoWidth = video.videoWidth

@@ -3,22 +3,14 @@
  * Usa la misma configuración para PWA y Web - abre Google Maps en una nueva pestaña.
  */
 
-/** Información geográfica o descriptiva para navegación. */
 interface Location {
-    /** Latitud decimal. */
     latitude?: number;
-    /** Longitud decimal. */
     longitude?: number;
-    /** Dirección física (fallback si no hay lat/lng). */
     address?: string;
 }
 
 /**
  * Abre Google Maps en una nueva pestaña con el destino especificado.
- * 
- * @param destination La ubicación de destino (lat/lng o dirección).
- * @param originLat Latitud de origen opcional.
- * @param originLng Longitud de origen opcional.
  */
 export const openMaps = (
     destination: Location,

@@ -13,7 +13,6 @@ import {
 } from './error-utils'
 import type { ApiErrorResponse } from '@/types/error.types'
 
-// Helper para crear errores Axios mock
 function createAxiosError(
     status: number,
     data?: ApiErrorResponse,
@@ -35,7 +34,6 @@ function createAxiosError(
     return error
 }
 
-// Helper para crear error de red (sin respuesta)
 function createNetworkError(code: string): AxiosError<ApiErrorResponse> {
     const error = new Error('Network Error') as AxiosError<ApiErrorResponse>
     error.isAxiosError = true

@@ -74,17 +74,14 @@ test.describe('Service Creation Flow', () => {
     });
 
     test('should create a new service delivery successfully from messenger dashboard', async ({ page }) => {
-        // Wait for dashboard to be ready (ensure we are not on login page)
         await expect(page).not.toHaveURL(/.*login/, { timeout: 15000 });
 
-        // Find FAB (Plus icon)
         const fab = page.locator('button:has(svg.lucide-plus)').first();
         await expect(fab).toBeVisible({ timeout: 20000 });
         await fab.click();
 
         await expect(page).toHaveURL(/.*crear/, { timeout: 20000 });
 
-        // Select dealership
         const trigger = page.locator('button[id="dealershipId"]').first();
         await expect(trigger).toBeVisible({ timeout: 10000 });
         await trigger.click();
@@ -93,22 +90,18 @@ test.describe('Service Creation Flow', () => {
         await expect(option).toBeVisible();
         await option.click();
 
-        // Photo Upload mock interaction
         await page.locator('input[type="file"]').first().setInputFiles({
             name: 'plate.jpg',
             mimeType: 'image/jpeg',
             buffer: Buffer.from('fake-image-content'),
         });
 
-        // Wait for OCR mock (manual entry fallback)
         const plateInput = page.locator('input[name="manualPlateNumber"]').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
         await plateInput.fill('ABC 123');
 
-        // Submit
         await page.getByRole('button', { name: /crear servicio/i }).click();
 
-        // Redirect back
         await expect(page).toHaveURL(/.*\/messenger/, { timeout: 20000 });
     });
 });

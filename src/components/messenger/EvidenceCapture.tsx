@@ -82,7 +82,6 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         const canvas = canvasRef.current
         if (!video || !canvas || !cameraReady) return
 
-        // Relación de aspecto del contenedor (16:9 como se define en la clase aspect-video)
         const targetAspectRatio = 16 / 9
 
         const videoWidth = video.videoWidth
@@ -94,31 +93,26 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         let sourceWidth = videoWidth
         let sourceHeight = videoHeight
 
-        // Calcular el recorte centrado (equivalente a object-cover)
         if (videoAspectRatio > targetAspectRatio) {
-            // El video es más ancho que el objetivo: recortar los lados
             sourceWidth = videoHeight * targetAspectRatio
             sourceX = (videoWidth - sourceWidth) / 2
         } else {
-            // El video es más alto que el objetivo: recortar arriba/abajo
             sourceHeight = videoWidth / targetAspectRatio
             sourceY = (videoHeight - sourceHeight) / 2
         }
 
-        // Ajustar el canvas al tamaño del recorte (manteniendo calidad)
         canvas.width = sourceWidth
         canvas.height = sourceHeight
 
         const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) return
 
-        // Dibujar solo la parte recortada
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = 'high'
         ctx.drawImage(
             video,
-            sourceX, sourceY, sourceWidth, sourceHeight, // Fuente
-            0, 0, sourceWidth, sourceHeight              // Destino
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, sourceWidth, sourceHeight
         )
 
         canvas.toBlob((blob) => {

@@ -9,7 +9,6 @@ import {
 } from './status-utils';
 import { DEFAULT_STATUS_COLORS } from './status-colors';
 
-// Color por defecto para estados desconocidos
 const DEFAULT_FALLBACK_COLOR = '#6b7280';
 
 /**
@@ -20,21 +19,17 @@ const DEFAULT_FALLBACK_COLOR = '#6b7280';
 describe('status-utils', () => {
     describe('getStatusBadge', () => {
         it('should return correct badge config for known statuses', () => {
-            // PENDING
             expect(getStatusBadge('PENDING').label).toBe('Pendiente');
             expect(getStatusBadge('PENDING').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.PENDING);
 
-            // CANCELED
             expect(getStatusBadge('CANCELED').label).toBe('Cancelado');
             expect(getStatusBadge('CANCELED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.CANCELED);
 
-            // DELETED
             expect(getStatusBadge('DELETED').label).toBe('Eliminado');
             expect(getStatusBadge('DELETED').style?.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
         });
 
         it('should return default for unknown status', () => {
-            // Probando entrada de estado inválido - usa gray-500 por defecto
             const result = getStatusBadge('UNKNOWN');
             expect(result.label).toBe('UNKNOWN');
             expect(result.style?.backgroundColor).toBe(DEFAULT_FALLBACK_COLOR);
@@ -43,13 +38,10 @@ describe('status-utils', () => {
 
     describe('getStatusIconConfig', () => {
         it('should return correct icon config', () => {
-            // DELIVERED
             const result = getStatusIconConfig('DELIVERED');
             expect(result.label).toBe('Entregado');
             expect(result.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
             expect(result.textStyle.color).toBe(DEFAULT_STATUS_COLORS.DELIVERED);
-
-            // DELETED
             const deletedResult = getStatusIconConfig('DELETED');
             expect(deletedResult.label).toBe('Eliminado');
             expect(deletedResult.dotStyle.backgroundColor).toBe(DEFAULT_STATUS_COLORS.DELETED);
