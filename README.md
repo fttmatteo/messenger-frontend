@@ -25,18 +25,17 @@
 ---
 
 ## Overview
-
 **PLAK Messenger Frontend** is the mission-critical user interface for urban logistics operations. Built with enterprise-grade architecture, it orchestrates real-time fleet management while ensuring business continuity even under adverse network conditions.
 
 ### Native App (Android)
-
 The messenger experience is fully optimized as a standalone Android application. By installing the native APK, users get:
 - **Instant Access**: Launch directly from the home screen.
 - **Immersive Experience**: True full-screen interface without browser navigation bars.
 - **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
 
-### Two Optimized Experiences
+---
 
+### Two Optimized Experiences
 | **Command Center** | **Field App** |
 |:---|:---|
 | Admin Dashboard for operations control | Progressive Web App for messengers |
@@ -47,10 +46,8 @@ The messenger experience is fully optimized as a standalone Android application.
 ---
 
 ## Screenshots
-<details>
 
 ### Admin Dashboard
-
 | Login | Live Monitoring |
 |:---:|:---:|
 | ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/14_Admin_Monitoreo.png) |
@@ -69,7 +66,6 @@ The messenger experience is fully optimized as a standalone Android application.
 ---
 
 ### Messenger PWA
-
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
 | ![Login](docs/screenshots/messenger/1_Messenger_Login.png) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.png) | ![Update Status](docs/screenshots/messenger/5_Messenger_Actualizar_Estado.png) |
@@ -79,15 +75,12 @@ The messenger experience is fully optimized as a standalone Android application.
 |:---:|:---:|:---:|
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
 | *Complete information & navigation* | *Service status history* | *App preferences* |
-</details>
 
 ---
 
 ## Key Features
-<details>
 
 ### Robustness & Resilience (Offline-First)
-
 | Feature | Description |
 |:---|:---|
 | **Smart Synchronization** | *Store-and-Forward* pattern implementation. Actions performed offline are persisted in `IndexedDB` and automatically retried when connection is restored. |
@@ -95,29 +88,28 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
 
-### Geospatial Engineering
+---
 
+### Geospatial Engineering
 | Feature | Description |
 |:---|:---|
 | **Live Tracking** | Bidirectional WebSocket communication via STOMP/SockJS for sub-second position updates. |
 | **Advanced Markers API** | High-performance Google Maps rendering, supporting thousands of simultaneous entities without FPS degradation. |
 | **Resilient Geocoding** | Queue system for address resolution that respects Google API rate limits. |
 
-### User Experience (UX)
+---
 
+### User Experience (UX)
 | Feature | Description |
 |:---|:---|
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
-</details>
 
 ---
 
 ## Quality Strategy & Testing
-<details>
-
 This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
 
 ```
@@ -137,8 +129,9 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 | **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
 
-### Running Tests
+---
 
+### Running Tests
 ```bash
 # Unit & Integration tests (Vitest)
 npm run test:run
@@ -152,13 +145,10 @@ npx playwright test
 # E2E tests with UI
 npx playwright test --ui
 ```
-</details>
 
 ---
 
 ## Tech Stack
-<details>
-
 The architecture is designed for **scalability**, **maintainability**, and **long-term performance**.
 
 | Category | Technologies | Purpose |
@@ -174,13 +164,10 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 | **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
 | **Animation** | `Framer Motion` | Fluid animations and transitions |
 | **Charts** | `Recharts` | Data visualization components |
-</details>
 
 ---
 
 ## Project Architecture
-<details>
-
 The codebase follows **Clean Architecture** principles adapted for frontend development:
 
 ```
@@ -202,23 +189,21 @@ src/
 ├── types/               # TypeScript Type Definitions
 └── utils/               # Utility Functions
 ```
-</details>
 
 ---
 
 ## Installation & Deployment
-<details>
 
 ### Prerequisites
-
 | Requirement | Version |
 |:---|:---|
 | Node.js | v20.0.0+ (LTS recommended) |
 | npm | v10+ |
 | Google Maps API Key | Required for maps functionality |
 
-### Quick Start (Docker)
+---
 
+### Quick Start (Docker)
 If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
 
 1. Go to the backend folder: `cd ../messenger-backend`
@@ -226,8 +211,9 @@ If you have the backend repository in the same root folder, you can spin up the 
 
 This will build the frontend and serve it at `http://localhost`.
 
-### Development with Hot Reloading (Docker)
+---
 
+### Development with Hot Reloading (Docker)
 For active development with automatic code reloading:
 
 ```bash
@@ -240,7 +226,6 @@ The frontend dev server (Vite HMR) will be available at `http://localhost:5173` 
 ---
 
 ### Local Development (Manual)
-
 ```bash
 # 1. Clone the repository
 git clone https://github.com/fttmatteo/messenger-frontend.git
@@ -257,8 +242,9 @@ cp .env.example .env
 npm run dev
 ```
 
-### Environment Variables
+---
 
+### Environment Variables
 Create a `.env` file in the project root:
 
 ```env
@@ -275,8 +261,9 @@ VITE_WS_URL=ws://localhost:8080/ws
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
 
-### Available Scripts
+---
 
+### Available Scripts
 | Script | Description |
 |:---|:---|
 | `npm run dev` | Start development server with HMR |
@@ -289,13 +276,10 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | `npm run test:run` | Run Vitest once |
 | `npm run test:ui` | Open Vitest UI |
 | `npm run test:coverage` | Generate coverage report |
-</details>
 
 ---
 
 ## Security
-<details>
-
 | Feature | Implementation |
 |:---|:---|
 | **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
@@ -305,12 +289,10 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | **Input Validation** | All user inputs validated with Zod schemas |
 | **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
 | **Rate Limiting** | Client-side handling of 429 errors from the backend |
-</details>
 
 ---
 
 ## Contact
-
 For inquiries about this project:
 - **Repository**: `messenger-frontend`
 - **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
