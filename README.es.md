@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 📱 PLAK - Messenger Frontend
+# PLAK - Messenger Frontend
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -24,20 +24,20 @@
 
 ---
 
-## 📋 Descripción General
+## Descripción General
 
 **PLAK Messenger Frontend** es la interfaz de usuario crítica para operaciones de logística urbana. Construida con arquitectura empresarial, orquesta la gestión de flotas en tiempo real mientras asegura la continuidad del negocio incluso bajo condiciones de red adversas.
 
-### 📱 App Nativa (Android)
+### App Nativa (Android)
 
 La experiencia del mensajero está completamente optimizada como una aplicación independiente para Android. Al instalar el APK nativo, los usuarios obtienen:
 - **Acceso Instantáneo**: Inicio directo desde la pantalla principal del teléfono.
 - **Experiencia Inmersiva**: Interfaz a pantalla completa real, sin barras de navegación del navegador que estorben.
 - **Operación Confiable**: Seguimiento en segundo plano persistente y sincronización offline perfectamente adaptada al dispositivo.
 
-### 🎯 Dos Experiencias Optimizadas
+### Dos Experiencias Optimizadas
 
-| 🖥️ **Centro de Comando** | 📱 **App de Campo** |
+| **Centro de Comando** | **App de Campo** |
 |:---|:---|
 | Dashboard Administrativo para control de operaciones | Aplicación Web Progresiva para mensajeros |
 | Monitoreo de flota en tiempo real con Google Maps | Instalable en cualquier dispositivo móvil |
@@ -46,10 +46,10 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 
 ---
 
-## 📸 Capturas de Pantalla
+## Capturas de Pantalla
 <details>
 
-### 🖥️ Admin Dashboard
+### Admin Dashboard
 
 | Login | Monitoreo en Vivo |
 |:---:|:---:|
@@ -68,7 +68,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 
 ---
 
-### 📱 Messenger PWA
+### Messenger PWA
 
 | Login | Servicios Asignados | Actualización de Estado |
 |:---:|:---:|:---:|
@@ -83,10 +83,10 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 
 ---
 
-## ✨ Características Principales
+## Características Principales
 <details>
 
-### 🛡️ Robustez y Resiliencia (Offline-First)
+### Robustez y Resiliencia (Offline-First)
 
 | Característica | Descripción |
 |:---|:---|
@@ -95,7 +95,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |
 
-### 🗺️ Ingeniería Geoespacial
+### Ingeniería Geoespacial
 
 | Característica | Descripción |
 |:---|:---|
@@ -103,7 +103,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Advanced Markers API** | Renderizado de alto rendimiento en Google Maps, soportando miles de entidades simultáneas sin degradación de FPS. |
 | **Geocodificación Resiliente** | Sistema de colas para resolución de direcciones que respeta los límites de la API de Google. |
 
-### 📱 Experiencia de Usuario (UX)
+### Experiencia de Usuario (UX)
 
 | Característica | Descripción |
 |:---|:---|
@@ -115,7 +115,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 
 ---
 
-## 🧪 Estrategia de Calidad y Pruebas
+## Estrategia de Calidad y Pruebas
 <details>
 
 Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confianza en el despliegue sobre métricas de cobertura vanidosas.
@@ -137,7 +137,7 @@ Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confian
 | **Unitarias** | `Vitest` | Lógica de negocio (~89% de cobertura en servicios), utilidades y hooks complejos |
 | **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
 
-### 🧪 Ejecutar Pruebas
+### Ejecutar Pruebas
 
 ```bash
 # Pruebas unitarias e integración (Vitest)
@@ -156,7 +156,7 @@ npx playwright test --ui
 
 ---
 
-## 🛠 Stack Tecnológico
+## Stack Tecnológico
 <details>
 
 La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **rendimiento a largo plazo**.
@@ -178,35 +178,35 @@ La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **r
 
 ---
 
-## 🏗 Arquitectura del Proyecto
+## Arquitectura del Proyecto
 <details>
 
 El código sigue principios de **Clean Architecture** adaptados para desarrollo frontend:
 
 ```
 src/
-├── components/          # 🧩 Bloques de Construcción UI (115+ componentes)
-│   ├── ui/              #    Componentes base (Shadcn/UI)
-│   └── ...              #    Componentes específicos por feature
-├── config/              # ⚙️ Configuración de la Aplicación
-├── context/             # 🌐 Proveedores de Estado Global (Auth, Theme, Maps)
-├── hooks/               # 🎣 Custom React Hooks (16 hooks)
-├── layouts/             # 📐 Componentes de Layout de Página
-├── lib/                 # 📚 Librerías de Utilidades
-├── pages/               # 📄 Componentes de Página de Ruta (28 páginas)
-├── routes/              # 🛣️ Enrutamiento de la Aplicación
-├── schemas/             # 📝 Esquemas de Validación Zod
-├── services/            # 📡 Servicios de API e Infraestructura
-├── styles/              # 🎨 Estilos Globales
-├── test/                # 🧪 Configuración de Pruebas y Mocks (MSW)
-├── types/               # 🏷️ Definiciones de Tipos TypeScript
-└── utils/               # 🔧 Funciones Utilitarias
+├── components/          # Bloques de Construcción UI (115+ componentes)
+│   ├── ui/              # Componentes base (Shadcn/UI)
+│   └── ...              # Componentes específicos por feature
+├── config/              # Configuración de la Aplicación
+├── context/             # Proveedores de Estado Global (Auth, Theme, Maps)
+├── hooks/               # Custom React Hooks (16 hooks)
+├── layouts/             # Componentes de Layout de Página
+├── lib/                 # Librerías de Utilidades
+├── pages/               # Componentes de Página de Ruta (28 páginas)
+├── routes/              # Enrutamiento de la Aplicación
+├── schemas/             # Esquemas de Validación Zod
+├── services/            # Servicios de API e Infraestructura
+├── styles/              # Estilos Globales
+├── test/                # Configuración de Pruebas y Mocks (MSW)
+├── types/               # Definiciones de Tipos TypeScript
+└── utils/               # Funciones Utilitarias
 ```
 </details>
 
 ---
 
-## 🚀 Instalación y Despliegue
+## Instalación y Despliegue
 <details>
 
 ### Prerrequisitos
@@ -217,7 +217,7 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Requerido para funcionalidad de mapas |
 
-### 🚀 Inicio Rápido (Docker)
+### Inicio Rápido (Docker)
 
 Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
 
@@ -226,7 +226,7 @@ Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar 
 
 Esto compilará el frontend y lo servirá en `http://localhost`.
 
-### 🔥 Desarrollo con Hot Reloading (Docker)
+### Desarrollo con Hot Reloading (Docker)
 
 Para desarrollo activo con recarga automática de código:
 
@@ -239,7 +239,7 @@ El servidor de desarrollo del frontend (Vite HMR) estará disponible en `http://
 
 ---
 
-### 🔧 Desarrollo Local (Manual)
+### Desarrollo Local (Manual)
 
 ```bash
 # 1. Clonar el repositorio
@@ -257,7 +257,7 @@ cp .env.example .env
 npm run dev
 ```
 
-### 🌍 Variables de Entorno
+### Variables de Entorno
 
 Crea un archivo `.env` en la raíz del proyecto:
 
@@ -275,7 +275,7 @@ VITE_WS_URL=ws://localhost:8080/ws
 VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 ```
 
-### 📜 Scripts Disponibles
+### Scripts Disponibles
 
 | Script | Descripción |
 |:---|:---|
@@ -293,7 +293,7 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 
 ---
 
-## 🔒 Seguridad
+## Seguridad
 <details>
 
 | Característica | Implementación |
@@ -309,7 +309,7 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 
 ---
 
-## 📧 Contacto
+## Contacto
 
 Para consultas sobre este proyecto:
 - **Repositorio**: `messenger-frontend`

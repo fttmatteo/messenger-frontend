@@ -1,15 +1,15 @@
-# 🚀 Guía de Colaboración - Frontend
+# Guía de Colaboración - Frontend
 
 Esta guía establece los estándares y reglas para contribuir al frontend del proyecto Messenger.
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 * **Framework:** React 19 + Vite 7
 * **Lenguaje:** TypeScript
 * **Estilos:** Tailwind CSS
 * **Estado/Formularios:** React Hook Form + Zod
 * **Componentes:** Radix UI / Lucide Icons
 
-## 🔐 Reglas de Contribución (Seguridad)
+## Reglas de Contribución (Seguridad)
 Al igual que en el backend, el repositorio tiene activadas reglas de protección estrictas:
 
 1. **Prohibido Push a `main`:** Nunca subas código directamente a la rama principal.
@@ -21,7 +21,7 @@ Al igual que en el backend, el repositorio tiene activadas reglas de protección
 5. **Conversaciones Resueltas:** Asegúrate de responder y resolver todos los comentarios del revisor antes del merge.
 6. **Pruebas Obligatorias:** Todo Pull Request debe pasar la suite de pruebas completa (`npm run test:run` y `npx playwright test`) sin fallos.
 
-## 🚀 Pasos para colaborar
+## Pasos para colaborar
 1. Clona el repositorio.
 2. Crea tu rama de trabajo desde `main`.
 3. **IMPORTANTE**: No subas archivos `.env` al repositorio. Verifica que estén en el `.gitignore`.

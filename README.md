@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 📱 PLAK - Messenger Frontend
+# PLAK - Messenger Frontend
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -24,20 +24,20 @@
 
 ---
 
-## 📋 Overview
+## Overview
 
 **PLAK Messenger Frontend** is the mission-critical user interface for urban logistics operations. Built with enterprise-grade architecture, it orchestrates real-time fleet management while ensuring business continuity even under adverse network conditions.
 
-### 📱 Native App (Android)
+### Native App (Android)
 
 The messenger experience is fully optimized as a standalone Android application. By installing the native APK, users get:
 - **Instant Access**: Launch directly from the home screen.
 - **Immersive Experience**: True full-screen interface without browser navigation bars.
 - **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
 
-### 🎯 Two Optimized Experiences
+### Two Optimized Experiences
 
-| 🖥️ **Command Center** | 📱 **Field App** |
+| **Command Center** | **Field App** |
 |:---|:---|
 | Admin Dashboard for operations control | Progressive Web App for messengers |
 | Real-time fleet monitoring on Google Maps | Installable on any mobile device |
@@ -46,10 +46,10 @@ The messenger experience is fully optimized as a standalone Android application.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 <details>
 
-### 🖥️ Admin Dashboard
+### Admin Dashboard
 
 | Login | Live Monitoring |
 |:---:|:---:|
@@ -68,7 +68,7 @@ The messenger experience is fully optimized as a standalone Android application.
 
 ---
 
-### 📱 Messenger PWA
+### Messenger PWA
 
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
@@ -83,10 +83,10 @@ The messenger experience is fully optimized as a standalone Android application.
 
 ---
 
-## ✨ Key Features
+## Key Features
 <details>
 
-### 🛡️ Robustness & Resilience (Offline-First)
+### Robustness & Resilience (Offline-First)
 
 | Feature | Description |
 |:---|:---|
@@ -95,7 +95,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
 
-### 🗺️ Geospatial Engineering
+### Geospatial Engineering
 
 | Feature | Description |
 |:---|:---|
@@ -103,7 +103,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Advanced Markers API** | High-performance Google Maps rendering, supporting thousands of simultaneous entities without FPS degradation. |
 | **Resilient Geocoding** | Queue system for address resolution that respects Google API rate limits. |
 
-### 📱 User Experience (UX)
+### User Experience (UX)
 
 | Feature | Description |
 |:---|:---|
@@ -115,7 +115,7 @@ The messenger experience is fully optimized as a standalone Android application.
 
 ---
 
-## 🧪 Quality Strategy & Testing
+## Quality Strategy & Testing
 <details>
 
 This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
@@ -137,7 +137,7 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 | **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
 
-### 🧪 Running Tests
+### Running Tests
 
 ```bash
 # Unit & Integration tests (Vitest)
@@ -156,7 +156,7 @@ npx playwright test --ui
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 <details>
 
 The architecture is designed for **scalability**, **maintainability**, and **long-term performance**.
@@ -178,35 +178,35 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 
 ---
 
-## 🏗 Project Architecture
+## Project Architecture
 <details>
 
 The codebase follows **Clean Architecture** principles adapted for frontend development:
 
 ```
 src/
-├── components/          # 🧩 UI Building Blocks (115+ components)
-│   ├── ui/              #    Base components (Shadcn/UI)
-│   └── ...              #    Feature-specific components
-├── config/              # ⚙️ Application Configuration
-├── context/             # 🌐 Global State Providers (Auth, Theme, Maps)
-├── hooks/               # 🎣 Custom React Hooks (16 hooks)
-├── layouts/             # 📐 Page Layout Components
-├── lib/                 # 📚 Utility Libraries
-├── pages/               # 📄 Route Page Components (28 pages)
-├── routes/              # 🛣️ Application Routing
-├── schemas/             # 📝 Zod Validation Schemas
-├── services/            # 📡 API & Infrastructure Services
-├── styles/              # 🎨 Global Styles
-├── test/                # 🧪 Test Configuration & Mocks (MSW)
-├── types/               # 🏷️ TypeScript Type Definitions
-└── utils/               # 🔧 Utility Functions
+├── components/          # UI Building Blocks (115+ components)
+│   ├── ui/              # Base components (Shadcn/UI)
+│   └── ...              # Feature-specific components
+├── config/              # Application Configuration
+├── context/             # Global State Providers (Auth, Theme, Maps)
+├── hooks/               # Custom React Hooks (16 hooks)
+├── layouts/             # Page Layout Components
+├── lib/                 # Utility Libraries
+├── pages/               # Route Page Components (28 pages)
+├── routes/              # Application Routing
+├── schemas/             # Zod Validation Schemas
+├── services/            # API & Infrastructure Services
+├── styles/              # Global Styles
+├── test/                # Test Configuration & Mocks (MSW)
+├── types/               # TypeScript Type Definitions
+└── utils/               # Utility Functions
 ```
 </details>
 
 ---
 
-## 🚀 Installation & Deployment
+## Installation & Deployment
 <details>
 
 ### Prerequisites
@@ -217,7 +217,7 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Required for maps functionality |
 
-### 🚀 Quick Start (Docker)
+### Quick Start (Docker)
 
 If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
 
@@ -226,7 +226,7 @@ If you have the backend repository in the same root folder, you can spin up the 
 
 This will build the frontend and serve it at `http://localhost`.
 
-### 🔥 Development with Hot Reloading (Docker)
+### Development with Hot Reloading (Docker)
 
 For active development with automatic code reloading:
 
@@ -239,7 +239,7 @@ The frontend dev server (Vite HMR) will be available at `http://localhost:5173` 
 
 ---
 
-### 🔧 Local Development (Manual)
+### Local Development (Manual)
 
 ```bash
 # 1. Clone the repository
@@ -257,7 +257,7 @@ cp .env.example .env
 npm run dev
 ```
 
-### 🌍 Environment Variables
+### Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -275,7 +275,7 @@ VITE_WS_URL=ws://localhost:8080/ws
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
 
-### 📜 Available Scripts
+### Available Scripts
 
 | Script | Description |
 |:---|:---|
@@ -293,7 +293,7 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 
 ---
 
-## 🔒 Security
+## Security
 <details>
 
 | Feature | Implementation |
@@ -309,7 +309,7 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 
 ---
 
-## 📧 Contact
+## Contact
 
 For inquiries about this project:
 - **Repository**: `messenger-frontend`
