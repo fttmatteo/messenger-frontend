@@ -24,7 +24,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
     const { colors } = useStatusColors()
 
     const handleClick = () => {
-        navigate(`/messenger/servicio/${service.idServiceDelivery}`)
+        navigate(`/messenger/servicio/${service.uuid}`)
     }
 
     const statusColor = colors[service.currentStatus] || '#6b7280'
@@ -76,7 +76,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
     const handleUpdate = (e: React.MouseEvent) => {
         e.stopPropagation()
-        navigate(`/messenger/servicio/${service.idServiceDelivery}/actualizar`)
+        navigate(`/messenger/servicio/${service.uuid}/actualizar`)
     }
 
     return (

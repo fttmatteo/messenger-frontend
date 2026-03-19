@@ -48,7 +48,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     )
                 }
 
-                await serviceDeliveryService.updateStatus(payload.serviceId, {
+                await serviceDeliveryService.updateStatus(payload.uuid, {
                     status: payload.status as ServiceStatus,
                     observation: payload.observation,
                     signature,
@@ -58,7 +58,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     longitude: payload.longitude,
                 })
 
-                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { serviceId: payload.serviceId })
+                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { uuid: payload.uuid })
                 return true
             } catch (error) {
                 logger.error('Error al sincronizar UPDATE_STATUS_WITH_FILES', error)
@@ -103,22 +103,31 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
     useEffect(() => {
         const handleOnline = () => {
+            logger.info('Navegador detectado como ONLINE')
             setIsOnline(true)
 
-            if (wasOffline) {
-                showToast.success('Conexión restaurada', {
-                    description: 'Sincronizando datos...',
-                    icon: <Wifi className="h-4 w-4" />,
-                    duration: 3000,
-                })
+            // Usamos actualización funcional para asegurar que leemos el valor más reciente de wasOffline
+            // y realizamos la acción solo si realmente estábamos offline
+            setWasOffline(prevWasOffline => {
+                if (prevWasOffline) {
+                    logger.info('Restaurando conexión tras periodo offline - Iniciando sincronización')
+                    showToast.success('Conexión restaurada', {
+                        description: 'Sincronizando datos...',
+                        icon: <Wifi className="h-4 w-4" />,
+                        duration: 3000,
+                    })
 
-                syncPendingActions()
-            }
-
-            setWasOffline(false)
+                    // Pequeño delay opcional para asegurar que los sockets/conexiones estén realmente listos
+                    setTimeout(() => {
+                        syncPendingActions()
+                    }, 500)
+                }
+                return false
+            })
         }
 
         const handleOffline = () => {
+            logger.info('Navegador detectado como OFFLINE')
             setIsOnline(false)
             setWasOffline(true)
 
@@ -133,10 +142,11 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         window.addEventListener('offline', handleOffline)
 
         return () => {
+            logger.info('Limpiando listeners de red')
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
         }
-    }, [wasOffline, syncPendingActions])
+    }, [syncPendingActions])
 
     useEffect(() => {
         const handleOfflineReady = () => {

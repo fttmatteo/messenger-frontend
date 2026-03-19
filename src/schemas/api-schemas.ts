@@ -73,6 +73,7 @@ export const PhotoInfoSchema = z.object({
  */
 export const DealershipInfoSchema = z.object({
     idDealership: z.number(),
+    uuid: z.string(),
     name: z.string(),
     address: z.string(),
     phone: z.string(),
@@ -86,6 +87,7 @@ export const DealershipInfoSchema = z.object({
  */
 export const EmployeeInfoSchema = z.object({
     idEmployee: z.number(),
+    uuid: z.string(),
     document: z.number(),
     fullName: z.string(),
     phone: z.string(),
@@ -113,6 +115,7 @@ export const StatusHistoryInfoSchema = z.object({
  */
 export const ServiceDeliverySchema = z.object({
     idServiceDelivery: z.number(),
+    uuid: z.string(),
     plate: PlateInfoSchema,
     dealership: DealershipInfoSchema,
     messenger: EmployeeInfoSchema.nullable().optional(),

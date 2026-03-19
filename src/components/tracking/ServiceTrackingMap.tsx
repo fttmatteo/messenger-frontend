@@ -13,7 +13,7 @@ import { useStatusColors } from "@/hooks/use-status-colors"
 import { logger } from "@/utils/logger"
 
 interface ServiceTrackingMapProps {
-    serviceId: number
+    serviceId: string
     dealershipLat?: number
     dealershipLng?: number
     dealershipName?: string

@@ -21,8 +21,10 @@ vi.mock('@/utils/logger', () => ({
 }));
 
 describe('ServiceDeliveryService', () => {
+    const mockUuid = '550e8400-e29b-41d4-a716-446655440000';
     const mockService = {
         idServiceDelivery: 1,
+        uuid: mockUuid,
         plate: {
             idPlate: 1,
             plateNumber: 'ABC123',
@@ -30,6 +32,7 @@ describe('ServiceDeliveryService', () => {
         },
         dealership: {
             idDealership: 1,
+            uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',
             name: 'Test Dealership',
             address: '123 St',
             phone: '555-1234',
@@ -103,9 +106,9 @@ describe('ServiceDeliveryService', () => {
     describe('getById', () => {
         it('should return single service', async () => {
             vi.mocked(apiClient.get).mockResolvedValue({ data: mockService });
-            const result = await serviceDeliveryService.getById(1);
+            const result = await serviceDeliveryService.getById(mockUuid);
             expect(result).toEqual(mockService);
-            expect(apiClient.get).toHaveBeenCalledWith('/services/findByServiceId/1');
+            expect(apiClient.get).toHaveBeenCalledWith(`/services/findByServiceId/${mockUuid}`);
         });
     });
 
@@ -144,13 +147,13 @@ describe('ServiceDeliveryService', () => {
         it('should send evidence as FormData', async () => {
             vi.mocked(apiClient.put).mockResolvedValue({ data: mockService });
 
-            await serviceDeliveryService.updateStatus(1, {
+            await serviceDeliveryService.updateStatus(mockUuid, {
                 status: 'DELIVERED',
                 observation: 'All good',
                 photos: [new File([''], 'p1.jpg')]
             });
 
-            expect(apiClient.put).toHaveBeenCalledWith('/services/updateService/1', expect.any(FormData));
+            expect(apiClient.put).toHaveBeenCalledWith(`/services/updateService/${mockUuid}`, expect.any(FormData));
         });
     });
 
@@ -163,20 +166,20 @@ describe('ServiceDeliveryService', () => {
 
         it('restore should call API', async () => {
             vi.mocked(apiClient.post).mockResolvedValue({ data: mockService });
-            await serviceDeliveryService.restore(1);
-            expect(apiClient.post).toHaveBeenCalledWith('/services/trash/restore/1');
+            await serviceDeliveryService.restore(mockUuid);
+            expect(apiClient.post).toHaveBeenCalledWith(`/services/trash/restore/${mockUuid}`);
         });
 
         it('delete should call API', async () => {
             vi.mocked(apiClient.delete).mockResolvedValue({});
-            await serviceDeliveryService.delete(1);
-            expect(apiClient.delete).toHaveBeenCalledWith('/services/deleteService/1');
+            await serviceDeliveryService.delete(mockUuid);
+            expect(apiClient.delete).toHaveBeenCalledWith(`/services/deleteService/${mockUuid}`);
         });
 
         it('permanentDelete should call API', async () => {
             vi.mocked(apiClient.delete).mockResolvedValue({ data: { message: 'Deleted' } });
-            await serviceDeliveryService.permanentDelete(1);
-            expect(apiClient.delete).toHaveBeenCalledWith('/services/trash/1');
+            await serviceDeliveryService.permanentDelete(mockUuid);
+            expect(apiClient.delete).toHaveBeenCalledWith(`/services/trash/${mockUuid}`);
         });
 
         it('emptyTrash should call delete', async () => {
@@ -189,8 +192,8 @@ describe('ServiceDeliveryService', () => {
     describe('reassign', () => {
         it('should call put with messengerId', async () => {
             vi.mocked(apiClient.put).mockResolvedValue({ data: mockService });
-            await serviceDeliveryService.reassign(1, 100);
-            expect(apiClient.put).toHaveBeenCalledWith('/services/reassign/1', { messengerId: 100 });
+            await serviceDeliveryService.reassign(mockUuid, 100);
+            expect(apiClient.put).toHaveBeenCalledWith(`/services/reassign/${mockUuid}`, { messengerId: 100 });
         });
     });
 

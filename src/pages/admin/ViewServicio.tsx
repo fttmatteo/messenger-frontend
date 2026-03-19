@@ -56,7 +56,7 @@ export default function ViewServicio() {
 
         try {
             setLoading(true)
-            const data = await serviceDeliveryService.getById(Number(id))
+            const data = await serviceDeliveryService.getById(id)
             setService(data)
             setError(null)
         } catch (error) {
@@ -78,7 +78,7 @@ export default function ViewServicio() {
 
         try {
             setDeleting(true)
-            await serviceDeliveryService.delete(Number(id))
+            await serviceDeliveryService.delete(id)
             setSuccess("Servicio eliminado exitosamente")
             navigate("/admin/servicios")
         } catch (error) {
@@ -143,7 +143,7 @@ export default function ViewServicio() {
                 />
 
                 <ServiceTrackingMap
-                    serviceId={service.idServiceDelivery}
+                    serviceId={service.uuid}
                     dealershipLat={service.dealership.latitude}
                     dealershipLng={service.dealership.longitude}
                     dealershipName={service.dealership.name}

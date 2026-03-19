@@ -24,6 +24,7 @@ const getWebSocketUrl = () => {
 
 export interface LiveTrackingUpdate {
     messengerId: number;
+    messengerUuid?: string;
     messengerName: string;
     latitude: number;
     longitude: number;

@@ -44,6 +44,7 @@ export interface PhotoInfo {
  */
 export interface DealershipInfo {
     idDealership: number
+    uuid: string
     name: string
     address: string
     phone: string
@@ -54,6 +55,7 @@ export interface DealershipInfo {
 
 export interface EmployeeInfo {
     idEmployee: number
+    uuid: string
     document: number
     fullName: string
     phone: string
@@ -82,6 +84,7 @@ export interface StatusHistoryInfo {
  */
 export interface ServiceDelivery {
     idServiceDelivery: number
+    uuid: string
     plate: PlateInfo
     dealership: DealershipInfo
     // El backend puede omitir o devolver null para el mensajero cuando no está asignado

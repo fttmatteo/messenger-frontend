@@ -142,7 +142,7 @@ export default function CreateConcesionario() {
             })
 
             try {
-                await dealershipService.geocode(created.idDealership)
+                await dealershipService.geocode(created.uuid)
                 setSuccess("Concesionario creado y ubicado exitosamente")
             } catch (geocodeError) {
                 logger.error("Auto geocoding failed", geocodeError)

@@ -3,6 +3,7 @@
  */
 export interface Dealership {
     idDealership: number
+    uuid: string
     name: string
     address: string
     phone: string

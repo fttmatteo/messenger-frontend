@@ -10,6 +10,7 @@ test.describe('Offline Resilience & Sync', () => {
                 document: 789,
                 role: 'MESSENGER',
                 id: 3,
+                uuid: 'messenger-3',
                 name: 'Offline User',
                 isOnline: true
             };
@@ -32,13 +33,15 @@ test.describe('Offline Resilience & Sync', () => {
         });
         /* eslint-enable @typescript-eslint/no-explicit-any */
 
-        await page.route('**/services/findByServiceId/202', async route => {
+        await page.route('**/services/findByServiceId/s202', async route => {
             await route.fulfill({
                 json: {
                     idServiceDelivery: 202,
+                    uuid: 's202',
                     plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
                     dealership: {
                         idDealership: 2,
+                        uuid: 'd2',
                         name: 'Concesionario Norte',
                         address: 'Calle 100 #15-20',
                         phone: '7654321',
@@ -57,8 +60,11 @@ test.describe('Offline Resilience & Sync', () => {
         await page.route('**/services/updateStatus/**', async route => {
             await route.fulfill({ json: { message: 'Success' } });
         });
+        await page.route('**/auth/ws-token', async route => {
+            await route.fulfill({ json: { token: 'mock-ws-token' } });
+        });
 
-        await page.goto('/messenger/servicio/202/actualizar');
+        await page.goto('/messenger/servicio/s202/actualizar');
         await page.waitForLoadState('networkidle');
     });
 
@@ -99,7 +105,7 @@ test.describe('Offline Resilience & Sync', () => {
         await expect(page.getByText(/offline|pendiente/i).first()).toBeVisible({ timeout: 20000 });
 
         let syncCalled = false;
-        await page.route('**/services/updateService/202', async route => {
+        await page.route('**/services/updateService/s202', async route => {
             syncCalled = true;
             await route.fulfill({ json: { success: true } });
         });

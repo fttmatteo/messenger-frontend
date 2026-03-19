@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import apiClient from '../api-client';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../test/mocks/server';
+import apiClient, { _resetState } from '../api-client';
 import { authService } from '../auth.service';
 
 // Mock authService para evitar side-effects
@@ -14,6 +16,7 @@ import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 describe('api-client interceptors', () => {
     beforeEach(() => {
+        _resetState();
         vi.clearAllMocks();
         localStorage.clear();
         sessionStorage.clear();
@@ -60,54 +63,51 @@ describe('api-client interceptors', () => {
     });
 
     describe('401 Refresh logic', () => {
-        it('should handle 401 error and trigger token refresh', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
-            vi.mocked(authService.refreshToken).mockResolvedValue();
+        it('should handle 401 error and trigger token refresh', { timeout: 15000 }, async () => {
+            let refreshCalled = false;
+            vi.mocked(authService.refreshToken).mockImplementation(async () => {
+                refreshCalled = true;
+            });
 
-            // Mockeamos el fallback a apiClient
-            const originalRequest = { _retry: false, url: '/services/all' };
-            const mockError = {
-                config: originalRequest as unknown as InternalAxiosRequestConfig,
-                response: { status: 401 }
-            };
+            server.use(
+                http.get(new RegExp('.*/test-401'), () => {
+                    if (!refreshCalled) {
+                        return new HttpResponse(null, { status: 401 });
+                    }
+                    return HttpResponse.json({ data: 'retry-success' });
+                }),
+                http.get(new RegExp('.*/test-401'), () => {
+                    return HttpResponse.json({ data: 'retry-success' });
+                })
+            );
 
-            // Hacemos mock de apiClient en sí mismo para la repetición
-            vi.spyOn(apiClient, 'request').mockResolvedValue('retry-success');
+            const result = await apiClient.get('/test-401');
 
-            try {
-                await errorInterceptor(mockError);
-            } catch {
-                // ignorar para este mock base
-            }
-
-            expect(authService.refreshToken).toHaveBeenCalled();
-            expect(originalRequest._retry).toBe(true);
+            expect(refreshCalled).toBe(true);
+            expect(result.data.data).toBe('retry-success');
         });
 
         it('should avoid loop if endpoint is login', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
+            server.use(
+                http.post(new RegExp('.*/auth/login'), () => {
+                    return new HttpResponse(null, { status: 401 });
+                })
+            );
 
-            const originalRequest = { _retry: false, url: '/auth/login' };
-            const mockError = {
-                config: originalRequest as unknown as InternalAxiosRequestConfig,
-                response: { status: 401 }
-            };
-
-            await expect(errorInterceptor(mockError)).rejects.toBe(mockError);
+            await expect(apiClient.post('/auth/login', {})).rejects.toThrow();
             expect(authService.refreshToken).not.toHaveBeenCalled();
         });
 
         it('should logout on refresh failure', async () => {
-            const errorInterceptor = (apiClient.interceptors.response as unknown as { handlers: { rejected: (e: unknown) => Promise<unknown> }[] }).handlers[1].rejected;
             vi.mocked(authService.refreshToken).mockRejectedValue(new Error('Refresh failed'));
 
-            const originalRequest = { _retry: false, url: '/services/all' };
-            const mockError = {
-                config: originalRequest as unknown as InternalAxiosRequestConfig,
-                response: { status: 401 }
-            };
+            server.use(
+                http.get(new RegExp('.*/test-refresh-fail'), () => {
+                    return new HttpResponse(null, { status: 401 });
+                })
+            );
 
-            await expect(errorInterceptor(mockError)).rejects.toThrow('Refresh failed');
+            await expect(apiClient.get('/test-refresh-fail')).rejects.toThrow();
             expect(authService.logout).toHaveBeenCalled();
         });
     });

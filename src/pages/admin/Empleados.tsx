@@ -152,7 +152,7 @@ export default function Empleados() {
                                                     layout
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                                                    onClick={() => navigate(`/admin/empleados/editar/${employee.idEmployee}`)}
+                                                    onClick={() => navigate(`/admin/empleados/editar/${employee.uuid}`)}
                                                 >
                                                     <TableCell className="font-medium text-sm">
                                                         <Tooltip>

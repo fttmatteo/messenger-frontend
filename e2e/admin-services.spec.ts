@@ -11,6 +11,7 @@ test.describe('Service Creation Flow', () => {
                 document: 123,
                 role: 'MESSENGER',
                 id: 1,
+                uuid: 'm1',
                 name: 'E2E Creator',
                 isOnline: true
             };
@@ -43,6 +44,7 @@ test.describe('Service Creation Flow', () => {
             await route.fulfill({
                 json: [{
                     idDealership: 1,
+                    uuid: 'd1',
                     name: 'Test Dealership',
                     address: 'Calle 123',
                     phone: '555-1234',
@@ -55,8 +57,9 @@ test.describe('Service Creation Flow', () => {
             await route.fulfill({
                 json: {
                     idServiceDelivery: 202,
+                    uuid: 's202',
                     plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
-                    dealership: { idDealership: 1, name: 'Test Dealership', address: 'Calle 123', phone: '555-1234', zone: 'Norte' },
+                    dealership: { idDealership: 1, uuid: 'd1', name: 'Test Dealership', address: 'Calle 123', phone: '555-1234', zone: 'Norte' },
                     currentStatus: 'PENDING',
                     createdAt: new Date().toISOString()
                 }
@@ -67,6 +70,9 @@ test.describe('Service Creation Flow', () => {
             await route.fulfill({
                 json: { success: false, message: 'OCR Fallback' }
             });
+        });
+        await page.route('**/auth/ws-token', async route => {
+            await route.fulfill({ json: { token: 'mock-ws-token' } });
         });
 
         await page.goto('/messenger');

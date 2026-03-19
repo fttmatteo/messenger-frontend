@@ -17,8 +17,8 @@ interface DeletedServiceRowProps {
     service: ServiceDelivery
     isRestoring: boolean
     isDeleting: boolean
-    onRestore: (id: number) => void
-    onDelete: (id: number) => void
+    onRestore: (uuid: string) => void
+    onDelete: (uuid: string) => void
     itemVariants: Variants
 }
 
@@ -116,8 +116,8 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                 type={actionType || 'restore'}
                 plateNumber={service.plate.plateNumber}
                 onConfirm={() => {
-                    if (actionType === 'restore') onRestore(service.idServiceDelivery)
-                    else if (actionType === 'permanent-delete') onDelete(service.idServiceDelivery)
+                    if (actionType === 'restore') onRestore(service.uuid)
+                    else if (actionType === 'permanent-delete') onDelete(service.uuid)
                     setActionType(null)
                 }}
             />
@@ -127,10 +127,10 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
 
 interface DeletedServiceTableProps {
     services: ServiceDelivery[]
-    restoringId: number | null
-    deletingId: number | null
-    onRestore: (id: number) => void
-    onDelete: (id: number) => void
+    restoringId: string | null
+    deletingId: string | null
+    onRestore: (uuid: string) => void
+    onDelete: (uuid: string) => void
     itemVariants: Variants
 }
 
@@ -157,8 +157,8 @@ export function DeletedServiceTable({ services, restoringId, deletingId, onResto
                         <DeletedServiceRow
                             key={service.idServiceDelivery}
                             service={service}
-                            isRestoring={restoringId === service.idServiceDelivery}
-                            isDeleting={deletingId === service.idServiceDelivery}
+                            isRestoring={restoringId === service.uuid}
+                            isDeleting={deletingId === service.uuid}
                             onRestore={onRestore}
                             onDelete={onDelete}
                             itemVariants={itemVariants}

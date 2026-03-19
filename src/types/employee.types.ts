@@ -8,6 +8,7 @@ export type EmployeeRole = 'ADMIN' | 'MESSENGER'
  */
 export interface Employee {
     idEmployee: number
+    uuid: string
     document: number
     fullName: string
     phone: string

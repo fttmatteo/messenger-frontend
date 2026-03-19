@@ -28,7 +28,7 @@ import { TrackingHistoryList } from "@/components/tracking/TrackingHistoryList"
 export default function MessengerDetails() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const messengerId = Number(id)
+    const messengerUuid = id // route param is now a UUID string
 
     // Estado
     const [employee, setEmployee] = useState<Employee | null>(null)
@@ -46,7 +46,7 @@ export default function MessengerDetails() {
 
     // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
-        if (update.messengerId === messengerId) {
+        if (employee && update.messengerId === employee.idEmployee) {
             setCurrentLocation({ lat: update.latitude, lng: update.longitude })
             if (update.lastUpdate) {
                 setLastUpdate(new Date(update.lastUpdate))
@@ -54,7 +54,7 @@ export default function MessengerDetails() {
             setSpeed(update.speed || 0)
             setIsActive(update.status === 'ACTIVE')
         }
-    }, [messengerId])
+    }, [employee])
 
     // Conectar a WebSocket
     useEffect(() => {
@@ -86,7 +86,7 @@ export default function MessengerDetails() {
 
     // Obtener datos del empleado y tracking
     const fetchData = useCallback(async () => {
-        if (!messengerId || isNaN(messengerId)) {
+        if (!messengerUuid) {
             setLoading(false)
             return
         }
@@ -94,13 +94,13 @@ export default function MessengerDetails() {
         try {
             setLoading(true)
 
-            // Obtener info del empleado
-            const emp = await employeeService.getById(messengerId)
+            // Obtener info del empleado by UUID
+            const emp = await employeeService.getById(messengerUuid)
             setEmployee(emp)
 
             // Obtener tracking activo si existe
             const activeMessengers = await trackingApiService.getActiveMessengers()
-            const activeData = activeMessengers.find(m => m.messengerId === messengerId)
+            const activeData = activeMessengers.find(m => m.messengerId === emp.idEmployee)
 
             if (activeData) {
                 setCurrentLocation({ lat: activeData.latitude, lng: activeData.longitude })
@@ -111,7 +111,7 @@ export default function MessengerDetails() {
             } else {
                 // Intentar obtener última ubicación conocida
                 try {
-                    const lastLocation = await trackingApiService.getLastLocation(messengerId)
+                    const lastLocation = await trackingApiService.getLastLocation(messengerUuid)
                     if (lastLocation) {
                         setCurrentLocation({ lat: lastLocation.latitude, lng: lastLocation.longitude })
                         const date = lastLocation.lastUpdate ? new Date(lastLocation.lastUpdate) : null
@@ -127,16 +127,16 @@ export default function MessengerDetails() {
         } finally {
             setLoading(false)
         }
-    }, [messengerId])
+    }, [messengerUuid])
 
     // Obtener datos del historial
     const fetchHistory = useCallback(async () => {
-        if (!messengerId || isNaN(messengerId)) return
+        if (!messengerUuid) return
 
         try {
             setLoadingHistory(true)
             const dateStr = format(historyDate, 'yyyy-MM-dd')
-            const data = await trackingApiService.getHistory(messengerId, dateStr)
+            const data = await trackingApiService.getHistory(messengerUuid, dateStr)
 
             if (Array.isArray(data)) {
                 setHistoryData(data)
@@ -149,7 +149,7 @@ export default function MessengerDetails() {
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerId, historyDate])
+    }, [messengerUuid, historyDate])
 
     useEffect(() => {
         fetchData()
@@ -190,13 +190,13 @@ export default function MessengerDetails() {
                     <AdminBreadcrumb
                         segments={[
                             { label: "Monitoreo", href: "/admin/tracking" },
-                            { label: employee?.fullName || `Mensajero #${messengerId}` }
+                            { label: employee?.fullName || `Mensajero` }
                         ]}
                     />
                 </div>
 
                 <h1 className="text-xl md:text-2xl font-bold text-center">
-                    {employee?.fullName || `Mensajero #${messengerId}`}
+                    {employee?.fullName || `Mensajero`}
                 </h1>
 
                 <div className="justify-self-end">

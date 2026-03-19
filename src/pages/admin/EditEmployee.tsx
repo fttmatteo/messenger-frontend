@@ -73,7 +73,7 @@ export default function EditEmployee() {
             if (!id) return
             try {
                 setLoading(true)
-                const employee = await employeeService.getById(Number(id))
+                const employee = await employeeService.getById(id)
                 reset({
                     document: String(employee.document),
                     fullName: employee.fullName,
@@ -94,7 +94,7 @@ export default function EditEmployee() {
     const onSubmit = async (data: EmployeeFormValues) => {
         if (!id) return
         try {
-            await employeeService.update(Number(id), {
+            await employeeService.update(id, {
                 document: data.document,
                 fullName: capitalizeWords(data.fullName.trim()),
                 phone: data.phone,
@@ -112,7 +112,7 @@ export default function EditEmployee() {
         if (!id) return
         try {
             setDeleting(true)
-            await employeeService.delete(Number(id))
+            await employeeService.delete(id)
             setSuccess("Empleado eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {

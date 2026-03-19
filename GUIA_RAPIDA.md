@@ -1,13 +1,13 @@
-# 🚀 Guía de Inicio Rápido - Frontend (Docker)
+# Guía de Inicio Rápido - Frontend (Docker)
 
 Esta guía permite levantar el frontend de **Messenger** de forma profesional utilizando Docker.
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 - **Docker Desktop** instalado y en ejecución.
 - El **Backend** debe estar configurado (se recomienda usar el `docker-compose.local.yml` de la carpeta raíz).
 
-## 🛠 Ejecución con Docker
+## Ejecución con Docker
 
 ### 1. Como parte del sistema completo (Recomendado)
 Para levantar todo el ecosistema (Frontend + Backend + DB), navega a la carpeta raíz del backend y ejecuta:

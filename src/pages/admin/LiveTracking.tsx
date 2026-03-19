@@ -86,14 +86,14 @@ export default function LiveTracking() {
 
                 // Si está activo, usar datos activos
                 if (activeMap.has(emp.idEmployee)) {
-                    return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName }
+                    return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName, messengerUuid: emp.uuid }
                 }
 
                 // Si está offline, intentar obtener última ubicación
                 try {
-                    const lastLoc = await trackingApiService.getLastLocation(emp.idEmployee)
+                    const lastLoc = await trackingApiService.getLastLocation(emp.uuid)
                     if (lastLoc) {
-                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName }
+                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName, messengerUuid: emp.uuid }
                     }
                 } catch (e) {
                     if (isAxiosError(e) && e.response?.status !== 404) {
@@ -104,6 +104,7 @@ export default function LiveTracking() {
                 // Estructura offline por defecto sin ubicación
                 return {
                     messengerId: emp.idEmployee,
+                    messengerUuid: emp.uuid,
                     messengerName: formattedName,
                     latitude: 0,
                     longitude: 0,
@@ -322,7 +323,7 @@ export default function LiveTracking() {
 
             <MessengerSidePanel
                 messenger={selectedMessenger}
-                messengerId={selectedMessenger?.messengerId || null}
+                messengerUuid={selectedMessenger?.messengerUuid || null}
                 isOpen={showMessengerDetails}
                 onClose={deselectMessenger}
                 onFollow={toggleFollow}

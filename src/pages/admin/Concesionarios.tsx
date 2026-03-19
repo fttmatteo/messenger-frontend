@@ -261,7 +261,7 @@ export default function Concesionarios() {
                                                     layout
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.idDealership}`)}
+                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.uuid}`)}
                                                 >
                                                     <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
                                                     <TableCell className="max-w-xs text-sm">
