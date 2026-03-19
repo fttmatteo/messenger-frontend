@@ -12,7 +12,7 @@ vi.mock('../api-client', () => ({
 }));
 
 describe('employeeService', () => {
-    const mockEmployee = { idEmployee: 1, fullName: 'Employee 1', document: 12345 };
+    const mockEmployee = { idEmployee: 1, uuid: 'employee-uuid-1', fullName: 'Employee 1', document: 12345 };
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -27,7 +27,7 @@ describe('employeeService', () => {
 
     it('getById should return one', async () => {
         vi.mocked(apiClient.get).mockResolvedValue({ data: mockEmployee });
-        const result = await employeeService.getById(1);
+        const result = await employeeService.getById('1');
         expect(result).toEqual(mockEmployee);
         expect(apiClient.get).toHaveBeenCalledWith('/employees/findByEmployeeId/1');
     });
@@ -47,7 +47,7 @@ describe('employeeService', () => {
 
     it('update should call API', async () => {
         vi.mocked(apiClient.put).mockResolvedValue({ data: mockEmployee });
-        const result = await employeeService.update(1, {
+        const result = await employeeService.update('1', {
             fullName: 'Updated',
             document: '123',
             phone: '123',
@@ -60,7 +60,7 @@ describe('employeeService', () => {
 
     it('delete should call API', async () => {
         vi.mocked(apiClient.delete).mockResolvedValue({});
-        await employeeService.delete(1);
+        await employeeService.delete('1');
         expect(apiClient.delete).toHaveBeenCalledWith('/employees/deleteEmployee/1');
     });
 });

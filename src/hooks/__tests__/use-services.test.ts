@@ -20,8 +20,9 @@ import type { ServiceDelivery } from "@/types/service.types"
 
 const mockService: ServiceDelivery = {
     idServiceDelivery: 1,
+    uuid: 'service-uuid-1',
     plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
-    dealership: { idDealership: 1, name: 'Test', address: 'Add', phone: '123', zone: 'Z' },
+    dealership: { idDealership: 1, uuid: 'dealer-uuid-1', name: 'Test', address: 'Add', phone: '123', zone: 'Z' },
     currentStatus: 'PENDING',
     photos: [],
     history: [],

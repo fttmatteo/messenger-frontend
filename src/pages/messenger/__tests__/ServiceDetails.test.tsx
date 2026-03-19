@@ -41,10 +41,12 @@ vi.mock('@/services/service.service', () => ({
 describe('ServiceDetails Page Integration', () => {
     const mockService: ServiceDelivery = {
         idServiceDelivery: 1,
+        uuid: 'service-uuid-1',
         currentStatus: 'ASSIGNED',
         plate: { plateNumber: 'XYZ-789', plateType: 'MOTORCYCLE', idPlate: 123 },
         dealership: {
             idDealership: 1,
+            uuid: 'dealer-uuid-1',
             name: 'Main Dealership',
             address: '123 Main St',
             phone: '555-0199',

@@ -12,7 +12,7 @@ vi.mock('../api-client', () => ({
 }));
 
 describe('dealershipService', () => {
-    const mockDealership = { idDealership: 1, name: 'Dealership 1', address: 'Address 1' };
+    const mockDealership = { idDealership: 1, uuid: 'dealer-uuid-1', name: 'Dealership 1', address: 'Address 1' };
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -27,7 +27,7 @@ describe('dealershipService', () => {
 
     it('getById should return one', async () => {
         vi.mocked(apiClient.get).mockResolvedValue({ data: mockDealership });
-        const result = await dealershipService.getById(1);
+        const result = await dealershipService.getById('1');
         expect(result).toEqual(mockDealership);
         expect(apiClient.get).toHaveBeenCalledWith('/dealerships/findByDealershipId/1');
     });
@@ -41,20 +41,20 @@ describe('dealershipService', () => {
 
     it('update should call API', async () => {
         vi.mocked(apiClient.put).mockResolvedValue({ data: mockDealership });
-        const result = await dealershipService.update(1, { name: 'Updated', address: 'Add', phone: '123', zone: 'Z1' });
+        const result = await dealershipService.update('1', { name: 'Updated', address: 'Add', phone: '123', zone: 'Z1' });
         expect(result).toEqual(mockDealership);
         expect(apiClient.put).toHaveBeenCalledWith('/dealerships/updateDealership/1', expect.anything());
     });
 
     it('delete should call API', async () => {
         vi.mocked(apiClient.delete).mockResolvedValue({});
-        await dealershipService.delete(1);
+        await dealershipService.delete('1');
         expect(apiClient.delete).toHaveBeenCalledWith('/dealerships/deleteDealership/1');
     });
 
     it('geocode should call API', async () => {
         vi.mocked(apiClient.post).mockResolvedValue({ data: mockDealership });
-        const result = await dealershipService.geocode(1);
+        const result = await dealershipService.geocode('1');
         expect(result).toEqual(mockDealership);
         expect(apiClient.post).toHaveBeenCalledWith('/dealerships/geocodeDealership/1');
     });
