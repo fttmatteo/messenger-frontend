@@ -48,7 +48,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     )
                 }
 
-                await serviceDeliveryService.updateStatus(payload.serviceId, {
+                await serviceDeliveryService.updateStatus(payload.uuid, {
                     status: payload.status as ServiceStatus,
                     observation: payload.observation,
                     signature,
@@ -58,7 +58,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     longitude: payload.longitude,
                 })
 
-                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { serviceId: payload.serviceId })
+                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { uuid: payload.uuid })
                 return true
             } catch (error) {
                 logger.error('Error al sincronizar UPDATE_STATUS_WITH_FILES', error)

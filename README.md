@@ -289,6 +289,7 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | **Input Validation** | All user inputs validated with Zod schemas |
 | **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
 | **Rate Limiting** | Client-side handling of 429 errors from the backend |
+| **Public UUIDs** | Use of UUID v4 for all entity references to prevent ID enumeration and improve offline sync |
 
 ---
 

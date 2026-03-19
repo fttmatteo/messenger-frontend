@@ -13,7 +13,7 @@ import { useState } from "react"
 interface DeletedServiceCardProps {
     service: ServiceDelivery
     isRestoring: boolean
-    onRestore: (id: number) => void
+    onRestore: (uuid: string) => void
     itemVariants: Variants
 }
 
@@ -74,7 +74,7 @@ export function DeletedServiceCard({ service, isRestoring, onRestore, itemVarian
                 isOpen={isRestoreDialogOpen}
                 onOpenChange={setIsRestoreDialogOpen}
                 onConfirm={() => {
-                    onRestore(service.idServiceDelivery)
+                    onRestore(service.uuid)
                     setIsRestoreDialogOpen(false)
                 }}
                 plateNumber={service.plate.plateNumber}
@@ -86,8 +86,8 @@ export function DeletedServiceCard({ service, isRestoring, onRestore, itemVarian
 
 interface DeletedServiceListProps {
     services: ServiceDelivery[]
-    restoringId: number | null
-    onRestore: (id: number) => void
+    restoringId: string | null
+    onRestore: (uuid: string) => void
     itemVariants: Variants
 }
 
@@ -102,7 +102,7 @@ export function DeletedServiceList({ services, restoringId, onRestore, itemVaria
                     <DeletedServiceCard
                         key={service.idServiceDelivery}
                         service={service}
-                        isRestoring={restoringId === service.idServiceDelivery}
+                        isRestoring={restoringId === service.uuid}
                         onRestore={onRestore}
                         itemVariants={itemVariants}
                     />

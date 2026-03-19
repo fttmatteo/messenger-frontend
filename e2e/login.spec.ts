@@ -19,6 +19,9 @@ test.describe('Login E2E Flow', () => {
         /* eslint-enable @typescript-eslint/no-explicit-any */
 
         await page.goto('/login');
+        await page.route('**/auth/ws-token', async route => {
+            await route.fulfill({ json: { token: 'mock-ws-token' } });
+        });
     });
 
     test('should show validation errors on empty submission', async ({ page }) => {
@@ -51,7 +54,7 @@ test.describe('Login E2E Flow', () => {
             const json = {
                 role: 'ADMIN',
                 message: 'Login exitoso',
-                user: { id: 1, document: 12345678, role: 'ADMIN', fullName: 'Test Admin' }
+                user: { id: 1, uuid: 'uadmin-1', document: 12345678, role: 'ADMIN', fullName: 'Test Admin' }
             };
             await route.fulfill({ json });
         });

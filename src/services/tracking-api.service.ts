@@ -19,11 +19,11 @@ export const trackingApiService = {
 
     /**
      * Recupera el historial de ubicaciones de un mensajero para una fecha específica.
-     * @param messengerId - ID del mensajero.
+     * @param messengerUuid - UUID del mensajero.
      * @param date - Fecha de consulta (formato YYYY-MM-DD).
      */
-    getHistory: async (messengerId: number, date: string) => {
-        const response = await apiClient.get(`/tracking/history/${messengerId}`, {
+    getHistory: async (messengerUuid: string, date: string) => {
+        const response = await apiClient.get(`/tracking/history/${messengerUuid}`, {
             params: { date }
         });
         return response.data;
@@ -31,19 +31,19 @@ export const trackingApiService = {
 
     /**
      * Obtiene la última ubicación registrada de un mensajero específico.
-     * @param messengerId - ID del mensajero.
+     * @param messengerUuid - UUID del mensajero.
      */
-    getLastLocation: async (messengerId: number): Promise<LiveTrackingUpdate | null> => {
-        const response = await apiClient.get<LiveTrackingUpdate | null>(`/tracking/messenger/${messengerId}`);
+    getLastLocation: async (messengerUuid: string): Promise<LiveTrackingUpdate | null> => {
+        const response = await apiClient.get<LiveTrackingUpdate | null>(`/tracking/messenger/${messengerUuid}`);
         return response.data;
     },
 
     /**
      * Obtiene el historial de ubicaciones asociadas a un servicio de entrega concreto.
-     * @param serviceId - ID del servicio.
+     * @param serviceUuid - UUID del servicio.
      */
-    getHistoryByService: async (serviceId: number) => {
-        const response = await apiClient.get(`/tracking/service/${serviceId}`);
+    getHistoryByService: async (serviceUuid: string) => {
+        const response = await apiClient.get(`/tracking/service/${serviceUuid}`);
         return response.data;
     }
 };

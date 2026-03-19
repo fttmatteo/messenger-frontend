@@ -289,6 +289,7 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 | **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod |
 | **Protección contra Bots** | Cloudflare Turnstile integrado en todos los flujos de login |
 | **Rate Limiting** | Manejo del lado del cliente de errores 429 desde el backend |
+| **UUIDs Públicos** | Uso de UUID v4 para todas las referencias de entidades para prevenir enumeración de IDs y mejorar la sincronización offline |
 
 ---
 

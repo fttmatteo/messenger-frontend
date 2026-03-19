@@ -63,7 +63,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
     const handleUpdateStatus = async () => {
         try {
             setUpdating(true)
-            await serviceDeliveryService.updateStatus(service.idServiceDelivery, {
+            await serviceDeliveryService.updateStatus(service.uuid, {
                 status: newStatus,
                 observation: observation || undefined,
             })
@@ -84,7 +84,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
         try {
             setReassigning(true)
             await serviceDeliveryService.reassign(
-                service.idServiceDelivery,
+                service.uuid,
                 Number(selectedMessenger)
             )
 

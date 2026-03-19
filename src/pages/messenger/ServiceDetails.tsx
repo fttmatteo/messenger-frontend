@@ -40,7 +40,7 @@ export default function ServiceDetails() {
             try {
                 setLoading(true)
                 setError(null)
-                const data = await serviceDeliveryService.getById(Number(id))
+                const data = await serviceDeliveryService.getById(id)
                 setService(data)
             } catch (error) {
                 const message = getErrorMessage(error)

@@ -16,11 +16,11 @@ export const dealershipService = {
     },
 
     /**
-     * Obtiene la información detallada de un concesionario por su ID.
-     * @param id - ID único del concesionario.
+     * Obtiene la información detallada de un concesionario por su UUID.
+     * @param uuid - UUID público del concesionario.
      */
-    async getById(id: number): Promise<Dealership> {
-        const response = await apiClient.get(`/dealerships/findByDealershipId/${id}`)
+    async getById(uuid: string): Promise<Dealership> {
+        const response = await apiClient.get(`/dealerships/findByDealershipId/${uuid}`)
         return response.data
     },
 
@@ -35,28 +35,28 @@ export const dealershipService = {
 
     /**
      * Actualiza la información de un concesionario existente.
-     * @param id - ID único del concesionario a actualizar.
+     * @param uuid - UUID público del concesionario a actualizar.
      * @param data - Nuevos datos para el concesionario.
      */
-    async update(id: number, data: UpdateDealershipRequest): Promise<Dealership> {
-        const response = await apiClient.put(`/dealerships/updateDealership/${id}`, data)
+    async update(uuid: string, data: UpdateDealershipRequest): Promise<Dealership> {
+        const response = await apiClient.put(`/dealerships/updateDealership/${uuid}`, data)
         return response.data
     },
 
     /**
      * Elimina (lógicamente) un concesionario del sistema.
-     * @param id - ID único del concesionario a eliminar.
+     * @param uuid - UUID público del concesionario a eliminar.
      */
-    async delete(id: number): Promise<void> {
-        await apiClient.delete(`/dealerships/deleteDealership/${id}`)
+    async delete(uuid: string): Promise<void> {
+        await apiClient.delete(`/dealerships/deleteDealership/${uuid}`)
     },
 
     /**
      * Ejecuta el proceso de geocodificación para obtener coordenadas GPS a partir de la dirección.
-     * @param id - ID único del concesionario a geocodificar.
+     * @param uuid - UUID público del concesionario a geocodificar.
      */
-    async geocode(id: number): Promise<Dealership> {
-        const response = await apiClient.post(`/dealerships/geocodeDealership/${id}`)
+    async geocode(uuid: string): Promise<Dealership> {
+        const response = await apiClient.post(`/dealerships/geocodeDealership/${uuid}`)
         return response.data
     },
 }

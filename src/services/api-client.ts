@@ -153,4 +153,13 @@ apiClient.interceptors.response.use(
     }
 )
 
+/**
+ * Solo para propósitos de test: permite resetear el estado interno de renovación.
+ * @internal
+ */
+export const _resetState = () => {
+    isRefreshing = false
+    failedQueue = []
+}
+
 export default apiClient

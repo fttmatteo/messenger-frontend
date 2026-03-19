@@ -39,9 +39,11 @@ describe('Servicios Admin Page Integration', () => {
                     content: [
                         {
                             idServiceDelivery: 1,
+                            uuid: '550e8400-e29b-41d4-a716-446655440000',
                             plate: { idPlate: 101, plateNumber: 'ADM-001', plateType: 'CAR' },
                             dealership: {
                                 idDealership: 201,
+                                uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',
                                 name: 'Dealership-Alpha',
                                 address: '123 Main',
                                 phone: '555-1111',
@@ -49,6 +51,7 @@ describe('Servicios Admin Page Integration', () => {
                             },
                             messenger: {
                                 idEmployee: 301,
+                                uuid: '899a6317-8bbc-4d96-81b0-c586041f0945',
                                 document: 9001,
                                 fullName: 'Messenger-Beta',
                                 phone: '555-2222',

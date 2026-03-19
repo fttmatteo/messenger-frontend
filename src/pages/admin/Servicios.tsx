@@ -198,7 +198,7 @@ export default function Servicios() {
                                                     exit="exit"
                                                     layout
                                                     custom={index}
-                                                    onClick={() => navigate(`/admin/servicios/${service.idServiceDelivery}`)}
+                                                    onClick={() => navigate(`/admin/servicios/${service.uuid}`)}
                                                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                                                 >
                                                     <TableCell>

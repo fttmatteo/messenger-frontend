@@ -47,12 +47,12 @@ class ServiceDeliveryService {
     }
 
     /**
-     * Obtiene los detalles de un servicio específico por su ID.
+     * Obtiene los detalles de un servicio específico por su UUID.
      * Verifica permisos de propiedad si el usuario es un mensajero.
-     * @param id - ID único del servicio.
+     * @param uuid - UUID público del servicio.
      */
-    async getById(id: number): Promise<ServiceDelivery> {
-        const response = await apiClient.get(`/services/findByServiceId/${id}`)
+    async getById(uuid: string): Promise<ServiceDelivery> {
+        const response = await apiClient.get(`/services/findByServiceId/${uuid}`)
         return ServiceDeliverySchema.parse(response.data)
     }
 
@@ -102,11 +102,10 @@ class ServiceDeliveryService {
 
     /**
      * Actualiza el estado de un servicio capturando evidencias obligatorias.
-     * Maneja el envío de firmas (imágenes y GIF), fotos y observaciones como FormData.
-     * @param id - ID del servicio a actualizar.
+     * @param uuid - UUID del servicio a actualizar.
      * @param request - Información del nuevo estado y archivos de respaldo.
      */
-    async updateStatus(id: number, request: UpdateServiceStatusRequest): Promise<ServiceDelivery> {
+    async updateStatus(uuid: string, request: UpdateServiceStatusRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
         formData.append('status', request.status)
 
@@ -136,15 +135,15 @@ class ServiceDeliveryService {
             formData.append('longitude', request.longitude.toString())
         }
 
-        const response = await apiClient.put(`/services/updateService/${id}`, formData)
+        const response = await apiClient.put(`/services/updateService/${uuid}`, formData)
         return ServiceDeliverySchema.parse(response.data)
     }
 
     /**
      * Eliminar servicio (solo admin)
      */
-    async delete(id: number): Promise<void> {
-        await apiClient.delete(`/services/deleteService/${id}`)
+    async delete(uuid: string): Promise<void> {
+        await apiClient.delete(`/services/deleteService/${uuid}`)
     }
 
     /**
@@ -158,10 +157,10 @@ class ServiceDeliveryService {
 
     /**
      * Restaura un servicio previamente eliminado de la papelera.
-     * @param id - ID del servicio a restaurar.
+     * @param uuid - UUID del servicio a restaurar.
      */
-    async restore(id: number): Promise<ServiceDelivery> {
-        const response = await apiClient.post(`/services/trash/restore/${id}`)
+    async restore(uuid: string): Promise<ServiceDelivery> {
+        const response = await apiClient.post(`/services/trash/restore/${uuid}`)
         return ServiceDeliverySchema.parse(response.data)
     }
 
@@ -176,8 +175,8 @@ class ServiceDeliveryService {
     /**
      * Eliminar permanentemente un solo servicio de la papelera - Solo Admin
      */
-    async permanentDelete(id: number): Promise<{ message: string }> {
-        const response = await apiClient.delete(`/services/trash/${id}`)
+    async permanentDelete(uuid: string): Promise<{ message: string }> {
+        const response = await apiClient.delete(`/services/trash/${uuid}`)
         return response.data
     }
 
@@ -185,8 +184,8 @@ class ServiceDeliveryService {
      * Reasignar un servicio a otro mensajero - Solo Admin
      * Solo se permite cuando el servicio está en estado CANCELED
      */
-    async reassign(id: number, messengerId: number): Promise<ServiceDelivery> {
-        const response = await apiClient.put(`/services/reassign/${id}`, { messengerId })
+    async reassign(uuid: string, messengerId: number): Promise<ServiceDelivery> {
+        const response = await apiClient.put(`/services/reassign/${uuid}`, { messengerId })
         return ServiceDeliverySchema.parse(response.data)
     }
 

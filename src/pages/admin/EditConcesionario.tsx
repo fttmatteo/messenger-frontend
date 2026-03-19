@@ -107,7 +107,7 @@ export default function EditConcesionario() {
             if (!id) return
             try {
                 setLoading(true)
-                const dealership = await dealershipService.getById(Number(id))
+                const dealership = await dealershipService.getById(id)
                 reset({
                     name: dealership.name,
                     address: dealership.address,
@@ -134,7 +134,7 @@ export default function EditConcesionario() {
     const onSubmit = async (data: DealershipFormValues) => {
         if (!id) return
         try {
-            await dealershipService.update(Number(id), {
+            await dealershipService.update(id, {
                 name: capitalizeWords(data.name.trim()),
                 address: capitalizeWords(data.address.trim()),
                 phone: data.phone,
@@ -160,7 +160,7 @@ export default function EditConcesionario() {
         try {
             setGeocoding(true)
             // Primero guardar
-            await dealershipService.update(Number(id), {
+            await dealershipService.update(id, {
                 name: capitalizeWords(data.name.trim()),
                 address: capitalizeWords(data.address.trim()),
                 phone: data.phone,
@@ -168,7 +168,7 @@ export default function EditConcesionario() {
                 whatsappPin: data.whatsappPin,
             })
             // Luego geocodificar
-            const result = await dealershipService.geocode(Number(id))
+            const result = await dealershipService.geocode(id)
             setGeocoded(true)
             setCoordinates({
                 lat: result.latitude,
@@ -187,7 +187,7 @@ export default function EditConcesionario() {
         if (!id) return
         try {
             setDeleting(true)
-            await dealershipService.delete(Number(id))
+            await dealershipService.delete(id)
             setSuccess("Concesionario eliminado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error) {

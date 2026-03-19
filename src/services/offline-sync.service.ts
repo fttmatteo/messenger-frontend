@@ -30,7 +30,7 @@ export interface OfflineAction {
  * Los archivos se almacenan como cadenas base64 para compatibilidad con IndexedDB.
  */
 export interface UpdateStatusWithFilesPayload {
-    serviceId: number
+    uuid: string
     status: string
     observation?: string
     signatureBase64?: string

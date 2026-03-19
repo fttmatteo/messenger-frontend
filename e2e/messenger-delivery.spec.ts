@@ -14,6 +14,7 @@ test.describe('Messenger Delivery Execution', () => {
                 document: 456,
                 role: 'MESSENGER',
                 id: 2,
+                uuid: 'm2',
                 name: 'E2E Messenger',
                 isOnline: true
             };
@@ -45,9 +46,11 @@ test.describe('Messenger Delivery Execution', () => {
                 json: {
                     content: [{
                         idServiceDelivery: 101,
+                        uuid: 's101',
                         plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
                         dealership: {
                             idDealership: 1,
+                            uuid: 'd1',
                             name: 'E2E Dealership',
                             address: 'Av. Principal 45',
                             phone: '1234567',
@@ -73,14 +76,19 @@ test.describe('Messenger Delivery Execution', () => {
                 json: { message: 'Status updated' }
             });
         });
+        await page.route('**/auth/ws-token', async route => {
+            await route.fulfill({ json: { token: 'mock-ws-token' } });
+        });
 
         await page.route('**/services/findByServiceId/**', async route => {
             await route.fulfill({
                 json: {
                     idServiceDelivery: 101,
+                    uuid: 's101',
                     plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
                     dealership: {
                         idDealership: 1,
+                        uuid: 'd1',
                         name: 'E2E Dealership',
                         address: 'Av. Principal 45',
                         phone: '1234567',
@@ -93,7 +101,7 @@ test.describe('Messenger Delivery Execution', () => {
             });
         });
 
-        await page.route('**/services/updateService/101', async route => {
+        await page.route('**/services/updateService/s101', async route => {
             await route.fulfill({ json: { success: true } });
         });
 
@@ -108,12 +116,12 @@ test.describe('Messenger Delivery Execution', () => {
         await expect(serviceItem).toBeVisible({ timeout: 20000 });
         await serviceItem.click();
 
-        await expect(page).toHaveURL(/.*servicio\/101/, { timeout: 20000 });
+        await expect(page).toHaveURL(/.*servicio\/s101/, { timeout: 20000 });
 
         const updateBtn = page.getByRole('button', { name: /actualizar/i }).first();
         await updateBtn.click();
 
-        await expect(page).toHaveURL(/.*servicio\/101\/actualizar/, { timeout: 20000 });
+        await expect(page).toHaveURL(/.*servicio\/s101\/actualizar/, { timeout: 20000 });
 
         await page.getByText(/entregado/i).first().click();
 

@@ -41,8 +41,8 @@ export default function Eliminados() {
     const { setSuccess, setError } = useAdminUI()
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
-    const [restoring, setRestoring] = useState<number | null>(null)
-    const [deleting, setDeleting] = useState<number | null>(null)
+    const [restoring, setRestoring] = useState<string | null>(null)
+    const [deleting, setDeleting] = useState<string | null>(null)
     const [emptying, setEmptying] = useState(false)
     const [isEmptyTrashDialogOpen, setIsEmptyTrashDialogOpen] = useState(false)
 
@@ -62,10 +62,10 @@ export default function Eliminados() {
         fetchDeletedServices()
     }, [fetchDeletedServices])
 
-    const handleRestore = async (id: number) => {
+    const handleRestore = async (uuid: string) => {
         try {
-            setRestoring(id)
-            await serviceDeliveryService.restore(id)
+            setRestoring(uuid)
+            await serviceDeliveryService.restore(uuid)
             setSuccess("Servicio restaurado correctamente")
             fetchDeletedServices()
         } catch (error) {
@@ -89,12 +89,12 @@ export default function Eliminados() {
         }
     }
 
-    const handlePermanentDelete = async (id: number) => {
+    const handlePermanentDelete = async (uuid: string) => {
         try {
-            setDeleting(id)
-            await serviceDeliveryService.permanentDelete(id)
+            setDeleting(uuid)
+            await serviceDeliveryService.permanentDelete(uuid)
             setSuccess("Servicio eliminado permanentemente")
-            setServices(prev => prev.filter(s => s.idServiceDelivery !== id))
+            setServices(prev => prev.filter(s => s.uuid !== uuid))
         } catch (error) {
             setError(getErrorMessage(error))
         } finally {

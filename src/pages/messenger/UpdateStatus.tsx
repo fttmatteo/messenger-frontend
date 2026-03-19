@@ -92,7 +92,7 @@ export default function UpdateStatus() {
 
             try {
                 setLoading(true)
-                const data = await serviceDeliveryService.getById(Number(id))
+                const data = await serviceDeliveryService.getById(id)
                 setService(data)
             } catch (error) {
                 const message = getErrorMessage(error)
@@ -183,7 +183,7 @@ export default function UpdateStatus() {
             if (!isOnline) {
                 // Convertir archivos a base64 para almacenamiento en IndexedDB
                 const payload: UpdateStatusWithFilesPayload = {
-                    serviceId: Number(id),
+                    uuid: id,
                     status: selectedStatus,
                     observation: observation.trim() || undefined,
                     signatureBase64: signatureFile ? await fileToBase64(signatureFile) : undefined,
@@ -197,7 +197,7 @@ export default function UpdateStatus() {
                     optimisticUpdate: async () => {
                         const cachedServices = await offlineCacheService.getCachedServices()
                         const updatedServices = cachedServices.map((s: ServiceDelivery) =>
-                            s.idServiceDelivery === Number(id) ? { ...s, currentStatus: selectedStatus } : s
+                            s.uuid === id ? { ...s, currentStatus: selectedStatus } : s
                         )
                         await offlineCacheService.cacheServices(updatedServices)
                     }
@@ -213,7 +213,7 @@ export default function UpdateStatus() {
                 return
             }
 
-            await serviceDeliveryService.updateStatus(Number(id), {
+            await serviceDeliveryService.updateStatus(id, {
                 status: selectedStatus as ServiceStatus,
                 observation: observation.trim() || undefined,
                 signature: signatureFile,

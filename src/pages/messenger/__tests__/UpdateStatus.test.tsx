@@ -104,10 +104,12 @@ describe('UpdateStatus Page Integration', () => {
             http.get('http://localhost:8080/services/findByServiceId/123', () => {
                 return HttpResponse.json({
                     idServiceDelivery: 123,
+                    uuid: '550e8400-e29b-41d4-a716-446655440000',
                     currentStatus: 'PENDING',
                     plate: { idPlate: 1, plateNumber: 'ABC-123', plateType: 'CAR' },
                     dealership: {
                         idDealership: 10,
+                        uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',
                         name: 'Test Dealership',
                         address: '123 Main St',
                         phone: '555-0000',
@@ -155,7 +157,7 @@ describe('UpdateStatus Page Integration', () => {
         await userEvent.click(finalConfirm)
 
         await waitFor(() => {
-            expect(updateSpy).toHaveBeenCalledWith(123, expect.objectContaining({
+            expect(updateSpy).toHaveBeenCalledWith('123', expect.objectContaining({
                 status: 'DELIVERED',
                 signature: expect.any(File),
                 signatureGif: expect.any(File)
@@ -187,6 +189,7 @@ describe('UpdateStatus Page Integration', () => {
 
         await waitFor(() => {
             expect(queueSpy).toHaveBeenCalledWith('UPDATE_STATUS_WITH_FILES', expect.objectContaining({
+                uuid: '123',
                 status: 'DELIVERED',
                 signatureBase64: expect.any(String)
             }), expect.any(Object))

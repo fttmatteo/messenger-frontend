@@ -27,7 +27,7 @@ import {
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
-    messengerId: number | null
+    messengerUuid: string | null
     isOpen: boolean
     onClose: () => void
     onFollow: (id: number) => void
@@ -45,7 +45,7 @@ interface MessengerSidePanelProps {
  */
 export function MessengerSidePanel({
     messenger,
-    messengerId,
+    messengerUuid,
     isOpen,
     onClose,
     onFollow,
@@ -63,25 +63,25 @@ export function MessengerSidePanel({
 
 
     const fetchDetails = useCallback(async () => {
-        if (!messengerId) return
+        if (!messengerUuid) return
 
         try {
-            const emp = await employeeService.getById(messengerId)
+            const emp = await employeeService.getById(messengerUuid)
             setEmployee(emp)
         } catch (error) {
             logger.error("Error fetching messenger details in MessengerSidePanel:", error)
         }
-    }, [messengerId])
+    }, [messengerUuid])
 
     const fetchActivity = useCallback(async () => {
-        if (!messengerId) return
+        if (!messengerUuid) return
 
         try {
             setLoadingHistory(true)
             setHistoryError(null)
 
             const { monitoringService } = await import('@/services/monitoring.service')
-            const response = await monitoringService.getMessengerActivity(messengerId, selectedDate)
+            const response = await monitoringService.getMessengerActivity(messengerUuid, selectedDate)
 
             setDailyStats({
                 date: format(selectedDate, 'yyyy-MM-dd'),
@@ -128,26 +128,26 @@ export function MessengerSidePanel({
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerId, selectedDate, colors])
+    }, [messengerUuid, selectedDate, colors])
 
     useEffect(() => {
-        if (isOpen && messengerId) {
+        if (isOpen && messengerUuid) {
             fetchDetails()
         }
-    }, [isOpen, messengerId, fetchDetails])
+    }, [isOpen, messengerUuid, fetchDetails])
 
     useEffect(() => {
-        if (isOpen && messengerId) {
+        if (isOpen && messengerUuid) {
             fetchActivity()
         }
-    }, [isOpen, messengerId, selectedDate, fetchActivity])
+    }, [isOpen, messengerUuid, selectedDate, fetchActivity])
 
     useEffect(() => {
-        if (messengerId) {
+        if (messengerUuid) {
             setHistory([])
             setEmployee(null)
         }
-    }, [messengerId])
+    }, [messengerUuid])
 
     const safeFormatDistanceToNow = (dateString: string | undefined) => {
         if (!dateString) return 'Sin registro'
@@ -205,7 +205,7 @@ export function MessengerSidePanel({
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => messengerId && onFollow(messengerId)}
+                            onClick={() => messenger?.messengerId && onFollow(messenger.messengerId)}
                             className={cn(
                                 "h-8 w-8 rounded-full border transition-all duration-200",
                                 isFollowing

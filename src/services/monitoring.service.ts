@@ -40,12 +40,12 @@ export interface MessengerActivityResponse {
 class MonitoringService {
     /**
      * Obtiene el resumen de actividad y estadísticas de un mensajero para una fecha determinada.
-     * @param messengerId - ID único del mensajero.
+     * @param messengerUuid - UUID público del mensajero.
      * @param date - Fecha para la cual se desea consultar la actividad.
      */
-    async getMessengerActivity(messengerId: number, date: Date): Promise<MessengerActivityResponse> {
+    async getMessengerActivity(messengerUuid: string, date: Date): Promise<MessengerActivityResponse> {
         const dateStr = format(date, 'yyyy-MM-dd')
-        const response = await apiClient.get(`/monitoring/messenger/${messengerId}/activity`, {
+        const response = await apiClient.get(`/monitoring/messenger/${messengerUuid}/activity`, {
             params: { date: dateStr }
         })
         return response.data
