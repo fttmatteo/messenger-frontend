@@ -1,0 +1,16 @@
+node_modules
+dist
+dev-dist
+coverage
+.git
+.github
+.vscode
+android
+*.md
+docs
+.env
+.env.*
+!.env.example
+stats.html
+e2e
+.gitignore

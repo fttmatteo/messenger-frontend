@@ -102,8 +102,6 @@ class TrackingService {
      * Evita que todos los clientes reconecten al mismo tiempo (thundering herd).
      */
     private calculateReconnectDelay(): number {
-        this.reconnectAttempt++;
-
         // Exponencial: 2s, 4s, 8s, 16s, 32s, 60s (cap)
         const baseDelay = Math.min(
             INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempt - 1),
