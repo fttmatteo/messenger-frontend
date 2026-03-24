@@ -10,7 +10,7 @@ import { useAdminUI } from "@/context/AdminUIContext"
 import { authService } from "@/services/auth.service"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { isMessengerOnline } from "@/lib/messenger-utils"
+import { isMessengerOnline, getLatestTimestamp } from "@/lib/messenger-utils"
 import { employeeService } from "@/services/employee.service"
 import { getErrorMessage, isAxiosError } from "@/lib/error-utils"
 import { MessengerSidePanel } from "./MessengerSidePanel"
@@ -78,15 +78,15 @@ export default function LiveTracking() {
 
             // 2. Obtener sesiones activas
             const activeMessengers = await trackingApiService.getActiveMessengers()
-            const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
+            const activeMap = new Map(activeMessengers.map(m => [Number(m.messengerId), m]))
 
             // 3. Fusionar datos
             const combinedRequests = messengerEmployees.map(async (emp) => {
                 const formattedName = formatDisplayName(emp.fullName)
 
                 // Si está activo, usar datos activos
-                if (activeMap.has(emp.idEmployee)) {
-                    return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName, messengerUuid: emp.uuid }
+                if (activeMap.has(Number(emp.idEmployee))) {
+                    return { ...activeMap.get(Number(emp.idEmployee))!, messengerName: formattedName, messengerUuid: emp.uuid }
                 }
 
                 // Si está offline, intentar obtener última ubicación
@@ -121,7 +121,7 @@ export default function LiveTracking() {
             // Actualizar mensajero seleccionado si existe en nuevos datos
             setSelectedMessenger(current => {
                 if (!current) return null
-                const refreshed = updatedMessengers.find(m => m.messengerId === current.messengerId)
+                const refreshed = updatedMessengers.find(m => Number(m.messengerId) === Number(current.messengerId))
                 return refreshed || current
             })
 
@@ -150,7 +150,7 @@ export default function LiveTracking() {
     // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
         setMessengers(prev => {
-            const existingIndex = prev.findIndex(m => m.messengerId === update.messengerId)
+            const existingIndex = prev.findIndex(m => Number(m.messengerId) === Number(update.messengerId))
 
             if (existingIndex >= 0) {
                 const updatedList = [...prev]
@@ -163,8 +163,8 @@ export default function LiveTracking() {
         })
 
         setSelectedMessenger(prev => {
-            if (prev?.messengerId === update.messengerId) {
-                return { ...prev, ...update, messengerName: prev.messengerName || update.messengerName }
+            if (Number(prev?.messengerId) === Number(update.messengerId)) {
+                return { ...prev, ...update, messengerName: prev?.messengerName || update.messengerName }
             }
             return prev
         })
@@ -173,7 +173,7 @@ export default function LiveTracking() {
         const currentFollowId = followingMessengerIdRef.current
         const currentMap = mapRef.current
 
-        if (currentFollowId === update.messengerId && isValidCoords(update.latitude, update.longitude) && currentMap) {
+        if (Number(currentFollowId) === Number(update.messengerId) && isValidCoords(update.latitude, update.longitude) && currentMap) {
             currentMap.panTo({ lat: update.latitude, lng: update.longitude })
         }
     }, []) // Sin dependencias inestables
@@ -239,7 +239,7 @@ export default function LiveTracking() {
             setFollowingMessengerId(null)
         } else {
             setFollowingMessengerId(messengerId)
-            const messenger = messengers.find(m => m.messengerId === messengerId)
+            const messenger = messengers.find(m => Number(m.messengerId) === Number(messengerId))
             if (messenger && isValidCoords(messenger.latitude, messenger.longitude) && map) {
                 map.panTo({ lat: messenger.latitude, lng: messenger.longitude })
             }
@@ -253,7 +253,7 @@ export default function LiveTracking() {
             .filter(m => isValidCoords(m.latitude, m.longitude))
             .map(m => ({
                 ...m,
-                isOnline: isMessengerOnline(m.status, m.lastHeartbeat || m.lastUpdate, 2, now)
+                isOnline: isMessengerOnline(m.status, getLatestTimestamp(m.lastHeartbeat, m.lastUpdate), 2, now)
             }))
     }, [messengers, now])
 
