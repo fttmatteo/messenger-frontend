@@ -43,6 +43,13 @@ vi.mock('@capacitor/core', () => ({
     })
 }))
 
+vi.mock('@capacitor/geolocation', () => ({
+    Geolocation: {
+        checkPermissions: vi.fn().mockResolvedValue({ location: 'granted' }),
+        requestPermissions: vi.fn().mockResolvedValue({ location: 'granted' })
+    }
+}))
+
 vi.mock('@/hooks/use-network', () => ({
     useNetwork: vi.fn().mockReturnValue({ isOnline: true, pendingActionsCount: 0 })
 }))
