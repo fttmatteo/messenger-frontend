@@ -20,6 +20,7 @@ import { openSupportEmail, APP_CONFIG } from "@/lib/app-config"
 import { cn } from "@/lib/utils"
 import { isNative } from "@/lib/capacitor"
 import { registerPlugin } from "@capacitor/core"
+import { Geolocation } from '@capacitor/geolocation'
 
 // Plugin nativo para Foreground Service de ubicación persistente (solo APK)
 interface LocationServicePlugin {
@@ -147,17 +148,34 @@ export default function MessengerLayout() {
                 const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
                 const authToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || '';
 
-                LocationService.startService({
-                    messengerId: userId,
-                    backendUrl: backendUrl,
-                    authCookie: `Bearer ${authToken}`
-                }).then(() => {
-                    logger.info('Servicio de ubicación nativo iniciado');
-                    watchIdRef.current = 'native-service';
-                }).catch((error) => {
-                    logger.error('Error iniciando servicio de ubicación nativo:', error);
-                    showToast.error('Error iniciando rastreo de ubicación');
-                });
+                const initializeNativeService = async () => {
+                    try {
+                        let permissions = await Geolocation.checkPermissions();
+                        if (permissions.location !== 'granted') {
+                            permissions = await Geolocation.requestPermissions();
+                        }
+
+                        if (permissions.location === 'granted') {
+                            await LocationService.startService({
+                                messengerId: Number(userId),
+                                backendUrl: backendUrl,
+                                authCookie: `Bearer ${authToken}`
+                            });
+                            logger.info('Servicio de ubicación nativo iniciado exitosamente');
+                            watchIdRef.current = 'native-service';
+                        } else {
+                            logger.warn('Permisos de GPS denegados por el usuario');
+                            showToast.error('La ubicación es obligatoria para trabajar. Cerrando sesión...', { id: 'messenger-location-native-required' });
+                            logout();
+                            navigate("/login");
+                        }
+                    } catch (error) {
+                        logger.error('Error iniciando servicio de ubicación nativo:', error);
+                        showToast.error('Error iniciando rastreo de ubicación');
+                    }
+                };
+
+                initializeNativeService();
 
             } else if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(
