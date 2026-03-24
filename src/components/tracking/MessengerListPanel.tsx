@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { isMessengerOnline } from "@/lib/messenger-utils"
+import { isMessengerOnline, getLatestTimestamp } from "@/lib/messenger-utils"
 import type { LiveTrackingUpdate } from "@/services/tracking.service"
 
 export interface MessengerListPanelProps {
@@ -71,7 +71,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                             {messengers.map((messenger) => {
                                 const lastUpdateDate = messenger.lastUpdate ? new Date(messenger.lastUpdate) : null
                                 const hasRecentUpdate = lastUpdateDate && (now - lastUpdateDate.getTime() < 60000)
-                                const isConnected = isMessengerOnline(messenger.status, messenger.lastHeartbeat || messenger.lastUpdate, 2)
+                                const isConnected = isMessengerOnline(messenger.status, getLatestTimestamp(messenger.lastHeartbeat, messenger.lastUpdate), 2)
                                 const hasGps = isMessengerOnline(messenger.status, messenger.lastUpdate, 2)
 
                                 return (

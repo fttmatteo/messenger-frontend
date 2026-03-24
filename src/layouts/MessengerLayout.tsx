@@ -46,7 +46,13 @@ export default function MessengerLayout() {
     const isOnline = user?.isOnline || false
     const watchIdRef = useRef<number | string | null>(null)
     const { isOnline: isNetworkOnline, pendingActionsCount } = useNetwork()
+    const lastKnownUserIdRef = useRef<number | string | null>(user?.id || user?.document || null)
 
+    useEffect(() => {
+        if (user?.id || user?.document) {
+            lastKnownUserIdRef.current = user?.id || user?.document || null
+        }
+    }, [user?.id, user?.document])
 
     const mainRef = useRef<HTMLElement>(null)
     const isMobile = useIsMobile()
@@ -250,10 +256,10 @@ export default function MessengerLayout() {
                 watchIdRef.current = null
             }
 
-            const userId = user?.id || user?.document
+            const userId = user?.id || user?.document || lastKnownUserIdRef.current
             if (userId) {
                 trackingService.sendUpdate({
-                    messengerId: userId,
+                    messengerId: Number(userId),
                     status: 'OFFLINE'
                 })
             }

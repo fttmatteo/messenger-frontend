@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatDisplayName } from "@/lib/format-utils"
-import { isMessengerOnline } from "@/lib/messenger-utils"
+import { isMessengerOnline, getLatestTimestamp } from "@/lib/messenger-utils"
 import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
 import { employeeService } from "@/services/employee.service"
@@ -224,11 +224,11 @@ export function MessengerSidePanel({
                         </h3>
                         <Badge variant="outline" className={cn(
                             "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold",
-                            isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now)
+                            isMessengerOnline(messenger?.status || '', getLatestTimestamp(messenger?.lastHeartbeat, messenger?.lastUpdate), 2, now)
                                 ? "bg-emerald-500/10 text-emerald-500"
                                 : "bg-muted text-muted-foreground"
                         )}>
-                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? '• En línea' : 'Offline'}
+                            {isMessengerOnline(messenger?.status || '', getLatestTimestamp(messenger?.lastHeartbeat, messenger?.lastUpdate), 2, now) ? '• En línea' : 'Offline'}
                         </Badge>
                     </div>
                 </div>

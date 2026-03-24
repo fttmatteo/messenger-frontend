@@ -186,7 +186,7 @@ public class LocationForegroundService extends Service {
                 conn.setReadTimeout(10000);
                 conn.setDoOutput(true);
 
-                String json = String.format(
+                String json = String.format(java.util.Locale.US,
                         "{\"messengerId\":%d,\"latitude\":%.8f,\"longitude\":%.8f,\"speed\":%.2f,\"heading\":%.2f,\"accuracy\":%.2f,\"status\":\"ACTIVE\"}",
                         messengerId,
                         location.getLatitude(),
