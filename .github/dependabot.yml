@@ -8,24 +8,17 @@ updates:
       interval: "daily"
       time: "09:00"
       timezone: "America/Bogota"
-    open-pull-requests-limit: 10
     commit-message:
       prefix: "deps"
     labels:
       - "dependencies"
       - "npm"
-    groups:
-      # Group minor and patch updates together
-      minor-and-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
     ignore:
-      # Ignore major version updates for all dependencies (requires careful migration)
+      # Ignore major and minor version updates for all dependencies
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types: 
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -40,13 +33,8 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-    groups:
-      todas-las-dependencias:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types: 
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
