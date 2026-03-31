@@ -1,4 +1,4 @@
-> **Copyright (C) 2025 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
+> **Copyright (C) 2026 Mateo Valencia Ardila. Licenciado bajo la Licencia Apache, Versión 2.0.**
 
 <div align="center">
 
@@ -10,7 +10,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-Unit-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
-[![License](https://img.shields.io/badge/Licencia-Propietaria-red?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/Licencia-Apache_2.0-blue.svg?style=for-the-badge)](LICENSE)
 
 **Plataforma de alta ingeniería para gestión de mensajería.**
 
@@ -302,4 +302,4 @@ Para consultas sobre este proyecto:
 
 ---
 
-> **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. Confidential and Proprietary.**
+> **Copyright (C) 2026 Mateo Valencia Ardila. Licenciado bajo la Licencia Apache, Versión 2.0.**
