@@ -1,4 +1,4 @@
-> **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. The source code for this application is protected by copyright laws. DNDA Registration No. 13-108-139. Copying, distributing, or modifying this application without express authorization is strictly prohibited.**
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
 
 <div align="center">
 
@@ -10,296 +10,296 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-Unit-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
-[![License](https://img.shields.io/badge/License-Proprietary-red.svg?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-Propietario-red.svg?style=for-the-badge)](LICENSE)
 
-**High-engineering platform for messenger management.**
+**Plataforma de alta ingeniería para gestión de mensajería.**
 
-*Robust interface • Offline-First Architecture • Real-time Fleet Tracking • Comprehensive Testing Strategy*
+*Interfaz robusta • Arquitectura Offline-First • Rastreo de flota en tiempo real • Estrategia de pruebas integral*
 
 ---
 
-[🇪🇸 Versión en Español](README.es.md) • [Features](#-key-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation--deployment) • [Architecture](#-project-architecture)
+[🇺🇸 English Version](README.en.md) • [Características](#-características-principales) • [Capturas](#-capturas-de-pantalla) • [Tecnologías](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
 
 </div>
 
 ---
 
-## Overview
-**PLAK Messenger Frontend** is the mission-critical user interface for urban logistics operations. Built with enterprise-grade architecture, it orchestrates real-time fleet management while ensuring business continuity even under adverse network conditions.
+## Descripción General
+**PLAK Messenger Frontend** es la interfaz de usuario crítica para operaciones de logística urbana. Construida con arquitectura empresarial, orquesta la gestión de flotas en tiempo real mientras asegura la continuidad del negocio incluso bajo condiciones de red adversas.
 
-### Native App (Android)
-The messenger experience is fully optimized as a standalone Android application. By installing the native APK, users get:
-- **Instant Access**: Launch directly from the home screen.
-- **Immersive Experience**: True full-screen interface without browser navigation bars.
-- **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
+### App Nativa (Android)
+La experiencia del mensajero está completamente optimizada como una aplicación independiente para Android. Al instalar el APK nativo, los usuarios obtienen:
+- **Acceso Instantáneo**: Inicio directo desde la pantalla principal del teléfono.
+- **Experiencia Inmersiva**: Interfaz a pantalla completa real, sin barras de navegación del navegador que estorben.
+- **Operación Confiable**: Seguimiento en segundo plano persistente y sincronización offline perfectamente adaptada al dispositivo.
 
 ---
 
-### Two Optimized Experiences
-| **Command Center** | **Field App** |
+### Dos Experiencias Optimizadas
+| **Centro de Comando** | **App de Campo** |
 |:---|:---|
-| Admin Dashboard for operations control | Progressive Web App for messengers |
-| Real-time fleet monitoring on Google Maps | Installable on any mobile device |
-| Dealership & employee management | Offline-capable with auto-sync |
-| Service auditing with digital evidence | Digital signature & photo capture |
+| Dashboard Administrativo para control de operaciones | Aplicación Web Progresiva para mensajeros |
+| Monitoreo de flota en tiempo real con Google Maps | Instalable en cualquier dispositivo móvil |
+| Gestión de concesionarios y empleados | Capaz de trabajar offline con auto-sincronización |
+| Auditoría de servicios con evidencia digital | Firma digital y captura de fotos |
 
 ---
 
-## Screenshots
+## Capturas de Pantalla
 
 ### Admin Dashboard
-| Login | Live Monitoring |
+| Login | Monitoreo en Vivo |
 |:---:|:---:|
 | ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/14_Admin_Monitoreo.png) |
-| *Administrative system access* | *Real-time fleet position on Google Maps* |
+| *Acceso al sistema administrativo* | *Posición de la flota en tiempo real con Google Maps* |
 
-| Service Management | Service Details |
+| Gestión de Servicios | Detalles del Servicio |
 |:---:|:---:|
 | ![Services](docs/screenshots/admin/11_Admin_Servicios.png) | ![Service Details](docs/screenshots/admin/12_Admin_Detalles_Servicio.png) |
-| *Listing and filtering of services* | *Detailed timeline with photo evidence* |
+| *Listado y filtrado de servicios* | *Timeline detallado con evidencias fotográficas* |
 
-| Employees | Dealerships |
+| Empleados | Concesionarios |
 |:---:|:---:|
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
-| *Staff management* | *Dealership administration* |
+| *Gestión del personal* | *Administración de concesionarios* |
 
 ---
 
 ### Messenger PWA
-| Login | Assigned Services | Update Status |
+| Login | Servicios Asignados | Actualización de Estado |
 |:---:|:---:|:---:|
 | ![Login](docs/screenshots/messenger/1_Messenger_Login.png) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.png) | ![Update Status](docs/screenshots/messenger/5_Messenger_Actualizar_Estado.png) |
-| *Messenger access* | *Assigned deliveries list* | *Status change with evidence* |
+| *Acceso mensajeros* | *Lista de entregas asignadas* | *Cambio de estado con evidencia* |
 
-| Service Details | History | Settings |
+| Detalles del Servicio | Historial | Configuración |
 |:---:|:---:|:---:|
 | ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
-| *Complete information & navigation* | *Service status history* | *App preferences* |
+| *Información completa y navegación* | *Servicios con cambio de estado* | *Preferencias de la app* |
 
 ---
 
-## Key Features
+## Características Principales
 
-### Robustness & Resilience (Offline-First)
-| Feature | Description |
+### Robustez y Resiliencia (Offline-First)
+| Característica | Descripción |
 |:---|:---|
-| **Smart Synchronization** | *Store-and-Forward* pattern implementation. Actions performed offline are persisted in `IndexedDB` and automatically retried when connection is restored. |
-| **Smart Last-Location** | Optimized tracking strategy that only queues the most recent location when offline, preventing bandwidth waste and "teleportation" artifacts upon reconnection. |
-| **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
-| **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
+| **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones realizadas sin conexión se persisten en `IndexedDB` y se reintentan automáticamente al restaurar la conexión. |
+| **Última Ubicación Inteligente** | Estrategia de rastreo optimizada que solo encola la ubicación más reciente cuando está offline, evitando desperdicio de ancho de banda y "teletransportes" al reconectar. |
+| **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
+| **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |
 
 ---
 
-### Geospatial Engineering
-| Feature | Description |
+### Ingeniería Geoespacial
+| Característica | Descripción |
 |:---|:---|
-| **Live Tracking** | Bidirectional WebSocket communication via STOMP/SockJS for sub-second position updates. |
-| **Advanced Markers API** | High-performance Google Maps rendering, supporting thousands of simultaneous entities without FPS degradation. |
-| **Resilient Geocoding** | Queue system for address resolution that respects Google API rate limits. |
+| **Rastreo en Vivo** | Comunicación bidireccional WebSocket via STOMP/SockJS para actualizaciones de posición sub-segundo. |
+| **Advanced Markers API** | Renderizado de alto rendimiento en Google Maps, soportando miles de entidades simultáneas sin degradación de FPS. |
+| **Geocodificación Resiliente** | Sistema de colas para resolución de direcciones que respeta los límites de la API de Google. |
 
 ---
 
-### User Experience (UX)
-| Feature | Description |
+### Experiencia de Usuario (UX)
+| Característica | Descripción |
 |:---|:---|
-| **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4. |
-| **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
-| **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
-| **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
+| **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4. |
+| **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
+| **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
+| **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
 
 ---
 
-## Quality Strategy & Testing
-This project follows the **"Testing Trophy"** methodology, prioritizing deployment confidence over vanity coverage metrics.
+## Estrategia de Calidad y Pruebas
+Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confianza en el despliegue sobre métricas de cobertura vanidosas.
 
 ```
-    ╭────────────────────╮    
-    │  E2E (Playwright)  │  ← Full user flows
-    ├────────────────────┤
-    │  Integration (MSW) │  ← Component + API layer
-    ├────────────────────┤
-    │   Unit (Vitest)    │  ← Business logic (~89% coverage)
-    ├────────────────────┤
-    │  Static (TS/ESLint)│  ← Compile-time safety
-    ╰────────────────────╯
+    ╭──────────────────────╮
+    │  E2E (Playwright)    │  ← Flujos de usuario completos
+    ├──────────────────────┤
+    │  Integración (MSW)   │  ← Componente + capa API
+    ├──────────────────────┤
+    │   Unitarias (Vitest) │  ← Lógica de negocio (~89% cobertura)
+    ├──────────────────────┤
+    │  Estático (TS/ESLint)│ ← Seguridad en compilación
+    ╰──────────────────────╯
 ```
 
-| **E2E** | `Playwright` | Critical flow tests (Login, Delivery, Offline) with security bypass (Turnstile) |
-| **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
-| **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
-| **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
+| **E2E** | `Playwright` | Pruebas de flujos críticos (Login, Entrega, Offline) con bypass de seguridad (Turnstile) |
+| **Integración** | `Vitest` + `MSW` | Pruebas de página completa con capa de red mockeada via Mock Service Worker |
+| **Unitarias** | `Vitest` | Lógica de negocio (~89% de cobertura en servicios), utilidades y hooks complejos |
+| **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
 
 ---
 
-### Running Tests
+### Ejecutar Pruebas
 ```bash
-# Unit & Integration tests (Vitest)
+# Pruebas unitarias e integración (Vitest)
 npm run test:run
 
-# Coverage report
+# Reporte de cobertura
 npm run test:coverage
 
-# E2E tests (Playwright)
+# Pruebas E2E (Playwright)
 npx playwright test
 
-# E2E tests with UI
+# Pruebas E2E con UI
 npx playwright test --ui
 ```
 
 ---
 
-## Tech Stack
-The architecture is designed for **scalability**, **maintainability**, and **long-term performance**.
+## Stack Tecnológico
+La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **rendimiento a largo plazo**.
 
-| Category | Technologies | Purpose |
+| Categoría | Tecnologías | Propósito |
 |:---|:---|:---|
-| **Core** | `React 19.2`, `TypeScript 5.9` | Concurrent features + strict type safety |
-| **Build** | `Vite 7.3` | Lightning-fast HMR and optimized builds |
-| **Styling** | `Tailwind CSS 4.1`, `Shadcn/UI` | Utility-first CSS with accessible component library |
-| **State** | `React Query`, `Context API` | Server state caching + global client state |
-| **Forms** | `React Hook Form`, `Zod 4` | High-performance forms with schema validation |
-| **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline capabilities and local persistence |
-| **Mobile** | `Capacitor 6` | Native Android app generation and native APIs access |
-| **Maps** | `@react-google-maps/api` | Deep integration with Google Maps Platform |
-| **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
-| **Animation** | `Framer Motion` | Fluid animations and transitions |
-| **Charts** | `Recharts` | Data visualization components |
+| **Core** | `React 19.2`, `TypeScript 5.9` | Características concurrentes + tipado estricto |
+| **Build** | `Vite 7.3` | HMR ultrarrápido y builds optimizadas |
+| **Estilos** | `Tailwind CSS 4.1`, `Shadcn/UI` | CSS utility-first con librería de componentes accesibles |
+| **Estado** | `React Query`, `Context API` | Caché de estado del servidor + estado global del cliente |
+| **Formularios** | `React Hook Form`, `Zod 4` | Formularios de alto rendimiento con validación de esquemas |
+| **PWA** | `vite-plugin-pwa`, `idb-keyval` | Capacidades offline y persistencia local |
+| **Mobile** | `Capacitor 6` | Generación de la aplicación nativa para Android y acceso a sus APIs |
+| **Mapas** | `@react-google-maps/api` | Integración profunda con Google Maps Platform |
+| **Tiempo Real** | `@stomp/stompjs` | Mensajería WebSocket para rastreo en vivo |
+| **Animaciones** | `Framer Motion` | Animaciones y transiciones fluidas |
+| **Gráficos** | `Recharts` | Componentes de visualización de datos |
 
 ---
 
-## Project Architecture
-The codebase follows **Clean Architecture** principles adapted for frontend development:
+## Arquitectura del Proyecto
+El código sigue principios de **Clean Architecture** adaptados para desarrollo frontend:
 
 ```
 src/
-├── components/          # UI Building Blocks (115+ components)
-│   ├── ui/              # Base components (Shadcn/UI)
-│   └── ...              # Feature-specific components
-├── config/              # Application Configuration
-├── context/             # Global State Providers (Auth, Theme, Maps)
+├── components/          # Bloques de Construcción UI (115+ componentes)
+│   ├── ui/              # Componentes base (Shadcn/UI)
+│   └── ...              # Componentes específicos por feature
+├── config/              # Configuración de la Aplicación
+├── context/             # Proveedores de Estado Global (Auth, Theme, Maps)
 ├── hooks/               # Custom React Hooks (16 hooks)
-├── layouts/             # Page Layout Components
-├── lib/                 # Utility Libraries
-├── pages/               # Route Page Components (28 pages)
-├── routes/              # Application Routing
-├── schemas/             # Zod Validation Schemas
-├── services/            # API & Infrastructure Services
-├── styles/              # Global Styles
-├── test/                # Test Configuration & Mocks (MSW)
-├── types/               # TypeScript Type Definitions
-└── utils/               # Utility Functions
+├── layouts/             # Componentes de Layout de Página
+├── lib/                 # Librerías de Utilidades
+├── pages/               # Componentes de Página de Ruta (28 páginas)
+├── routes/              # Enrutamiento de la Aplicación
+├── schemas/             # Esquemas de Validación Zod
+├── services/            # Servicios de API e Infraestructura
+├── styles/              # Estilos Globales
+├── test/                # Configuración de Pruebas y Mocks (MSW)
+├── types/               # Definiciones de Tipos TypeScript
+└── utils/               # Funciones Utilitarias
 ```
 
 ---
 
-## Installation & Deployment
+## Instalación y Despliegue
 
-### Prerequisites
-| Requirement | Version |
+### Prerrequisitos
+| Requerimiento | Versión |
 |:---|:---|
-| Node.js | v20.0.0+ (LTS recommended) |
+| Node.js | v20.0.0+ (LTS recomendado) |
 | npm | v10+ |
-| Google Maps API Key | Required for maps functionality |
+| Google Maps API Key | Requerido para funcionalidad de mapas |
 
 ---
 
-### Quick Start (Docker)
-If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
+### Inicio Rápido (Docker)
+Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
 
-1. Go to the backend folder: `cd ../messenger-backend`
-2. Run: `docker-compose -f docker-compose.local.yml up --build`
+1. Ve a la carpeta del backend: `cd ../messenger-backend`
+2. Ejecuta: `docker-compose -f docker-compose.local.yml up --build`
 
-This will build the frontend and serve it at `http://localhost`.
+Esto compilará el frontend y lo servirá en `http://localhost`.
 
 ---
 
-### Development with Hot Reloading (Docker)
-For active development with automatic code reloading:
+### Desarrollo con Hot Reloading (Docker)
+Para desarrollo activo con recarga automática de código:
 
 ```bash
 cd ../messenger-backend
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
-The frontend dev server (Vite HMR) will be available at `http://localhost:5173` — changes are reflected instantly on save.
+El servidor de desarrollo del frontend (Vite HMR) estará disponible en `http://localhost:5173` — los cambios se reflejan instantáneamente al guardar.
 
 ---
 
-### Local Development (Manual)
+### Desarrollo Local (Manual)
 ```bash
-# 1. Clone the repository
+# 1. Clonar el repositorio
 git clone https://github.com/fttmatteo/messenger-frontend.git
 cd messenger-frontend
 
-# 2. Install dependencies
+# 2. Instalar dependencias
 npm install
 
-# 3. Configure environment variables
+# 3. Configurar variables de entorno
 cp .env.example .env
-# Edit .env with your configuration
+# Editar .env con tu configuración
 
-# 4. Start development server
+# 4. Iniciar servidor de desarrollo
 npm run dev
 ```
 
 ---
 
-### Environment Variables
-Create a `.env` file in the project root:
+### Variables de Entorno
+Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
-# API Configuration
+# Configuración de API
 VITE_API_URL=http://localhost:8080/api
 
 # Google Maps
-VITE_GOOGLE_MAPS_KEY=your_google_maps_api_key
+VITE_GOOGLE_MAPS_KEY=tu_api_key_de_google_maps
 
-# WebSocket (optional - for development)
+# WebSocket (opcional - para desarrollo)
 VITE_WS_URL=ws://localhost:8080/ws
 
-# Cloudflare Turnstile (Bot Protection)
-VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
+# Cloudflare Turnstile (Protección contra Bots)
+VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 ```
 
 ---
 
-### Available Scripts
-| Script | Description |
+### Scripts Disponibles
+| Script | Descripción |
 |:---|:---|
-| `npm run dev` | Start development server with HMR |
-| `npm run dev:staging` | Start dev server with staging config |
-| `npm run build` | Build for production |
-| `npm run build:staging` | Build for staging environment |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint code quality checks |
-| `npm run test` | Run Vitest in watch mode |
-| `npm run test:run` | Run Vitest once |
-| `npm run test:ui` | Open Vitest UI |
-| `npm run test:coverage` | Generate coverage report |
+| `npm run dev` | Iniciar servidor de desarrollo con HMR |
+| `npm run dev:staging` | Iniciar servidor dev con config de staging |
+| `npm run build` | Compilar para producción |
+| `npm run build:staging` | Compilar para ambiente de staging |
+| `npm run preview` | Previsualizar build de producción localmente |
+| `npm run lint` | Ejecutar verificación de calidad ESLint |
+| `npm run test` | Ejecutar Vitest en modo watch |
+| `npm run test:run` | Ejecutar Vitest una vez |
+| `npm run test:ui` | Abrir UI de Vitest |
+| `npm run test:coverage` | Generar reporte de cobertura |
 
 ---
 
-## Security
-| Feature | Implementation |
+## Seguridad
+| Característica | Implementación |
 |:---|:---|
-| **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
-| **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
-| **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
-| **Solo HTTPS** | Enforced secure connections in production |
-| **Input Validation** | All user inputs validated with Zod schemas |
-| **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
-| **Rate Limiting** | Client-side handling of 429 errors from the backend |
-| **Public UUIDs** | Use of UUID v4 for all entity references to prevent ID enumeration and improve offline sync |
+| **Autenticación JWT** | Rotación automática de tokens via interceptores de Axios con soporte de refresh token |
+| **Prevención XSS** | Escapado integrado de React + Content Security Policy estricto |
+| **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Messenger) a nivel de router |
+| **Solo HTTPS** | Conexiones seguras forzadas en producción |
+| **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod |
+| **Protección contra Bots** | Cloudflare Turnstile integrado en todos los flujos de login |
+| **Rate Limiting** | Manejo del lado del cliente de errores 429 desde el backend |
+| **UUIDs Públicos** | Uso de UUID v4 para todas las referencias de entidades para prevenir enumeración de IDs y mejorar la sincronización offline |
 
 ---
 
-## Contact
-For inquiries about this project:
-- **Repository**: `messenger-frontend`
-- **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
+## Contacto
+Para consultas sobre este proyecto:
+- **Repositorio**: `messenger-frontend`
+- **Autor**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
-- **Website**: [plak.digital](https://www.plak.digital)
+- **Sitio Web**: [plak.digital](https://plak.digital)
 
 ---
 
-> **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. The source code for this application is protected by copyright laws. DNDA Registration No. 13-108-139. Copying, distributing, or modifying this application without express authorization is strictly prohibited.**
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
