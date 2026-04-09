@@ -1,3 +1,5 @@
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
+
 # Guía de Inicio Rápido - Frontend (Docker)
 
 Esta guía permite levantar el frontend de **Messenger** de forma profesional utilizando Docker.
@@ -38,3 +40,7 @@ docker run -d -p 80:80 --name messenger-frontend messenger-frontend
 
 > [!TIP]
 > **Zero-Config**: La imagen de Docker ya viene pre-configurada para conectarse al backend en `localhost:8080` y tiene un bypass automático para **Cloudflare Turnstile**, facilitando las pruebas sin configurar llaves externas.
+
+---
+
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**

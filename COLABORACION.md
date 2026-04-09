@@ -1,3 +1,5 @@
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
+
 # Guía de Colaboración - Frontend
 
 Esta guía establece los estándares y reglas para contribuir al frontend del proyecto Messenger.
@@ -28,3 +30,7 @@ Al igual que en el backend, el repositorio tiene activadas reglas de protección
 4. Realiza tus cambios siguiendo los estándares de ESLint.
 5. Sube tu rama y abre el Pull Request en GitHub.
 6. Espera la revisión de **@fttmatteo**.
+
+---
+
+> **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
