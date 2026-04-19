@@ -1,10 +1,13 @@
+// Declaración para el compilador de TS de la variable inyectada por Vite
+declare const __APP_VERSION__: string;
+
 /**
  * Configuración centralizada de la aplicación.
  * Agrupa variables de entorno y valores por defecto en un solo lugar.
  */
 export const APP_CONFIG = {
     name: 'PLAK',
-    version: '1.8.3',
+    version: __APP_VERSION__,
     description: 'Sistema de gestión de entrega de placas',
     supportEmail: 'soporte@plak.digital',
 } as const
