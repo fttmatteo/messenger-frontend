@@ -13,6 +13,10 @@ updates:
     labels:
       - "dependencies"
       - "npm"
+    groups:
+      npm-patch-updates:
+        update-types:
+          - "patch"
     ignore:
       # Ignore major and minor version updates for all dependencies
       - dependency-name: "*"
@@ -33,6 +37,10 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      actions-patch-updates:
+        update-types:
+          - "patch"
     ignore:
       - dependency-name: "*"
         update-types: 
