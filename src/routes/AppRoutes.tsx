@@ -19,7 +19,7 @@ function PageLoader() {
     );
 }
 
-import Login from '@/pages/Login';
+const Login = React.lazy(() => import('@/pages/Login'));
 
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
