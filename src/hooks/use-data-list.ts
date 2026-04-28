@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 
 export type SortDirection = "asc" | "desc"
 
@@ -113,10 +113,15 @@ export function useDataList<T>({
         return filteredAndSortedData.slice(start, start + itemsPerPage)
     }, [filteredAndSortedData, currentPage, itemsPerPage])
 
-    useEffect(() => {
-        // eslint-disable-next-line
+    const [prevParams, setPrevParams] = useState({ searchQuery, sortField, sortDirection, itemsPerPage })
+
+    if (prevParams.searchQuery !== searchQuery ||
+        prevParams.sortField !== sortField ||
+        prevParams.sortDirection !== sortDirection ||
+        prevParams.itemsPerPage !== itemsPerPage) {
+        setPrevParams({ searchQuery, sortField, sortDirection, itemsPerPage })
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, itemsPerPage, customFilter])
+    }
 
     const handleSort = (field: string) => {
         if (sortField === field) {

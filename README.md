@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.8.4-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.8.5-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -85,7 +85,8 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 ### Robustez y Resiliencia (Offline-First)
 | Característica | Descripción |
 |:---|:---|
-| **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones realizadas sin conexión se persisten en `IndexedDB` y se reintentan automáticamente al restaurar la conexión. |
+| **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones offline se persisten en `IndexedDB` y se reintentan automáticamente. |
+| **Arquitectura Event-Driven** | Eliminación de *polling* constante mediante eventos `offline-actions-updated`, reduciendo drásticamente latencia y consumo de batería. |
 | **Última Ubicación Inteligente** | Estrategia de rastreo optimizada que solo encola la ubicación más reciente cuando está offline, evitando desperdicio de ancho de banda y "teletransportes" al reconectar. |
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |

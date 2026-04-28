@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.8.4-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.8.5-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -85,7 +85,8 @@ The messenger experience is fully optimized as a standalone Android application.
 ### Robustness & Resilience (Offline-First)
 | Feature | Description |
 |:---|:---|
-| **Smart Synchronization** | *Store-and-Forward* pattern implementation. Actions performed offline are persisted in `IndexedDB` and automatically retried when connection is restored. |
+| **Smart Synchronization** | *Store-and-Forward* pattern implementation. Offline actions are persisted in `IndexedDB` and automatically retried. |
+| **Event-Driven Architecture** | Elimination of constant polling via `offline-actions-updated` events, drastically reducing latency and battery consumption. |
 | **Smart Last-Location** | Optimized tracking strategy that only queues the most recent location when offline, preventing bandwidth waste and "teleportation" artifacts upon reconnection. |
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |

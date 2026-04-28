@@ -45,5 +45,15 @@ export const trackingApiService = {
     getHistoryByService: async (serviceUuid: string) => {
         const response = await apiClient.get(`/tracking/service/${serviceUuid}`);
         return response.data;
+    },
+
+    /**
+     * Obtiene las últimas ubicaciones de un grupo de mensajeros en una sola llamada.
+     * REQUISITO DEL BACKEND: Se requiere el endpoint POST /tracking/messengers/bulk-locations
+     */
+    getBulkLastLocations: async (uuids: string[]): Promise<Record<string, LiveTrackingUpdate>> => {
+        if (!uuids.length) return {};
+        const response = await apiClient.post<Record<string, LiveTrackingUpdate>>('/tracking/messengers/bulk-locations', { uuids });
+        return response.data;
     }
 };

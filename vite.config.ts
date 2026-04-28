@@ -95,12 +95,13 @@ export default defineConfig(({ mode }) => {
     },
     // Build configuration
     build: {
+      target: 'es2020',
       // Generate sourcemaps for development/staging, but not for production
       sourcemap: !isProduction ? 'inline' : false,
       // Optimize for production
       minify: isProduction ? 'esbuild' : false,
       // Chunk size warnings
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 500,
       // Rollup options
       rollupOptions: {
         output: {
@@ -108,6 +109,8 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             // Core React libraries - cached long-term
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            // Icons chunk for better caching
+            'icons-vendor': ['lucide-react'],
             // Radix UI Primitives - dialogs, dropdowns, popovers
             'ui-primitives': [
               '@radix-ui/react-dialog',
@@ -175,6 +178,11 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
         '/services': {
+          target: env.VITE_API_URL || 'http://localhost:8080',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/tracking': {
           target: env.VITE_API_URL || 'http://localhost:8080',
           changeOrigin: true,
           secure: false,

@@ -53,7 +53,7 @@ export function useMessengerServices(): UseMessengerServicesReturn {
 
             const response = await serviceDeliveryService.getAllPaginated({
                 page: 0,
-                size: 100,
+                size: 20,
                 sortBy: 'createdAt',
                 sortDirection: 'desc'
             })
