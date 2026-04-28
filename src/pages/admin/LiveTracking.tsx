@@ -18,10 +18,6 @@ import { logger } from "@/utils/logger"
 
 /**
  * Valida si un par de coordenadas son números finitos y válidos para su uso en el mapa.
- * 
- * @param {number} [lat] - Latitud a validar.
- * @param {number} [lng] - Longitud a validar.
- * @returns {boolean} True si las coordenadas son válidas.
  */
 const isValidCoords = (lat?: number, lng?: number): boolean => {
     return typeof lat === 'number' && typeof lng === 'number' &&
@@ -39,18 +35,16 @@ export default function LiveTracking() {
     const [selectedMessenger, setSelectedMessenger] = useState<LiveTrackingUpdate | null>(null)
     const [loading, setLoading] = useState(true)
     const [connected, setConnected] = useState(false)
-    const [mapCenter,] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín - Initial only
+    const [mapCenter,] = useState({ lat: 6.2442, lng: -75.5812 }) // Medellín
     const [map, setMap] = useState<google.maps.Map | null>(null)
     const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
     const [showMessengerDetails, setShowMessengerDetails] = useState(false)
     const [followingMessengerId, setFollowingMessengerId] = useState<number | null>(null)
     const { setSuccess, setError } = useAdminUI()
 
-    // Refs para evitar reinicios de conexión cuando cambian estas dependencias
     const followingMessengerIdRef = useRef<number | null>(null)
     const mapRef = useRef<google.maps.Map | null>(null)
 
-    // Actualizar refs cuando cambia el estado
     useEffect(() => {
         followingMessengerIdRef.current = followingMessengerId
     }, [followingMessengerId])
@@ -59,49 +53,48 @@ export default function LiveTracking() {
         mapRef.current = map
     }, [map])
 
-    // Timestamp unificado para sincronizar estado en todos los componentes UI (Map, List, SidePanel)
-    // Intervalo de 10s asegura respuesta rápida para desconexiones
     const [now, setNow] = useState(() => Date.now())
     useEffect(() => {
         const timer = setInterval(() => setNow(Date.now()), 10000)
         return () => clearInterval(timer)
     }, [])
 
-    // Obtener datos iniciales via REST (Todos los mensajeros + estado)
     const fetchMessengers = useCallback(async (manual = false) => {
         try {
             setLoading(true)
 
-            // 1. Obtener todos los mensajeros
             const allEmployees = await employeeService.getAll()
             const messengerEmployees = allEmployees.filter(e => e.role === 'MESSENGER')
 
-            // 2. Obtener sesiones activas
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))
 
-            // 3. Fusionar datos
-            const combinedRequests = messengerEmployees.map(async (emp) => {
+            const offlineUuids = messengerEmployees
+                .filter(emp => !activeMap.has(emp.idEmployee))
+                .map(emp => emp.uuid)
+
+            let bulkLocations: Record<string, LiveTrackingUpdate> = {}
+            if (offlineUuids.length > 0) {
+                try {
+                    bulkLocations = await trackingApiService.getBulkLastLocations(offlineUuids)
+                } catch (e) {
+                    if (isAxiosError(e) && e.response?.status !== 404) {
+                        logger.apiError(`Error fetching bulk locations`, e)
+                    }
+                }
+            }
+
+            const updatedMessengers = messengerEmployees.map((emp) => {
                 const formattedName = formatDisplayName(emp.fullName)
 
-                // Si está activo, usar datos activos
                 if (activeMap.has(emp.idEmployee)) {
                     return { ...activeMap.get(emp.idEmployee)!, messengerName: formattedName, messengerUuid: emp.uuid }
                 }
 
-                // Si está offline, intentar obtener última ubicación
-                try {
-                    const lastLoc = await trackingApiService.getLastLocation(emp.uuid)
-                    if (lastLoc) {
-                        return { ...lastLoc, status: 'OFFLINE' as const, messengerName: formattedName, messengerUuid: emp.uuid }
-                    }
-                } catch (e) {
-                    if (isAxiosError(e) && e.response?.status !== 404) {
-                        logger.apiError(`Error fetching last location for messenger ${emp.idEmployee}`, e)
-                    }
+                if (bulkLocations[emp.uuid]) {
+                    return { ...bulkLocations[emp.uuid], status: 'OFFLINE' as const, messengerName: formattedName, messengerUuid: emp.uuid }
                 }
 
-                // Estructura offline por defecto sin ubicación
                 return {
                     messengerId: emp.idEmployee,
                     messengerUuid: emp.uuid,
@@ -115,10 +108,8 @@ export default function LiveTracking() {
                 }
             })
 
-            const updatedMessengers = await Promise.all(combinedRequests)
             setMessengers(updatedMessengers)
 
-            // Actualizar mensajero seleccionado si existe en nuevos datos
             setSelectedMessenger(current => {
                 if (!current) return null
                 const refreshed = updatedMessengers.find(m => m.messengerId === current.messengerId)
@@ -129,7 +120,6 @@ export default function LiveTracking() {
                 setSuccess(`Monitoreo actualizado`)
             }
 
-            // Centrar mapa en primer mensajero activo si está disponible Y refresco manual (usando ref)
             if (!manual && updatedMessengers.length > 0) {
                 const firstActive = updatedMessengers.find(m => m.status === 'ACTIVE' && isValidCoords(m.latitude, m.longitude))
                 if (firstActive && mapRef.current) {
@@ -145,9 +135,8 @@ export default function LiveTracking() {
         } finally {
             setLoading(false)
         }
-    }, [setSuccess, setError]) // Eliminada dependencia 'map' para estabilidad
+    }, [setSuccess, setError])
 
-    // Manejar actualizaciones en tiempo real
     const handleTrackingUpdate = useCallback((update: LiveTrackingUpdate) => {
         setMessengers(prev => {
             const existingIndex = prev.findIndex(m => m.messengerId === update.messengerId)
@@ -169,27 +158,20 @@ export default function LiveTracking() {
             return prev
         })
 
-        // Modo seguimiento: usar refs para evitar re-crear la función
         const currentFollowId = followingMessengerIdRef.current
         const currentMap = mapRef.current
 
         if (currentFollowId === update.messengerId && isValidCoords(update.latitude, update.longitude) && currentMap) {
             currentMap.panTo({ lat: update.latitude, lng: update.longitude })
         }
-    }, []) // Sin dependencias inestables
+    }, [])
 
-    // Conectar a WebSocket al montar
     useEffect(() => {
-        // Carga inicial de datos
-        fetchMessengers() // fetchMessengers es ahora estable
+        fetchMessengers()
 
         const startTracking = async () => {
-            // Omitir si ya está conectado
             if (trackingService.isCurrentlyConnected()) {
                 setConnected(true)
-                // Asegurarse de suscribir incluso si ya estaba conectado (idempotente)
-                // trackingService maneja suscripciones duplicadas internamente o lo podemos manejar aquí
-                // Pero lo más seguro es reconectar si queremos garantizar el estado limpio
                 return
             }
 
@@ -201,7 +183,6 @@ export default function LiveTracking() {
                     trackingService.subscribeToPresence(handleTrackingUpdate)
                 })
             } catch (err) {
-                // Fallback silencioso - normal en Safari Mobile
                 logger.debug('WS token unavailable for Admin, using cookie fallback', err)
                 trackingService.connect(undefined, () => {
                     setConnected(true)
@@ -217,7 +198,7 @@ export default function LiveTracking() {
             trackingService.disconnect()
             setConnected(false)
         }
-    }, [fetchMessengers, handleTrackingUpdate]) // Ahora estas dependencias son estables
+    }, [fetchMessengers, handleTrackingUpdate])
 
     const selectMessenger = useCallback((messenger: LiveTrackingUpdate) => {
         setSelectedMessenger(messenger)
@@ -246,8 +227,6 @@ export default function LiveTracking() {
         }
     }, [followingMessengerId, messengers, map])
 
-    // Memorizar marcadores visibles con estado online calculado
-    // Dependencia 'now' asegura recálculo para detección de offline
     const visibleMarkers = useMemo(() => {
         return messengers
             .filter(m => isValidCoords(m.latitude, m.longitude))
