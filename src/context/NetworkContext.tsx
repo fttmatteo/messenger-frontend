@@ -184,9 +184,11 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
         updateCount()
 
-        const interval = setInterval(updateCount, 5000)
+        window.addEventListener('offline-actions-updated', updateCount)
 
-        return () => clearInterval(interval)
+        return () => {
+            window.removeEventListener('offline-actions-updated', updateCount)
+        }
     }, [])
 
     const dismissUpdate = useCallback(() => {

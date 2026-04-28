@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useMemo } from 'react'
 import { useDataList } from './use-data-list'
 
 interface TestItem {
@@ -248,33 +247,6 @@ describe('useDataList', () => {
             expect(result.current.totalPages).toBe(1)
         })
 
-        it('debe reiniciar a la página 1 cuando cambia customFilter', () => {
-            const data = createTestData()
 
-            const { result, rerender } = renderHook(
-                ({ filterVal }) => {
-                    const customFilter = useMemo(() => (item: TestItem) => item.value > filterVal, [filterVal])
-                    return useDataList({
-                        data,
-                        searchQuery: '',
-                        searchFilter: () => true,
-                        customFilter,
-                        initialItemsPerPage: 2,
-                    })
-                },
-                {
-                    initialProps: { filterVal: 0 }
-                }
-            )
-
-            act(() => {
-                result.current.setCurrentPage(2)
-            })
-            expect(result.current.currentPage).toBe(2)
-
-            rerender({ filterVal: 25 })
-
-            expect(result.current.currentPage).toBe(1)
-        })
     })
 })

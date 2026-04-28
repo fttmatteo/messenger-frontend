@@ -51,6 +51,12 @@ class OfflineSyncService {
     private handlers: Map<OfflineActionType, ActionHandler> = new Map()
     private isSyncing = false
 
+    private notifyUpdate(): void {
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('offline-actions-updated'))
+        }
+    }
+
     /**
      * Registra un manejador personalizado para procesar un tipo de acción específico durante la sincronización.
      * @param type - El tipo de acción (ej. 'UPDATE_STATUS').
@@ -89,6 +95,7 @@ class OfflineSyncService {
         const actions = await this.getPendingActions()
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
+        this.notifyUpdate()
 
         // Intentar registrar Background Sync si está disponible, y NO estamos en modo nativo Capacitor.
         if (!isNative() && 'serviceWorker' in navigator && 'SyncManager' in window) {
@@ -142,6 +149,7 @@ class OfflineSyncService {
         const actions = await this.getPendingActions()
         const filtered = actions.filter(a => a.id !== actionId)
         await set(PENDING_ACTIONS_KEY, filtered)
+        this.notifyUpdate()
     }
 
     /**
@@ -162,6 +170,7 @@ class OfflineSyncService {
      */
     async clearAll(): Promise<void> {
         await del(PENDING_ACTIONS_KEY)
+        this.notifyUpdate()
     }
 
     /**
@@ -271,6 +280,7 @@ class OfflineSyncService {
                     : a
             )
             await set(PENDING_ACTIONS_KEY, updatedActions)
+            this.notifyUpdate()
         }
     }
 

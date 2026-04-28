@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loadUser();
     }, []);
 
-    const login = async (credentials: LoginCredentials) => {
+    const login = React.useCallback(async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
 
@@ -52,9 +52,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch(() => { });
 
         setUser(userObj);
-    };
+    }, []);
 
-    const updateUser = (data: Partial<User>) => {
+    const updateUser = React.useCallback((data: Partial<User>) => {
         if (!user) return;
         const updatedUser = { ...user, ...data };
         setUser(updatedUser);
@@ -71,26 +71,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         import('@capacitor/preferences').then(({ Preferences }) => {
             Preferences.set({ key: 'user', value: updatedUserStr });
         }).catch(() => { });
-    };
+    }, [user]);
 
-    const logout = () => {
+    const logout = React.useCallback(() => {
         authService.logout();
         localStorage.removeItem('user');
         localStorage.removeItem('role');
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('role');
         setUser(null);
-    };
+    }, []);
+
+    const contextValue = React.useMemo(() => ({
+        user,
+        login,
+        logout,
+        updateUser,
+        isAuthenticated: !!user,
+        isLoading
+    }), [user, login, logout, updateUser, isLoading]);
 
     return (
-        <AuthContext.Provider value={{
-            user,
-            login,
-            logout,
-            updateUser,
-            isAuthenticated: !!user,
-            isLoading
-        }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

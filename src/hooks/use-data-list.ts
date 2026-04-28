@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react"
 
 export type SortDirection = "asc" | "desc"
 
@@ -58,17 +58,26 @@ export function useDataList<T>({
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
 
+    const searchFilterRef = useRef(searchFilter)
+    const customFilterRef = useRef(customFilter)
+    const sortValueResolversRef = useRef(sortValueResolvers)
+
+    useLayoutEffect(() => {
+        searchFilterRef.current = searchFilter
+        customFilterRef.current = customFilter
+        sortValueResolversRef.current = sortValueResolvers
+    })
 
     const filteredAndSortedData = useMemo(() => {
         let result = data.filter((item) => {
             if (searchQuery.trim()) {
                 const query = searchQuery.toLowerCase()
-                if (!searchFilter(item, query)) {
+                if (!searchFilterRef.current(item, query)) {
                     return false
                 }
             }
 
-            if (customFilter && !customFilter(item)) {
+            if (customFilterRef.current && !customFilterRef.current(item)) {
                 return false
             }
 
@@ -76,7 +85,7 @@ export function useDataList<T>({
         })
 
         if (sortField) {
-            const resolver = sortValueResolvers[sortField] ||
+            const resolver = sortValueResolversRef.current[sortField] ||
                 ((item: T) => item[sortField as keyof T])
 
             result = [...result].sort((a, b) => {
@@ -103,7 +112,7 @@ export function useDataList<T>({
         }
 
         return result
-    }, [data, searchQuery, sortField, sortDirection, searchFilter, customFilter, sortValueResolvers])
+    }, [data, searchQuery, sortField, sortDirection])
 
 
     const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage)
@@ -116,7 +125,7 @@ export function useDataList<T>({
     useEffect(() => {
         // eslint-disable-next-line
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, itemsPerPage, customFilter])
+    }, [searchQuery, sortField, sortDirection, itemsPerPage])
 
     const handleSort = (field: string) => {
         if (sortField === field) {
