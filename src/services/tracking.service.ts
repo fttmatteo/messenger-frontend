@@ -5,7 +5,6 @@ const logger = createLogger('TrackingService');
 
 const getWebSocketUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    // Eliminar la barra diagonal al final si está presente para evitar "//ws/tracking"
     const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
 
     if (base.startsWith('https')) {
@@ -28,8 +27,8 @@ export interface LiveTrackingUpdate {
     messengerName: string;
     latitude: number;
     longitude: number;
-    lastUpdate?: string; // ISO string - última ubicación GPS
-    lastHeartbeat?: string; // ISO string - última señal de vida (puede no tener GPS)
+    lastUpdate?: string;
+    lastHeartbeat?: string;
     status: 'ACTIVE' | 'INACTIVE' | 'OFFLINE';
     speed: number;
     heading: number;
@@ -39,10 +38,9 @@ export interface LiveTrackingUpdate {
 const STORAGE_KEY = 'tracking_offline_queue';
 const MAX_QUEUE_SIZE = 100;
 
-// Retry exponencial config
-const INITIAL_RECONNECT_DELAY = 2000; // 2 segundos inicial
-const MAX_RECONNECT_DELAY = 60000; // 60 segundos máximo
-const JITTER_FACTOR = 0.3; // ±30% variación para evitar thundering herd
+const INITIAL_RECONNECT_DELAY = 2000;
+const MAX_RECONNECT_DELAY = 60000;
+const JITTER_FACTOR = 0.3;
 
 /**
  * Servicio encargado de la comunicación bidireccional en tiempo real mediante WebSockets (protocolo STOMP).
@@ -60,7 +58,7 @@ class TrackingService {
     private isConnected: boolean = false;
     private offlineQueue: Partial<LiveTrackingUpdate>[] = [];
     private reconnectAttempt: number = 0;
-    private pendingSubscriptions: ((frame: any) => void)[] = [];
+    private pendingSubscriptions: ((frame: any) => void)[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     constructor() {
         this.loadQueue();
@@ -217,7 +215,6 @@ class TrackingService {
 
 
         if (isActiveWithCoords) {
-            // Eliminar cualquier actualización de ubicació previa pendiente
             this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'ACTIVE');
         } else if (isOfflineStatus) {
             this.offlineQueue = this.offlineQueue.filter(u => u.status !== 'OFFLINE');

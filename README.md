@@ -85,7 +85,8 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 ### Robustez y Resiliencia (Offline-First)
 | Característica | Descripción |
 |:---|:---|
-| **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones realizadas sin conexión se persisten en `IndexedDB` y se reintentan automáticamente al restaurar la conexión. |
+| **Sincronización Inteligente** | Implementación del patrón *Store-and-Forward*. Las acciones offline se persisten en `IndexedDB` y se reintentan automáticamente. |
+| **Arquitectura Event-Driven** | Eliminación de *polling* constante mediante eventos `offline-actions-updated`, reduciendo drásticamente latencia y consumo de batería. |
 | **Última Ubicación Inteligente** | Estrategia de rastreo optimizada que solo encola la ubicación más reciente cuando está offline, evitando desperdicio de ancho de banda y "teletransportes" al reconectar. |
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |

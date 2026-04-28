@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react"
+import { useState, useMemo } from "react"
 
 export type SortDirection = "asc" | "desc"
 
@@ -58,26 +58,17 @@ export function useDataList<T>({
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
 
-    const searchFilterRef = useRef(searchFilter)
-    const customFilterRef = useRef(customFilter)
-    const sortValueResolversRef = useRef(sortValueResolvers)
-
-    useLayoutEffect(() => {
-        searchFilterRef.current = searchFilter
-        customFilterRef.current = customFilter
-        sortValueResolversRef.current = sortValueResolvers
-    })
 
     const filteredAndSortedData = useMemo(() => {
         let result = data.filter((item) => {
             if (searchQuery.trim()) {
                 const query = searchQuery.toLowerCase()
-                if (!searchFilterRef.current(item, query)) {
+                if (!searchFilter(item, query)) {
                     return false
                 }
             }
 
-            if (customFilterRef.current && !customFilterRef.current(item)) {
+            if (customFilter && !customFilter(item)) {
                 return false
             }
 
@@ -85,7 +76,7 @@ export function useDataList<T>({
         })
 
         if (sortField) {
-            const resolver = sortValueResolversRef.current[sortField] ||
+            const resolver = sortValueResolvers[sortField] ||
                 ((item: T) => item[sortField as keyof T])
 
             result = [...result].sort((a, b) => {
@@ -112,7 +103,7 @@ export function useDataList<T>({
         }
 
         return result
-    }, [data, searchQuery, sortField, sortDirection])
+    }, [data, searchQuery, sortField, sortDirection, searchFilter, customFilter, sortValueResolvers])
 
 
     const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage)
@@ -122,10 +113,15 @@ export function useDataList<T>({
         return filteredAndSortedData.slice(start, start + itemsPerPage)
     }, [filteredAndSortedData, currentPage, itemsPerPage])
 
-    useEffect(() => {
-        // eslint-disable-next-line
+    const [prevParams, setPrevParams] = useState({ searchQuery, sortField, sortDirection, itemsPerPage })
+
+    if (prevParams.searchQuery !== searchQuery ||
+        prevParams.sortField !== sortField ||
+        prevParams.sortDirection !== sortDirection ||
+        prevParams.itemsPerPage !== itemsPerPage) {
+        setPrevParams({ searchQuery, sortField, sortDirection, itemsPerPage })
         setCurrentPage(1)
-    }, [searchQuery, sortField, sortDirection, itemsPerPage])
+    }
 
     const handleSort = (field: string) => {
         if (sortField === field) {
