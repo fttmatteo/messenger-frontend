@@ -25,7 +25,6 @@ describe('Eliminados Page Integration', () => {
     }
 
     it('should load and display deleted services list', async () => {
-        // Mock more flexible to catch any variation of the URL
         server.use(
             http.get(/.*\/services\/trash.*/, () => {
                 return HttpResponse.json({
@@ -36,11 +35,19 @@ describe('Eliminados Page Integration', () => {
                             plate: { idPlate: 102, plateNumber: 'DEL-001', plateType: 'CAR' },
                             dealership: {
                                 idDealership: 201,
+                                uuid: 'dealership-uuid',
                                 name: 'Old Dealership',
+                                address: 'Old Street 123',
+                                phone: '555-1234',
                                 zone: 'South'
                             },
                             messenger: {
-                                fullName: 'Former Messenger'
+                                idEmployee: 501,
+                                uuid: 'messenger-uuid',
+                                document: 12345678,
+                                fullName: 'Former Messenger',
+                                phone: '555-5678',
+                                role: 'MESSENGER'
                             },
                             currentStatus: 'CANCELED',
                             createdAt: new Date().toISOString(),
@@ -59,12 +66,12 @@ describe('Eliminados Page Integration', () => {
 
         renderPage()
 
-        // Verify title
         expect(screen.getByText(/Servicios eliminados/i)).toBeInTheDocument()
 
-        // Wait for data
         expect(await screen.findByText(/Old Dealership/i)).toBeInTheDocument()
-        expect(await screen.findByText(/DEL-001/i)).toBeInTheDocument()
+        
+        // Use findByTitle because PlacaBadge splits the text in child elements
+        expect(await screen.findByTitle(/DEL-001/i)).toBeInTheDocument()
     })
 
     it('should show empty state when trash is empty', async () => {
