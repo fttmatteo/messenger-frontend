@@ -1,10 +1,6 @@
-import { z } from 'zod'
 import apiClient from './api-client'
 import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
 import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
-import { createLogger } from '@/utils/logger'
-
-const logger = createLogger('ServiceDelivery')
 
 /**
  * Servicio encargado de la gestión integral de las entregas de placas.
