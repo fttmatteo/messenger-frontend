@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.2-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-Unit-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-Propietario-red.svg?style=for-the-badge)](LICENSE)
@@ -105,8 +105,9 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 ### Experiencia de Usuario (UX)
 | Característica | Descripción |
 |:---|:---|
-| **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4. |
+| **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4.2. |
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
+| **Paginación y Búsqueda** | Gestión eficiente de grandes volúmenes de datos mediante paginación del lado del servidor y búsqueda Full-Text. |
 | **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
 
@@ -158,7 +159,7 @@ La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **r
 |:---|:---|:---|
 | **Core** | `React 19.2`, `TypeScript 5.9` | Características concurrentes + tipado estricto |
 | **Build** | `Vite 7.3` | HMR ultrarrápido y builds optimizadas |
-| **Estilos** | `Tailwind CSS 4.1`, `Shadcn/UI` | CSS utility-first con librería de componentes accesibles |
+| **Estilos** | `Tailwind CSS 4.2`, `Shadcn/UI` | CSS utility-first con librería de componentes accesibles |
 | **Estado** | `React Query`, `Context API` | Caché de estado del servidor + estado global del cliente |
 | **Formularios** | `React Hook Form`, `Zod 4` | Formularios de alto rendimiento con validación de esquemas |
 | **PWA** | `vite-plugin-pwa`, `idb-keyval` | Capacidades offline y persistencia local |

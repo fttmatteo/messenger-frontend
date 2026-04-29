@@ -136,10 +136,10 @@ export default function MessengerDetails() {
         try {
             setLoadingHistory(true)
             const dateStr = format(historyDate, 'yyyy-MM-dd')
-            const data = await trackingApiService.getHistory(messengerUuid, dateStr)
+            const response = await trackingApiService.getHistory(messengerUuid, dateStr, 0, 500) // Fetch first 500 points for trail
 
-            if (Array.isArray(data)) {
-                setHistoryData(data)
+            if (response && Array.isArray(response.content)) {
+                setHistoryData(response.content)
             } else {
                 setHistoryData([])
             }
