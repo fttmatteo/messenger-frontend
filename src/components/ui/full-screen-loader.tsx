@@ -39,16 +39,6 @@ export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScree
                 </div>
             </div>
 
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes bounce-slow {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-5px); }
-                }
-                .animate-bounce-slow {
-                    animation: bounce-slow 2s infinite ease-in-out;
-                }
-            `}} />
         </div>
     )
 }

@@ -64,4 +64,18 @@
     .animate-accordion-up {
         animation: accordion-up-safe 0.2s ease-out;
     }
+
+    @keyframes bounce-slow {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .animate-bounce-slow {
+        animation: bounce-slow 2s infinite ease-in-out;
+    }
 }
