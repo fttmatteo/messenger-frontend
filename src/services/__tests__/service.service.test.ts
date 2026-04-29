@@ -49,11 +49,8 @@ describe('ServiceDeliveryService', () => {
     });
 
     describe('getAll', () => {
-        it('should return array of services', async () => {
-            vi.mocked(apiClient.get).mockResolvedValue({ data: [mockService] });
-            const result = await serviceDeliveryService.getAll();
-            expect(result).toEqual([mockService]);
-            expect(apiClient.get).toHaveBeenCalledWith('/services/allServices');
+        it('should throw error as it is removed', async () => {
+            await expect(serviceDeliveryService.getAll()).rejects.toThrow('getAll() IS REMOVED');
         });
     });
 
@@ -158,10 +155,19 @@ describe('ServiceDeliveryService', () => {
     });
 
     describe('trash operations', () => {
-        it('getTrash should return array', async () => {
-            vi.mocked(apiClient.get).mockResolvedValue({ data: [mockService] });
+        it('getTrash should return paginated response', async () => {
+            const mockPaginated = {
+                content: [mockService],
+                totalElements: 1,
+                totalPages: 1,
+                pageSize: 10,
+                currentPage: 0,
+                first: true,
+                last: true
+            };
+            vi.mocked(apiClient.get).mockResolvedValue({ data: mockPaginated });
             const result = await serviceDeliveryService.getTrash();
-            expect(result).toEqual([mockService]);
+            expect(result).toEqual(mockPaginated);
         });
 
         it('restore should call API', async () => {

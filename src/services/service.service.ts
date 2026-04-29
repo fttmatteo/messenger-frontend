@@ -1,10 +1,6 @@
-import { z } from 'zod'
 import apiClient from './api-client'
 import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
 import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
-import { createLogger } from '@/utils/logger'
-
-const logger = createLogger('ServiceDelivery')
 
 /**
  * Servicio encargado de la gestión integral de las entregas de placas.
@@ -13,12 +9,11 @@ const logger = createLogger('ServiceDelivery')
  */
 class ServiceDeliveryService {
     /**
-     * @deprecated Usar getAllPaginated en su lugar para mejor rendimiento.
+     * @deprecated El endpoint /services/allServices ha sido eliminado del backend por rendimiento.
+     * Usar getAllPaginated en su lugar.
      */
     async getAll(): Promise<ServiceDelivery[]> {
-        logger.warn('getAll() IS DEPRECATED. Use getAllPaginated()')
-        const response = await apiClient.get('/services/allServices')
-        return z.array(ServiceDeliverySchema).parse(response.data)
+        throw new Error('getAll() IS REMOVED. Use getAllPaginated() instead.')
     }
 
     /**
@@ -148,11 +143,17 @@ class ServiceDeliveryService {
 
     /**
      * Lista los servicios que han sido marcados como eliminados pero aún están en la papelera.
+     * Soporta paginación para eficiencia en administración.
      * Solo accesible por usuarios con rol ADMIN.
      */
-    async getTrash(): Promise<ServiceDelivery[]> {
-        const response = await apiClient.get('/services/trash')
-        return z.array(ServiceDeliverySchema).parse(response.data)
+    async getTrash(params: { page?: number; size?: number } = {}): Promise<PaginatedResponse<ServiceDelivery>> {
+        const response = await apiClient.get('/services/trash', {
+            params: {
+                page: params.page ?? 0,
+                size: params.size ?? 10
+            }
+        })
+        return PaginatedSchema(ServiceDeliverySchema).parse(response.data)
     }
 
     /**

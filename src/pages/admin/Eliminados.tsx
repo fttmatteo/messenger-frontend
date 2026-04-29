@@ -14,6 +14,7 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components
 import { DeletedServiceRowSkeleton, DeletedServiceCardSkeleton } from "@/components/admin/DeletedServiceSkeletons"
 import { DeletedServiceTable } from "@/components/admin/DeletedServiceTable"
 import { EmptyTrashDialog } from "@/components/admin/DeletedServiceDialogs"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 // Variantes de animación
 const itemVariants = {
@@ -41,6 +42,10 @@ export default function Eliminados() {
     const { setSuccess, setError } = useAdminUI()
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(0)
+    const [totalElements, setTotalElements] = useState(0)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
     const [restoring, setRestoring] = useState<string | null>(null)
     const [deleting, setDeleting] = useState<string | null>(null)
     const [emptying, setEmptying] = useState(false)
@@ -49,14 +54,19 @@ export default function Eliminados() {
     const fetchDeletedServices = useCallback(async () => {
         try {
             setLoading(true)
-            const data = await serviceDeliveryService.getTrash()
-            setServices(data)
+            const response = await serviceDeliveryService.getTrash({
+                page: currentPage - 1,
+                size: itemsPerPage
+            })
+            setServices(response.content)
+            setTotalPages(response.totalPages)
+            setTotalElements(response.totalElements)
         } catch (error) {
             setError(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
-    }, [setError])
+    }, [currentPage, itemsPerPage, setError])
 
     useEffect(() => {
         fetchDeletedServices()
@@ -210,6 +220,19 @@ export default function Eliminados() {
                                 />
                             )}
                         </CardContent>
+                        {!loading && services.length > 0 && (
+                            <TablePagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                totalItems={totalElements}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={(items) => {
+                                    setItemsPerPage(items)
+                                    setCurrentPage(1)
+                                }}
+                            />
+                        )}
                     </Card>
                 )}
             </div>
