@@ -1,4 +1,4 @@
-import { Package } from "lucide-react"
+import logo from "../../assets/logo.png"
 
 interface FullScreenLoaderProps {
     message?: string
@@ -20,7 +20,11 @@ export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScree
                     <div className="relative">
                         <div className="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Package className="h-8 w-8 text-primary animate-bounce-slow" aria-hidden="true" />
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="h-8 w-8 object-contain animate-bounce-slow"
+                            />
                         </div>
                     </div>
 
