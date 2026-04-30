@@ -20,7 +20,7 @@
 
 ---
 
-[🇪🇸 Versión en Español](README.md) • [Features](#-key-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation--deployment) • [Architecture](#-project-architecture)
+[🇪🇸 Versión en Español](README.md) • [Features](#key-features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Installation](#installation--deployment) • [Architecture](#project-architecture)
 
 </div>
 

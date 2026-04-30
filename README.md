@@ -20,7 +20,7 @@
 
 ---
 
-[🇺🇸 English Version](README.en.md) • [Características](#-características-principales) • [Capturas](#-capturas-de-pantalla) • [Tecnologías](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
+[🇺🇸 English Version](README.en.md) • [Características](#características-principales) • [Capturas](#capturas-de-pantalla) • [Tecnologías](#stack-tecnológico) • [Instalación](#instalación-y-despliegue) • [Arquitectura](#arquitectura-del-proyecto)
 
 </div>
 
