@@ -3,11 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-/**
- * Componente visual de carga a pantalla completa.
- * Se muestra mientras se cargan componentes perezosos (lazy loading)
- * o se verifica el estado de autenticación.
- */
 function PageLoader() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
@@ -20,10 +15,8 @@ function PageLoader() {
 }
 
 const Login = React.lazy(() => import('@/pages/Login'));
-
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
-
 const AdminDashboard = React.lazy(() => import('@/pages/admin/Dashboard'));
 const Empleados = React.lazy(() => import('@/pages/admin/Empleados'));
 const CreateEmployee = React.lazy(() => import('@/pages/admin/CreateEmployee'));
@@ -37,24 +30,17 @@ const Eliminados = React.lazy(() => import('@/pages/admin/Eliminados'));
 const LiveTracking = React.lazy(() => import('@/pages/admin/LiveTracking'));
 const MessengerDetails = React.lazy(() => import('@/pages/admin/MessengerDetails'));
 const Configuracion = React.lazy(() => import('@/pages/admin/Configuracion'));
-
+const Profile = React.lazy(() => import('@/pages/admin/Profile'));
 const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
 const MessengerCreateServicio = React.lazy(() => import('@/pages/messenger/CreateServicio'));
 const MessengerServiceDetails = React.lazy(() => import('@/pages/messenger/ServiceDetails'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
-
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
-
 const MobileOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
 const DesktopOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
-/**
- * Guardián de rutas que restringe el acceso a usuarios no autenticados.
- * Si el usuario no ha iniciado sesión, es redirigido a la página de login.
- * Mientras se verifica el estado, muestra un cargador.
- */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
 
@@ -169,6 +155,7 @@ export function AppRoutes() {
                     <Route path="tracking" element={<LiveTracking />} />
                     <Route path="tracking/mensajero/:id" element={<MessengerDetails />} />
                     <Route path="configuracion" element={<Configuracion />} />
+                    <Route path="perfil" element={<Profile />} />
                 </Route>
 
 
@@ -188,6 +175,7 @@ export function AppRoutes() {
                     <Route path="servicios" element={<MessengerServiciosPage />} />
                     <Route path="configuracion" element={<MessengerConfiguracionPage />} />
                     <Route path="configuracion/apariencia" element={<MessengerAppearancePage />} />
+                    <Route path="perfil" element={<Profile />} />
                 </Route>
 
 

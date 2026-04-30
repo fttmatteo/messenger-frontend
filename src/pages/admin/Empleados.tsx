@@ -8,21 +8,17 @@ import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TableRowSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Plus, PhoneCall, User, FileText, Shield, Users, X, Smartphone } from "lucide-react"
+import { Plus, PhoneCall, User, FileText, Users, Smartphone } from "lucide-react"
 import { formatDisplayName } from "@/lib/format-utils"
 
-
-
 /**
- * Página principal de administración de empleados.
- * Muestra una lista paginada de todos los empleados registrada en el sistema.
- * Permite filtrar por rol (Administrador/Mensajero), buscar por nombre o documento,
- * y navegar hacia las vistas de creación y edición.
+ * Página principal de administración de mensajeros.
+ * Muestra una lista paginada de todos los mensajeros registrados en el sistema.
+ * Permite buscar por nombre o documento y navegar hacia las vistas de creación y edición.
+ * Los administradores solo ven empleados con rol MESSENGER (filtrado server-side).
  */
 export default function Empleados() {
     const navigate = useNavigate()
@@ -40,44 +36,23 @@ export default function Empleados() {
         sortField,
         sortDirection,
         handleSort,
-        roleFilter,
-        setRoleFilter,
     } = useEmployees({ searchQuery })
-
-    const filterLabel = roleFilter !== "all"
-        ? `filtro: ${roleFilter === "ADMIN" ? "Admin" : "Mensajero"}`
-        : undefined
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Mensajeros" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Empleados</h1>
-                    <ToggleGroup
-                        type="single"
-                        value={roleFilter}
-                        onValueChange={(value) => setRoleFilter((value as "all" | "ADMIN" | "MESSENGER") || "all")}
-                        className="justify-start shrink-0"
-                    >
-                        <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
-                        <ToggleGroupItem value="ADMIN" aria-label="Admin" className="h-8 px-2 text-xs">Administradores</ToggleGroupItem>
-                        <ToggleGroupItem value="MESSENGER" aria-label="Mensajeros" className="h-8 px-2 text-xs">Mensajeros</ToggleGroupItem>
-                    </ToggleGroup>
-                    {roleFilter !== "all" && (
-                        <Button variant="ghost" size="sm" onClick={() => setRoleFilter("all")} className="h-8 text-xs shrink-0">
-                            <X className="h-3 w-3 mr-1" />Limpiar
-                        </Button>
-                    )}
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Mensajeros</h1>
                 </div>
 
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo empleado
+                        Nuevo mensajero
                     </Button>
                 </div>
             </div>
@@ -90,7 +65,6 @@ export default function Empleados() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Nombre</TableHead>
-                                        <TableHead>Rol</TableHead>
                                         <TableHead>Documento</TableHead>
                                         <TableHead>Teléfono</TableHead>
                                     </TableRow>
@@ -106,8 +80,8 @@ export default function Empleados() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Users />}
-                                emptyTitle="Sin empleados"
-                                emptyDescription="Aún no hay empleados registrados en el sistema"
+                                emptyTitle="Sin mensajeros"
+                                emptyDescription="Aún no hay mensajeros registrados en el sistema"
                                 className="py-0"
                             />
                         </div>
@@ -121,12 +95,6 @@ export default function Empleados() {
                                                 <div className="flex items-center gap-2">
                                                     <User className="h-4 w-4" />Nombre
                                                     <SortIndicator field="fullName" currentSortField={sortField} sortDirection={sortDirection} />
-                                                </div>
-                                            </TableHead>
-                                            <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("role")}>
-                                                <div className="flex items-center gap-2">
-                                                    <Shield className="h-4 w-4" />Rol
-                                                    <SortIndicator field="role" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("document")}>
@@ -162,11 +130,6 @@ export default function Empleados() {
                                                             <TooltipContent><p>{employee.fullName}</p></TooltipContent>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant={employee.role === 'ADMIN' ? 'default' : 'secondary'} className="text-xs">
-                                                            {employee.role === 'ADMIN' ? 'Admin' : 'Mensajero'}
-                                                        </Badge>
-                                                    </TableCell>
                                                     <TableCell className="font-mono text-sm">{employee.document}</TableCell>
                                                     <TableCell className="text-sm">
                                                         <Tooltip>
@@ -184,7 +147,7 @@ export default function Empleados() {
                                     </TableBody>
                                 </Table>
                             </div>
-                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedEmployees.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} filterLabel={filterLabel} />
+                            <TablePagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAndSortedEmployees.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} onItemsPerPageChange={setItemsPerPage} />
                         </>
                     )}
                 </CardContent>
@@ -192,3 +155,4 @@ export default function Empleados() {
         </div >
     )
 }
+

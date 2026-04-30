@@ -6,7 +6,6 @@ import { useDataList } from "@/hooks/use-data-list"
 import { getErrorMessage } from "@/lib/error-utils"
 
 type SortDirection = "asc" | "desc"
-type RoleFilter = "all" | "ADMIN" | "MESSENGER"
 
 interface UseEmployeesOptions {
     searchQuery: string
@@ -27,40 +26,28 @@ interface UseEmployeesReturn {
     sortDirection: SortDirection
     handleSort: (field: string) => void
 
-    roleFilter: RoleFilter
-    setRoleFilter: (filter: RoleFilter) => void
-
     fetchEmployees: () => Promise<void>
 }
 
 /**
- * Hook para gestionar y filtrar la lista de empleados.
- * Proporciona funcionalidades de búsqueda, filtrado por rol y ordenación.
+ * Hook para gestionar y filtrar la lista de mensajeros.
+ * Proporciona funcionalidades de búsqueda y ordenación.
+ * El filtrado por rol se realiza en el backend (solo retorna MESSENGER).
  */
 export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployeesReturn {
     const [employees, setEmployees] = useState<Employee[]>([])
     const [loading, setLoading] = useState(true)
-    const [roleFilter, setRoleFilter] = useState<RoleFilter>("all")
 
     const searchFilter = useCallback((employee: Employee, query: string) => {
         return (
             employee.fullName.toLowerCase().includes(query) ||
             String(employee.document).includes(query) ||
-            employee.phone.includes(query) ||
-            employee.role.toLowerCase().includes(query)
+            employee.phone.includes(query)
         )
     }, [])
 
-    const customFilter = useCallback((employee: Employee) => {
-        if (roleFilter !== "all" && employee.role !== roleFilter) {
-            return false
-        }
-        return true
-    }, [roleFilter])
-
     const sortValueResolvers = {
         "fullName": (e: Employee) => e.fullName,
-        "role": (e: Employee) => e.role,
         "document": (e: Employee) => String(e.document)
     }
 
@@ -79,7 +66,6 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         data: employees,
         searchQuery,
         searchFilter,
-        customFilter,
         sortValueResolvers,
         defaultSortField: null,
         initialItemsPerPage: 10
@@ -91,7 +77,7 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
             const data = await employeeService.getAll()
             setEmployees(data)
         } catch (error) {
-            showToast.error("Error al cargar empleados", {
+            showToast.error("Error al cargar mensajeros", {
                 description: getErrorMessage(error)
             })
         } finally {
@@ -119,9 +105,7 @@ export function useEmployees({ searchQuery }: UseEmployeesOptions): UseEmployees
         sortDirection,
         handleSort,
 
-        roleFilter,
-        setRoleFilter,
-
         fetchEmployees,
     }
 }
+

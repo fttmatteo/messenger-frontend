@@ -52,7 +52,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                 setLoadingMessengers(true)
                 employeeService.getAll()
                     .then(employees => {
-                        setMessengers(employees.filter(e => e.role === 'MESSENGER'))
+                        setMessengers(employees)
                     })
                     .catch(() => { })
                     .finally(() => setLoadingMessengers(false))

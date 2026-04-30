@@ -300,7 +300,7 @@ export default function Login() {
                 </Card>
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight">
-                    PLAK es un software desarrollado y operado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a través del correo electrónico o el botón de ayuda en la esquina superior izquierda.
+                    Plak es un software desarrollado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a soporte@plak.digital
                 </div>
 
 
