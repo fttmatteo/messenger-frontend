@@ -275,7 +275,7 @@ export default function LoginMobile() {
                 </Card>
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight">
-                    PLAK es un software desarrollado y operado legalmente por Mateo Valencia Ardila | NIT 1000413081-0
+                    Plak es un software desarrollado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a soporte@plak.digital
                 </div>
 
 
