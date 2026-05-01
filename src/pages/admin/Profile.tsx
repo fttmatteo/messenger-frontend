@@ -107,9 +107,9 @@ export default function Profile() {
         .slice(0, 2) || "U"
 
     return (
-        <div className="flex flex-col h-full gap-4 overflow-hidden animate-in fade-in duration-500">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header Section - Hidden on Mobile */}
-            <div className="hidden md:flex items-center justify-between min-h-[48px] mb-4 gap-4">
+            <div className="hidden md:flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Mi Perfil" }]} />
                 </div>
@@ -122,10 +122,10 @@ export default function Profile() {
             <div className="flex-1 overflow-y-auto pb-4 px-4">
                 <div className="w-full space-y-3">
                     {/* Perfil Header Card */}
-                    <Card className="border-border/50 bg-background/60 backdrop-blur-xl">
+                    <Card>
                         <CardContent className="py-3 px-6">
                                 <div className="flex items-center gap-4">
-                                    <Avatar className="h-14 w-14 border-2 border-background shadow-md">
+                                    <Avatar className="h-14 w-14 border-2 border-background">
                                         <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
                                             {initials}
                                         </AvatarFallback>
@@ -145,17 +145,17 @@ export default function Profile() {
 
                     <Tabs defaultValue="personal" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 max-w-[320px] mb-2 bg-muted/50 p-1">
-                            <TabsTrigger value="personal" className="text-xs py-1 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                            <TabsTrigger value="personal" className="text-xs py-1 data-[state=active]:bg-background">
                                 Información Personal
                             </TabsTrigger>
-                            <TabsTrigger value="security" className="text-xs py-1 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                            <TabsTrigger value="security" className="text-xs py-1 data-[state=active]:bg-background">
                                 Seguridad
                             </TabsTrigger>
                         </TabsList>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <TabsContent value="personal" className="mt-0 focus-visible:outline-none">
-                                <Card className="border-border/50 bg-background/40">
+                                <Card>
                                         <CardHeader className="py-3 px-6">
                                             <CardTitle className="text-base">Datos Personales</CardTitle>
                                         </CardHeader>
@@ -169,7 +169,7 @@ export default function Profile() {
                                                     <Input
                                                         id="document"
                                                         value={fullProfile?.document 
-                                                            ? String(fullProfile.document).replace(/.(?=.{4})/g, '***') 
+                                                            ? String(fullProfile.document).replace(/.(?=.{4})/g, '*') 
                                                             : ""}
                                                         disabled
                                                         className="bg-muted/30 border-dashed"
@@ -184,7 +184,7 @@ export default function Profile() {
                                                         id="fullName"
                                                         placeholder="Tu nombre"
                                                         {...register("fullName")}
-                                                        className="bg-background/50 focus:bg-background transition-all"
+                                                        className="bg-background/50 focus:bg-background"
                                                     />
                                                     {errors.fullName && (
                                                         <p className="text-sm text-red-500">{errors.fullName.message}</p>
@@ -199,7 +199,7 @@ export default function Profile() {
                                                         id="phone"
                                                         placeholder="3001234567"
                                                         {...register("phone")}
-                                                        className="bg-background/50 focus:bg-background transition-all"
+                                                        className="bg-background/50 focus:bg-background"
                                                     />
                                                     {errors.phone && (
                                                         <p className="text-sm text-red-500">{errors.phone.message}</p>
@@ -211,7 +211,7 @@ export default function Profile() {
                             </TabsContent>
 
                             <TabsContent value="security" className="mt-0 focus-visible:outline-none">
-                                <Card className="border-border/50 bg-background/40">
+                                <Card>
                                         <CardHeader className="py-3 px-6">
                                             <CardTitle className="text-base">Seguridad</CardTitle>
                                         </CardHeader>
@@ -227,7 +227,7 @@ export default function Profile() {
                                                         type="password"
                                                         placeholder="••••••••"
                                                         {...register("password")}
-                                                        className="bg-background/50 focus:bg-background transition-all"
+                                                        className="bg-background/50 focus:bg-background"
                                                     />
                                                     <p className="text-[10px] text-muted-foreground italic">
                                                         Deja este campo vacío si no deseas cambiar tu contraseña actual.
@@ -242,7 +242,7 @@ export default function Profile() {
                             </TabsContent>
 
                             <div className="flex justify-end pt-2">
-                                <Button type="submit" disabled={saving} size="sm" className="min-w-[140px] shadow-lg shadow-primary/20">
+                                <Button type="submit" disabled={saving} size="sm" className="min-w-[140px]">
                                     {saving ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -271,9 +271,9 @@ export default function Profile() {
  */
 function ProfileSkeleton() {
     return (
-        <div className="flex flex-col h-full gap-4 overflow-hidden">
+        <div className="flex flex-col h-full gap-1 overflow-hidden">
             {/* Header Skeleton - Hidden on Mobile */}
-            <div className="hidden md:flex items-center justify-between min-h-[48px] gap-4 px-4">
+            <div className="hidden md:flex items-center justify-between min-h-[48px] mb-2 gap-4 px-4">
                 <div className="flex-1">
                     <Skeleton static className="h-4 w-32 rounded bg-muted/20" />
                 </div>
@@ -286,10 +286,10 @@ function ProfileSkeleton() {
             <div className="flex-1 overflow-y-auto pb-4 px-4">
                 <div className="w-full space-y-3">
                     {/* Perfil Header Card Skeleton */}
-                    <Card className="border-border/50 bg-background/60">
+                    <Card>
                         <CardContent className="py-3 px-6">
                             <div className="flex items-center gap-4">
-                                <Skeleton static className="h-14 w-14 rounded-full border-2 border-background bg-muted/20 shadow-md" />
+                                <Skeleton static className="h-14 w-14 rounded-full border-2 border-background bg-muted/20" />
                                 <div className="flex-1 space-y-2">
                                     <Skeleton static className="h-5 w-48 rounded bg-muted/20" />
                                     <Skeleton static className="h-3 w-32 rounded bg-muted/10" />
@@ -306,7 +306,7 @@ function ProfileSkeleton() {
                         </div>
 
                         {/* Form Skeleton */}
-                        <Card className="border-border/50 bg-background/40">
+                        <Card>
                             <CardHeader className="py-3 px-6">
                                 <Skeleton static className="h-5 w-32 rounded bg-muted/20" />
                             </CardHeader>
@@ -324,7 +324,7 @@ function ProfileSkeleton() {
                     </div>
 
                     <div className="flex justify-end pt-2">
-                        <Skeleton static className="h-8 w-32 rounded-md bg-muted/20 shadow-lg" />
+                        <Skeleton static className="h-8 w-32 rounded-md bg-muted/20" />
                     </div>
                 </div>
             </div>
