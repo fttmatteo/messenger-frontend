@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LogOut, ChevronLeft, WifiOff, CloudOff, Menu, History, Settings, ClipboardList, HelpCircle } from "lucide-react"
+import { LogOut, ChevronLeft, WifiOff, CloudOff, Menu, History, Settings, ClipboardList, HelpCircle, User } from "lucide-react"
 import { trackingService } from "@/services/tracking.service"
 import { authService } from "@/services/auth.service"
 import { showToast } from "@/config/toast-config"
@@ -84,6 +84,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
+        if (location.pathname.includes('perfil')) return 'Mi Perfil'
         if (location.pathname.includes('actualizar')) return 'Actualizar estado'
         if (location.pathname.includes('servicio/')) return 'Detalle servicio'
         if (location.pathname.includes('crear')) return 'Nuevo servicio'
@@ -566,6 +567,14 @@ export default function MessengerLayout() {
                                         <Button
                                             variant="ghost"
                                             className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
+                                            onClick={() => { navigate('/messenger/perfil'); setIsSidebarOpen(false); }}
+                                        >
+                                            <User className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <span className="font-medium text-sm">Mi Perfil</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 px-4 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
                                             onClick={() => { navigate('/messenger/configuracion'); setIsSidebarOpen(false); }}
                                         >
                                             <Settings className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -589,7 +598,7 @@ export default function MessengerLayout() {
                                             onClick={() => { handleLogout(); setIsSidebarOpen(false); }}
                                         >
                                             <LogOut className="h-5 w-5" />
-                                            <span className="text-sm">Cerrar sesión</span>
+                                            <span className="text-sm">Cerrar Sesión</span>
                                         </Button>
                                     </div>
                                 </SheetContent>
@@ -615,7 +624,7 @@ export default function MessengerLayout() {
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Cerrar Sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Se detendrá el rastreo GPS y cerrarás tu sesión.
                         </AlertDialogDescription>

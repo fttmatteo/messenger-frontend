@@ -63,8 +63,7 @@ export default function LiveTracking() {
         try {
             setLoading(true)
 
-            const allEmployees = await employeeService.getAll()
-            const messengerEmployees = allEmployees.filter(e => e.role === 'MESSENGER')
+            const messengerEmployees = await employeeService.getAll()
 
             const activeMessengers = await trackingApiService.getActiveMessengers()
             const activeMap = new Map(activeMessengers.map(m => [m.messengerId, m]))

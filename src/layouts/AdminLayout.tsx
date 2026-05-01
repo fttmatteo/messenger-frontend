@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle } from "lucide-react"
+import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
@@ -91,6 +91,16 @@ function AdminLayoutContent() {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton
+                                onClick={() => navigate("/admin/perfil")}
+                                tooltip="Mi Perfil"
+                                className="text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                            >
+                                <User className="h-4 w-4" />
+                                <span className="text-xs font-medium">Mi Perfil</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
                                 onClick={() => openSupportEmail()}
                                 tooltip="Soporte"
                                 className="text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
@@ -102,11 +112,11 @@ function AdminLayoutContent() {
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 onClick={handleLogout}
-                                tooltip="Cerrar sesión"
+                                tooltip="Cerrar Sesión"
                                 className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                             >
                                 <LogOut className="h-4 w-4" />
-                                <span className="text-xs font-medium">Cerrar sesión</span>
+                                <span className="text-xs font-medium">Cerrar Sesión</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
@@ -122,7 +132,7 @@ function AdminLayoutContent() {
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Cerrar Sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
                             ¿Estás seguro que deseas cerrar sesión?
                         </AlertDialogDescription>

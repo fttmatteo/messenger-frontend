@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.9.2-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.0-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -20,7 +20,7 @@
 
 ---
 
-[🇪🇸 Versión en Español](README.md) • [Features](#-key-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation--deployment) • [Architecture](#-project-architecture)
+[🇪🇸 Versión en Español](README.md) • [Features](#key-features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Installation](#installation--deployment) • [Architecture](#project-architecture)
 
 </div>
 
@@ -109,6 +109,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Pagination & Search** | Efficient management of large data volumes through server-side pagination and Full-Text search. |
 | **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
+| **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 
 ---
@@ -290,7 +291,8 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 | **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
 | **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
 | **Solo HTTPS** | Enforced secure connections in production |
-| **Input Validation** | All user inputs validated with Zod schemas |
+| **Input Validation** | All user inputs validated with Zod schemas (aligned with backend, e.g., min 6 chars for passwords) |
+| **Data Masking** | Automatic obfuscation of sensitive documents in the UI (only last 4 digits visible) |
 | **Bot Protection** | Cloudflare Turnstile integrated into all login flows |
 | **Rate Limiting** | Client-side handling of 429 errors from the backend |
 | **Public UUIDs** | Use of UUID v4 for all entity references to prevent ID enumeration and improve offline sync |

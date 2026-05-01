@@ -1,16 +1,14 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { employeeService } from "@/services/employee.service"
-import type { EmployeeRole } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { capitalizeWords } from "@/lib/format-utils"
@@ -21,15 +19,15 @@ const employeeSchema = z.object({
     fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
     password: z.string().min(1, "La contraseña es requerida").min(6, "Mínimo 6 caracteres"),
-    role: z.enum(["ADMIN", "MESSENGER"]),
+    role: z.literal("MESSENGER"),
 })
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
 /**
- * Página para la creación de un nuevo empleado (Administrador o Mensajero).
- * Proporciona un formulario para ingresar el documento, nombre, teléfono,
- * contraseña y rol del usuario.
+ * Página para la creación de un nuevo mensajero.
+ * Proporciona un formulario para ingresar el documento, nombre, teléfono
+ * y contraseña. El rol se asigna automáticamente como MESSENGER.
  */
 export default function CreateEmployee() {
     const navigate = useNavigate()
@@ -40,16 +38,12 @@ export default function CreateEmployee() {
     const {
         register,
         handleSubmit,
-        setValue,
-        control,
         formState: { errors, isSubmitting },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
-    })
-
-    const selectedRole = useWatch({
-        control,
-        name: "role",
+        defaultValues: {
+            role: "MESSENGER",
+        },
     })
 
     const onSubmit = async (data: EmployeeFormValues) => {
@@ -59,9 +53,9 @@ export default function CreateEmployee() {
                 fullName: capitalizeWords(data.fullName.trim()),
                 phone: data.phone,
                 password: data.password,
-                role: data.role as EmployeeRole,
+                role: "MESSENGER",
             })
-            setSuccess("El nuevo empleado ha sido registrado correctamente")
+            setSuccess("El nuevo mensajero ha sido registrado correctamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -79,7 +73,7 @@ export default function CreateEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo empleado</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo mensajero</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
@@ -87,7 +81,7 @@ export default function CreateEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del mensajero</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -161,25 +155,6 @@ export default function CreateEmployee() {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="role">Cargo</Label>
-                                <Select
-                                    name="role"
-                                    value={selectedRole}
-                                    onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
-                                >
-                                    <SelectTrigger id="role">
-                                        <SelectValue placeholder="Selecciona un cargo" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ADMIN">Administrador</SelectItem>
-                                        <SelectItem value="MESSENGER">Mensajero</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.role && (
-                                    <p className="text-sm text-red-500">{errors.role.message}</p>
-                                )}
-                            </div>
                         </div>
 
                         <div className="flex gap-4 pt-6 mt-auto border-t">
@@ -193,7 +168,7 @@ export default function CreateEmployee() {
                             </Button>
                             <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear empleado
+                                Crear mensajero
                             </Button>
                         </div>
                     </form>

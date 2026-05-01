@@ -5,13 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { employeeService } from "@/services/employee.service"
 import { useAdminUI } from "@/context/AdminUIContext"
-import type { EmployeeRole } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff, Trash2, Save } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
@@ -22,7 +20,7 @@ const employeeSchema = z.object({
     fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
     phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
     password: z.string().optional(),
-    role: z.enum(["ADMIN", "MESSENGER"]),
+    role: z.literal("MESSENGER"),
 })
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
@@ -43,9 +41,9 @@ function capitalizeWords(str: string): string {
 }
 
 /**
- * Página para editar la información de un empleado existente.
- * Permite actualizar datos personales, cambiar el rol o la contraseña,
- * y eliminar al empleado del sistema.
+ * Página para editar la información de un mensajero existente.
+ * Permite actualizar datos personales y cambiar la contraseña.
+ * El rol permanece como MESSENGER (no se puede promover a admin desde el panel).
  */
 export default function EditEmployee() {
     const { id } = useParams<{ id: string }>()
@@ -58,16 +56,11 @@ export default function EditEmployee() {
     const {
         register,
         handleSubmit,
-        setValue,
-        watch,
         reset,
         formState: { errors, isSubmitting },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
     })
-
-    const selectedRole = watch("role")
-
     useEffect(() => {
         const fetchEmployee = async () => {
             if (!id) return
@@ -79,7 +72,7 @@ export default function EditEmployee() {
                     fullName: employee.fullName,
                     phone: employee.phone,
                     password: "",
-                    role: employee.role,
+                    role: "MESSENGER",
                 })
             } catch (error) {
                 setError(getErrorMessage(error))
@@ -99,9 +92,9 @@ export default function EditEmployee() {
                 fullName: capitalizeWords(data.fullName.trim()),
                 phone: data.phone,
                 password: data.password || "",
-                role: data.role as EmployeeRole,
+                role: "MESSENGER",
             })
-            setSuccess("Empleado actualizado exitosamente")
+            setSuccess("Mensajero actualizado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -113,7 +106,7 @@ export default function EditEmployee() {
         try {
             setDeleting(true)
             await employeeService.delete(id)
-            setSuccess("Empleado eliminado exitosamente")
+            setSuccess("Mensajero eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -137,7 +130,7 @@ export default function EditEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar empleado</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar mensajero</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
@@ -145,7 +138,7 @@ export default function EditEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del mensajero</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -219,25 +212,6 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="role">Cargo</Label>
-                                <Select
-                                    name="role"
-                                    value={selectedRole}
-                                    onValueChange={(value) => setValue("role", value as "ADMIN" | "MESSENGER")}
-                                >
-                                    <SelectTrigger id="role">
-                                        <SelectValue placeholder="Selecciona un rol" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ADMIN">Administrador</SelectItem>
-                                        <SelectItem value="MESSENGER">Mensajero</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.role && (
-                                    <p className="text-sm text-red-500">{errors.role.message}</p>
-                                )}
-                            </div>
                         </div>
 
                         <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
@@ -272,10 +246,10 @@ export default function EditEmployee() {
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>
-                                            ¿Eliminar empleado?
+                                            ¿Eliminar mensajero?
                                         </AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente este empleado del sistema.
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente este mensajero del sistema.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.9.2-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.0-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -20,7 +20,7 @@
 
 ---
 
-[🇺🇸 English Version](README.en.md) • [Características](#-características-principales) • [Capturas](#-capturas-de-pantalla) • [Tecnologías](#-stack-tecnológico) • [Instalación](#-instalación-y-despliegue) • [Arquitectura](#-arquitectura-del-proyecto)
+[🇺🇸 English Version](README.en.md) • [Características](#características-principales) • [Capturas](#capturas-de-pantalla) • [Tecnologías](#stack-tecnológico) • [Instalación](#instalación-y-despliegue) • [Arquitectura](#arquitectura-del-proyecto)
 
 </div>
 
@@ -109,6 +109,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
 | **Paginación y Búsqueda** | Gestión eficiente de grandes volúmenes de datos mediante paginación del lado del servidor y búsqueda Full-Text. |
 | **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
+| **Mi Perfil** | Gestión centralizada de datos personales y seguridad con enmascaramiento de documentos sensibles. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
 
 ---
@@ -290,7 +291,8 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 | **Prevención XSS** | Escapado integrado de React + Content Security Policy estricto |
 | **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Messenger) a nivel de router |
 | **Solo HTTPS** | Conexiones seguras forzadas en producción |
-| **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod |
+| **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod (alineadas con el backend, ej: mín. 6 caracteres para claves) |
+| **Enmascaramiento de Datos** | Ofuscación automática de documentos sensibles en la interfaz (solo últimos 4 dígitos visibles) |
 | **Protección contra Bots** | Cloudflare Turnstile integrado en todos los flujos de login |
 | **Rate Limiting** | Manejo del lado del cliente de errores 429 desde el backend |
 | **UUIDs Públicos** | Uso de UUID v4 para todas las referencias de entidades para prevenir enumeración de IDs y mejorar la sincronización offline |

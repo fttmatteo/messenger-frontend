@@ -1,7 +1,7 @@
 {
   "name": "plak-frontend",
   "private": true,
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "Frontend de PLAK Messenger",
   "author": "Mateo Valencia Ardila",
   "license": "Proprietary",
@@ -90,7 +90,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.4",
-    "uuid": "^13.0.0",
+    "uuid": "^13.0.1",
     "vaul": "^1.1.2",
     "zod": "^4.3.6"
   },
