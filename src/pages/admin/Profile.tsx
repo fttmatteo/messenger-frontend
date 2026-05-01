@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Loader2, Save, User, ShieldCheck, Smartphone, FileText, KeyRound } from "lucide-react"
+import { Loader2, Save, User, ShieldCheck, Smartphone, FileText, KeyRound, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { profileService, type ProfileUpdateRequest } from "@/services/profile.service"
 import { showToast } from "@/config/toast-config"
@@ -36,6 +36,7 @@ export default function Profile() {
     const { user, updateUser } = useAuth()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const [fullProfile, setFullProfile] = useState<{ document: string | number; role: string } | null>(null)
 
     const {
@@ -222,13 +223,28 @@ export default function Profile() {
                                                         <KeyRound className="h-4 w-4 text-muted-foreground" />
                                                         Nueva contraseña
                                                     </Label>
-                                                    <Input
-                                                        id="password"
-                                                        type="password"
-                                                        placeholder="••••••••"
-                                                        {...register("password")}
-                                                        className="bg-background/50 focus:bg-background"
-                                                    />
+                                                    <div className="relative">
+                                                        <Input
+                                                            id="password"
+                                                            type={showPassword ? "text" : "password"}
+                                                            placeholder="••••••••"
+                                                            {...register("password")}
+                                                            className="bg-background/50 focus:bg-background pr-10"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                        >
+                                                            {showPassword ? (
+                                                                <EyeOff className="h-4 w-4" />
+                                                            ) : (
+                                                                <Eye className="h-4 w-4" />
+                                                            )}
+                                                        </Button>
+                                                    </div>
                                                     <p className="text-[10px] text-muted-foreground italic">
                                                         Deja este campo vacío si no deseas cambiar tu contraseña actual.
                                                     </p>
