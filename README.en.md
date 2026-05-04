@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.10.3-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.4-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -108,7 +108,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4.2. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Pagination & Search** | Efficient management of large data volumes through server-side pagination and Full-Text search. |
-| **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
+| **Evidence Capture** | Vector digital signature and **Native WebP Optimization Pipeline** with source compression for maximum performance. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 

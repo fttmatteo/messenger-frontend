@@ -22,7 +22,6 @@ import { useSmartLocation } from "@/hooks/use-smart-location"
 import { CreateServiceSkeleton } from "@/components/service/ServiceSkeletons"
 
 
-// Esquema de validación del formulario
 const formSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario es obligatorio"),
     manualPlateNumber: z.string().optional(),
@@ -42,17 +41,24 @@ export default function MessengerCreateServicio() {
     const { getCurrentLocation } = useSmartLocation()
 
 
-    // Estado del formulario
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
     const [loadingData, setLoadingData] = useState(true)
     const [showManualPlate, setShowManualPlate] = useState(false)
 
-    // Estado de la imagen
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+    // Limpieza de memoria para URLs de previsualización
+    useEffect(() => {
+        return () => {
+            if (imagePreview && imagePreview.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
     const [showCamera, setShowCamera] = useState(true)
 
-    // Estado del preview de OCR
     const [extractingPlate, setExtractingPlate] = useState(false)
     const [ocrSuccess, setOcrSuccess] = useState<boolean | null>(null)
 
@@ -64,7 +70,6 @@ export default function MessengerCreateServicio() {
         },
     })
 
-    // Agrupar concesionarios por zona
     const groupedDealerships = useMemo(() => {
         const groups: Record<string, Dealership[]> = {}
         dealerships.forEach(d => {
@@ -77,7 +82,6 @@ export default function MessengerCreateServicio() {
         return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
     }, [dealerships])
 
-    // Cargar concesionarios al montar el componente
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -95,13 +99,11 @@ export default function MessengerCreateServicio() {
         fetchData()
     }, [])
 
-    // Manejar captura de foto desde la cámara
     const handlePhotoCapture = useCallback(async (file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
 
-        // Ejecutar OCR automáticamente
         setExtractingPlate(true)
         setOcrSuccess(null)
         try {
@@ -121,13 +123,11 @@ export default function MessengerCreateServicio() {
         }
     }, [form])
 
-    // Manejar selección de imagen desde la galería
     const handleImageSelect = useCallback(async (file: File, previewUrl: string) => {
         form.setValue("image", file)
         setImagePreview(previewUrl)
         setShowCamera(false)
 
-        // Ejecutar OCR automáticamente
         setExtractingPlate(true)
         setOcrSuccess(null)
         try {
@@ -147,7 +147,6 @@ export default function MessengerCreateServicio() {
         }
     }, [form])
 
-    // Limpiar imagen seleccionada
     const clearImage = useCallback(() => {
         form.setValue("image", undefined as unknown as File)
         form.setValue("manualPlateNumber", "")
@@ -157,7 +156,6 @@ export default function MessengerCreateServicio() {
         setShowManualPlate(false)
     }, [form])
 
-    // Manejador de envío del formulario
     const onSubmit = async (values: FormValues) => {
         try {
             setLoading(true)
@@ -210,7 +208,6 @@ export default function MessengerCreateServicio() {
         }
     }
 
-    // Skeleton de carga mientras se obtienen los concesionarios
     if (loadingData) {
         return <CreateServiceSkeleton />
     }

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
 import { showToast } from '@/config/toast-config'
@@ -11,6 +11,47 @@ interface EvidenceCaptureProps {
     maxPhotos?: number
     photos: File[]
     onPhotosChange: (photos: File[]) => void
+}
+
+interface PhotoPreviewProps {
+    photo: File;
+    index: number;
+    photos: File[];
+    onRemove: (index: number) => void;
+}
+
+function PhotoPreview({ photo, index, photos, onRemove }: PhotoPreviewProps) {
+    // Generamos la URL síncronamente para evitar el renderizado en cascada (cascading renders)
+    const url = useMemo(() => URL.createObjectURL(photo), [photo]);
+
+    // Nos encargamos EXCLUSIVAMENTE de la limpieza cuando el componente se desmonta o la foto cambia
+    useEffect(() => {
+        return () => URL.revokeObjectURL(url);
+    }, [url]);
+
+    if (!url) return <div className="w-full h-full bg-muted animate-pulse" />;
+
+    return (
+        <div className="relative aspect-square rounded-lg overflow-hidden border border-border/50 bg-muted/50">
+            <img
+                src={url}
+                alt={`Evidencia ${index + 1}`}
+                className="w-full h-full object-cover"
+            />
+            <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md hover:bg-red-500 hover:text-white transition-colors"
+                onClick={() => onRemove(index)}
+            >
+                <X className="h-4 w-4" />
+            </Button>
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                <p className="text-xs text-white font-medium">Foto {index + 1} de {photos.length}</p>
+            </div>
+        </div>
+    );
 }
 
 /**
@@ -117,11 +158,11 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
         canvas.toBlob((blob) => {
             if (blob) {
-                const file = new File([blob], `evidencia_${Date.now()}.jpg`, { type: 'image/jpeg' })
+                const file = new File([blob], `evidencia_${Date.now()}.webp`, { type: 'image/webp' })
                 onPhotosChange([...photos, file])
                 stopCamera()
             }
-        }, 'image/jpeg', 0.9)
+        }, 'image/webp', 0.85)
     }
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,25 +245,13 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 <div className="space-y-3">
                     <div className={`grid gap-3 ${photos.length === 1 ? 'grid-cols-1 max-w-sm' : 'grid-cols-2 sm:grid-cols-3'}`}>
                         {photos.map((photo, index) => (
-                            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-border/50 bg-muted/50">
-                                <img
-                                    src={URL.createObjectURL(photo)}
-                                    alt={`Evidencia ${index + 1}`}
-                                    className="w-full h-full object-cover"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="icon"
-                                    className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-md hover:bg-red-500 hover:text-white transition-colors"
-                                    onClick={() => removePhoto(index)}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                                    <p className="text-xs text-white font-medium">Foto {index + 1} de {photos.length}</p>
-                                </div>
-                            </div>
+                            <PhotoPreview 
+                                key={`${photo.name}-${index}`} 
+                                photo={photo} 
+                                index={index} 
+                                photos={photos}
+                                onRemove={removePhoto} 
+                            />
                         ))}
                     </div>
                 </div>
