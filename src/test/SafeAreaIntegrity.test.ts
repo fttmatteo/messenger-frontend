@@ -43,9 +43,7 @@ describe('Safe Area Integrity Audit', () => {
         
         expect(content).toContain('pt-safe')
         expect(content).toContain('pb-safe')
-        // Verifica que el header tenga pt-safe
         expect(content).toMatch(/<header[^>]*pt-safe/)
-        // Verifica que el main tenga pb-safe
         expect(content).toMatch(/<main[^>]*pb-safe/)
     })
 
@@ -59,18 +57,43 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toMatch(/id="main-content"[^>]*pb-safe/)
     })
 
+    it('No debe haber paddings duplicados en páginas estándar', () => {
+        const messengerPagesDir = path.resolve(__dirname, '../pages/messenger')
+        const pages = ['ServiceDetails.tsx', 'ServiciosPage.tsx', 'ConfiguracionPage.tsx', 'AppearancePage.tsx']
+        
+        pages.forEach(page => {
+            const content = fs.readFileSync(path.join(messengerPagesDir, page), 'utf-8')
+            // El Safe Area inferior ya lo provee el Layout global, no debe estar en la página
+            expect(content).not.toContain('pb-safe')
+        })
+    })
+
+    it('index.html debe tener viewport-fit=cover', () => {
+        const htmlPath = path.resolve(__dirname, '../../index.html')
+        const content = fs.readFileSync(htmlPath, 'utf-8')
+        expect(content).toContain('viewport-fit=cover')
+    })
+
+    it('base.css debe tener fondo consistente y fill-available', () => {
+        const cssPath = path.resolve(__dirname, '../styles/base.css')
+        const content = fs.readFileSync(cssPath, 'utf-8')
+        expect(content).toContain('background-color: var(--background)')
+        expect(content).toContain('-webkit-fill-available')
+    })
+
     it('Sonner toaster debe usar el offset dinámico con safe-area-bottom', () => {
         const sonnerPath = path.resolve(__dirname, '../components/ui/sonner.tsx')
         const content = fs.readFileSync(sonnerPath, 'utf-8')
-        
         expect(content).toContain('calc(var(--safe-area-bottom) + 16px)')
     })
 
-    it('MessengerDashboard debe tener padding inferior simplificado', () => {
+    it('Páginas con elementos fijos deben mantener el cálculo de seguridad', () => {
         const dashboardPath = path.resolve(__dirname, '../pages/messenger/Dashboard.tsx')
-        const content = fs.readFileSync(dashboardPath, 'utf-8')
-        
-        expect(content).toContain('pb-24')
-        expect(content).toContain('bottom-[calc(1.5rem+var(--safe-area-bottom))]')
+        const dashboardContent = fs.readFileSync(dashboardPath, 'utf-8')
+        expect(dashboardContent).toContain('bottom-[calc(1.5rem+var(--safe-area-bottom))]')
+
+        const statusPath = path.resolve(__dirname, '../pages/messenger/UpdateStatus.tsx')
+        const statusContent = fs.readFileSync(statusPath, 'utf-8')
+        expect(statusContent).toContain('pb-[calc(1rem+var(--safe-area-bottom))]')
     })
 })
