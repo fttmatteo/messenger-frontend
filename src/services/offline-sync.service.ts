@@ -34,7 +34,6 @@ export interface UpdateStatusWithFilesPayload {
     status: string
     observation?: string
     signatureBase64?: string
-    signatureGifBase64?: string
     photosBase64?: string[]
     latitude?: number
     longitude?: number

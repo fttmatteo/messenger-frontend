@@ -30,7 +30,6 @@ export interface PlateInfo {
 export interface SignatureInfo {
     idSignature: number
     signaturePath: string
-    gifPath?: string
 }
 
 export interface PhotoInfo {
@@ -118,7 +117,6 @@ export interface UpdateServiceStatusRequest {
     status: ServiceStatus
     observation?: string
     signature?: File
-    signatureGif?: File
     photos?: File[]
     latitude?: number
     longitude?: number

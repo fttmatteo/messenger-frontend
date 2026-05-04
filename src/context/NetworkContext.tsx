@@ -36,10 +36,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')
                 }
 
-                let signatureGif: File | undefined
-                if (payload.signatureGifBase64) {
-                    signatureGif = await base64ToFile(payload.signatureGifBase64, 'capture.gif', 'image/gif')
-                }
 
                 let photos: File[] | undefined
                 if (payload.photosBase64 && payload.photosBase64.length > 0) {
@@ -52,7 +48,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                     status: payload.status as ServiceStatus,
                     observation: payload.observation,
                     signature,
-                    signatureGif,
                     photos,
                     latitude: payload.latitude,
                     longitude: payload.longitude,

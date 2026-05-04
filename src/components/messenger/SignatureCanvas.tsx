@@ -1,14 +1,9 @@
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { Eraser, Check, PenLine, X, Loader2 } from 'lucide-react'
+import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import SignatureCameraCapture, { type SignatureCameraCaptureRef } from './SignatureCameraCapture'
-import { createLogger } from '@/utils/logger'
 
-const isE2ETest = typeof window !== 'undefined' && 'e2eTestCameraMock' in window;
-
-const logger = createLogger('SignatureCanvas')
 
 
 /**
@@ -16,8 +11,6 @@ const logger = createLogger('SignatureCanvas')
  */
 interface SignatureCanvasProps {
     onSignatureChange?: (hasSignature: boolean) => void
-    onGifGenerated?: (gif: Blob | null) => void
-    enableCamera?: boolean
     width?: number
     height?: number
 }
@@ -28,28 +21,21 @@ interface SignatureCanvasProps {
 export interface SignatureCanvasRef {
     clear: () => void
     getSignature: () => Promise<File | null>
-    getGifFile: () => Promise<File | null>
     hasSignature: () => boolean
-    hasGif: () => boolean
 }
 
 /**
  * Componente que proporciona un área de dibujo (canvas) para capturar la firma del asesor.
- * Opcionalmente activa la cámara frontal para capturar una ráfaga de imágenes durante la firma.
  */
 export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasProps>(
-    ({ onSignatureChange, onGifGenerated, enableCamera = false, width = 300, height = 150 }, ref) => {
+    ({ onSignatureChange, width = 300, height = 150 }, ref) => {
         const savedCanvasRef = useRef<HTMLCanvasElement>(null)
         const fullscreenCanvasRef = useRef<HTMLCanvasElement>(null)
-        const cameraRef = useRef<SignatureCameraCaptureRef>(null)
         const [hasDrawn, setHasDrawn] = useState(false)
         const [isOpen, setIsOpen] = useState(false)
         const [tempHasDrawn, setTempHasDrawn] = useState(false)
         const isDrawingRef = useRef(false)
         const canvasInitializedRef = useRef(false)
-        const [savedGifBlob, setSavedGifBlob] = useState<Blob | null>(null)
-        const [isGifProcessing, setIsGifProcessing] = useState(false)
-        const [isCameraReady, setIsCameraReady] = useState(!enableCamera)
 
 
         useEffect(() => {
@@ -142,16 +128,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             isDrawingRef.current = true
             ctx.beginPath()
             ctx.moveTo(coords.x, coords.y)
-
-
-            if (enableCamera && cameraRef.current) {
-                if (!savedGifBlob && !isGifProcessing) {
-                    setIsGifProcessing(true)
-                    setSavedGifBlob(null)
-                    cameraRef.current.startCapture()
-                }
-            }
-        }, [getCoords, enableCamera, savedGifBlob, isGifProcessing])
+        }, [getCoords])
 
         const handleMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
             if (!isDrawingRef.current) return
@@ -241,17 +218,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
         useImperativeHandle(ref, () => ({
             clear,
             getSignature,
-            getGifFile: async () => {
-                const blob = savedGifBlob ?? await cameraRef.current?.getGif()
-                if (!blob) {
-                    logger.warn('getGifFile retornó null', { hasSavedBlob: !!savedGifBlob })
-                    return null
-                }
-                return new File([blob], `captura_${Date.now()}.webp`, { type: 'image/webp' })
-            },
-            hasSignature: () => hasDrawn,
-            hasGif: () => savedGifBlob !== null || (cameraRef.current?.isReady() ?? false)
-        }), [savedGifBlob, hasDrawn, clear, getSignature])
+            hasSignature: () => hasDrawn
+        }), [hasDrawn, clear, getSignature])
 
         return (
             <>
@@ -266,10 +234,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             </div>
                             <div className="flex gap-2">
                                 <Button type="button" variant="outline" size="sm" onClick={() => {
-                                    if (enableCamera) {
-                                        setSavedGifBlob(null)
-                                        setIsCameraReady(false)
-                                    }
                                     setIsOpen(true)
                                 }}>
                                     Cambiar
@@ -285,7 +249,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             variant="outline"
                             className="w-full h-20 border-dashed border-2 flex flex-col gap-1"
                             onClick={() => {
-                                if (enableCamera && !savedGifBlob) setIsCameraReady(false)
                                 setIsOpen(true)
                             }}
                         >
@@ -296,10 +259,6 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                 </div>
 
                 <Dialog open={isOpen} onOpenChange={(open) => {
-                    if (!open && !hasDrawn) {
-                        setSavedGifBlob(null)
-                        if (enableCamera) setIsCameraReady(false)
-                    }
                     setIsOpen(open)
                 }}>
                     <DialogContent
@@ -314,27 +273,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                         </DialogHeader>
 
                         <div className={`flex-1 flex gap-3 min-h-0 flex-col`}>
-                            {enableCamera && (
-                                <div className="flex-[3] min-h-0">
-                                    <SignatureCameraCapture
-                                        ref={cameraRef}
-                                        onReadyChange={setIsCameraReady}
-                                        onGifGenerated={(gif) => {
-                                            logger.info('onGifGenerated received', { size: gif?.size })
-                                            setSavedGifBlob(gif)
-                                            setIsGifProcessing(false)
-                                            onGifGenerated?.(gif)
-                                        }}
-                                        onRetry={() => {
-                                            setIsGifProcessing(true)
-                                            setSavedGifBlob(null)
-                                        }}
-                                        className="h-full"
-                                    />
-                                </div>
-                            )}
 
-                            <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 ${enableCamera ? 'flex-[7]' : 'flex-1'} ${(!isCameraReady && !savedGifBlob && !isGifProcessing) ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <div className={`relative border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white min-h-0 flex-1`}>
                                 <canvas
                                     ref={fullscreenCanvasRef}
                                     className="touch-none cursor-crosshair absolute inset-0 w-full h-full"
@@ -350,13 +290,8 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                                 {!tempHasDrawn && (
                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                         <span className="text-muted-foreground/40 text-base sm:text-xl">
-                                            {(!isE2ETest && !isCameraReady && !savedGifBlob && !isGifProcessing) ? 'Preparando cámara...' : 'Firme aquí'}
+                                            Firme aquí
                                         </span>
-                                    </div>
-                                )}
-                                {(!isE2ETest && !isCameraReady && !savedGifBlob && !isGifProcessing) && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
                                     </div>
                                 )}
                             </div>
@@ -370,7 +305,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                             <Button
                                 onClick={confirmSignature}
                                 className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
-                                disabled={!tempHasDrawn || (!isE2ETest && (!savedGifBlob || isGifProcessing))}
+                                disabled={!tempHasDrawn}
                             >
                                 <Check className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Confirmar firma

@@ -31,10 +31,6 @@ const logger = createLogger('UpdateStatus')
 
 /**
  * Convierte un color hexadecimal a formato RGBA con transparencia.
- * 
- * @param hex - Color en formato hexadecimal (ej. #ffffff).
- * @param alpha - Nivel de opacidad (0 a 1).
- * @returns Cadena de texto con el color en formato rgba().
  */
 function hexToRgba(hex: string, alpha: number): string {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -66,19 +62,17 @@ export default function UpdateStatus() {
     const [observation, setObservation] = useState('')
     const [photos, setPhotos] = useState<File[]>([])
     const [hasSignature, setHasSignature] = useState(false)
-    const [hasGif, setHasGif] = useState(false)
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
-    // statusOptions derivado de la configuración compartida
     const statusOptions = useMemo(() => {
         return STATUS_OPTIONS
             .filter(option => !service || option.id !== service.currentStatus)
             .map(option => ({
-                value: option.id, // Mapear 'id' a 'value' para coincidir con el uso del componente existente
+                value: option.id,
                 label: option.label,
                 description: option.description,
-                icon: option.icon, // Esto ahora es un Componente, no un Elemento. Necesitamos renderizarlo.
+                icon: option.icon, 
                 requiresSignature: option.requiresSignature,
                 requiresPhotos: option.requiresPhotos,
                 requiresObservation: option.requiresObservation,
@@ -105,8 +99,6 @@ export default function UpdateStatus() {
         fetchService()
     }, [id])
 
-    // Optimización: Precargar ubicación al entrar a la pantalla
-    // Esto evita que el usuario tenga que esperar 20s al dar click en Confirmar
     useEffect(() => {
         getCurrentLocation().catch(err => {
             logger.warn('Error precargando ubicación', err)
@@ -123,10 +115,6 @@ export default function UpdateStatus() {
             return false
         }
 
-        // El GIF es obligatorio para ENTREGADO y PENDIENTE
-        if (option.requiresSignature && (option.value === 'DELIVERED' || option.value === 'PENDING') && !hasGif) {
-            return false
-        }
 
         if (option.requiresPhotos && photos.length === 0) {
             return false
@@ -148,26 +136,13 @@ export default function UpdateStatus() {
         try {
             setSubmitting(true)
 
-            // Obtener archivo de firma si es requerido
             let signatureFile: File | undefined
-            let signatureGifFile: File | undefined
             if (option.requiresSignature && signatureRef.current) {
                 const sig = await signatureRef.current.getSignature()
                 if (sig) signatureFile = sig
 
-                // Obtener GIF para ENTREGADO/PENDIENTE
-                if (option.value === 'DELIVERED' || option.value === 'PENDING') {
-                    const gif = await signatureRef.current.getGifFile()
-                    if (gif) {
-                        signatureGifFile = gif
-                        logger.info('gif_ready_for_upload', { size: gif.size })
-                    } else {
-                        logger.warn('gif_not_obtained', { status: option.value })
-                    }
-                }
             }
 
-            // Capturar ubicación usando el hook
             let latitude: number | undefined
             let longitude: number | undefined
 
@@ -179,15 +154,12 @@ export default function UpdateStatus() {
                 // Ya notificado por el hook
             }
 
-            // Verificar si hay conexión - si no, encolar para sincronización offline
             if (!isOnline) {
-                // Convertir archivos a base64 para almacenamiento en IndexedDB
                 const payload: UpdateStatusWithFilesPayload = {
                     uuid: id,
                     status: selectedStatus,
                     observation: observation.trim() || undefined,
                     signatureBase64: signatureFile ? await fileToBase64(signatureFile) : undefined,
-                    signatureGifBase64: signatureGifFile ? await fileToBase64(signatureGifFile) : undefined,
                     photosBase64: photos.length > 0 ? await Promise.all(photos.map(p => fileToBase64(p))) : undefined,
                     latitude,
                     longitude,
@@ -217,7 +189,6 @@ export default function UpdateStatus() {
                 status: selectedStatus as ServiceStatus,
                 observation: observation.trim() || undefined,
                 signature: signatureFile,
-                signatureGif: signatureGifFile,
                 photos: photos.length > 0 ? photos : undefined,
                 latitude,
                 longitude
@@ -363,8 +334,6 @@ export default function UpdateStatus() {
                                     <SignatureCanvas
                                         ref={signatureRef}
                                         onSignatureChange={setHasSignature}
-                                        enableCamera={selectedStatus === 'DELIVERED' || selectedStatus === 'PENDING'}
-                                        onGifGenerated={(gif) => setHasGif(!!gif)}
                                     />
                                 </Card>
                             )}

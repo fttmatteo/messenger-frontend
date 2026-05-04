@@ -79,34 +79,14 @@ export function HistoryEntryCard({
                 </div>
             )}
 
-
             {(((entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath)) || (entry.photos && entry.photos.length > 0)) && (
                 <div className="pt-1.5 border-t border-border/50 flex flex-row gap-2 justify-center">
                     {(entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath) && (
                         <div className="flex flex-col items-center">
-                            <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Captura + Firma</p>
+                            <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Firma</p>
                             <div className="flex rounded border border-border/50 overflow-hidden bg-white">
-                                {entry.signature?.gifPath && (
-                                    <div
-                                        className="relative group cursor-pointer h-16 w-24 flex items-center justify-center border-r border-border/30"
-                                        onClick={() => entry.signature?.gifPath && handleImageClick(entry.signature.gifPath)}
-                                    >
-                                        <img
-                                            src={getImageUrl(entry.signature.gifPath)}
-                                            alt="Captura GIF"
-                                            className="max-w-full max-h-full object-contain"
-                                        />
-                                        <div className="absolute bottom-0.5 left-0.5 bg-black/60 text-white text-[8px] px-1 rounded">GIF</div>
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <div className="bg-black/60 rounded-full p-1">
-                                                <Expand className="h-3 w-3 text-white" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
                                 <div
-                                    className="relative group cursor-pointer h-16 w-16 flex items-center justify-center"
+                                    className="relative group cursor-pointer h-16 w-32 flex items-center justify-center"
                                     onClick={() => handleImageClick(entry.signature?.signaturePath || signaturePath!)}
                                 >
                                     <img
@@ -123,6 +103,7 @@ export function HistoryEntryCard({
                             </div>
                         </div>
                     )}
+
 
 
                     {entry.photos && entry.photos.length > 0 && (
