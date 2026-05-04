@@ -43,16 +43,13 @@ vi.mock('@/services/offline-sync.service', () => ({
 vi.mock('@/components/messenger/SignatureCanvas', async () => {
     const { forwardRef, useImperativeHandle } = await import('react')
 
-    const MockSignatureCanvas = forwardRef((props: { onSignatureChange: (v: boolean) => void, onGifGenerated?: (v: Blob | null) => void, enableCamera?: boolean }, ref: React.ForwardedRef<unknown>) => {
+    const MockSignatureCanvas = forwardRef((props: { onSignatureChange: (v: boolean) => void }, ref: React.ForwardedRef<unknown>) => {
         useImperativeHandle(ref, () => ({
             getSignature: async () => new File(['signature'], 'signature.png', { type: 'image/png' }),
-            getGifFile: async () => new File(['gif'], 'capture.gif', { type: 'image/gif' }),
             clear: () => {
                 props.onSignatureChange(false)
-                if (props.onGifGenerated) props.onGifGenerated(null)
             },
             hasSignature: () => true,
-            hasGif: () => true,
             isReady: () => true
         }));
 
@@ -65,14 +62,6 @@ vi.mock('@/components/messenger/SignatureCanvas', async () => {
                 >
                     Simular Firma
                 </button>
-                {props.enableCamera && (
-                    <button
-                        type="button"
-                        onClick={() => props.onGifGenerated && props.onGifGenerated(new Blob(['gif'], { type: 'image/gif' }))}
-                    >
-                        Simular GIF
-                    </button>
-                )}
             </div>
         )
     })
@@ -93,7 +82,7 @@ vi.mock('@/components/messenger/EvidenceCapture', () => ({
 /**
  * Suite de pruebas de integración para el componente UpdateStatus.
  * Verifica el flujo crítico de actualización de estado de entrega, incluyendo la validación
- * de requisitos complejos como firmas digitales y captura de evidencia GIF.
+ * de requisitos complejos como firmas digitales y captura de evidencia fotográfica.
  */
 describe('UpdateStatus Page Integration', () => {
     vi.setConfig({ testTimeout: 15000 });
@@ -147,8 +136,6 @@ describe('UpdateStatus Page Integration', () => {
         // Select Entregado (Default in some tests, let's be explicit)
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
-        await userEvent.click(screen.getByText('Simular GIF'))
-
         const confirmBtn = screen.getByRole('button', { name: /confirmar entregado/i })
         await userEvent.click(confirmBtn)
 
@@ -159,8 +146,7 @@ describe('UpdateStatus Page Integration', () => {
         await waitFor(() => {
             expect(updateSpy).toHaveBeenCalledWith('123', expect.objectContaining({
                 status: 'DELIVERED',
-                signature: expect.any(File),
-                signatureGif: expect.any(File)
+                signature: expect.any(File)
             }))
         })
     })
@@ -182,7 +168,6 @@ describe('UpdateStatus Page Integration', () => {
 
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
-        await userEvent.click(screen.getByText('Simular GIF'))
 
         await userEvent.click(screen.getByRole('button', { name: /confirmar entregado/i }))
         await userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))

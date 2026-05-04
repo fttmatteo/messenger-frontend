@@ -1,7 +1,7 @@
 {
   "name": "plak-frontend",
   "private": true,
-  "version": "1.10.5",
+  "version": "1.10.6",
   "description": "Frontend de PLAK Messenger",
   "author": "Mateo Valencia Ardila",
   "license": "Proprietary",
@@ -79,7 +79,6 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.577.0",
     "next-themes": "^0.4.6",
-    "node-webpmux": "^3.2.1",
     "react": "^19.2.5",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.2.5",
