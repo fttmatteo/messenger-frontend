@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Camera, X, Upload, Loader2 } from 'lucide-react'
 import { showToast } from '@/config/toast-config'
@@ -21,13 +21,13 @@ interface PhotoPreviewProps {
 }
 
 function PhotoPreview({ photo, index, photos, onRemove }: PhotoPreviewProps) {
-    const [url, setUrl] = useState<string>('');
+    // Generamos la URL síncronamente para evitar el renderizado en cascada (cascading renders)
+    const url = useMemo(() => URL.createObjectURL(photo), [photo]);
 
+    // Nos encargamos EXCLUSIVAMENTE de la limpieza cuando el componente se desmonta o la foto cambia
     useEffect(() => {
-        const objectUrl = URL.createObjectURL(photo);
-        setUrl(objectUrl);
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [photo]);
+        return () => URL.revokeObjectURL(url);
+    }, [url]);
 
     if (!url) return <div className="w-full h-full bg-muted animate-pulse" />;
 
