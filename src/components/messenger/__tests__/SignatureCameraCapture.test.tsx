@@ -4,6 +4,7 @@ import { createRef } from 'react'
 import SignatureCameraCapture from '@/components/messenger/SignatureCameraCapture'
 import type { SignatureCameraCaptureRef } from '@/components/messenger/SignatureCameraCapture'
 
+// Mock de logger y toast
 vi.mock('@/utils/logger', () => ({
   createLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn() }),
 }))
@@ -22,6 +23,7 @@ vi.mock('node-webpmux', () => ({
 
 describe('SignatureCameraCapture - Blindaje Total', () => {
   beforeEach(() => {
+    // Mock de getUserMedia
     vi.stubGlobal('navigator', {
       mediaDevices: {
         getUserMedia: vi.fn().mockResolvedValue({
@@ -29,21 +31,37 @@ describe('SignatureCameraCapture - Blindaje Total', () => {
         }),
       },
     })
+    
+    // Mock de HTMLVideoElement.prototype.play
     vi.spyOn(HTMLVideoElement.prototype, 'play').mockResolvedValue(undefined)
+
+    // Mock de getContext para evitar error de "Not implemented" en JSDOM
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+      drawImage: vi.fn(),
+      getImageData: vi.fn().mockReturnValue({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      putImageData: vi.fn(),
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    } as any)
   })
 
-  it('debe mostrar el estado de procesamiento al iniciar captura', async () => {
+  it('debe renderizar el contenedor principal de video', () => {
+    render(<SignatureCameraCapture />)
+    const videoContainer = screen.getByTestId('signature-video-container')
+    expect(videoContainer).toBeInTheDocument()
+  })
+
+  it('debe iniciar captura correctamente y no mostrar errores de canvas', async () => {
     const ref = createRef<SignatureCameraCaptureRef>()
     render(<SignatureCameraCapture ref={ref} />)
     
-    // Disparamos la captura a través de la ref expuesta
     await act(async () => {
       ref.current?.startCapture()
     })
     
-    // Al estar capturando/generando, el texto debe aparecer
-    // Nota: El componente tiene timeouts internos, pero el estado isCapturing se activa de inmediato
-    expect(screen.queryByTestId('signature-video-container')).toBeInTheDocument()
+    // Si el mock de getContext funciona, no debería haber texto de error
+    expect(screen.queryByText(/Error al inicializar canvas/i)).not.toBeInTheDocument()
+    expect(screen.getByTestId('signature-video-container')).toBeInTheDocument()
   })
 
   it('debe haber reemplazado GIF por WebP en los badges', () => {
