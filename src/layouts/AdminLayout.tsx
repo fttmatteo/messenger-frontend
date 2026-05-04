@@ -53,7 +53,7 @@ function AdminLayoutContent() {
                 Saltar al contenido principal
             </a>
             <Sidebar collapsible="offcanvas" className="h-screen">
-                <SidebarHeader className="border-b border-sidebar-border">
+                <SidebarHeader className="border-b border-sidebar-border pt-safe">
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex flex-col items-center gap-1">
                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
@@ -123,7 +123,7 @@ function AdminLayoutContent() {
                 </SidebarFooter>
             </Sidebar>
             <SidebarToggleTab />
-            <SidebarInset className="overflow-hidden flex flex-col h-screen">
+            <SidebarInset className="overflow-hidden flex flex-col h-screen pt-safe">
                 <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>

@@ -21,7 +21,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       position={position}
       expand={true}
-      offset={isMobile ? 80 : 32}
+      offset={isMobile ? "calc(var(--safe-area-bottom) + 16px)" : 32}
       gap={12}
       duration={4000}
       toastOptions={{

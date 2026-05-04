@@ -120,7 +120,7 @@ export default function Profile() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-4 px-4">
+            <div className="flex-1 overflow-y-auto pb-[calc(1rem+var(--safe-area-bottom))] px-4">
                 <div className="w-full space-y-3">
                     {/* Perfil Header Card */}
                     <Card>
@@ -299,7 +299,7 @@ function ProfileSkeleton() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-4 px-4">
+            <div className="flex-1 overflow-y-auto pb-[calc(1rem+var(--safe-area-bottom))] px-4">
                 <div className="w-full space-y-3">
                     {/* Perfil Header Card Skeleton */}
                     <Card>
