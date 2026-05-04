@@ -1,10 +1,10 @@
 /** @vitest-environment node */
 import { describe, it, expect } from 'vitest'
-// @ts-ignore
+// @ts-expect-error: Built-in Node.js modules are not in the browser tsconfig
 import fs from 'fs'
-// @ts-ignore
+// @ts-expect-error: Built-in Node.js modules are not in the browser tsconfig
 import path from 'path'
-// @ts-ignore
+// @ts-expect-error: Built-in Node.js modules are not in the browser tsconfig
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
