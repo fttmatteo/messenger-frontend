@@ -257,7 +257,7 @@ export default function UpdateStatus() {
     const selectedOption = getSelectedOption()
 
     return (
-        <div className="relative pb-[calc(6rem+var(--safe-area-bottom))]">
+        <div className="relative pb-24">
             <div className="">
                 <div className="p-4 pb-2">
                     <Card className="p-5 bg-gradient-to-br from-card to-muted/30 border-border/50">

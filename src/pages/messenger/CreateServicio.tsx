@@ -216,7 +216,7 @@ export default function MessengerCreateServicio() {
     }
 
     return (
-        <div className="pb-[calc(6rem+var(--safe-area-bottom))]">
+        <div className="pb-24">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
                     <div className="">

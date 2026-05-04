@@ -37,19 +37,26 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toContain('padding-bottom: var(--safe-area-bottom)')
     })
 
-    it('MessengerLayout debe aplicar pt-safe en el header', () => {
+    it('MessengerLayout debe aplicar pt-safe en el header y pb-safe en el main', () => {
         const layoutPath = path.resolve(__dirname, '../layouts/MessengerLayout.tsx')
         const content = fs.readFileSync(layoutPath, 'utf-8')
         
-        expect(content).toMatch(/<header[^>]*className=[^>]*pt-safe/)
+        expect(content).toContain('pt-safe')
+        expect(content).toContain('pb-safe')
+        // Verifica que el header tenga pt-safe
+        expect(content).toMatch(/<header[^>]*pt-safe/)
+        // Verifica que el main tenga pb-safe
+        expect(content).toMatch(/<main[^>]*pb-safe/)
     })
 
-    it('AdminLayout debe aplicar pt-safe en SidebarHeader y SidebarInset', () => {
+    it('AdminLayout debe aplicar pt-safe y pb-safe', () => {
         const layoutPath = path.resolve(__dirname, '../layouts/AdminLayout.tsx')
         const content = fs.readFileSync(layoutPath, 'utf-8')
         
-        expect(content).toContain('SidebarHeader className="border-b border-sidebar-border pt-safe"')
-        expect(content).toContain('SidebarInset className="overflow-hidden flex flex-col h-screen pt-safe"')
+        expect(content).toContain('pt-safe')
+        expect(content).toContain('pb-safe')
+        expect(content).toMatch(/SidebarHeader[^>]*pt-safe/)
+        expect(content).toMatch(/id="main-content"[^>]*pb-safe/)
     })
 
     it('Sonner toaster debe usar el offset dinámico con safe-area-bottom', () => {
@@ -59,11 +66,11 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toContain('calc(var(--safe-area-bottom) + 16px)')
     })
 
-    it('MessengerDashboard debe tener padding inferior dinámico', () => {
+    it('MessengerDashboard debe tener padding inferior simplificado', () => {
         const dashboardPath = path.resolve(__dirname, '../pages/messenger/Dashboard.tsx')
         const content = fs.readFileSync(dashboardPath, 'utf-8')
         
-        expect(content).toContain('pb-[calc(6rem+var(--safe-area-bottom))]')
+        expect(content).toContain('pb-24')
         expect(content).toContain('bottom-[calc(1.5rem+var(--safe-area-bottom))]')
     })
 })

@@ -185,7 +185,7 @@ export function ServiceDetailsSkeleton() {
  */
 export function UpdateServiceStatusSkeleton() {
     return (
-        <div className="animate-in fade-in duration-500 pb-[calc(6rem+var(--safe-area-bottom))]">
+        <div className="animate-in fade-in duration-500 pb-24">
             {/* Hero Card Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-6 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
@@ -232,7 +232,7 @@ export function UpdateServiceStatusSkeleton() {
  */
 export function CreateServiceSkeleton() {
     return (
-        <div className="pb-[calc(6rem+var(--safe-area-bottom))] animate-in fade-in duration-500">
+        <div className="pb-24 animate-in fade-in duration-500">
             {/* Photo Section Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-5 border-border/50 rounded-2xl">
