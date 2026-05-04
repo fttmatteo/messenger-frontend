@@ -108,7 +108,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4.2. |
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
 | **Paginación y Búsqueda** | Gestión eficiente de grandes volúmenes de datos mediante paginación del lado del servidor y búsqueda Full-Text. |
-| **Captura de Evidencia** | Compresión de imágenes del lado del cliente, firma digital vectorial y **verificación por cámara GIF** para entregas seguras. |
+| **Captura de Evidencia** | Firma digital vectorial y **Pipeline de Optimización WebP nativo** con compresión en origen para máximo rendimiento. |
 | **Mi Perfil** | Gestión centralizada de datos personales y seguridad con enmascaramiento de documentos sensibles. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
 

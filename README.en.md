@@ -108,7 +108,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4.2. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Pagination & Search** | Efficient management of large data volumes through server-side pagination and Full-Text search. |
-| **Evidence Capture** | Client-side image compression, vector digital signature, and **GIF camera verification** for secure deliveries. |
+| **Evidence Capture** | Vector digital signature and **Native WebP Optimization Pipeline** with source compression for maximum performance. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 
