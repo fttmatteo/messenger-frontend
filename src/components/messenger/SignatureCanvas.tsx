@@ -247,7 +247,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     logger.warn('getGifFile retornó null', { hasSavedBlob: !!savedGifBlob })
                     return null
                 }
-                return new File([blob], `captura_${Date.now()}.gif`, { type: 'image/gif' })
+                return new File([blob], `captura_${Date.now()}.webp`, { type: 'image/webp' })
             },
             hasSignature: () => hasDrawn,
             hasGif: () => savedGifBlob !== null || (cameraRef.current?.isReady() ?? false)

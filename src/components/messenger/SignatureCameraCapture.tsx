@@ -7,13 +7,12 @@ import { RefreshCw, Camera, Loader2 } from 'lucide-react'
 const logger = createLogger('SignatureCapture')
 
 /**
- * Configuración para la generación de GIF de verificación.
+ * Configuración para la generación de WebP Animado de verificación.
  */
 const GIF_WIDTH = 640
 const GIF_HEIGHT = 480
 const CAPTURE_INTERVAL_MS = 500
 const FRAME_COUNT = 3
-const GIF_GENERATION_TIMEOUT_MS = 5000
 
 export interface SignatureCameraCaptureRef {
     getGif: () => Promise<Blob | null>
@@ -32,7 +31,7 @@ interface SignatureCameraCaptureProps {
 
 /**
  * Componente que captura una ráfaga de imágenes de la cámara frontal mientras el usuario firma.
- * Genera un GIF animado para propósitos de verificación de identidad (anti-fraude).
+ * Genera un WebP Animado para propósitos de verificación de identidad (anti-fraude).
  */
 const SignatureCameraCapture = forwardRef<
     SignatureCameraCaptureRef,
@@ -52,11 +51,11 @@ const SignatureCameraCapture = forwardRef<
 
 
     useImperativeHandle(ref, () => ({
-        getGif: async () => isE2ETest ? new Blob(["fake-gif"], { type: 'image/gif' }) : gifBlob,
+        getGif: async () => isE2ETest ? new Blob(["fake-webp"], { type: 'image/webp' }) : gifBlob,
         isReady: () => isE2ETest ? true : gifBlob !== null,
         startCapture: () => {
             if (isE2ETest) {
-                const blob = new Blob(["fake-gif"], { type: 'image/gif' });
+                const blob = new Blob(["fake-webp"], { type: 'image/webp' });
                 setGifBlob(blob);
                 if (onGifGenerated) onGifGenerated(blob);
                 return;
@@ -142,8 +141,6 @@ const SignatureCameraCapture = forwardRef<
                 }
             }
 
-            logger.info('Cámara inicializada correctamente')
-
 
             showToast.info('Se capturarán fotos para verificación', {
                 description: 'La cámara se activará mientras firma',
@@ -160,53 +157,52 @@ const SignatureCameraCapture = forwardRef<
         }
     }
 
-    const generateGif = useCallback(async (capturedFrames: ImageData[]) => {
+    const generateWebPAnimation = useCallback(async (capturedFrames: ImageData[]) => {
         setIsGenerating(true)
         const startTime = performance.now()
 
         try {
-            const GIF = (await import('gif.js')).default
+            const { WebP } = await import('node-webpmux')
+            const img = new WebP()
 
-            const gifPromise = new Promise<Blob>((resolve, reject) => {
-                const gif = new GIF({
-                    workers: 2,
-                    quality: 10,
-                    width: GIF_WIDTH,
-                    height: GIF_HEIGHT,
-                    workerScript: '/gif.worker.js',
+            const framePromises = capturedFrames.map(async (frameData) => {
+                const tempCanvas = document.createElement('canvas')
+                tempCanvas.width = GIF_WIDTH
+                tempCanvas.height = GIF_HEIGHT
+                const tempCtx = tempCanvas.getContext('2d')
+                if (!tempCtx) throw new Error('Canvas context error')
+                
+                tempCtx.putImageData(frameData, 0, 0)
+                
+                return new Promise<Uint8Array>((resolve) => {
+                    tempCanvas.toBlob(async (blob) => {
+                        if (blob) {
+                            const buffer = await blob.arrayBuffer()
+                            resolve(new Uint8Array(buffer))
+                        }
+                    }, 'image/webp', 0.95)
                 })
-
-                capturedFrames.forEach(frame => {
-                    gif.addFrame(frame, { delay: CAPTURE_INTERVAL_MS })
-                })
-
-                gif.on('finished', (blob: Blob) => {
-                    resolve(blob)
-                })
-
-                gif.on('error', (error: Error) => {
-                    reject(error)
-                })
-
-                gif.render()
             })
 
+            const frameBuffers = await Promise.all(framePromises)
 
-            const blob = await Promise.race([
-                gifPromise,
-                new Promise<never>((_, reject) =>
-                    setTimeout(() => reject(new Error('Timeout')), GIF_GENERATION_TIMEOUT_MS)
-                ),
-            ])
+            for (const buffer of frameBuffers) {
+                await img.addFrame(buffer, { delay: CAPTURE_INTERVAL_MS })
+            }
+
+            img.setAnimationSettings({ loopCount: 0 })
+
+            const finalBuffer = await img.save()
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const blob = new Blob([finalBuffer as any], { type: 'image/webp' })
 
             const generationTime = performance.now() - startTime
-            const gifSizeKb = Math.round(blob.size / 1024)
+            const webpSizeKb = Math.round(blob.size / 1024)
 
-            logger.info('GIF capturado correctamente', {
+            logger.info('WebP Animado capturado correctamente', {
                 tiempoMs: Math.round(generationTime),
-                tamañoKb: gifSizeKb,
+                tamañoKb: webpSizeKb,
             })
-
 
             const url = URL.createObjectURL(blob)
             setGifUrl(url)
@@ -214,7 +210,7 @@ const SignatureCameraCapture = forwardRef<
             onGifGenerated?.(blob)
 
         } catch (error) {
-            logger.error('Error al capturar GIF', { error })
+            logger.error('Error al capturar WebP Animado', { error })
             showToast.error('Error generando captura', {
                 description: 'Intenta de nuevo',
             })
@@ -242,7 +238,6 @@ const SignatureCameraCapture = forwardRef<
             return
         }
 
-
         let streamWaitdAttempts = 0
         while (!video.srcObject && streamWaitdAttempts < 30) {
             await new Promise(r => setTimeout(r, 100))
@@ -253,10 +248,8 @@ const SignatureCameraCapture = forwardRef<
             logger.warn('Sin stream de video después de esperar')
         }
 
-
         let attempts = 0
         const maxAttempts = 30
-
 
         while ((video.readyState < 2 || video.currentTime === 0) && attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, 100))
@@ -272,7 +265,6 @@ const SignatureCameraCapture = forwardRef<
 
         const capturedFrames: ImageData[] = []
 
-
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             logger.warn('Dimensiones de video 0, esperando metadata')
             let dimensionsAttempts = 0
@@ -282,11 +274,10 @@ const SignatureCameraCapture = forwardRef<
             }
         }
 
-        logger.info('Iniciando captura de GIF', {
+        logger.info('Iniciando captura de WebP Animado', {
             frames: FRAME_COUNT,
             dimensiones: `${video.videoWidth}x${video.videoHeight}`
         })
-
 
         const targetAspectRatio = GIF_WIDTH / GIF_HEIGHT
 
@@ -324,9 +315,8 @@ const SignatureCameraCapture = forwardRef<
 
         setIsCapturing(false)
 
-
-        await generateGif(capturedFrames)
-    }, [isCapturing, generateGif])
+        await generateWebPAnimation(capturedFrames)
+    }, [isCapturing, generateWebPAnimation])
 
     function handleRetry() {
         if (gifUrl) {
@@ -337,7 +327,6 @@ const SignatureCameraCapture = forwardRef<
         onRetry?.()
         setTimeout(() => startCapture(), 100)
     }
-
 
     useEffect(() => {
         if (!gifUrl && videoRef.current && streamRef.current && !videoRef.current.srcObject) {
@@ -357,6 +346,7 @@ const SignatureCameraCapture = forwardRef<
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
             <div
+                data-testid="signature-video-container"
                 className={`relative overflow-hidden rounded-lg ${isCapturing ? 'animate-pulse ring-2 ring-red-500' : ''
                     }`}
                 style={{ aspectRatio: `${GIF_WIDTH}/${GIF_HEIGHT}` }}
@@ -385,7 +375,6 @@ const SignatureCameraCapture = forwardRef<
                     </>
                 )}
 
-
                 {isCapturing && (
                     <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5 animate-pulse shadow-sm backdrop-blur-sm z-10">
                         <div className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -393,20 +382,18 @@ const SignatureCameraCapture = forwardRef<
                     </div>
                 )}
 
-
                 {isGenerating && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] z-20">
                         <div className="bg-background/95 dark:bg-zinc-900/95 text-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-3 border border-border/50">
                             <RefreshCw className="h-4 w-4 animate-spin text-primary" />
-                            <span className="text-sm font-medium">Procesando GIF...</span>
+                            <span className="text-sm font-medium">Procesando animación...</span>
                         </div>
                     </div>
                 )}
 
-
                 {gifUrl && (
                     <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded border border-white/10 shadow-sm">
-                        GIF
+                        WebP
                     </div>
                 )}
 
@@ -426,7 +413,6 @@ const SignatureCameraCapture = forwardRef<
                     </Button>
                 )}
             </div>
-
 
             <canvas ref={canvasRef} className="hidden" />
         </div>
