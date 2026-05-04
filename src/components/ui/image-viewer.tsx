@@ -30,7 +30,7 @@ export function ImageViewer({ src, alt = "Visualizador de imagen", open, onClose
                         <Button
                             size="icon"
                             variant="ghost"
-                            className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full h-10 w-10 pointer-events-auto z-[99995]"
+                            className="absolute top-[max(1rem,var(--safe-area-top,0px))] right-[max(1rem,var(--safe-area-right,0px))] text-white hover:bg-white/20 rounded-full h-10 w-10 pointer-events-auto z-[99995]"
                             onClick={onClose}
                         >
                             <X className="h-6 w-6" />
