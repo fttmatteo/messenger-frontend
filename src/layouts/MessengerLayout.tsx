@@ -405,7 +405,7 @@ export default function MessengerLayout() {
                 Saltar al contenido principal
             </a>
             <header
-                className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm"
+                className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm pt-safe"
                 role="banner"
             >
                 <div className="relative flex h-12 items-center justify-between px-4 w-full">
@@ -496,7 +496,7 @@ export default function MessengerLayout() {
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="left" className={cn("w-[280px] p-0 border-r bg-background flex flex-col", isSheetBlocked && "pointer-events-none")}>
+                                <SheetContent side="left" className={cn("w-[280px] p-0 border-r bg-background flex flex-col pt-safe", isSheetBlocked && "pointer-events-none")}>
                                     <SheetHeader className="p-4 pb-1 text-left">
                                         <div className="flex flex-col items-center gap-1 mb-4">
                                             <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />

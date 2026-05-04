@@ -43,8 +43,10 @@ const localStorageMock = (() => {
     };
 })();
 
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
+if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
+}
 
 // Mock de indexedDB (mínimo para que librerías como idb-keyval no exploten)
 if (typeof window !== 'undefined') {
@@ -60,8 +62,8 @@ if (typeof window !== 'undefined') {
 afterEach(() => {
     vi.clearAllMocks();
     server.resetHandlers();
-    localStorage.clear();
-    sessionStorage.clear();
+    if (typeof localStorage !== 'undefined') localStorage.clear();
+    if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
 });
 
 // Cerrar el servidor MSW después de todas las pruebas
@@ -97,20 +99,22 @@ if (typeof window !== 'undefined' && window.Element && !window.Element.prototype
     window.Element.prototype.scrollIntoView = vi.fn();
 }
 
-// Mock de matchMedia (para hooks responsivos)
-Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-    })),
-});
+if (typeof window !== 'undefined') {
+    // Mock de matchMedia (para hooks responsivos)
+    Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: vi.fn().mockImplementation(query => ({
+            matches: false,
+            media: query,
+            onchange: null,
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        })),
+    });
+}
 
 // Mock de Service Worker y Sync API
 if (typeof window !== 'undefined') {

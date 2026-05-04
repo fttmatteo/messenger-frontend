@@ -185,7 +185,7 @@ export function ServiceDetailsSkeleton() {
  */
 export function UpdateServiceStatusSkeleton() {
     return (
-        <div className="animate-in fade-in duration-500 pb-24">
+        <div className="animate-in fade-in duration-500 pb-[calc(6rem+var(--safe-area-bottom))]">
             {/* Hero Card Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-6 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
@@ -220,7 +220,7 @@ export function UpdateServiceStatusSkeleton() {
             </div>
 
             {/* Fixed Bottom Action Skeleton */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md">
+            <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+var(--safe-area-bottom))] border-t border-border/50 bg-background/95 backdrop-blur-md">
                 <Skeleton static className="w-full h-14 rounded-2xl bg-muted/30" />
             </div>
         </div>
@@ -232,7 +232,7 @@ export function UpdateServiceStatusSkeleton() {
  */
 export function CreateServiceSkeleton() {
     return (
-        <div className="pb-24 animate-in fade-in duration-500">
+        <div className="pb-[calc(6rem+var(--safe-area-bottom))] animate-in fade-in duration-500">
             {/* Photo Section Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-5 border-border/50 rounded-2xl">
@@ -256,7 +256,7 @@ export function CreateServiceSkeleton() {
             </div>
 
             {/* Fixed Bottom Action Skeleton */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
+            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md" style={{ paddingBottom: 'calc(var(--safe-area-bottom) + 1rem)' }}>
                 <div className="flex gap-4">
                     <Skeleton static className="h-12 w-28 rounded-2xl bg-muted/20" />
                     <Skeleton static className="flex-1 h-12 rounded-2xl bg-muted/30" />

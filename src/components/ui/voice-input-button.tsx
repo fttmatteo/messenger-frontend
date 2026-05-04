@@ -182,7 +182,7 @@ export function VoiceInputButton({
                         transition={{ duration: 0.15, ease: "easeOut" }}
                         className={cn(
                             "z-50 bg-background/95 backdrop-blur-sm border border-border rounded-lg p-2 shadow-lg transition-all duration-200",
-                            "fixed bottom-24 left-4 right-4 max-w-[90vw] mx-auto sm:static",
+                            "fixed bottom-[calc(6rem+var(--safe-area-bottom))] left-4 right-4 max-w-[90vw] mx-auto sm:static",
                             "sm:absolute sm:bottom-full sm:mb-2 sm:left-0 sm:right-0 sm:w-auto sm:min-w-[200px]"
                         )}
                     >

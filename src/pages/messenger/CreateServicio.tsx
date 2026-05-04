@@ -216,7 +216,7 @@ export default function MessengerCreateServicio() {
     }
 
     return (
-        <div className="pb-24">
+        <div className="pb-[calc(6rem+var(--safe-area-bottom))]">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
                     <div className="">
@@ -401,7 +401,7 @@ export default function MessengerCreateServicio() {
                         </div>
                     </div>
 
-                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 border-t border-border/60 bg-background">
+                    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+var(--safe-area-bottom))] border-t border-border/60 bg-background">
                         <div className="flex gap-3">
                             <Button
                                 type="button"
