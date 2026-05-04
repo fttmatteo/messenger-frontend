@@ -181,15 +181,15 @@ export function PlateCamera({ onCapture, onCancel, autoStart = true }: PlateCame
 
         canvas.toBlob((blob) => {
             if (blob) {
-                const file = new File([blob], `placa_${Date.now()}.jpg`, { type: 'image/jpeg' })
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
+                const file = new File([blob], `placa_${Date.now()}.webp`, { type: 'image/webp' })
+                const dataUrl = URL.createObjectURL(blob)
 
                 stopCamera()
                 onCapture(file, dataUrl)
             } else {
                 showToast.error("Error al capturar foto", { id: "error-captura" })
             }
-        }, 'image/jpeg', 0.9)
+        }, 'image/webp', 0.85)
     }, [stopCamera, onCapture])
 
     const handleCancel = useCallback(() => {

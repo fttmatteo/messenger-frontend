@@ -230,11 +230,11 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
             return new Promise((resolve) => {
                 canvas.toBlob((blob) => {
                     if (blob) {
-                        resolve(new File([blob], `firma_${Date.now()}.png`, { type: 'image/png' }))
+                        resolve(new File([blob], `firma_${Date.now()}.webp`, { type: 'image/webp' }))
                     } else {
                         resolve(null)
                     }
-                }, 'image/png')
+                }, 'image/webp', 0.95)
             })
         }, [hasDrawn])
 
