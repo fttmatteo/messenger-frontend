@@ -42,6 +42,7 @@ describe('SignatureCameraCapture - Blindaje Total', () => {
       putImageData: vi.fn(),
       imageSmoothingEnabled: true,
       imageSmoothingQuality: 'high'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
   })
 
