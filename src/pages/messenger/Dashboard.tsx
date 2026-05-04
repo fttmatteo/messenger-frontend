@@ -46,7 +46,7 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-[calc(6rem+var(--safe-area-bottom))]">
+        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-24">
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">

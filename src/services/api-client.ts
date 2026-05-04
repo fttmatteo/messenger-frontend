@@ -117,9 +117,14 @@ apiClient.interceptors.response.use(
         }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-            // Ignorar reintento si el endpoint es login
+            // Ignorar reintento si el endpoint es login, refresh o logout
             // (evita bucles infinitos: login falla -> 401 -> refresh -> retry login -> loop)
-            if (originalRequest.url?.includes('auth/login')) {
+            const isAuthAction = 
+                originalRequest.url?.includes('auth/login') || 
+                originalRequest.url?.includes('auth/refresh') || 
+                originalRequest.url?.includes('auth/logout');
+            
+            if (isAuthAction) {
                 return Promise.reject(error)
             }
 

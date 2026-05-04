@@ -24,6 +24,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         };
         loadUser();
+
+        // Escuchar evento de sesión expirada para limpiar el estado
+        const handleSessionExpired = () => {
+            setUser(null);
+        };
+        window.addEventListener('session-expired', handleSessionExpired);
+
+        return () => {
+            window.removeEventListener('session-expired', handleSessionExpired);
+        };
     }, []);
 
     const login = React.useCallback(async (credentials: LoginCredentials) => {

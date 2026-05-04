@@ -124,7 +124,7 @@ function AdminLayoutContent() {
             </Sidebar>
             <SidebarToggleTab />
             <SidebarInset className="overflow-hidden flex flex-col h-screen pt-safe">
-                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
+                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col pb-safe", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>
             </SidebarInset>

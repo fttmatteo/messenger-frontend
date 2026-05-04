@@ -58,23 +58,16 @@ export default function MessengerLayout() {
 
 
     useEffect(() => {
-        const originalStyle = {
-            position: document.body.style.position,
-            width: document.body.style.width,
-            height: document.body.style.height,
-            overflow: document.body.style.overflow
-        }
-
-        document.body.style.position = 'fixed'
-        document.body.style.width = '100%'
+        // Aseguramos que el html y body ocupen todo el espacio disponible
+        // pero sin bloquear la posición fixed que puede romper el safe-area-bottom
+        document.documentElement.style.height = '100%'
         document.body.style.height = '100%'
-        document.body.style.overflow = 'hidden'
+        document.body.style.overflow = 'hidden' // Evita el doble scrollbar
 
         return () => {
-            document.body.style.position = originalStyle.position
-            document.body.style.width = originalStyle.width
-            document.body.style.height = originalStyle.height
-            document.body.style.overflow = originalStyle.overflow
+            document.documentElement.style.height = ''
+            document.body.style.height = ''
+            document.body.style.overflow = ''
         }
     }, [])
 
@@ -397,7 +390,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-full w-full bg-background overflow-auto relative">
+        <div className="flex flex-col h-screen w-full bg-background relative overflow-hidden">
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
@@ -615,7 +608,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-x-hidden"
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden pb-safe"
                 role="main"
             >
                 <Outlet />
