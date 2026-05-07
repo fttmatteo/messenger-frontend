@@ -70,13 +70,13 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 ### Messenger PWA
 | Login | Servicios Asignados | Actualización de Estado |
 |:---:|:---:|:---:|
-| ![Login](docs/screenshots/messenger/1_Messenger_Login.png) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.png) | ![Update Status](docs/screenshots/messenger/5_Messenger_Actualizar_Estado.png) |
-| *Acceso mensajeros* | *Lista de entregas asignadas* | *Cambio de estado con evidencia* |
+| ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
+| *Acceso mensajeros* | *Lista de entregas asignadas* | *Cambio de estado* |
 
-| Detalles del Servicio | Historial | Configuración |
+| Detalles del Servicio | Crear Servicio | Mi Perfil |
 |:---:|:---:|:---:|
-| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
-| *Información completa y navegación* | *Servicios con cambio de estado* | *Preferencias de la app* |
+| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio.jpeg) | ![History](docs/screenshots/messenger/13_Messenger_Crear_Servicio_1.jpeg) | ![Settings](docs/screenshots/messenger/19_Messenger_Sidebar_MiPerfil_1.jpeg) |
+| *Información completa* | *Creación de servicio* | *Datos de perfil* |
 
 ---
 

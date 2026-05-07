@@ -70,13 +70,13 @@ The messenger experience is fully optimized as a standalone Android application.
 ### Messenger PWA
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
-| ![Login](docs/screenshots/messenger/1_Messenger_Login.png) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.png) | ![Update Status](docs/screenshots/messenger/5_Messenger_Actualizar_Estado.png) |
-| *Messenger access* | *Assigned deliveries list* | *Status change with evidence* |
+| ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
+| *Messenger access* | *Assigned deliveries list* | *Status change* |
 
-| Service Details | History | Settings |
+| Service Details | New Service | My Profile |
 |:---:|:---:|:---:|
-| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
-| *Complete information & navigation* | *Service status history* | *App preferences* |
+| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio.jpeg) | ![History](docs/screenshots/messenger/13_Messenger_Crear_Servicio_1.jpeg) | ![Settings](docs/screenshots/messenger/19_Messenger_Sidebar_MiPerfil_1.jpeg) |
+| *Complete information* | *Create Service* | *Date Profile* |
 
 ---
 
