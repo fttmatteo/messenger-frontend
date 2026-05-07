@@ -4,9 +4,9 @@ import { ServiceList } from "@/components/messenger/ServiceList"
 import { RefreshCw, Database, Building2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useMemo, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 
 /**
  * Panel principal (Dashboard) para la aplicación del mensajero.
@@ -17,43 +17,33 @@ export default function MessengerDashboard() {
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
-    const navigate = useNavigate()
-
-    // Lógica para ocultar/mostrar FAB al hacer scroll
     const [isFabVisible, setIsFabVisible] = useState(true)
     const lastScrollY = useRef(0)
+    const navigate = useNavigate()
 
-    useEffect(() => {
-        const mainContent = document.getElementById('main-content')
-        if (!mainContent) return
+    const { scrollY } = useScroll({ 
+        container: { current: typeof document !== 'undefined' ? document.getElementById('main-content') : null } as React.RefObject<HTMLElement> 
+    })
 
-        const handleScroll = () => {
-            const currentScrollY = mainContent.scrollTop
-            
-            // Si scrollea hacia abajo y ha pasado un umbral, ocultar
-            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-                setIsFabVisible(false)
-            } 
-            // Si scrollea hacia arriba, mostrar
-            else if (currentScrollY < lastScrollY.current) {
-                setIsFabVisible(true)
-            }
-            
-            lastScrollY.current = currentScrollY
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const isScrollingDown = latest > lastScrollY.current
+
+        if (isScrollingDown && latest > 100) {
+            if (isFabVisible) setIsFabVisible(false)
+        } else if (!isScrollingDown) {
+            if (!isFabVisible) setIsFabVisible(true)
         }
 
-        mainContent.addEventListener('scroll', handleScroll, { passive: true })
-        return () => mainContent.removeEventListener('scroll', handleScroll)
-    }, [])
+        lastScrollY.current = latest
+    })
 
-    const handleRefresh = async () => {
+    const handleRefresh = useCallback(async () => {
         if (!isOnline || isRefreshing) return
         setIsRefreshing(true)
         await refetch()
         setIsRefreshing(false)
-    }
+    }, [isOnline, isRefreshing, refetch])
 
-    // Extraer concesionarios únicos de los servicios disponibles
     const dealerships = useMemo(() => {
         const map = new Map<number, string>();
         pendingServices.forEach(s => {
@@ -64,14 +54,13 @@ export default function MessengerDashboard() {
         return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
     }, [pendingServices]);
 
-    // Filtrar servicios
     const filteredServices = useMemo(() => {
         if (selectedDealership === "all") return pendingServices;
         return pendingServices.filter(s => String(s.dealership.idDealership) === selectedDealership);
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-20">
+        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-16">
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
@@ -147,12 +136,17 @@ export default function MessengerDashboard() {
 
             <AnimatePresence>
                 {isFabVisible && (
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 15 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.5, y: 20 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="fixed bottom-[calc(1.5rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50"
+                        exit={{ opacity: 0, scale: 0.8, y: 15 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                            mass: 0.5
+                        }}
+                        className="fixed bottom-[calc(0.75rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50 will-change-transform"
                     >
                         <Button
                             onClick={() => navigate('/messenger/crear')}
