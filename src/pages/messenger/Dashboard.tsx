@@ -152,7 +152,7 @@ export default function MessengerDashboard() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.5, y: 20 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="fixed bottom-[calc(1rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50"
+                        className="fixed bottom-[calc(1.5rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50"
                     >
                         <Button
                             onClick={() => navigate('/messenger/crear')}
