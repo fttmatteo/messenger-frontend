@@ -4,15 +4,13 @@ import { ServiceList } from "@/components/messenger/ServiceList"
 import { RefreshCw, Database, Building2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
 
 /**
  * Panel principal (Dashboard) para la aplicación del mensajero.
  * Muestra la lista de servicios pendientes asignados al mensajero actual.
- * Permite filtrar los servicios por concesionario, refrescar la lista
- * manualmente y acceder rápidamente a la creación de un nuevo servicio.
- * Soporta visualización de datos en caché cuando no hay conexión.
  */
 export default function MessengerDashboard() {
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
@@ -20,6 +18,33 @@ export default function MessengerDashboard() {
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
     const navigate = useNavigate()
+
+    // Lógica para ocultar/mostrar FAB al hacer scroll
+    const [isFabVisible, setIsFabVisible] = useState(true)
+    const lastScrollY = useRef(0)
+
+    useEffect(() => {
+        const mainContent = document.getElementById('main-content')
+        if (!mainContent) return
+
+        const handleScroll = () => {
+            const currentScrollY = mainContent.scrollTop
+            
+            // Si scrollea hacia abajo y ha pasado un umbral, ocultar
+            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setIsFabVisible(false)
+            } 
+            // Si scrollea hacia arriba, mostrar
+            else if (currentScrollY < lastScrollY.current) {
+                setIsFabVisible(true)
+            }
+            
+            lastScrollY.current = currentScrollY
+        }
+
+        mainContent.addEventListener('scroll', handleScroll, { passive: true })
+        return () => mainContent.removeEventListener('scroll', handleScroll)
+    }, [])
 
     const handleRefresh = async () => {
         if (!isOnline || isRefreshing) return
@@ -30,7 +55,7 @@ export default function MessengerDashboard() {
 
     // Extraer concesionarios únicos de los servicios disponibles
     const dealerships = useMemo(() => {
-        const map = new Map();
+        const map = new Map<number, string>();
         pendingServices.forEach(s => {
             if (s.dealership && !map.has(s.dealership.idDealership)) {
                 map.set(s.dealership.idDealership, s.dealership.name);
@@ -46,7 +71,7 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-24">
+        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-20">
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
@@ -63,7 +88,7 @@ export default function MessengerDashboard() {
                                 </div>
                             </div>
                         </SelectTrigger>
-                        <SelectContent align="start" className="w-[280px] rounded-2xl border-border/60 bg-card shadow-2xl p-1">
+                        <SelectContent align="start" className="w-[280px] rounded-2xl border-border/60 bg-card shadow-2xl p-1 custom-scrollbar">
                             <SelectItem value="all" className="rounded-xl font-semibold my-0.5">
                                 <div className="flex items-center justify-between w-full gap-4">
                                     <span className="truncate">Todos los concesionarios</span>
@@ -120,17 +145,27 @@ export default function MessengerDashboard() {
                 />
             </div>
 
-            <div className="fixed bottom-[calc(1.5rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50 animate-in zoom-in slide-in-from-bottom-10 duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
-                <Button
-                    onClick={() => navigate('/messenger/crear')}
-                    className="h-14 w-14 rounded-full bg-primary shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-primary/20 hover:scale-110 active:scale-90 transition-all duration-300 group"
-                    size="icon"
-                >
-                    <div className="relative flex items-center justify-center">
-                        <Plus className="h-7 w-7 text-primary-foreground group-hover:rotate-90 transition-transform duration-500 ease-out" strokeWidth={3} />
-                    </div>
-                </Button>
-            </div>
+            <AnimatePresence>
+                {isFabVisible && (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, y: 20 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="fixed bottom-[calc(1.5rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50"
+                    >
+                        <Button
+                            onClick={() => navigate('/messenger/crear')}
+                            className="h-14 w-14 rounded-full bg-primary shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-primary/20 hover:scale-110 active:scale-90 transition-all duration-300 group"
+                            size="icon"
+                        >
+                            <div className="relative flex items-center justify-center">
+                                <Plus className="h-7 w-7 text-primary-foreground group-hover:rotate-90 transition-transform duration-500 ease-out" strokeWidth={3} />
+                            </div>
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {error && !loading && (
                 <div className="fixed bottom-[calc(6rem+var(--safe-area-bottom))] left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-lg z-40 animate-in fade-in slide-in-from-bottom-2">

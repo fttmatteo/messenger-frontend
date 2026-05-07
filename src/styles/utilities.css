@@ -4,7 +4,8 @@
  */
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
+    height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -12,11 +13,21 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 rounded-full;
+    background: color-mix(in srgb, var(--muted-foreground) 25%, transparent);
+    border-radius: 20px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/40;
+    background: color-mix(in srgb, var(--muted-foreground) 45%, transparent);
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
 @layer utilities {
