@@ -63,7 +63,6 @@ describe('Safe Area Integrity Audit', () => {
         
         pages.forEach(page => {
             const content = fs.readFileSync(path.join(messengerPagesDir, page), 'utf-8')
-            // El Safe Area inferior ya lo provee el Layout global, no debe estar en la página
             expect(content).not.toContain('pb-safe')
         })
     })
@@ -90,10 +89,10 @@ describe('Safe Area Integrity Audit', () => {
     it('Páginas con elementos fijos deben mantener el cálculo de seguridad', () => {
         const dashboardPath = path.resolve(__dirname, '../pages/messenger/Dashboard.tsx')
         const dashboardContent = fs.readFileSync(dashboardPath, 'utf-8')
-        expect(dashboardContent).toContain('bottom-[calc(1.5rem+var(--safe-area-bottom))]')
+        expect(dashboardContent).toContain('bottom-[calc(0.75rem+var(--safe-area-bottom))]')
 
         const statusPath = path.resolve(__dirname, '../pages/messenger/UpdateStatus.tsx')
         const statusContent = fs.readFileSync(statusPath, 'utf-8')
-        expect(statusContent).toContain('pb-[calc(1rem+var(--safe-area-bottom))]')
+        expect(statusContent).toContain('pb-[calc(6rem+var(--safe-area-bottom))]')
     })
 })

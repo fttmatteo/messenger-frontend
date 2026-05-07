@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
@@ -32,6 +32,7 @@ export default function ServiceDetails() {
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [imageLoaded, setImageLoaded] = useState(false)
 
     useEffect(() => {
         const fetchService = async () => {
@@ -57,7 +58,7 @@ export default function ServiceDetails() {
         fetchService()
     }, [id])
 
-    const handleNavigate = () => {
+    const handleNavigate = useCallback(() => {
         if (!isOnline) {
             showToast.warning('Sin conexión para navegar', {
                 description: 'Los mapas requieren internet para cargar rutas.',
@@ -117,13 +118,13 @@ export default function ServiceDetails() {
         } else {
             triggerNavigation()
         }
-    }
+    }, [isOnline, service])
 
-    const handleUpdateStatus = () => {
+    const handleUpdateStatus = useCallback(() => {
         navigate(`/messenger/servicio/${id}/actualizar`)
-    }
+    }, [id, navigate])
 
-    const formatDateTime = (dateString: string) => {
+    const formatDateTime = useCallback((dateString: string) => {
         const date = new Date(dateString)
         return date.toLocaleString('es-CO', {
             day: 'numeric',
@@ -133,7 +134,12 @@ export default function ServiceDetails() {
             minute: '2-digit',
             hour12: true
         })
-    }
+    }, [])
+
+    const statusConfig = useMemo(() => {
+        if (!service) return null;
+        return getStatusIconConfig(service.currentStatus, colors);
+    }, [service?.currentStatus, colors]);
 
     if (loading) {
         return <ServiceDetailsSkeleton />
@@ -168,15 +174,17 @@ export default function ServiceDetails() {
                                 size="xl"
                             />
 
-                            <div
-                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
-                            >
-                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
-                                <span className="text-sm font-bold">
-                                    {getStatusIconConfig(service.currentStatus, colors).label}
-                                </span>
-                            </div>
+                            {statusConfig && (
+                                <div
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                    style={{ backgroundColor: statusConfig.pillBackground }}
+                                >
+                                    <div className="w-3 h-3 rounded-full" style={statusConfig.dotStyle} />
+                                    <span className="text-sm font-bold">
+                                        {statusConfig.label}
+                                    </span>
+                                </div>
+                            )}
 
                             <div className="flex items-center gap-2 w-full mt-2">
                                 <Button
@@ -284,11 +292,29 @@ export default function ServiceDetails() {
                                 </div>
                                 <h3 className="text-sm font-bold tracking-tight">Evidencia visual</h3>
                             </div>
-                            <img
-                                src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
-                                alt="Placa del vehículo"
-                                className="w-full rounded-lg border object-contain max-h-48"
-                            />
+                            
+                            <div className="relative w-full aspect-video rounded-xl border bg-muted/30 overflow-hidden group">
+                                {!imageLoaded && (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/20">
+                                        <div className="relative">
+                                            <FileImage className="h-10 w-10 text-muted-foreground/20" strokeWidth={1.5} />
+                                            <div className="absolute inset-0 border-2 border-primary/10 rounded-full animate-ping opacity-20" />
+                                        </div>
+                                        <div className="mt-3 space-y-2 flex flex-col items-center">
+                                            <div className="h-2 w-20 bg-muted-foreground/10 rounded-full animate-pulse" />
+                                            <div className="h-1.5 w-12 bg-muted-foreground/5 rounded-full animate-pulse" />
+                                        </div>
+                                    </div>
+                                )}
+                                <img
+                                    src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
+                                    alt="Placa del vehículo"
+                                    onLoad={() => setImageLoaded(true)}
+                                    className={`w-full h-full object-contain transition-all duration-700 ease-out ${
+                                        imageLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-sm'
+                                    }`}
+                                />
+                            </div>
                         </Card>
                     </div>
                 )}
