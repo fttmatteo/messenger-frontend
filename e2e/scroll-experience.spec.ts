@@ -13,7 +13,7 @@ test.describe('Experiencia de Scroll y UX Premium', () => {
             sessionStorage.setItem('role', 'MESSENGER');
             // @ts-expect-error - Mocking global object
             window.turnstile = {
-                render: (_container: any, options: any) => {
+                render: (_container: HTMLElement, options: { callback?: (token: string) => void }) => {
                     setTimeout(() => { if (options && options.callback) options.callback('mock-token'); }, 50);
                     return 'mock-id';
                 },
@@ -80,6 +80,7 @@ test.describe('Experiencia de Scroll y UX Premium', () => {
     test('los contenedores de scroll deben tener suavizado webkit-touch habilitado', async ({ page }) => {
         const hasWebkitTouch = await page.evaluate(() => {
             const el = document.getElementById('main-content');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return el ? (getComputedStyle(el) as any)['webkitOverflowScrolling'] === 'touch' : false;
         });
         expect(hasWebkitTouch).toBe(true);

@@ -55,7 +55,7 @@ export default function MessengerDashboard() {
 
     // Extraer concesionarios únicos de los servicios disponibles
     const dealerships = useMemo(() => {
-        const map = new Map();
+        const map = new Map<number, string>();
         pendingServices.forEach(s => {
             if (s.dealership && !map.has(s.dealership.idDealership)) {
                 map.set(s.dealership.idDealership, s.dealership.name);
