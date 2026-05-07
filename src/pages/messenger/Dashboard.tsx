@@ -4,7 +4,7 @@ import { ServiceList } from "@/components/messenger/ServiceList"
 import { RefreshCw, Database, Building2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useMemo, useEffect, useRef, useCallback } from "react"
+import { useState, useMemo, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 
@@ -17,18 +17,12 @@ export default function MessengerDashboard() {
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
-    // Lógica optimizada para ocultar/mostrar FAB al hacer scroll
     const [isFabVisible, setIsFabVisible] = useState(true)
-    const [container, setContainer] = useState<HTMLElement | null>(null)
     const lastScrollY = useRef(0)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        setContainer(document.getElementById('main-content'))
-    }, [])
-
     const { scrollY } = useScroll({ 
-        container: container ? { current: container } as React.RefObject<HTMLElement> : undefined 
+        container: { current: typeof document !== 'undefined' ? document.getElementById('main-content') : null } as React.RefObject<HTMLElement> 
     })
 
     useMotionValueEvent(scrollY, "change", (latest) => {

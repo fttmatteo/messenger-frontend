@@ -139,7 +139,7 @@ export default function ServiceDetails() {
     const statusConfig = useMemo(() => {
         if (!service) return null;
         return getStatusIconConfig(service.currentStatus, colors);
-    }, [service?.currentStatus, colors]);
+    }, [service, colors]);
 
     if (loading) {
         return <ServiceDetailsSkeleton />
