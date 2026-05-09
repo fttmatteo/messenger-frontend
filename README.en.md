@@ -16,9 +16,7 @@
 
 **High-engineering platform for messenger management.**
 
-*Robust interface • Offline-First Architecture • Real-time Fleet Tracking • Comprehensive Testing Strategy*
-
-[🇪🇸 Versión en Español](README.md) • [Features](#key-features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Installation](#installation--deployment) • [Architecture](#project-architecture)
+[🇪🇸 Versión en Español](README.md) • [Overview](#overview) • [Screenshots](#screenshots) • [Features](#key-features) • [Testing](#quality-strategy--testing) • [Tech Stack](#tech-stack) • [Architecture](#project-architecture) • [Installation](#installation--deployment) • [Security](#security) • [Tips](#operation-tips-mobile) • [Contact](#contact)
 
 </div>
 

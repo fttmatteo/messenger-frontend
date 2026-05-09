@@ -16,9 +16,7 @@
 
 **Plataforma de alta ingeniería para gestión de mensajería.**
 
-*Interfaz robusta • Arquitectura Offline-First • Rastreo de flota en tiempo real • Estrategia de pruebas integral*
-
-[🇺🇸 English Version](README.en.md) • [Características](#características-principales) • [Capturas](#capturas-de-pantalla) • [Tecnologías](#stack-tecnológico) • [Instalación](#instalación-y-despliegue) • [Arquitectura](#arquitectura-del-proyecto)
+[🇺🇸 English Version](README.en.md) • [Descripción](#descripción-general) • [Capturas](#capturas-de-pantalla) • [Características](#características-principales) • [Calidad](#estrategia-de-calidad-y-pruebas) • [Tecnologías](#stack-tecnológico) • [Arquitectura](#arquitectura-del-proyecto) • [Instalación](#instalación-y-despliegue) • [Seguridad](#seguridad) • [Tips](#tips-de-operación-móvil) • [Contacto](#contacto)
 
 </div>
 
