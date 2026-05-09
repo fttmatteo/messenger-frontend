@@ -86,11 +86,11 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 #### Flujo de Sincronización Offline
 ```mermaid
 graph TD
-    A[Acción del Usuario] -->|Sin Conexión| B[IndexedDB (idb-keyval)]
+    A[Acción del Usuario] -->|Sin Conexión| B["IndexedDB (idb-keyval)"]
     B --> C{Detectar Red}
     C -->|Offline| D[Cola de Espera]
     D --> C
-    C -->|Online| E[Sincronizador (offline-sync.service)]
+    C -->|Online| E["Sincronizador (offline-sync.service)"]
     E --> F[Reintento Exponencial]
     F --> G[API Backend]
     G -->|Éxito| H[Eliminar de IDB]

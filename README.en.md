@@ -86,11 +86,11 @@ The messenger experience is fully optimized as a standalone Android application.
 #### Offline Synchronization Flow
 ```mermaid
 graph TD
-    A[User Action] -->|Offline| B[IndexedDB (idb-keyval)]
+    A[User Action] -->|Offline| B["IndexedDB (idb-keyval)"]
     B --> C{Detect Network}
     C -->|Offline| D[Retry Queue]
     D --> C
-    C -->|Online| E[Sync Manager (offline-sync.service)]
+    C -->|Online| E["Sync Manager (offline-sync.service)"]
     E --> F[Exponential Backoff]
     F --> G[Backend API]
     G -->|Success| H[Clear from IDB]
