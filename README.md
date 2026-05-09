@@ -125,7 +125,7 @@ Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confian
     ├──────────────────────┤
     │   Unitarias (Vitest) │  ← Lógica de negocio (~89% cobertura)
     ├──────────────────────┤
-    │  Estático (TS/ESLint)│ ← Seguridad en compilación
+    │  Estático (TS/ESLint)│  ← Seguridad en compilación
     ╰──────────────────────╯
 ```
 
@@ -161,10 +161,10 @@ La arquitectura está diseñada para **escalabilidad**, **mantenibilidad** y **r
 | **Core** | `React 19.2`, `TypeScript 5.9` | Características concurrentes + tipado estricto |
 | **Build** | `Vite 7.3` | HMR ultrarrápido y builds optimizadas |
 | **Estilos** | `Tailwind CSS 4.2`, `Shadcn/UI` | CSS utility-first con librería de componentes accesibles |
-| **Estado** | `React Query`, `Context API` | Caché de estado del servidor + estado global del cliente |
+| **Estado** | `Context API`, `Custom Hooks` | Gestión de estado global y lógica de negocio compartida |
 | **Formularios** | `React Hook Form`, `Zod 4` | Formularios de alto rendimiento con validación de esquemas |
 | **PWA** | `vite-plugin-pwa`, `idb-keyval` | Capacidades offline y persistencia local |
-| **Mobile** | `Capacitor 6` | Generación de la aplicación nativa para Android y acceso a sus APIs |
+| **Mobile** | `Capacitor 8` | Generación de la aplicación nativa para Android y acceso a sus APIs de última generación |
 | **Mapas** | `@react-google-maps/api` | Integración profunda con Google Maps Platform |
 | **Tiempo Real** | `@stomp/stompjs` | Mensajería WebSocket para rastreo en vivo |
 | **Animaciones** | `Framer Motion` | Animaciones y transiciones fluidas |
@@ -181,11 +181,11 @@ src/
 │   ├── ui/              # Componentes base (Shadcn/UI)
 │   └── ...              # Componentes específicos por feature
 ├── config/              # Configuración de la Aplicación
-├── context/             # Proveedores de Estado Global (Auth, Theme, Maps)
+├── context/             # Proveedores de Estado Global (Auth, Network, StatusColor)
 ├── hooks/               # Custom React Hooks (16 hooks)
 ├── layouts/             # Componentes de Layout de Página
 ├── lib/                 # Librerías de Utilidades
-├── pages/               # Componentes de Página de Ruta (28 páginas)
+├── pages/               # Componentes de Página de Ruta (31 páginas)
 ├── routes/              # Enrutamiento de la Aplicación
 ├── schemas/             # Esquemas de Validación Zod
 ├── services/            # Servicios de API e Infraestructura
@@ -257,10 +257,8 @@ Crea un archivo `.env` en la raíz del proyecto:
 VITE_API_URL=http://localhost:8080/api
 
 # Google Maps
-VITE_GOOGLE_MAPS_KEY=tu_api_key_de_google_maps
-
-# WebSocket (opcional - para desarrollo)
-VITE_WS_URL=ws://localhost:8080/ws
+VITE_GOOGLE_MAPS_API_KEY=tu_api_key_de_google_maps
+VITE_GOOGLE_MAPS_MAP_ID=tu_map_id_de_google_maps
 
 # Cloudflare Turnstile (Protección contra Bots)
 VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key

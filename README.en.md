@@ -161,10 +161,10 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 | **Core** | `React 19.2`, `TypeScript 5.9` | Concurrent features + strict type safety |
 | **Build** | `Vite 7.3` | Lightning-fast HMR and optimized builds |
 | **Styling** | `Tailwind CSS 4.2`, `Shadcn/UI` | Utility-first CSS with accessible component library |
-| **State** | `React Query`, `Context API` | Server state caching + global client state |
+| **State** | `Context API`, `Custom Hooks` | Global state management + shared business logic |
 | **Forms** | `React Hook Form`, `Zod 4` | High-performance forms with schema validation |
 | **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline capabilities and local persistence |
-| **Mobile** | `Capacitor 6` | Native Android app generation and native APIs access |
+| **Mobile** | `Capacitor 8` | Native Android app generation and next-gen native APIs access |
 | **Maps** | `@react-google-maps/api` | Deep integration with Google Maps Platform |
 | **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
 | **Animation** | `Framer Motion` | Fluid animations and transitions |
@@ -181,11 +181,11 @@ src/
 │   ├── ui/              # Base components (Shadcn/UI)
 │   └── ...              # Feature-specific components
 ├── config/              # Application Configuration
-├── context/             # Global State Providers (Auth, Theme, Maps)
+├── context/             # Global State Providers (Auth, Network, StatusColor)
 ├── hooks/               # Custom React Hooks (16 hooks)
 ├── layouts/             # Page Layout Components
 ├── lib/                 # Utility Libraries
-├── pages/               # Route Page Components (28 pages)
+├── pages/               # Route Page Components (31 pages)
 ├── routes/              # Application Routing
 ├── schemas/             # Zod Validation Schemas
 ├── services/            # API & Infrastructure Services
@@ -257,10 +257,8 @@ Create a `.env` file in the project root:
 VITE_API_URL=http://localhost:8080/api
 
 # Google Maps
-VITE_GOOGLE_MAPS_KEY=your_google_maps_api_key
-
-# WebSocket (optional - for development)
-VITE_WS_URL=ws://localhost:8080/ws
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+VITE_GOOGLE_MAPS_MAP_ID=your_google_maps_map_id
 
 # Cloudflare Turnstile (Bot Protection)
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
