@@ -18,8 +18,6 @@
 
 *Interfaz robusta • Arquitectura Offline-First • Rastreo de flota en tiempo real • Estrategia de pruebas integral*
 
----
-
 [🇺🇸 English Version](README.en.md) • [Características](#características-principales) • [Capturas](#capturas-de-pantalla) • [Tecnologías](#stack-tecnológico) • [Instalación](#instalación-y-despliegue) • [Arquitectura](#arquitectura-del-proyecto)
 
 </div>
@@ -34,8 +32,6 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 - **Acceso Instantáneo**: Inicio directo desde la pantalla principal del teléfono.
 - **Experiencia Inmersiva**: Interfaz a pantalla completa real, sin barras de navegación del navegador que estorben.
 - **Operación Confiable**: Seguimiento en segundo plano persistente y sincronización offline perfectamente adaptada al dispositivo.
-
----
 
 ### Dos Experiencias Optimizadas
 | **Centro de Comando** | **App de Campo** |
@@ -65,8 +61,6 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Gestión del personal* | *Administración de concesionarios* |
 
----
-
 ### Messenger PWA
 | Login | Servicios Asignados | Actualización de Estado |
 |:---:|:---:|:---:|
@@ -91,7 +85,19 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Service Workers** | Caché estratégica de assets y respuestas de API mediante VitePWA para carga instantánea bajo cualquier condición de red. |
 | **Optimización de Bundle** | Análisis continuo del tamaño del bundle con `rollup-plugin-visualizer` para asegurar rendimiento en dispositivos de gama media/baja. |
 
----
+#### Flujo de Sincronización Offline
+```mermaid
+graph TD
+    A[Acción del Usuario] -->|Sin Conexión| B[IndexedDB (idb-keyval)]
+    B --> C{Detectar Red}
+    C -->|Offline| D[Cola de Espera]
+    D --> C
+    C -->|Online| E[Sincronizador (offline-sync.service)]
+    E --> F[Reintento Exponencial]
+    F --> G[API Backend]
+    G -->|Éxito| H[Eliminar de IDB]
+    G -->|Error| F
+```
 
 ### Ingeniería Geoespacial
 | Característica | Descripción |
@@ -99,8 +105,6 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Rastreo en Vivo** | Comunicación bidireccional WebSocket via STOMP/SockJS para actualizaciones de posición sub-segundo. |
 | **Advanced Markers API** | Renderizado de alto rendimiento en Google Maps, soportando miles de entidades simultáneas sin degradación de FPS. |
 | **Geocodificación Resiliente** | Sistema de colas para resolución de direcciones que respeta los límites de la API de Google. |
-
----
 
 ### Experiencia de Usuario (UX)
 | Característica | Descripción |
@@ -111,6 +115,8 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | **Captura de Evidencia** | Firma digital vectorial y **Pipeline de Optimización WebP nativo** con compresión en origen para máximo rendimiento. |
 | **Mi Perfil** | Gestión centralizada de datos personales y seguridad con enmascaramiento de documentos sensibles. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
+| **Safe Area Support** | Adaptación nativa para *Notches* y *Dynamic Islands* mediante `@capacitor-community/safe-area`, garantizando una experiencia inmersiva sin recortes de UI. |
+
 
 ---
 
@@ -133,8 +139,6 @@ Este proyecto sigue la metodología **"Testing Trophy"**, priorizando la confian
 | **Integración** | `Vitest` + `MSW` | Pruebas de página completa con capa de red mockeada via Mock Service Worker |
 | **Unitarias** | `Vitest` | Lógica de negocio (~89% de cobertura en servicios), utilidades y hooks complejos |
 | **Estático** | `ESLint`, `TypeScript` | Verificación estricta de tipos y reglas de linting |
-
----
 
 ### Ejecutar Pruebas
 ```bash
@@ -206,8 +210,6 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Requerido para funcionalidad de mapas |
 
----
-
 ### Inicio Rápido (Docker)
 Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar todo el ecosistema (Frontend + Backend + DB) usando Docker:
 
@@ -215,8 +217,6 @@ Si tienes el repositorio del backend en la misma carpeta raíz, puedes levantar 
 2. Ejecuta: `docker-compose -f docker-compose.local.yml up --build`
 
 Esto compilará el frontend y lo servirá en `http://localhost`.
-
----
 
 ### Desarrollo con Hot Reloading (Docker)
 Para desarrollo activo con recarga automática de código:
@@ -227,8 +227,6 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 El servidor de desarrollo del frontend (Vite HMR) estará disponible en `http://localhost:5173` — los cambios se reflejan instantáneamente al guardar.
-
----
 
 ### Desarrollo Local (Manual)
 ```bash
@@ -247,8 +245,6 @@ cp .env.example .env
 npm run dev
 ```
 
----
-
 ### Variables de Entorno
 Crea un archivo `.env` en la raíz del proyecto:
 
@@ -263,8 +259,6 @@ VITE_GOOGLE_MAPS_MAP_ID=tu_map_id_de_google_maps
 # Cloudflare Turnstile (Protección contra Bots)
 VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 ```
-
----
 
 ### Scripts Disponibles
 | Script | Descripción |
@@ -297,13 +291,19 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 
 ---
 
+## Tips de Operación (Móvil)
+Para garantizar la mejor experiencia en dispositivos Android:
+*   **Optimización de Batería**: Es mandatorio desactivar la "Optimización de Batería" para PLAK en los ajustes del sistema. Esto permite que el rastreo GPS funcione correctamente en segundo plano.
+*   **Permisos de Ubicación**: Seleccionar "Permitir siempre" para asegurar que el tracking no se detenga al minimizar la aplicación.
+*   **Modo de Ahorro**: Evitar el "Modo de Ahorro de Energía" extremo, ya que puede limitar la frecuencia de actualización de los WebSockets.
+
+---
+
 ## Contacto
 Para consultas sobre este proyecto:
 - **Repositorio**: `messenger-frontend`
 - **Autor**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Sitio Web**: [plak.digital](https://plak.digital)
-
----
 
 > **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**

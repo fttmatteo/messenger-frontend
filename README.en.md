@@ -18,8 +18,6 @@
 
 *Robust interface • Offline-First Architecture • Real-time Fleet Tracking • Comprehensive Testing Strategy*
 
----
-
 [🇪🇸 Versión en Español](README.md) • [Features](#key-features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Installation](#installation--deployment) • [Architecture](#project-architecture)
 
 </div>
@@ -34,8 +32,6 @@ The messenger experience is fully optimized as a standalone Android application.
 - **Instant Access**: Launch directly from the home screen.
 - **Immersive Experience**: True full-screen interface without browser navigation bars.
 - **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
-
----
 
 ### Two Optimized Experiences
 | **Command Center** | **Field App** |
@@ -65,8 +61,6 @@ The messenger experience is fully optimized as a standalone Android application.
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Staff management* | *Dealership administration* |
 
----
-
 ### Messenger PWA
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
@@ -91,7 +85,19 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
 
----
+#### Offline Synchronization Flow
+```mermaid
+graph TD
+    A[User Action] -->|Offline| B[IndexedDB (idb-keyval)]
+    B --> C{Detect Network}
+    C -->|Offline| D[Retry Queue]
+    D --> C
+    C -->|Online| E[Sync Manager (offline-sync.service)]
+    E --> F[Exponential Backoff]
+    F --> G[Backend API]
+    G -->|Success| H[Clear from IDB]
+    G -->|Error| F
+```
 
 ### Geospatial Engineering
 | Feature | Description |
@@ -99,8 +105,6 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Live Tracking** | Bidirectional WebSocket communication via STOMP/SockJS for sub-second position updates. |
 | **Advanced Markers API** | High-performance Google Maps rendering, supporting thousands of simultaneous entities without FPS degradation. |
 | **Resilient Geocoding** | Queue system for address resolution that respects Google API rate limits. |
-
----
 
 ### User Experience (UX)
 | Feature | Description |
@@ -111,6 +115,8 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Evidence Capture** | Vector digital signature and **Native WebP Optimization Pipeline** with source compression for maximum performance. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
+| **Safe Area Support** | Native adaptation for *Notches* and *Dynamic Islands* via `@capacitor-community/safe-area`, ensuring an immersive experience without UI clipping. |
+
 
 ---
 
@@ -133,8 +139,6 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 | **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
 | **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
-
----
 
 ### Running Tests
 ```bash
@@ -206,8 +210,6 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Required for maps functionality |
 
----
-
 ### Quick Start (Docker)
 If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
 
@@ -215,8 +217,6 @@ If you have the backend repository in the same root folder, you can spin up the 
 2. Run: `docker-compose -f docker-compose.local.yml up --build`
 
 This will build the frontend and serve it at `http://localhost`.
-
----
 
 ### Development with Hot Reloading (Docker)
 For active development with automatic code reloading:
@@ -227,8 +227,6 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 The frontend dev server (Vite HMR) will be available at `http://localhost:5173` — changes are reflected instantly on save.
-
----
 
 ### Local Development (Manual)
 ```bash
@@ -247,8 +245,6 @@ cp .env.example .env
 npm run dev
 ```
 
----
-
 ### Environment Variables
 Create a `.env` file in the project root:
 
@@ -263,8 +259,6 @@ VITE_GOOGLE_MAPS_MAP_ID=your_google_maps_map_id
 # Cloudflare Turnstile (Bot Protection)
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
-
----
 
 ### Available Scripts
 | Script | Description |
@@ -297,13 +291,19 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 
 ---
 
+## Operation Tips (Mobile)
+To ensure the best experience on Android devices:
+*   **Battery Optimization**: It is mandatory to disable "Battery Optimization" for PLAK in the system settings. This allows GPS tracking to function correctly in the background.
+*   **Location Permissions**: Select "Allow all the time" to ensure tracking doesn't stop when the app is minimized.
+*   **Power Saving Mode**: Avoid extreme "Power Saving" modes, as they may limit the update frequency of WebSockets.
+
+---
+
 ## Contact
 For inquiries about this project:
 - **Repository**: `messenger-frontend`
 - **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Website**: [plak.digital](https://www.plak.digital)
-
----
 
 > **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. The source code for this application is protected by copyright laws. DNDA Registration No. 13-108-139. Copying, distributing, or modifying this application without express authorization is strictly prohibited.**
