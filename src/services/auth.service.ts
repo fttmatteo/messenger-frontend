@@ -4,6 +4,7 @@ import apiClient from './api-client';
 import { logger } from '@/utils/logger';
 import { offlineCacheService } from './offline-cache.service';
 import { Preferences } from '@capacitor/preferences';
+import { isNative } from '@/lib/capacitor';
 
 const KEYS = {
     USER: 'user',
@@ -53,6 +54,12 @@ export const authService = {
             await Preferences.set({ key: KEYS.ROLE, value: role });
             if (accessToken) await Preferences.set({ key: KEYS.ACCESS_TOKEN, value: accessToken });
             if (refreshToken) await Preferences.set({ key: KEYS.REFRESH_TOKEN, value: refreshToken });
+            
+            // Sincronizar con localStorage para acceso inmediato en interceptores
+            localStorage.setItem(KEYS.USER, JSON.stringify(user));
+            localStorage.setItem(KEYS.ROLE, role);
+            if (accessToken) localStorage.setItem(KEYS.ACCESS_TOKEN, accessToken);
+            if (refreshToken) localStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
         } else {
             sessionStorage.setItem(KEYS.USER, JSON.stringify(user));
             sessionStorage.setItem(KEYS.ROLE, role);
@@ -62,8 +69,14 @@ export const authService = {
     },
 
     async refreshToken(): Promise<void> {
-        const { value } = await Preferences.get({ key: KEYS.REFRESH_TOKEN });
-        const refreshToken = value || sessionStorage.getItem(KEYS.REFRESH_TOKEN);
+        let refreshToken: string | null = null;
+        if (!isNative()) {
+            refreshToken = localStorage.getItem(KEYS.REFRESH_TOKEN) || sessionStorage.getItem(KEYS.REFRESH_TOKEN);
+        } else {
+            const { value } = await Preferences.get({ key: KEYS.REFRESH_TOKEN });
+            refreshToken = value || localStorage.getItem(KEYS.REFRESH_TOKEN) || sessionStorage.getItem(KEYS.REFRESH_TOKEN);
+        }
+        
         await apiClient.post('/auth/refresh', refreshToken ? { refreshToken } : {});
     },
 
@@ -84,6 +97,11 @@ export const authService = {
     },
 
     async getCurrentUserAsync(): Promise<User | null> {
+        if (!isNative()) {
+            const userStr = localStorage.getItem(KEYS.USER) || sessionStorage.getItem(KEYS.USER);
+            return userStr ? JSON.parse(userStr) : null;
+        }
+
         try {
             const { value } = await Preferences.get({ key: KEYS.USER });
             const userStr = value || localStorage.getItem(KEYS.USER) || sessionStorage.getItem(KEYS.USER);
@@ -94,6 +112,10 @@ export const authService = {
     },
 
     async getTokenAsync(): Promise<string | null> {
+        if (!isNative()) {
+            return localStorage.getItem(KEYS.ACCESS_TOKEN) || sessionStorage.getItem(KEYS.ACCESS_TOKEN);
+        }
+
         const { value } = await Preferences.get({ key: KEYS.ACCESS_TOKEN });
         return value || localStorage.getItem(KEYS.ACCESS_TOKEN) || sessionStorage.getItem(KEYS.ACCESS_TOKEN);
     },
@@ -104,6 +126,10 @@ export const authService = {
     },
 
     async getRoleAsync(): Promise<string | null> {
+        if (!isNative()) {
+            return localStorage.getItem(KEYS.ROLE) || sessionStorage.getItem(KEYS.ROLE);
+        }
+
         const { value } = await Preferences.get({ key: KEYS.ROLE });
         return value || localStorage.getItem(KEYS.ROLE) || sessionStorage.getItem(KEYS.ROLE);
     }

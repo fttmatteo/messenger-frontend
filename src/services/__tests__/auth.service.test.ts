@@ -4,6 +4,7 @@ import apiClient from '../api-client';
 import { offlineCacheService } from '../offline-cache.service';
 import { Preferences } from '@capacitor/preferences';
 import { logger } from '@/utils/logger';
+import { isNative } from '@/lib/capacitor';
 
 vi.mock('../api-client', () => ({
     default: {
@@ -23,6 +24,10 @@ vi.mock('@capacitor/preferences', () => ({
         set: vi.fn(),
         remove: vi.fn(),
     },
+}));
+
+vi.mock('@/lib/capacitor', () => ({
+    isNative: vi.fn(() => false),
 }));
 
 vi.mock('@/utils/logger', () => ({
@@ -69,6 +74,7 @@ describe('authService', () => {
 
     describe('refreshToken', () => {
         it('should call /auth/refresh with token from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'pref-refresh-token' });
             vi.mocked(apiClient.post).mockResolvedValue({});
 
@@ -109,6 +115,7 @@ describe('authService', () => {
 
     describe('getCurrentUserAsync', () => {
         it('should get user from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             const user = { id: 1, name: 'Test' };
             vi.mocked(Preferences.get).mockResolvedValue({ value: JSON.stringify(user) });
 
@@ -120,6 +127,7 @@ describe('authService', () => {
 
     describe('getTokenAsync', () => {
         it('should return token from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'token' });
             const result = await authService.getTokenAsync();
             expect(result).toBe('token');
@@ -137,6 +145,7 @@ describe('authService', () => {
 
     describe('getRoleAsync', () => {
         it('should return role from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'ADMIN' });
             const result = await authService.getRoleAsync();
             expect(result).toBe('ADMIN');

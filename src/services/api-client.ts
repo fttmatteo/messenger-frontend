@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { logger } from '../utils/logger'
 import { Preferences } from '@capacitor/preferences'
+import { isNative } from '@/lib/capacitor'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -23,6 +24,15 @@ apiClient.interceptors.request.use(
     async (config) => {
         const correlationId = crypto.randomUUID();
         config.headers['X-Correlation-Id'] = correlationId;
+
+        // Optimización: Si no es nativo, vamos directo al storage síncrono para evitar 'hangs' asíncronos en navegadores/tests
+        if (!isNative()) {
+            const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return config;
+        }
 
         try {
             const { value } = await Preferences.get({ key: 'accessToken' });
