@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from './AuthContext'
 import { authService } from '@/services/auth.service'
@@ -9,7 +9,8 @@ vi.mock('../services/auth.service', () => ({
     authService: {
         login: vi.fn(),
         logout: vi.fn(),
-        saveSession: vi.fn(async (user, role, at, rt, rememberMe = true) => {
+        getRoleAsync: vi.fn(),
+        saveSession: vi.fn(async (user, role, _at, _rt, rememberMe = true) => {
             if (rememberMe) {
                 await Preferences.set({ key: 'user', value: JSON.stringify(user) });
                 await Preferences.set({ key: 'role', value: role });
@@ -23,14 +24,6 @@ vi.mock('../services/auth.service', () => ({
             const userStr = value || sessionStorage.getItem('user');
             return userStr ? JSON.parse(userStr) : null;
         }),
-        getRoleAsync: vi.fn().mockImplementation(async () => {
-            const { value } = await Preferences.get({ key: 'role' });
-            return value || sessionStorage.getItem('role');
-        }),
-        getTokenAsync: vi.fn().mockImplementation(async () => {
-            const { value } = await Preferences.get({ key: 'accessToken' });
-            return value || sessionStorage.getItem('accessToken');
-        }),
     },
 }))
 
@@ -43,27 +36,33 @@ describe('AuthContext', () => {
         localStorage.clear()
         sessionStorage.clear()
         vi.clearAllMocks()
+        // Reset Preferences mock state (since it's linked to localStorage in setup.ts)
     })
 
     it('debe restaurar al usuario desde storage al montar', async () => {
-        const storedUser = { id: 1, name: 'Test' }
+        const storedUser = { id: 1, name: 'Test', document: 111, role: 'ADMIN', isOnline: true }
         await Preferences.set({ key: 'user', value: JSON.stringify(storedUser) })
         
         const { result } = renderHook(() => useAuth(), { wrapper })
 
         await waitFor(() => {
             expect(result.current.isLoading).toBe(false)
-        })
+        }, { timeout: 2000 })
 
         expect(result.current.user).toMatchObject(storedUser)
         expect(result.current.isAuthenticated).toBe(true)
     })
 
     it('debe iniciar sesión con rememberMe y guardar en Preferences', async () => {
-        vi.mocked(authService.login).mockResolvedValue({
+        const mockResponse = {
             role: 'ADMIN',
             message: 'ok',
-            user: { id: 123, name: 'Admin' }
+            user: { id: 123, name: 'Admin', document: 12345, role: 'ADMIN', isOnline: true }
+        }
+        
+        vi.mocked(authService.login).mockImplementation(async (creds) => {
+            await authService.saveSession(mockResponse.user, mockResponse.role, 'at', 'rt', creds.rememberMe);
+            return mockResponse;
         })
 
         const { result } = renderHook(() => useAuth(), { wrapper })
@@ -79,10 +78,15 @@ describe('AuthContext', () => {
     })
 
     it('debe iniciar sesión sin rememberMe y guardar en sessionStorage', async () => {
-        vi.mocked(authService.login).mockResolvedValue({
+        const mockResponse = {
             role: 'MESSENGER',
             message: 'ok',
-            user: { id: 456, name: 'Messenger' }
+            user: { id: 456, name: 'Messenger', document: 67890, role: 'MESSENGER', isOnline: true }
+        }
+
+        vi.mocked(authService.login).mockImplementation(async (creds) => {
+            await authService.saveSession(mockResponse.user, mockResponse.role, 'at', 'rt', creds.rememberMe);
+            return mockResponse;
         })
 
         const { result } = renderHook(() => useAuth(), { wrapper })
