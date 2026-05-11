@@ -42,7 +42,7 @@ apiClient.interceptors.request.use(
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
         } catch (e) {
-            logger.warn('No se pudo recuperar el token de respaldo:', e);
+            logger.warn('[api-client] No se pudo recuperar el token de Preferences:', e);
         }
 
         return config;

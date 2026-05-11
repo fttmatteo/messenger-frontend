@@ -96,9 +96,10 @@ class OfflineSyncService {
         const actions = await this.getPendingActions()
         actions.push(action)
         await set(PENDING_ACTIONS_KEY, actions)
+        
         this.notifyUpdate()
 
-        // Intentar registrar Background Sync si está disponible, y NO estamos en modo nativo Capacitor.
+        // Intentar registrar Background Sync si está disponible...
         if (!isNative() && 'serviceWorker' in navigator && 'SyncManager' in window) {
             try {
                 const registration = await navigator.serviceWorker.ready
@@ -180,11 +181,7 @@ class OfflineSyncService {
      * @returns El número de acciones que se sincronizaron exitosamente.
      */
     async syncAll(): Promise<number> {
-        if (this.isSyncing) {
-            return 0
-        }
-
-        if (!navigator.onLine) {
+        if (this.isSyncing || !navigator.onLine) {
             return 0
         }
 
