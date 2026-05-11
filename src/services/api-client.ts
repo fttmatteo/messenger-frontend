@@ -25,7 +25,9 @@ apiClient.interceptors.request.use(
         config.headers['X-Correlation-Id'] = correlationId;
 
         try {
-            const { value: token } = await Preferences.get({ key: 'accessToken' });
+            const { value } = await Preferences.get({ key: 'accessToken' });
+            const token = value || localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            
             if (token) {
                 config.headers['Authorization'] = `Bearer ${token}`;
             }

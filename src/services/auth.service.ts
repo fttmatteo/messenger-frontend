@@ -86,7 +86,7 @@ export const authService = {
     async getCurrentUserAsync(): Promise<User | null> {
         try {
             const { value } = await Preferences.get({ key: KEYS.USER });
-            const userStr = value || sessionStorage.getItem(KEYS.USER);
+            const userStr = value || localStorage.getItem(KEYS.USER) || sessionStorage.getItem(KEYS.USER);
             return userStr ? JSON.parse(userStr) : null;
         } catch {
             return null;
@@ -95,7 +95,7 @@ export const authService = {
 
     async getTokenAsync(): Promise<string | null> {
         const { value } = await Preferences.get({ key: KEYS.ACCESS_TOKEN });
-        return value || sessionStorage.getItem(KEYS.ACCESS_TOKEN);
+        return value || localStorage.getItem(KEYS.ACCESS_TOKEN) || sessionStorage.getItem(KEYS.ACCESS_TOKEN);
     },
 
     async getWsToken(): Promise<string> {
@@ -105,6 +105,6 @@ export const authService = {
 
     async getRoleAsync(): Promise<string | null> {
         const { value } = await Preferences.get({ key: KEYS.ROLE });
-        return value || sessionStorage.getItem(KEYS.ROLE);
+        return value || localStorage.getItem(KEYS.ROLE) || sessionStorage.getItem(KEYS.ROLE);
     }
 };
