@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.10.7-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.8-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -110,7 +110,8 @@ graph TD
 | **Diseño Responsivo** | Interfaz fluida desde monitores 4K hasta dispositivos móviles de 5", construida con Tailwind CSS v4.2. |
 | **Modo Oscuro/Claro** | Soporte nativo de temas con detección de preferencia del sistema y elección persistente del usuario. |
 | **Paginación y Búsqueda** | Gestión eficiente de grandes volúmenes de datos mediante paginación del lado del servidor y búsqueda Full-Text. |
-| **Captura de Evidencia** | Firma digital vectorial y **Pipeline de Optimización WebP nativo** con compresión en origen para máximo rendimiento. |
+| **Captura de Evidencia** | Firma digital vectorial y **Pipeline de Optimización WebP dual** (Compresión en origen + Refuerzo en servidor) para máximo ahorro de datos. |
+| **Rendimiento Adaptativo** | Integración de **LazyMotion** y memoización selectiva de componentes críticos (`ServiceCard`) para scroll fluido en dispositivos de gama media. |
 | **Mi Perfil** | Gestión centralizada de datos personales y seguridad con enmascaramiento de documentos sensibles. |
 | **Dictado por Voz** | Integración con Google Cloud Speech-to-Text para dictar observaciones de servicio, garantizando alta precisión y compatibilidad en todos los dispositivos. |
 | **Safe Area Support** | Adaptación nativa para *Notches* y *Dynamic Islands* mediante `@capacitor-community/safe-area`, garantizando una experiencia inmersiva sin recortes de UI. |
@@ -277,8 +278,8 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 ## Seguridad
 | Característica | Implementación |
 |:---|:---|
-| **Autenticación JWT** | Rotación automática de tokens via interceptores de Axios con soporte de refresh token |
-| **Prevención XSS** | Escapado integrado de React + Content Security Policy estricto |
+| **Autenticación JWT** | Rotación automática de tokens via interceptores de Axios con **Persistencia Híbrida Segura**: Cookies `HttpOnly` (Web) y `@capacitor/preferences` (App Nativa). |
+| **Prevención XSS** | Escapado integrado de React + **Content Security Policy (CSP)** estricto que bloquea inyecciones de scripts no autorizados. |
 | **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Messenger) a nivel de router |
 | **Solo HTTPS** | Conexiones seguras forzadas en producción |
 | **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod (alineadas con el backend, ej: mín. 6 caracteres para claves) |

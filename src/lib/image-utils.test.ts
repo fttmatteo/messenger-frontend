@@ -39,11 +39,12 @@ describe('Image Utils', () => {
             callback(blob);
         });
 
-        HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+        HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
             drawImage: vi.fn(),
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high'
-        })) as any;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }) as any;
 
         vi.stubGlobal('Image', class {
             onload: () => void = () => { };
@@ -57,9 +58,11 @@ describe('Image Utils', () => {
         });
 
         vi.stubGlobal('FileReader', class {
-            onload: (ev: any) => void = () => { };
+            onload: (ev: ProgressEvent<FileReader>) => void = () => { };
             readAsDataURL() {
-                setTimeout(() => this.onload({ target: { result: 'data:image/jpeg;base64,mock' } }), 10);
+                setTimeout(() => this.onload({ 
+                    target: { result: 'data:image/jpeg;base64,mock' } 
+                } as unknown as ProgressEvent<FileReader>), 10);
             }
         });
     });

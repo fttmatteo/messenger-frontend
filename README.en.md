@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.10.7-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.8-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -110,7 +110,8 @@ graph TD
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4.2. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Pagination & Search** | Efficient management of large data volumes through server-side pagination and Full-Text search. |
-| **Evidence Capture** | Vector digital signature and **Native WebP Optimization Pipeline** with source compression for maximum performance. |
+| **Evidence Capture** | Vector digital signature and **Dual WebP Optimization Pipeline** (Source compression + Server reinforcement) for maximum data savings. |
+| **Adaptive Performance** | Integration of **LazyMotion** and selective memoization of critical components (`ServiceCard`) for smooth scrolling on mid-range devices. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 | **Safe Area Support** | Native adaptation for *Notches* and *Dynamic Islands* via `@capacitor-community/safe-area`, ensuring an immersive experience without UI clipping. |
@@ -277,8 +278,8 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ## Security
 | Feature | Implementation |
 |:---|:---|
-| **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
-| **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
+| **JWT Authentication** | Automatic token rotation via Axios interceptors with **Secure Hybrid Persistence**: `HttpOnly` Cookies (Web) and `@capacitor/preferences` (Native App). |
+| **XSS Prevention** | Built-in React escaping + strict **Content Security Policy (CSP)** blocking unauthorized script injections. |
 | **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
 | **Solo HTTPS** | Enforced secure connections in production |
 | **Input Validation** | All user inputs validated with Zod schemas (aligned with backend, e.g., min 6 chars for passwords) |

@@ -31,7 +31,8 @@ describe('Auth Service - Phase 1 Security', () => {
     });
 
     it('saveSession debe guardar en Preferences y NO en localStorage', async () => {
-        const mockUser = { id: 1, name: 'Test' } as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mockUser = { id: 1, fullName: 'Test' } as any;
         const mockRole = 'ADMIN';
         const mockToken = 'secret-token';
 
