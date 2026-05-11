@@ -32,7 +32,13 @@ export const authService = {
                 isOnline: validated.role === 'MESSENGER'
             };
 
-            await authService.saveSession(userObj, validated.role, validated.accessToken, validated.refreshToken);
+            await authService.saveSession(
+                userObj, 
+                validated.role, 
+                validated.accessToken, 
+                validated.refreshToken, 
+                credentials.rememberMe
+            );
             
             return validated;
         } catch (error) {
@@ -41,15 +47,23 @@ export const authService = {
         }
     },
 
-    async saveSession(user: User, role: string, accessToken?: string, refreshToken?: string) {
-        await Preferences.set({ key: KEYS.USER, value: JSON.stringify(user) });
-        await Preferences.set({ key: KEYS.ROLE, value: role });
-        if (accessToken) await Preferences.set({ key: KEYS.ACCESS_TOKEN, value: accessToken });
-        if (refreshToken) await Preferences.set({ key: KEYS.REFRESH_TOKEN, value: refreshToken });
+    async saveSession(user: User, role: string, accessToken?: string, refreshToken?: string, rememberMe: boolean = true) {
+        if (rememberMe) {
+            await Preferences.set({ key: KEYS.USER, value: JSON.stringify(user) });
+            await Preferences.set({ key: KEYS.ROLE, value: role });
+            if (accessToken) await Preferences.set({ key: KEYS.ACCESS_TOKEN, value: accessToken });
+            if (refreshToken) await Preferences.set({ key: KEYS.REFRESH_TOKEN, value: refreshToken });
+        } else {
+            sessionStorage.setItem(KEYS.USER, JSON.stringify(user));
+            sessionStorage.setItem(KEYS.ROLE, role);
+            if (accessToken) sessionStorage.setItem(KEYS.ACCESS_TOKEN, accessToken);
+            if (refreshToken) sessionStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
+        }
     },
 
     async refreshToken(): Promise<void> {
-        const { value: refreshToken } = await Preferences.get({ key: KEYS.REFRESH_TOKEN });
+        const { value } = await Preferences.get({ key: KEYS.REFRESH_TOKEN });
+        const refreshToken = value || sessionStorage.getItem(KEYS.REFRESH_TOKEN);
         await apiClient.post('/auth/refresh', refreshToken ? { refreshToken } : {});
     },
 
@@ -72,7 +86,8 @@ export const authService = {
     async getCurrentUserAsync(): Promise<User | null> {
         try {
             const { value } = await Preferences.get({ key: KEYS.USER });
-            return value ? JSON.parse(value) : null;
+            const userStr = value || sessionStorage.getItem(KEYS.USER);
+            return userStr ? JSON.parse(userStr) : null;
         } catch {
             return null;
         }
@@ -80,7 +95,7 @@ export const authService = {
 
     async getTokenAsync(): Promise<string | null> {
         const { value } = await Preferences.get({ key: KEYS.ACCESS_TOKEN });
-        return value;
+        return value || sessionStorage.getItem(KEYS.ACCESS_TOKEN);
     },
 
     async getWsToken(): Promise<string> {
@@ -90,6 +105,6 @@ export const authService = {
 
     async getRoleAsync(): Promise<string | null> {
         const { value } = await Preferences.get({ key: KEYS.ROLE });
-        return value;
+        return value || sessionStorage.getItem(KEYS.ROLE);
     }
 };

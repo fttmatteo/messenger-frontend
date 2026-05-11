@@ -22,6 +22,16 @@ vi.mock('@capacitor/core', async () => {
     };
 });
 
+// Mock de @capacitor/preferences para persistencia segura en tests
+vi.mock('@capacitor/preferences', () => ({
+    Preferences: {
+        get: vi.fn(async ({ key }) => ({ value: localStorage.getItem(key) })),
+        set: vi.fn(async ({ key, value }) => { localStorage.setItem(key, value); }),
+        remove: vi.fn(async ({ key }) => { localStorage.removeItem(key); }),
+        clear: vi.fn(async () => { localStorage.clear(); }),
+    }
+}));
+
 /**
  * Configuración global para el entorno de pruebas unitarias y de integración.
  * Configura MSW para interceptar peticiones de red y define mocks para APIs del navegador.

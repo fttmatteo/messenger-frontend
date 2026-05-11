@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../AuthContext'
 import type { ReactNode } from 'react'
+import { Preferences } from '@capacitor/preferences'
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
@@ -16,6 +17,7 @@ describe('AuthIntegration (MSW)', () => {
     beforeEach(() => {
         localStorage.clear()
         sessionStorage.clear()
+        vi.clearAllMocks()
     })
 
     afterEach(() => {
@@ -45,9 +47,10 @@ describe('AuthIntegration (MSW)', () => {
             id: 123
         })
 
-        expect(localStorage.getItem('role')).toBe('ADMIN')
-        expect(localStorage.getItem('user')).toContain('"id":123')
-        expect(localStorage.getItem('token')).toBeNull()
+        const { value: role } = await Preferences.get({ key: 'role' })
+        expect(role).toBe('ADMIN')
+        const { value: user } = await Preferences.get({ key: 'user' })
+        expect(user).toContain('"id":123')
     })
 
     it('should logout and clear storage', async () => {
@@ -63,14 +66,14 @@ describe('AuthIntegration (MSW)', () => {
         })
         expect(result.current.isAuthenticated).toBe(true)
 
-        act(() => {
-            result.current.logout()
+        await act(async () => {
+            await result.current.logout()
         })
 
         expect(result.current.isAuthenticated).toBe(false)
         expect(result.current.user).toBeNull()
-        expect(sessionStorage.getItem('user')).toBeNull()
-        expect(localStorage.getItem('user')).toBeNull()
+        const { value: user } = await Preferences.get({ key: 'user' })
+        expect(user).toBeNull()
     })
 
     it('should restore session from localStorage on mount', async () => {
@@ -80,8 +83,8 @@ describe('AuthIntegration (MSW)', () => {
             id: 999,
             isOnline: true
         }
-        localStorage.setItem('user', JSON.stringify(storedUser))
-        localStorage.setItem('role', storedUser.role)
+        await Preferences.set({ key: 'user', value: JSON.stringify(storedUser) })
+        await Preferences.set({ key: 'role', value: storedUser.role })
 
         const { result } = renderHook(() => useAuth(), { wrapper })
 

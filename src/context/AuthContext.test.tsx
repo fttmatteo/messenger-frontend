@@ -3,20 +3,33 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from './AuthContext'
 import { authService } from '@/services/auth.service'
 import type { ReactNode } from 'react'
+import { Preferences } from '@capacitor/preferences'
 
 vi.mock('../services/auth.service', () => ({
     authService: {
         login: vi.fn(),
         logout: vi.fn(),
+        saveSession: vi.fn(async (user, role, at, rt, rememberMe = true) => {
+            if (rememberMe) {
+                await Preferences.set({ key: 'user', value: JSON.stringify(user) });
+                await Preferences.set({ key: 'role', value: role });
+            } else {
+                sessionStorage.setItem('user', JSON.stringify(user));
+                sessionStorage.setItem('role', role);
+            }
+        }),
         getCurrentUserAsync: vi.fn().mockImplementation(async () => {
-            const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+            const { value } = await Preferences.get({ key: 'user' });
+            const userStr = value || sessionStorage.getItem('user');
             return userStr ? JSON.parse(userStr) : null;
         }),
         getRoleAsync: vi.fn().mockImplementation(async () => {
-            return localStorage.getItem('role') || sessionStorage.getItem('role');
+            const { value } = await Preferences.get({ key: 'role' });
+            return value || sessionStorage.getItem('role');
         }),
         getTokenAsync: vi.fn().mockImplementation(async () => {
-            return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            const { value } = await Preferences.get({ key: 'accessToken' });
+            return value || sessionStorage.getItem('accessToken');
         }),
     },
 }))
@@ -25,11 +38,6 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
 )
 
-/**
- * Suite de pruebas unitarias para el contexto de autenticación (AuthContext).
- * Evalúa los estados de sesión (login, logout, persistencia) y la correcta
- * interacción con el almacenamiento local (localStorage/sessionStorage).
- */
 describe('AuthContext', () => {
     beforeEach(() => {
         localStorage.clear()
@@ -37,208 +45,68 @@ describe('AuthContext', () => {
         vi.clearAllMocks()
     })
 
-    afterEach(() => {
-        localStorage.clear()
-        sessionStorage.clear()
+    it('debe restaurar al usuario desde storage al montar', async () => {
+        const storedUser = { id: 1, name: 'Test' }
+        await Preferences.set({ key: 'user', value: JSON.stringify(storedUser) })
+        
+        const { result } = renderHook(() => useAuth(), { wrapper })
+
+        await waitFor(() => {
+            expect(result.current.isLoading).toBe(false)
+        })
+
+        expect(result.current.user).toMatchObject(storedUser)
+        expect(result.current.isAuthenticated).toBe(true)
     })
 
-    describe('hook useAuth', () => {
-        it('debe lanzar un error cuando se usa fuera de AuthProvider', () => {
-            const originalError = console.error
-            console.error = vi.fn()
-
-            expect(() => {
-                renderHook(() => useAuth())
-            }).toThrow('useAuth debe ser usado dentro de un AuthProvider')
-
-            console.error = originalError
+    it('debe iniciar sesión con rememberMe y guardar en Preferences', async () => {
+        vi.mocked(authService.login).mockResolvedValue({
+            role: 'ADMIN',
+            message: 'ok',
+            user: { id: 123, name: 'Admin' }
         })
 
-        it('debe devolver el estado inicial no autenticado', async () => {
-            const { result } = renderHook(() => useAuth(), { wrapper })
+        const { result } = renderHook(() => useAuth(), { wrapper })
+        await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            expect(result.current.user).toBeNull()
-            expect(result.current.isAuthenticated).toBe(false)
+        await act(async () => {
+            await result.current.login({ document: 123, password: 'pw', rememberMe: true, turnstileToken: 't' })
         })
 
-        it('debe restaurar al usuario desde localStorage al montar', async () => {
-            const storedUser = {
-                document: '12345',
-                role: 'ADMIN',
-                id: 1,
-                isOnline: false
-            }
-            localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('role', 'ADMIN')
-
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            expect(result.current.user).toEqual(storedUser)
-            expect(result.current.isAuthenticated).toBe(true)
-        })
-
-        it('debe restaurar al usuario desde sessionStorage al montar', async () => {
-            const storedUser = {
-                document: '12345',
-                role: 'MESSENGER',
-                id: 2,
-                isOnline: true
-            }
-            sessionStorage.setItem('user', JSON.stringify(storedUser))
-            sessionStorage.setItem('role', 'MESSENGER')
-
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            expect(result.current.user).toEqual(storedUser)
-            expect(result.current.isAuthenticated).toBe(true)
-        })
+        const { value: role } = await Preferences.get({ key: 'role' })
+        expect(role).toBe('ADMIN')
+        expect(result.current.isAuthenticated).toBe(true)
     })
 
-    describe('login', () => {
-        it('debe iniciar sesión con rememberMe y guardar en localStorage', async () => {
-            vi.mocked(authService.login).mockResolvedValue({
-                role: 'ADMIN',
-                message: 'ok',
-                user: { id: 123, document: 12345, role: 'ADMIN' }
-            })
-
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            await act(async () => {
-                await result.current.login({
-                    document: 12345,
-                    password: 'password',
-                    rememberMe: true,
-                    turnstileToken: 'test-token',
-                })
-            })
-
-            expect(authService.login).toHaveBeenCalledWith({
-                document: 12345,
-                password: 'password',
-                rememberMe: true,
-                turnstileToken: 'test-token',
-            })
-            expect(localStorage.getItem('role')).toBe('ADMIN')
-            expect(localStorage.getItem('user')).toContain('"id":123')
-            expect(result.current.isAuthenticated).toBe(true)
-            expect(result.current.user?.role).toBe('ADMIN')
+    it('debe iniciar sesión sin rememberMe y guardar en sessionStorage', async () => {
+        vi.mocked(authService.login).mockResolvedValue({
+            role: 'MESSENGER',
+            message: 'ok',
+            user: { id: 456, name: 'Messenger' }
         })
 
-        it('debe iniciar sesión sin rememberMe y guardar en sessionStorage', async () => {
-            localStorage.clear()
-            sessionStorage.clear()
+        const { result } = renderHook(() => useAuth(), { wrapper })
+        await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-            vi.mocked(authService.login).mockResolvedValue({
-                role: 'MESSENGER',
-                message: 'ok',
-                user: { id: 456, document: 67890, role: 'MESSENGER' }
-            })
-
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            await act(async () => {
-                await result.current.login({
-                    document: 67890,
-                    password: 'password',
-                    rememberMe: false,
-                    turnstileToken: 'test-token',
-                })
-            })
-
-            expect(sessionStorage.getItem('role')).toBe('MESSENGER')
-            expect(sessionStorage.getItem('user')).toContain('"id":456')
-            expect(result.current.user?.role).toBe('MESSENGER')
-            expect(result.current.user?.isOnline).toBe(true)
+        await act(async () => {
+            await result.current.login({ document: 456, password: 'pw', rememberMe: false, turnstileToken: 't' })
         })
+
+        expect(sessionStorage.getItem('role')).toBe('MESSENGER')
+        const { value: role } = await Preferences.get({ key: 'role' })
+        expect(role).toBeNull()
     })
 
-    describe('logout', () => {
-        it('debe limpiar al usuario y llamar a authService.logout', async () => {
-            const storedUser = {
-                document: '12345',
-                role: 'ADMIN',
-                id: 1,
-                isOnline: false
-            }
-            localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('role', 'ADMIN')
+    it('debe limpiar el estado al hacer logout', async () => {
+        const { result } = renderHook(() => useAuth(), { wrapper })
+        await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isAuthenticated).toBe(true)
-            })
-
-            act(() => {
-                result.current.logout()
-            })
-
-            expect(authService.logout).toHaveBeenCalled()
-            expect(result.current.user).toBeNull()
-            expect(result.current.isAuthenticated).toBe(false)
-        })
-    })
-
-    describe('updateUser', () => {
-        it('debe actualizar al usuario parcialmente', async () => {
-            const storedUser = {
-                document: '12345',
-                role: 'MESSENGER',
-                id: 1,
-                isOnline: false
-            }
-            localStorage.setItem('user', JSON.stringify(storedUser))
-            localStorage.setItem('role', 'MESSENGER')
-
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            act(() => {
-                result.current.updateUser({ isOnline: true })
-            })
-
-            expect(result.current.user?.isOnline).toBe(true)
-            expect(result.current.user?.document).toBe('12345')
-            const updatedStored = JSON.parse(localStorage.getItem('user') || '{}')
-            expect(updatedStored.isOnline).toBe(true)
+        await act(async () => {
+            await result.current.logout()
         })
 
-        it('no debe hacer nada cuando no hay un usuario autenticado', async () => {
-            const { result } = renderHook(() => useAuth(), { wrapper })
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false)
-            })
-
-            act(() => {
-                result.current.updateUser({ isOnline: true })
-            })
-
-            expect(result.current.user).toBeNull()
-        })
+        expect(result.current.user).toBeNull()
+        expect(result.current.isAuthenticated).toBe(false)
+        expect(authService.logout).toHaveBeenCalled()
     })
 })

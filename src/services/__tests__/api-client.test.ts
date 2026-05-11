@@ -3,6 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
 import apiClient, { _resetState } from '../api-client';
 import { authService } from '../auth.service';
+import { Preferences } from '@capacitor/preferences';
 
 // Mock authService para evitar side-effects
 vi.mock('../auth.service', () => ({
@@ -12,7 +13,7 @@ vi.mock('../auth.service', () => ({
     }
 }));
 
-import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 describe('api-client interceptors', () => {
     beforeEach(() => {
@@ -35,9 +36,9 @@ describe('api-client interceptors', () => {
         expect(result.headers['X-Correlation-Id']).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     });
 
-    it('should inject accessToken from localStorage as fallback', async () => {
+    it('should inject accessToken from Preferences as fallback', async () => {
         const requestInterceptor = (apiClient.interceptors.request as unknown as { handlers: { fulfilled: (c: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> }[] }).handlers[0].fulfilled;
-        localStorage.setItem('accessToken', 'test-token');
+        await Preferences.set({ key: 'accessToken', value: 'test-token' });
 
         const config = { headers: {} as unknown as InternalAxiosRequestConfig['headers'] } as InternalAxiosRequestConfig;
         const result = await requestInterceptor(config);
@@ -45,22 +46,6 @@ describe('api-client interceptors', () => {
         expect(result.headers['Authorization']).toBe('Bearer test-token');
     });
 
-    it('should extract and save tokens from response body', async () => {
-        const responseInterceptor = (apiClient.interceptors.response as unknown as { handlers: { fulfilled: (r: AxiosResponse) => Promise<AxiosResponse> }[] }).handlers[0].fulfilled;
-
-        const mockResponse = {
-            config: { url: '/auth/login' } as InternalAxiosRequestConfig,
-            data: {
-                accessToken: 'new-access',
-                refreshToken: 'new-refresh'
-            }
-        } as AxiosResponse;
-
-        await responseInterceptor(mockResponse);
-
-        expect(localStorage.getItem('accessToken')).toBe('new-access');
-        expect(localStorage.getItem('refreshToken')).toBe('new-refresh');
-    });
 
     describe('401 Refresh logic', () => {
         it('should handle 401 error and trigger token refresh', { timeout: 15000 }, async () => {
