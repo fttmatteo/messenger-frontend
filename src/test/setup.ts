@@ -73,12 +73,14 @@ afterAll(() => server.close());
 
 // Mocks para APIs modernas de DOM
 if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).ResizeObserver = class {
         observe() { }
         unobserve() { }
         disconnect() { }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).IntersectionObserver = class {
         constructor() { }
         observe() { }
@@ -124,6 +126,7 @@ if (typeof window !== 'undefined') {
         configurable: true
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).SyncManager = class { };
 
     Object.defineProperty(navigator, 'onLine', {
