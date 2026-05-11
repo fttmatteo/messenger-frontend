@@ -27,7 +27,7 @@ describe('AuthIntegration (MSW)', () => {
     it('should login successfully using real service and MSW', async () => {
         const { result } = renderHook(() => useAuth(), { wrapper })
 
-        await waitFor(() => expect(result.current.isLoading).toBe(false))
+        await waitFor(() => expect(result.current?.isLoading).toBe(false))
 
         await act(async () => {
             await result.current.login({
@@ -50,7 +50,6 @@ describe('AuthIntegration (MSW)', () => {
     })
 
     it('should logout and clear storage', async () => {
-        // Asegurar que el logout responda rápido para evitar timeouts
         server.use(
             http.post('*/auth/logout', () => {
                 return new HttpResponse(null, { status: 200 })
@@ -58,9 +57,8 @@ describe('AuthIntegration (MSW)', () => {
         )
 
         const { result } = renderHook(() => useAuth(), { wrapper })
-        await waitFor(() => expect(result.current.isLoading).toBe(false))
+        await waitFor(() => expect(result.current?.isLoading).toBe(false))
 
-        // Simular login previo
         await act(async () => {
             await result.current.login({
                 document: 12345,
@@ -72,7 +70,6 @@ describe('AuthIntegration (MSW)', () => {
         
         expect(result.current.isAuthenticated).toBe(true)
 
-        // Ejecutar logout
         await act(async () => {
             await result.current.logout()
         })
@@ -92,17 +89,16 @@ describe('AuthIntegration (MSW)', () => {
             isOnline: true
         }
         
-        // Preparar el estado antes de montar el hook
         await Preferences.set({ key: 'user', value: JSON.stringify(storedUser) })
         await Preferences.set({ key: 'role', value: storedUser.role })
 
         const { result } = renderHook(() => useAuth(), { wrapper })
 
-        // Esperar a que el useEffect interno cargue los datos
         await waitFor(() => {
-            if (!result.current) return false;
-            return result.current.isLoading === false;
-        }, { timeout: 3000 })
+            return result.current?.isLoading === false;
+        }, { timeout: 4000 })
+
+        if (!result.current) throw new Error('Result current is null after wait');
 
         expect(result.current.isAuthenticated).toBe(true)
         expect(result.current.user).toMatchObject(storedUser)

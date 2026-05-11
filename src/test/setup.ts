@@ -41,7 +41,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 /**
  * Simulador manual de Web Storage para entornos JSDOM donde no está disponible o es inconsistente.
  */
-const localStorageMock = (() => {
+const createStorageMock = () => {
     let store: Record<string, string> = {};
     return {
         getItem: (key: string) => store[key] || null,
@@ -51,11 +51,11 @@ const localStorageMock = (() => {
         get length() { return Object.keys(store).length; },
         key: (index: number) => Object.keys(store)[index] || null,
     };
-})();
+};
 
 if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
+    Object.defineProperty(window, 'localStorage', { value: createStorageMock() });
+    Object.defineProperty(window, 'sessionStorage', { value: createStorageMock() });
 }
 
 // Mock de indexedDB (mínimo para que librerías como idb-keyval no exploten)
