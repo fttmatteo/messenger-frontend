@@ -1,7 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { compressImage, IMAGE_CONFIG } from './image-utils'
+import { compressImage, IMAGE_CONFIG, getImageUrl } from './image-utils'
 
-describe('Image Utils - Phase 3 Optimization', () => {
+describe('Image Utils', () => {
+    describe('getImageUrl', () => {
+        beforeEach(() => {
+            vi.stubEnv('VITE_API_URL', 'http://test-api.com');
+        });
+
+        it('debe retornar string vacío si no hay url', () => {
+            expect(getImageUrl('')).toBe('');
+        });
+
+        it('debe respetar urls que ya son absolutas', () => {
+            const absolute = 'https://google.com/image.jpg';
+            expect(getImageUrl(absolute)).toBe(absolute);
+        });
+
+        it('debe añadir el prefijo de API a rutas relativas', () => {
+            const relative = '/services/photo.webp';
+            expect(getImageUrl(relative)).toBe('http://test-api.com/services/photo.webp');
+        });
+
+        it('debe limpiar prefijos /api/ duplicados', () => {
+            const withApi = '/api/services/photo.webp';
+            const result = getImageUrl(withApi);
+            expect(result).not.toContain('/api/api/');
+            expect(result).toBe('http://test-api.com/services/photo.webp');
+        });
+    });
+
+    describe('compressImage', () => {
     beforeEach(() => {
         globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
         globalThis.URL.revokeObjectURL = vi.fn();
@@ -68,5 +96,6 @@ describe('Image Utils - Phase 3 Optimization', () => {
         expect(IMAGE_CONFIG.MAX_WIDTH).toBe(1280);
         expect(IMAGE_CONFIG.PHOTO_QUALITY).toBe(0.85);
         expect(IMAGE_CONFIG.SIGNATURE_QUALITY).toBe(0.95);
+    });
     });
 });

@@ -6,6 +6,7 @@ import { NetworkProvider } from './context/NetworkContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
 import { SessionExpiredDialog } from './components/dialogs';
+import { LazyMotion, domMax } from 'framer-motion';
 
 /**
  * Componente envoltorio que proporciona StatusColorProvider con el ID del usuario actual.
@@ -35,7 +36,9 @@ export function App() {
         <NetworkProvider>
           <AuthProvider>
             <StatusColorWrapper>
-              <AppRoutes />
+              <LazyMotion features={domMax} strict>
+                <AppRoutes />
+              </LazyMotion>
               <Toaster />
               <SessionExpiredDialog />
             </StatusColorWrapper>
