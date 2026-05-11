@@ -32,11 +32,11 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 )
 
 describe('AuthContext', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+        vi.clearAllMocks()
         localStorage.clear()
         sessionStorage.clear()
-        vi.clearAllMocks()
-        // Reset Preferences mock state (since it's linked to localStorage in setup.ts)
+        await Preferences.clear() // Limpieza explícita
     })
 
     it('debe restaurar al usuario desde storage al montar', async () => {

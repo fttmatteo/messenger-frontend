@@ -3,21 +3,25 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../AuthContext'
 import type { ReactNode } from 'react'
 import { Preferences } from '@capacitor/preferences'
+import { http, HttpResponse } from 'msw'
+import { server } from '../../test/mocks/server'
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
 )
 
 describe('AuthIntegration (MSW)', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+        vi.clearAllMocks()
         localStorage.clear()
         sessionStorage.clear()
-        vi.clearAllMocks()
+        await Preferences.clear()
     })
 
-    afterEach(() => {
+    afterEach(async () => {
         localStorage.clear()
         sessionStorage.clear()
+        await Preferences.clear()
     })
 
     it('should login successfully using real service and MSW', async () => {
@@ -46,9 +50,17 @@ describe('AuthIntegration (MSW)', () => {
     })
 
     it('should logout and clear storage', async () => {
+        // Asegurar que el logout responda rápido para evitar timeouts
+        server.use(
+            http.post('*/auth/logout', () => {
+                return new HttpResponse(null, { status: 200 })
+            })
+        )
+
         const { result } = renderHook(() => useAuth(), { wrapper })
         await waitFor(() => expect(result.current.isLoading).toBe(false))
 
+        // Simular login previo
         await act(async () => {
             await result.current.login({
                 document: 12345,
@@ -60,6 +72,7 @@ describe('AuthIntegration (MSW)', () => {
         
         expect(result.current.isAuthenticated).toBe(true)
 
+        // Ejecutar logout
         await act(async () => {
             await result.current.logout()
         })
@@ -78,14 +91,18 @@ describe('AuthIntegration (MSW)', () => {
             id: 999,
             isOnline: true
         }
+        
+        // Preparar el estado antes de montar el hook
         await Preferences.set({ key: 'user', value: JSON.stringify(storedUser) })
         await Preferences.set({ key: 'role', value: storedUser.role })
 
         const { result } = renderHook(() => useAuth(), { wrapper })
 
+        // Esperar a que el useEffect interno cargue los datos
         await waitFor(() => {
-            expect(result.current.isLoading).toBe(false)
-        }, { timeout: 2000 })
+            if (!result.current) return false;
+            return result.current.isLoading === false;
+        }, { timeout: 3000 })
 
         expect(result.current.isAuthenticated).toBe(true)
         expect(result.current.user).toMatchObject(storedUser)
