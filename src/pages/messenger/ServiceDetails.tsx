@@ -12,6 +12,7 @@ import { getStatusIconConfig } from "@/lib/status-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { openMaps } from "@/lib/navigation-utils"
+import { getImageUrl } from "@/lib/image-utils"
 import { logger } from "@/utils/logger"
 import { ServiceDetailsSkeleton } from "@/components/service/ServiceSkeletons"
 import { useNetwork } from "@/hooks/use-network"
@@ -307,9 +308,11 @@ export default function ServiceDetails() {
                                     </div>
                                 )}
                                 <img
-                                    src={service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath}
+                                    src={getImageUrl(service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath || '')}
                                     alt="Placa del vehículo"
                                     onLoad={() => setImageLoaded(true)}
+                                    loading="lazy"
+                                    decoding="async"
                                     className={`w-full h-full object-contain transition-all duration-700 ease-out ${
                                         imageLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-sm'
                                     }`}

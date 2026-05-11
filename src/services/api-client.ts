@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { authService } from './auth.service'
 import { logger } from '../utils/logger'
+import { Preferences } from '@capacitor/preferences'
+import { isNative } from '@/lib/capacitor'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -16,79 +17,51 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 export const apiClient = axios.create({
     baseURL: API_URL,
     timeout: 30000,
-    withCredentials: true, // CRÍTICO: Enviar cookies en cada request
+    withCredentials: true,
 })
 
-// Defensivo: Limpiar residuo de 'token' en localStorage si existe (legacy)
-// Esto evita que alguna librería o componente legacy intente decodificarlo si quedó basura.
-if (typeof window !== 'undefined' && localStorage.getItem('token')) {
-    localStorage.removeItem('token');
-}
-
-// Interceptor de petición: El frontend prefiere usar cookies.
-// Ya no enviamos el accessToken manualmente si withCredentials: true está activo,
-// para minimizar superficies de ataque y redundancia.
 apiClient.interceptors.request.use(
-    (config) => {
+    async (config) => {
         const correlationId = crypto.randomUUID();
         config.headers['X-Correlation-Id'] = correlationId;
 
-        // Fallback: Si el entorno ha guardado un token, lo enviamos explícitamente en el header.
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+        // Optimización: Si no es nativo, vamos directo al storage síncrono para evitar 'hangs' asíncronos en navegadores/tests
+        if (!isNative()) {
+            const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return config;
         }
 
-        // Nota: Axios ya debería manejar X-XSRF-TOKEN automáticamente 
-        // si la cookie XSRF-TOKEN está presente.
+        try {
+            const { value } = await Preferences.get({ key: 'accessToken' });
+            const token = value || localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+        } catch (e) {
+            logger.warn('[api-client] No se pudo recuperar el token de Preferences:', e);
+        }
 
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Interceptor de respuesta: capturar token del body si llega
 apiClient.interceptors.response.use(
-    (response) => {
-        if (response.config.url?.includes('/auth/')) {
-            // Lógica específica de auth si fuera necesaria
-        }
-
-        // Si la respuesta trae tokens en el body, lo guardamos como fallback
-        if (response.data) {
-            if (response.data.accessToken) {
-                const currentToken = localStorage.getItem('accessToken');
-                if (currentToken !== response.data.accessToken) {
-                    localStorage.setItem('accessToken', response.data.accessToken);
-                    sessionStorage.setItem('accessToken', response.data.accessToken);
-                }
-            }
-            if (response.data.refreshToken) {
-                const currentRefresh = localStorage.getItem('refreshToken');
-                if (currentRefresh !== response.data.refreshToken) {
-                    localStorage.setItem('refreshToken', response.data.refreshToken);
-                    sessionStorage.setItem('refreshToken', response.data.refreshToken);
-                }
-            }
-        }
-        return response;
-    },
-    async (error) => {
-        // Esta parte es manejada por el interceptor posterior, así que solo pasamos el error
-        return Promise.reject(error);
-    }
+    (response) => response,
+    async (error) => Promise.reject(error)
 );
 
-// Indicador para rastrear si la renovación del token ya está en progreso
 let isRefreshing = false
 
-// Tipo para peticiones en cola esperando la renovación del token
 interface QueuedRequest {
     resolve: (token: string) => void
     reject: (error: unknown) => void
 }
 
-// Cola para mantener las peticiones que están esperando la renovación del token
 let failedQueue: QueuedRequest[] = []
 
 const processQueue = (error: unknown, token: string | null = null) => {
@@ -103,10 +76,8 @@ const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue = []
 }
 
-// Interceptor de respuesta - manejar errores 401 globalmente y loguear todos los errores
 apiClient.interceptors.response.use(
     (response) => {
-        // Podemos loguear metadata opcionalmente aquí
         return response
     },
     async (error) => {
@@ -117,8 +88,6 @@ apiClient.interceptors.response.use(
         }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-            // Ignorar reintento si el endpoint es login, refresh o logout
-            // (evita bucles infinitos: login falla -> 401 -> refresh -> retry login -> loop)
             const isAuthAction = 
                 originalRequest.url?.includes('auth/login') || 
                 originalRequest.url?.includes('auth/refresh') || 
@@ -144,15 +113,16 @@ apiClient.interceptors.response.use(
             isRefreshing = true
 
             try {
-                // Refresh token automáticamente desde cookie
+                const { authService } = await import('./auth.service')
+                
                 await authService.refreshToken()
                 processQueue(null, 'refreshed')
 
-                // Reintentar petición original
                 return apiClient(originalRequest)
             } catch (err) {
                 processQueue(err, null)
-                authService.logout()
+                const { authService } = await import('./auth.service')
+                await authService.logout()
                 window.dispatchEvent(new CustomEvent('session-expired'))
                 return Promise.reject(err)
             } finally {

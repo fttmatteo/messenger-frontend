@@ -11,6 +11,7 @@ export const LoginResponseSchema = z.object({
     role: z.string(),
     message: z.string(),
     accessToken: z.string().optional(),
+    refreshToken: z.string().optional(),
     user: z
         .object({
             id: z.number().optional(),

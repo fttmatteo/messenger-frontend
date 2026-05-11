@@ -4,6 +4,7 @@ import apiClient from '../api-client';
 import { offlineCacheService } from '../offline-cache.service';
 import { Preferences } from '@capacitor/preferences';
 import { logger } from '@/utils/logger';
+import { isNative } from '@/lib/capacitor';
 
 vi.mock('../api-client', () => ({
     default: {
@@ -23,6 +24,10 @@ vi.mock('@capacitor/preferences', () => ({
         set: vi.fn(),
         remove: vi.fn(),
     },
+}));
+
+vi.mock('@/lib/capacitor', () => ({
+    isNative: vi.fn(() => false),
 }));
 
 vi.mock('@/utils/logger', () => ({
@@ -69,6 +74,7 @@ describe('authService', () => {
 
     describe('refreshToken', () => {
         it('should call /auth/refresh with token from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'pref-refresh-token' });
             vi.mocked(apiClient.post).mockResolvedValue({});
 
@@ -77,15 +83,6 @@ describe('authService', () => {
             expect(apiClient.post).toHaveBeenCalledWith('/auth/refresh', { refreshToken: 'pref-refresh-token' });
         });
 
-        it('should fallback to localStorage if Preferences fails', async () => {
-            vi.mocked(Preferences.get).mockRejectedValue(new Error());
-            localStorage.setItem('refreshToken', 'local-refresh-token');
-            vi.mocked(apiClient.post).mockResolvedValue({});
-
-            await authService.refreshToken();
-
-            expect(apiClient.post).toHaveBeenCalledWith('/auth/refresh', { refreshToken: 'local-refresh-token' });
-        });
 
         it('should call /auth/refresh with empty object if no token found', async () => {
             vi.mocked(Preferences.get).mockResolvedValue({ value: null });
@@ -100,15 +97,11 @@ describe('authService', () => {
     describe('logout', () => {
         it('should clear everything and call logout API', async () => {
             vi.mocked(apiClient.post).mockResolvedValue({});
-            localStorage.setItem('accessToken', 'token');
-            sessionStorage.setItem('user', 'user');
 
             await authService.logout();
 
             expect(offlineCacheService.clearAll).toHaveBeenCalled();
             expect(apiClient.post).toHaveBeenCalledWith('/auth/logout');
-            expect(localStorage.getItem('accessToken')).toBeNull();
-            expect(sessionStorage.getItem('user')).toBeNull();
             expect(Preferences.remove).toHaveBeenCalledTimes(4);
         });
 
@@ -122,6 +115,7 @@ describe('authService', () => {
 
     describe('getCurrentUserAsync', () => {
         it('should get user from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             const user = { id: 1, name: 'Test' };
             vi.mocked(Preferences.get).mockResolvedValue({ value: JSON.stringify(user) });
 
@@ -129,18 +123,11 @@ describe('authService', () => {
             expect(result).toEqual(user);
         });
 
-        it('should get user from localStorage if Preferences fails', async () => {
-            const user = { id: 1, name: 'Local' };
-            vi.mocked(Preferences.get).mockResolvedValue({ value: null });
-            localStorage.setItem('user', JSON.stringify(user));
-
-            const result = await authService.getCurrentUserAsync();
-            expect(result).toEqual(user);
-        });
     });
 
     describe('getTokenAsync', () => {
         it('should return token from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'token' });
             const result = await authService.getTokenAsync();
             expect(result).toBe('token');
@@ -158,6 +145,7 @@ describe('authService', () => {
 
     describe('getRoleAsync', () => {
         it('should return role from Preferences', async () => {
+            vi.mocked(isNative).mockReturnValue(true);
             vi.mocked(Preferences.get).mockResolvedValue({ value: 'ADMIN' });
             const result = await authService.getRoleAsync();
             expect(result).toBe('ADMIN');

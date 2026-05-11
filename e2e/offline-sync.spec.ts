@@ -105,9 +105,20 @@ test.describe('Offline Resilience & Sync', () => {
         await expect(page.getByText(/offline|pendiente/i).first()).toBeVisible({ timeout: 20000 });
 
         let syncCalled = false;
-        await page.route('**/services/updateService/s202', async route => {
+        await page.route('**/services/updateService/**', async (route) => {
             syncCalled = true;
-            await route.fulfill({ json: { success: true } });
+            await route.fulfill({ 
+                status: 200, 
+                contentType: 'application/json', 
+                body: JSON.stringify({ 
+                    idServiceDelivery: 202,
+                    uuid: 's202',
+                    plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
+                    dealership: { idDealership: 2, uuid: 'd2', name: 'Concesionario Norte' },
+                    currentStatus: 'DELIVERED',
+                    createdAt: new Date().toISOString()
+                }) 
+            });
         });
 
         await context.setOffline(false);

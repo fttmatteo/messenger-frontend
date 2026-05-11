@@ -12,6 +12,35 @@ interface NetworkProviderProps {
     children: ReactNode
 }
 
+offlineSyncService.registerHandler('UPDATE_STATUS_WITH_FILES', async (action) => {
+    try {
+        const payload = action.payload as UpdateStatusWithFilesPayload
+        let signature: File | undefined
+        if (payload.signatureBase64) {
+            signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')
+        }
+        let photos: File[] | undefined
+        if (payload.photosBase64 && payload.photosBase64.length > 0) {
+            photos = await Promise.all(
+                payload.photosBase64.map((b64, i) => base64ToFile(b64, `photo_${i}.jpg`, 'image/jpeg'))
+            )
+        }
+        await serviceDeliveryService.updateStatus(payload.uuid, {
+            status: payload.status as ServiceStatus,
+            observation: payload.observation,
+            signature,
+            photos,
+            latitude: payload.latitude,
+            longitude: payload.longitude,
+        })
+        logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { uuid: payload.uuid })
+        return true
+    } catch (error) {
+        logger.error('Error al sincronizar UPDATE_STATUS_WITH_FILES', error)
+        return false
+    }
+})
+
 /**
  * Proveedor de contexto de red y PWA.
  * Monitorea el estado de conexión, gestiona la sincronización offline y las actualizaciones del Service Worker.
@@ -23,43 +52,8 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
     const [needRefresh, setNeedRefresh] = useState(false)
     const [pendingActionsCount, setPendingActionsCount] = useState(0)
 
-
     useEffect(() => {
         offlineSyncService.setupBackgroundSyncListener()
-
-        offlineSyncService.registerHandler('UPDATE_STATUS_WITH_FILES', async (action) => {
-            try {
-                const payload = action.payload as UpdateStatusWithFilesPayload
-
-                let signature: File | undefined
-                if (payload.signatureBase64) {
-                    signature = await base64ToFile(payload.signatureBase64, 'signature.png', 'image/png')
-                }
-
-
-                let photos: File[] | undefined
-                if (payload.photosBase64 && payload.photosBase64.length > 0) {
-                    photos = await Promise.all(
-                        payload.photosBase64.map((b64, i) => base64ToFile(b64, `photo_${i}.jpg`, 'image/jpeg'))
-                    )
-                }
-
-                await serviceDeliveryService.updateStatus(payload.uuid, {
-                    status: payload.status as ServiceStatus,
-                    observation: payload.observation,
-                    signature,
-                    photos,
-                    latitude: payload.latitude,
-                    longitude: payload.longitude,
-                })
-
-                logger.info('Acción offline sincronizada: UPDATE_STATUS_WITH_FILES', { uuid: payload.uuid })
-                return true
-            } catch (error) {
-                logger.error('Error al sincronizar UPDATE_STATUS_WITH_FILES', error)
-                return false
-            }
-        })
     }, [])
 
 
@@ -101,8 +95,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
             logger.info('Navegador detectado como ONLINE')
             setIsOnline(true)
 
-            // Usamos actualización funcional para asegurar que leemos el valor más reciente de wasOffline
-            // y realizamos la acción solo si realmente estábamos offline
             setWasOffline(prevWasOffline => {
                 if (prevWasOffline) {
                     logger.info('Restaurando conexión tras periodo offline - Iniciando sincronización')
@@ -112,10 +104,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
                         duration: 3000,
                     })
 
-                    // Pequeño delay opcional para asegurar que los sockets/conexiones estén realmente listos
-                    setTimeout(() => {
-                        syncPendingActions()
-                    }, 500)
+                    void syncPendingActions()
                 }
                 return false
             })

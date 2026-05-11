@@ -15,11 +15,13 @@ interface ServiceCardProps {
     service: ServiceDelivery
 }
 
+import React, { memo } from "react"
+
 /**
  * Tarjeta compacta para mostrar información básica de un servicio en la lista del mensajero.
  * Incluye acciones rápidas para navegar al concesionario y actualizar el estado.
  */
-export function ServiceCard({ service }: ServiceCardProps) {
+export const ServiceCard = memo(({ service }: ServiceCardProps) => {
     const navigate = useNavigate()
     const { colors } = useStatusColors()
 
@@ -128,4 +130,4 @@ export function ServiceCard({ service }: ServiceCardProps) {
             </div>
         </div>
     )
-}
+})

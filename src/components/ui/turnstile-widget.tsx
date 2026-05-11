@@ -112,7 +112,7 @@ export function TurnstileWidget({
                     'expired-callback': handleExpire,
                     theme,
                     size,
-                    appearance: 'always',
+                    appearance: 'execute',
                 });
                 widgetIdRef.current = id;
                 if (onWidgetId) {
@@ -121,11 +121,9 @@ export function TurnstileWidget({
             }
         };
 
-        // Si el script ya está cargado, renderizar directamente
         if (window.turnstile) {
             renderWidget();
         } else {
-            // Cargar el script de Turnstile si no existe en el DOM
             const existingScript = document.querySelector(
                 `script[src*="challenges.cloudflare.com/turnstile"]`
             );
@@ -142,15 +140,13 @@ export function TurnstileWidget({
 
                     script.onerror = () => {
                         logger.error(`Error al cargar el script de Turnstile (Intento ${retryCountRef.current + 1}/${maxRetries})`);
-                        script.remove(); // Limpiar script fallido
+                        script.remove();
 
                         if (retryCountRef.current < maxRetries) {
                             retryCountRef.current++;
                             setTimeout(() => {
-                                // Resetear flag para permitir reintento si es necesario, 
-                                // aunque aquí estamos reintentando manualmente
                                 loadScript();
-                            }, 1000 * retryCountRef.current); // Backoff exponencial simple: 0s, 1s, 2s... no, espera. 1s, 2s, 3s.
+                            }, 1000 * retryCountRef.current);
                         } else {
                             handleError();
                         }
@@ -177,7 +173,6 @@ export function TurnstileWidget({
         };
     }, [theme, size, handleVerify, handleError, handleExpire, onWidgetId]);
 
-    // Cleanup al desmontar el componente
     useEffect(() => {
         return () => {
             if (widgetIdRef.current && window.turnstile) {

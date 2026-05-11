@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.10.7-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.10.8-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -16,11 +16,7 @@
 
 **High-engineering platform for messenger management.**
 
-*Robust interface • Offline-First Architecture • Real-time Fleet Tracking • Comprehensive Testing Strategy*
-
----
-
-[🇪🇸 Versión en Español](README.md) • [Features](#key-features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Installation](#installation--deployment) • [Architecture](#project-architecture)
+[🇪🇸 Versión en Español](README.md) • [Overview](#overview) • [Screenshots](#screenshots) • [Features](#key-features) • [Testing](#quality-strategy--testing) • [Tech Stack](#tech-stack) • [Architecture](#project-architecture) • [Installation](#installation--deployment) • [Security](#security) • [Tips](#operation-tips-mobile) • [Contact](#contact)
 
 </div>
 
@@ -34,8 +30,6 @@ The messenger experience is fully optimized as a standalone Android application.
 - **Instant Access**: Launch directly from the home screen.
 - **Immersive Experience**: True full-screen interface without browser navigation bars.
 - **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
-
----
 
 ### Two Optimized Experiences
 | **Command Center** | **Field App** |
@@ -65,18 +59,16 @@ The messenger experience is fully optimized as a standalone Android application.
 | ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
 | *Staff management* | *Dealership administration* |
 
----
-
 ### Messenger PWA
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
-| ![Login](docs/screenshots/messenger/1_Messenger_Login.png) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.png) | ![Update Status](docs/screenshots/messenger/5_Messenger_Actualizar_Estado.png) |
-| *Messenger access* | *Assigned deliveries list* | *Status change with evidence* |
+| ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
+| *Messenger access* | *Assigned deliveries list* | *Status change* |
 
-| Service Details | History | Settings |
+| Service Details | New Service | My Profile |
 |:---:|:---:|:---:|
-| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio_1.1.png) | ![History](docs/screenshots/messenger/9_Messenger_Historial.png) | ![Settings](docs/screenshots/messenger/11_Messenger_Configuracion.png) |
-| *Complete information & navigation* | *Service status history* | *App preferences* |
+| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio.jpeg) | ![History](docs/screenshots/messenger/13_Messenger_Crear_Servicio_1.jpeg) | ![Settings](docs/screenshots/messenger/19_Messenger_Sidebar_MiPerfil_1.jpeg) |
+| *Complete information* | *Create Service* | *Date Profile* |
 
 ---
 
@@ -91,7 +83,19 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Service Workers** | Strategic caching of assets and API responses via VitePWA for instant loading under any network condition. |
 | **Bundle Optimization** | Continuous bundle size analysis with `rollup-plugin-visualizer` to ensure performance on mid/low-range devices. |
 
----
+#### Offline Synchronization Flow
+```mermaid
+graph TD
+    A[User Action] -->|Offline| B["IndexedDB (idb-keyval)"]
+    B --> C{Detect Network}
+    C -->|Offline| D[Retry Queue]
+    D --> C
+    C -->|Online| E["Sync Manager (offline-sync.service)"]
+    E --> F[Exponential Backoff]
+    F --> G[Backend API]
+    G -->|Success| H[Clear from IDB]
+    G -->|Error| F
+```
 
 ### Geospatial Engineering
 | Feature | Description |
@@ -100,17 +104,18 @@ The messenger experience is fully optimized as a standalone Android application.
 | **Advanced Markers API** | High-performance Google Maps rendering, supporting thousands of simultaneous entities without FPS degradation. |
 | **Resilient Geocoding** | Queue system for address resolution that respects Google API rate limits. |
 
----
-
 ### User Experience (UX)
 | Feature | Description |
 |:---|:---|
 | **Responsive Design** | Fluid interface from 4K monitors to 5" mobile devices, built with Tailwind CSS v4.2. |
 | **Dark/Light Mode** | Native theme support with system preference detection and persistent user choice. |
 | **Pagination & Search** | Efficient management of large data volumes through server-side pagination and Full-Text search. |
-| **Evidence Capture** | Vector digital signature and **Native WebP Optimization Pipeline** with source compression for maximum performance. |
+| **Evidence Capture** | Vector digital signature and **Dual WebP Optimization Pipeline** (Source compression + Server reinforcement) for maximum data savings. |
+| **Adaptive Performance** | Integration of **LazyMotion** and selective memoization of critical components (`ServiceCard`) for smooth scrolling on mid-range devices. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
 | **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
+| **Safe Area Support** | Native adaptation for *Notches* and *Dynamic Islands* via `@capacitor-community/safe-area`, ensuring an immersive experience without UI clipping. |
+
 
 ---
 
@@ -133,8 +138,6 @@ This project follows the **"Testing Trophy"** methodology, prioritizing deployme
 | **Integration** | `Vitest` + `MSW` | Full-page tests with mocked network layer via Mock Service Worker |
 | **Unit** | `Vitest` | Business logic (~89% coverage in services), utilities, and complex hooks |
 | **Static** | `ESLint`, `TypeScript` | Strict type checking and linting rules |
-
----
 
 ### Running Tests
 ```bash
@@ -161,10 +164,10 @@ The architecture is designed for **scalability**, **maintainability**, and **lon
 | **Core** | `React 19.2`, `TypeScript 5.9` | Concurrent features + strict type safety |
 | **Build** | `Vite 7.3` | Lightning-fast HMR and optimized builds |
 | **Styling** | `Tailwind CSS 4.2`, `Shadcn/UI` | Utility-first CSS with accessible component library |
-| **State** | `React Query`, `Context API` | Server state caching + global client state |
+| **State** | `Context API`, `Custom Hooks` | Global state management + shared business logic |
 | **Forms** | `React Hook Form`, `Zod 4` | High-performance forms with schema validation |
 | **PWA** | `vite-plugin-pwa`, `idb-keyval` | Offline capabilities and local persistence |
-| **Mobile** | `Capacitor 6` | Native Android app generation and native APIs access |
+| **Mobile** | `Capacitor 8` | Native Android app generation and next-gen native APIs access |
 | **Maps** | `@react-google-maps/api` | Deep integration with Google Maps Platform |
 | **Real-time** | `@stomp/stompjs` | WebSocket messaging for live tracking |
 | **Animation** | `Framer Motion` | Fluid animations and transitions |
@@ -181,11 +184,11 @@ src/
 │   ├── ui/              # Base components (Shadcn/UI)
 │   └── ...              # Feature-specific components
 ├── config/              # Application Configuration
-├── context/             # Global State Providers (Auth, Theme, Maps)
+├── context/             # Global State Providers (Auth, Network, StatusColor)
 ├── hooks/               # Custom React Hooks (16 hooks)
 ├── layouts/             # Page Layout Components
 ├── lib/                 # Utility Libraries
-├── pages/               # Route Page Components (28 pages)
+├── pages/               # Route Page Components (31 pages)
 ├── routes/              # Application Routing
 ├── schemas/             # Zod Validation Schemas
 ├── services/            # API & Infrastructure Services
@@ -206,8 +209,6 @@ src/
 | npm | v10+ |
 | Google Maps API Key | Required for maps functionality |
 
----
-
 ### Quick Start (Docker)
 If you have the backend repository in the same root folder, you can spin up the entire ecosystem (Frontend + Backend + DB) using Docker:
 
@@ -215,8 +216,6 @@ If you have the backend repository in the same root folder, you can spin up the 
 2. Run: `docker-compose -f docker-compose.local.yml up --build`
 
 This will build the frontend and serve it at `http://localhost`.
-
----
 
 ### Development with Hot Reloading (Docker)
 For active development with automatic code reloading:
@@ -227,8 +226,6 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 The frontend dev server (Vite HMR) will be available at `http://localhost:5173` — changes are reflected instantly on save.
-
----
 
 ### Local Development (Manual)
 ```bash
@@ -247,8 +244,6 @@ cp .env.example .env
 npm run dev
 ```
 
----
-
 ### Environment Variables
 Create a `.env` file in the project root:
 
@@ -257,16 +252,12 @@ Create a `.env` file in the project root:
 VITE_API_URL=http://localhost:8080/api
 
 # Google Maps
-VITE_GOOGLE_MAPS_KEY=your_google_maps_api_key
-
-# WebSocket (optional - for development)
-VITE_WS_URL=ws://localhost:8080/ws
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+VITE_GOOGLE_MAPS_MAP_ID=your_google_maps_map_id
 
 # Cloudflare Turnstile (Bot Protection)
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ```
-
----
 
 ### Available Scripts
 | Script | Description |
@@ -287,8 +278,8 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ## Security
 | Feature | Implementation |
 |:---|:---|
-| **JWT Authentication** | Automatic token rotation via Axios interceptors with refresh token support |
-| **XSS Prevention** | React's built-in escaping + strict Content Security Policy |
+| **JWT Authentication** | Automatic token rotation via Axios interceptors with **Secure Hybrid Persistence**: `HttpOnly` Cookies (Web) and `@capacitor/preferences` (Native App). |
+| **XSS Prevention** | Built-in React escaping + strict **Content Security Policy (CSP)** blocking unauthorized script injections. |
 | **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
 | **Solo HTTPS** | Enforced secure connections in production |
 | **Input Validation** | All user inputs validated with Zod schemas (aligned with backend, e.g., min 6 chars for passwords) |
@@ -299,13 +290,19 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 
 ---
 
+## Operation Tips (Mobile)
+To ensure the best experience on Android devices:
+*   **Battery Optimization**: It is mandatory to disable "Battery Optimization" for PLAK in the system settings. This allows GPS tracking to function correctly in the background.
+*   **Location Permissions**: Select "Allow all the time" to ensure tracking doesn't stop when the app is minimized.
+*   **Power Saving Mode**: Avoid extreme "Power Saving" modes, as they may limit the update frequency of WebSockets.
+
+---
+
 ## Contact
 For inquiries about this project:
 - **Repository**: `messenger-frontend`
 - **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Website**: [plak.digital](https://www.plak.digital)
-
----
 
 > **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. The source code for this application is protected by copyright laws. DNDA Registration No. 13-108-139. Copying, distributing, or modifying this application without express authorization is strictly prohibited.**

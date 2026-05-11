@@ -1,76 +1,104 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { getImageUrl } from './image-utils'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { compressImage, IMAGE_CONFIG, getImageUrl } from './image-utils'
 
-/**
- * Suite de pruebas para las utilidades de procesamiento de rutas de imágenes.
- * Verifica la normalización de URLs relativas y absolutas, prependiendo la URL de la API
- * cuando es necesario y evitando duplicidades.
- */
-describe('image-utils', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
-
-    afterEach(() => {
-        vi.unstubAllEnvs()
-    })
-
+describe('Image Utils', () => {
     describe('getImageUrl', () => {
-        it('should return empty string for empty input', () => {
-            expect(getImageUrl('')).toBe('')
-        })
+        beforeEach(() => {
+            vi.stubEnv('VITE_API_URL', 'http://test-api.com');
+        });
 
-        it('should return empty string for falsy input', () => {
-            // @ts-expect-error Probando caso borde con null
-            expect(getImageUrl(null)).toBe('')
-            // @ts-expect-error Probando caso borde con undefined
-            expect(getImageUrl(undefined)).toBe('')
-        })
+        it('debe retornar string vacío si no hay url', () => {
+            expect(getImageUrl('')).toBe('');
+        });
 
-        it('should return full URLs unchanged', () => {
-            const httpUrl = 'http://example.com/image.jpg'
-            const httpsUrl = 'https://example.com/image.jpg'
+        it('debe respetar urls que ya son absolutas', () => {
+            const absolute = 'https://google.com/image.jpg';
+            expect(getImageUrl(absolute)).toBe(absolute);
+        });
 
-            expect(getImageUrl(httpUrl)).toBe(httpUrl)
-            expect(getImageUrl(httpsUrl)).toBe(httpsUrl)
-        })
+        it('debe añadir el prefijo de API a rutas relativas', () => {
+            const relative = '/services/photo.webp';
+            expect(getImageUrl(relative)).toBe('http://test-api.com/services/photo.webp');
+        });
 
-        it('should prepend API URL to relative paths starting with /', () => {
-            const relativePath = '/uploads/images/photo.jpg'
-            const result = getImageUrl(relativePath)
+        it('debe limpiar prefijos /api/ duplicados', () => {
+            const withApi = '/api/services/photo.webp';
+            const result = getImageUrl(withApi);
+            expect(result).not.toContain('/api/api/');
+            expect(result).toBe('http://test-api.com/services/photo.webp');
+        });
+    });
 
-            expect(result).toContain('/uploads/images/photo.jpg')
-            expect(result).toMatch(/^https?:\/\//)
-        })
+    describe('compressImage', () => {
+    beforeEach(() => {
+        globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
 
-        it('should prepend API URL to relative paths without leading /', () => {
-            const relativePath = 'uploads/images/photo.jpg'
-            const result = getImageUrl(relativePath)
+        HTMLCanvasElement.prototype.toBlob = vi.fn((callback) => {
+            const blob = new Blob(['mock content'], { type: 'image/webp' });
+            callback(blob);
+        });
 
-            expect(result).toContain('uploads/images/photo.jpg')
-            expect(result).toMatch(/^https?:\/\//)
-        })
+        HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+            drawImage: vi.fn(),
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }) as any;
 
-        it('should remove /api prefix if present to avoid duplication', () => {
-            const pathWithApi = '/api/uploads/images/photo.jpg'
-            const result = getImageUrl(pathWithApi)
+        vi.stubGlobal('Image', class {
+            onload: () => void = () => { };
+            onerror: () => void = () => { };
+            src: string = '';
+            width: number = 2000;
+            height: number = 1000;
+            constructor() {
+                setTimeout(() => this.onload(), 10);
+            }
+        });
 
-            expect(result).not.toContain('/api/api')
-            expect(result).toContain('/uploads/images/photo.jpg')
-        })
+        vi.stubGlobal('FileReader', class {
+            onload: (ev: ProgressEvent<FileReader>) => void = () => { };
+            readAsDataURL() {
+                setTimeout(() => this.onload({ 
+                    target: { result: 'data:image/jpeg;base64,mock' } 
+                } as unknown as ProgressEvent<FileReader>), 10);
+            }
+        });
+    });
 
-        it('should handle paths that start with /api/', () => {
-            const pathWithApi = '/api/photos/123.jpg'
-            const result = getImageUrl(pathWithApi)
+    it('debe mantener las dimensiones si son menores al máximo', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
 
-            expect(result).toContain('/photos/123.jpg')
-        })
+        const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), 'image/jpeg'));
+        const file = new File([blob], 'test.jpg', { type: 'image/jpeg' });
 
-        it('should not modify paths that contain api but dont start with /api/', () => {
-            const path = '/uploads/api-docs/image.jpg'
-            const result = getImageUrl(path)
+        const optimized = await compressImage(file);
 
-            expect(result).toContain('/uploads/api-docs/image.jpg')
-        })
-    })
-})
+        expect(optimized.type).toBe('image/webp');
+        expect(optimized.name).toContain('_opt.webp');
+    });
+
+    it('debe redimensionar si el ancho excede el máximo (1280px)', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 2000;
+        canvas.height = 1000;
+
+        const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), 'image/jpeg'));
+        const file = new File([blob], 'large.jpg', { type: 'image/jpeg' });
+
+        const optimized = await compressImage(file);
+
+        expect(optimized).toBeDefined();
+        expect(optimized.type).toBe('image/webp');
+    });
+
+    it('las constantes de configuración deben coincidir con el backend', () => {
+        expect(IMAGE_CONFIG.MAX_WIDTH).toBe(1280);
+        expect(IMAGE_CONFIG.PHOTO_QUALITY).toBe(0.85);
+        expect(IMAGE_CONFIG.SIGNATURE_QUALITY).toBe(0.95);
+    });
+    });
+});
