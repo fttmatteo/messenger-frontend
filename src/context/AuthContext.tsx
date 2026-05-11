@@ -38,12 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = React.useCallback(async (credentials: LoginCredentials) => {
         const data = await authService.login(credentials);
-        const storage = credentials.rememberMe ? localStorage : sessionStorage;
-
-        const oppositeStorage = credentials.rememberMe ? sessionStorage : localStorage;
-        oppositeStorage.removeItem('role');
-        oppositeStorage.removeItem('user');
-
+        
         const userObj: User = {
             document: credentials.document,
             role: data.role,
@@ -53,42 +48,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isOnline: data.role === 'MESSENGER'
         };
 
-        storage.setItem('role', data.role);
-        storage.setItem('user', JSON.stringify(userObj));
-
-        import('@capacitor/preferences').then(({ Preferences }) => {
-            Preferences.set({ key: 'role', value: data.role });
-            Preferences.set({ key: 'user', value: JSON.stringify(userObj) });
-        }).catch(() => { });
-
         setUser(userObj);
     }, []);
 
-    const updateUser = React.useCallback((data: Partial<User>) => {
+    const updateUser = React.useCallback(async (data: Partial<User>) => {
         if (!user) return;
         const updatedUser = { ...user, ...data };
         setUser(updatedUser);
 
-        const updatedUserStr = JSON.stringify(updatedUser);
-
-        if (localStorage.getItem('user')) {
-            localStorage.setItem('user', updatedUserStr);
+        // Persistir cambio
+        const role = await authService.getRoleAsync();
+        if (role) {
+            await authService.saveSession(updatedUser, role);
         }
-        if (sessionStorage.getItem('user')) {
-            sessionStorage.setItem('user', updatedUserStr);
-        }
-
-        import('@capacitor/preferences').then(({ Preferences }) => {
-            Preferences.set({ key: 'user', value: updatedUserStr });
-        }).catch(() => { });
     }, [user]);
 
-    const logout = React.useCallback(() => {
-        authService.logout();
-        localStorage.removeItem('user');
-        localStorage.removeItem('role');
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('role');
+    const logout = React.useCallback(async () => {
+        await authService.logout();
         setUser(null);
     }, []);
 

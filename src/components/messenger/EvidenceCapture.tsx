@@ -4,6 +4,7 @@ import { Camera, X, Upload, Loader2 } from 'lucide-react'
 import { showToast } from '@/config/toast-config'
 import { getErrorMessage } from '@/lib/error-utils'
 import { createLogger } from '@/utils/logger'
+import { compressImage, IMAGE_CONFIG } from '@/lib/image-utils'
 
 const logger = createLogger('EvidenceCapture')
 
@@ -142,8 +143,17 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
             sourceY = (videoHeight - sourceHeight) / 2
         }
 
-        canvas.width = sourceWidth
-        canvas.height = sourceHeight
+        let finalWidth = sourceWidth
+        let finalHeight = sourceHeight
+
+        if (finalWidth > IMAGE_CONFIG.MAX_WIDTH || finalHeight > IMAGE_CONFIG.MAX_HEIGHT) {
+            const ratio = Math.min(IMAGE_CONFIG.MAX_WIDTH / finalWidth, IMAGE_CONFIG.MAX_HEIGHT / finalHeight)
+            finalWidth = finalWidth * ratio
+            finalHeight = finalHeight * ratio
+        }
+
+        canvas.width = finalWidth
+        canvas.height = finalHeight
 
         const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) return
@@ -153,7 +163,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
         ctx.drawImage(
             video,
             sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, sourceWidth, sourceHeight
+            0, 0, finalWidth, finalHeight
         )
 
         canvas.toBlob((blob) => {
@@ -162,10 +172,12 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 onPhotosChange([...photos, file])
                 stopCamera()
             }
-        }, 'image/webp', 0.85)
+        }, 'image/webp', IMAGE_CONFIG.PHOTO_QUALITY)
     }
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [isProcessing, setIsProcessing] = useState(false)
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (!files) return
 
@@ -175,19 +187,38 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
             return
         }
 
-        const newPhotos: File[] = []
-        for (let i = 0; i < Math.min(files.length, remainingSlots); i++) {
-            const file = files[i]
-            if (file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024) {
-                newPhotos.push(file)
+        try {
+            setIsProcessing(true)
+            const newPhotos: File[] = []
+            const processCount = Math.min(files.length, remainingSlots)
+
+            for (let i = 0; i < processCount; i++) {
+                const file = files[i]
+                if (file.type.startsWith('image/')) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        logger.info(`Imagen ${file.name} grande detectada, optimizando...`)
+                    }
+                    try {
+                        const optimized = await compressImage(file, IMAGE_CONFIG.PHOTO_QUALITY, IMAGE_CONFIG.MAX_WIDTH)
+                        newPhotos.push(optimized)
+                    } catch (err) {
+                        logger.error(`Error optimizando ${file.name}:`, err)
+                        if (file.size <= 10 * 1024 * 1024) {
+                            newPhotos.push(file)
+                        }
+                    }
+                }
             }
-        }
 
-        if (newPhotos.length > 0) {
-            onPhotosChange([...photos, ...newPhotos])
+            if (newPhotos.length > 0) {
+                onPhotosChange([...photos, ...newPhotos])
+            }
+        } catch (error) {
+            logger.error('Error procesando archivos:', error)
+        } finally {
+            setIsProcessing(false)
+            e.target.value = ''
         }
-
-        e.target.value = ''
     }
 
     const removePhoto = (index: number) => {
@@ -283,11 +314,16 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                             type="button"
                             variant="outline"
                             className="w-full h-11"
+                            disabled={isProcessing}
                             asChild
                         >
                             <span>
-                                <Upload className="h-4 w-4 mr-2" />
-                                Galería
+                                {isProcessing ? (
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Upload className="h-4 w-4 mr-2" />
+                                )}
+                                {isProcessing ? 'Procesando...' : 'Galería'}
                             </span>
                         </Button>
                     </label>

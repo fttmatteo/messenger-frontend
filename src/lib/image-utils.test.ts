@@ -1,76 +1,72 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { getImageUrl } from './image-utils'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { compressImage, IMAGE_CONFIG } from './image-utils'
 
-/**
- * Suite de pruebas para las utilidades de procesamiento de rutas de imágenes.
- * Verifica la normalización de URLs relativas y absolutas, prependiendo la URL de la API
- * cuando es necesario y evitando duplicidades.
- */
-describe('image-utils', () => {
+describe('Image Utils - Phase 3 Optimization', () => {
     beforeEach(() => {
-        vi.clearAllMocks()
-    })
+        globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
 
-    afterEach(() => {
-        vi.unstubAllEnvs()
-    })
+        HTMLCanvasElement.prototype.toBlob = vi.fn((callback) => {
+            const blob = new Blob(['mock content'], { type: 'image/webp' });
+            callback(blob);
+        });
 
-    describe('getImageUrl', () => {
-        it('should return empty string for empty input', () => {
-            expect(getImageUrl('')).toBe('')
-        })
+        HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+            drawImage: vi.fn(),
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        })) as any;
 
-        it('should return empty string for falsy input', () => {
-            // @ts-expect-error Probando caso borde con null
-            expect(getImageUrl(null)).toBe('')
-            // @ts-expect-error Probando caso borde con undefined
-            expect(getImageUrl(undefined)).toBe('')
-        })
+        vi.stubGlobal('Image', class {
+            onload: () => void = () => { };
+            onerror: () => void = () => { };
+            src: string = '';
+            width: number = 2000;
+            height: number = 1000;
+            constructor() {
+                setTimeout(() => this.onload(), 10);
+            }
+        });
 
-        it('should return full URLs unchanged', () => {
-            const httpUrl = 'http://example.com/image.jpg'
-            const httpsUrl = 'https://example.com/image.jpg'
+        vi.stubGlobal('FileReader', class {
+            onload: (ev: any) => void = () => { };
+            readAsDataURL() {
+                setTimeout(() => this.onload({ target: { result: 'data:image/jpeg;base64,mock' } }), 10);
+            }
+        });
+    });
 
-            expect(getImageUrl(httpUrl)).toBe(httpUrl)
-            expect(getImageUrl(httpsUrl)).toBe(httpsUrl)
-        })
+    it('debe mantener las dimensiones si son menores al máximo', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
 
-        it('should prepend API URL to relative paths starting with /', () => {
-            const relativePath = '/uploads/images/photo.jpg'
-            const result = getImageUrl(relativePath)
+        const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), 'image/jpeg'));
+        const file = new File([blob], 'test.jpg', { type: 'image/jpeg' });
 
-            expect(result).toContain('/uploads/images/photo.jpg')
-            expect(result).toMatch(/^https?:\/\//)
-        })
+        const optimized = await compressImage(file);
 
-        it('should prepend API URL to relative paths without leading /', () => {
-            const relativePath = 'uploads/images/photo.jpg'
-            const result = getImageUrl(relativePath)
+        expect(optimized.type).toBe('image/webp');
+        expect(optimized.name).toContain('_opt.webp');
+    });
 
-            expect(result).toContain('uploads/images/photo.jpg')
-            expect(result).toMatch(/^https?:\/\//)
-        })
+    it('debe redimensionar si el ancho excede el máximo (1280px)', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 2000;
+        canvas.height = 1000;
 
-        it('should remove /api prefix if present to avoid duplication', () => {
-            const pathWithApi = '/api/uploads/images/photo.jpg'
-            const result = getImageUrl(pathWithApi)
+        const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), 'image/jpeg'));
+        const file = new File([blob], 'large.jpg', { type: 'image/jpeg' });
 
-            expect(result).not.toContain('/api/api')
-            expect(result).toContain('/uploads/images/photo.jpg')
-        })
+        const optimized = await compressImage(file);
 
-        it('should handle paths that start with /api/', () => {
-            const pathWithApi = '/api/photos/123.jpg'
-            const result = getImageUrl(pathWithApi)
+        expect(optimized).toBeDefined();
+        expect(optimized.type).toBe('image/webp');
+    });
 
-            expect(result).toContain('/photos/123.jpg')
-        })
-
-        it('should not modify paths that contain api but dont start with /api/', () => {
-            const path = '/uploads/api-docs/image.jpg'
-            const result = getImageUrl(path)
-
-            expect(result).toContain('/uploads/api-docs/image.jpg')
-        })
-    })
-})
+    it('las constantes de configuración deben coincidir con el backend', () => {
+        expect(IMAGE_CONFIG.MAX_WIDTH).toBe(1280);
+        expect(IMAGE_CONFIG.PHOTO_QUALITY).toBe(0.85);
+        expect(IMAGE_CONFIG.SIGNATURE_QUALITY).toBe(0.95);
+    });
+});

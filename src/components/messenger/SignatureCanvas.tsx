@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Eraser, Check, PenLine, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { IMAGE_CONFIG } from '@/lib/image-utils'
 
 
 
@@ -211,7 +212,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     } else {
                         resolve(null)
                     }
-                }, 'image/webp', 0.95)
+                }, 'image/webp', IMAGE_CONFIG.SIGNATURE_QUALITY)
             })
         }, [hasDrawn])
 
