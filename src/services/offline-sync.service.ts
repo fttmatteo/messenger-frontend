@@ -5,6 +5,8 @@ import { isNative } from '@/lib/capacitor'
 const PENDING_ACTIONS_KEY = 'pending_offline_actions'
 const MAX_RETRY_COUNT = 3
 
+import { logger } from '@/utils/logger'
+
 export type OfflineActionType =
     | 'CREATE_SERVICE'
     | 'UPDATE_STATUS'
@@ -225,7 +227,7 @@ class OfflineSyncService {
                                 await this.handleFailedAction(action)
                             }
                         } else {
-                            await this.handleFailedAction(action)
+                            logger.warn(`No hay handler registrado para la acción ${action.type}. Se omitirá el backoff para reintento rápido.`)
                         }
                     }
                 } catch {
