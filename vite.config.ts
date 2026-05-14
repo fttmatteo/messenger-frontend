@@ -5,20 +5,25 @@ import { defineConfig, loadEnv } from "vite"
 import { VitePWA } from "vite-plugin-pwa"
 import { visualizer } from "rollup-plugin-visualizer"
 import pkg from './package.json'
-
 import { cloudflare } from "@cloudflare/vite-plugin";
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load environment variables based on mode
   const env = loadEnv(mode, process.cwd(), '')
 
-  // Determine if we're in development
   const isDevelopment = mode === 'development'
   const isProduction = mode === 'production'
 
+  const envBase = env.VITE_BASE || ''
+  const basePath = envBase
+    ? envBase.endsWith('/')
+      ? envBase
+      : envBase + '/'
+    : isProduction
+    ? '/'
+    : './'
+
   return {
-    base: './', // CRÍTICO: Necesario para que Capacitor cargue los assets correctamente
+    base: basePath, 
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
@@ -35,7 +40,7 @@ export default defineConfig(({ mode }) => {
         theme_color: '#141414',
         background_color: '#141414',
         display: 'standalone',
-        start_url: '/',
+        start_url: env.VITE_BASE || '/',
         icons: [
           {
             src: '/icons/icon-192x192.png',
@@ -73,7 +78,6 @@ export default defineConfig(({ mode }) => {
         globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
         navigateFallback: 'index.html',
         navigateFallbackAllowlist: [/^\/(?!api)/],
-        // Configuración específica para injectManifest si fuera necesaria
       },
       devOptions: {
         enabled: true,
@@ -90,25 +94,16 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    // Build configuration
     build: {
       target: 'es2020',
-      // Generate sourcemaps for development/staging, but not for production
       sourcemap: !isProduction ? 'inline' : false,
-      // Optimize for production
       minify: isProduction ? 'esbuild' : false,
-      // Chunk size warnings
       chunkSizeWarningLimit: 500,
-      // Rollup options
       rollupOptions: {
         output: {
-          // Manual chunking for better caching and loading performance
           manualChunks: {
-            // Core React libraries - cached long-term
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            // Icons chunk for better caching
             'icons-vendor': ['lucide-react'],
-            // Radix UI Primitives - dialogs, dropdowns, popovers
             'ui-primitives': [
               '@radix-ui/react-dialog',
               '@radix-ui/react-dropdown-menu',
@@ -119,7 +114,6 @@ export default defineConfig(({ mode }) => {
               '@radix-ui/react-context-menu',
               '@radix-ui/react-hover-card',
             ],
-            // Radix UI Layout - tabs, accordion, navigation
             'ui-layout': [
               '@radix-ui/react-tabs',
               '@radix-ui/react-accordion',
@@ -128,7 +122,6 @@ export default defineConfig(({ mode }) => {
               '@radix-ui/react-menubar',
               '@radix-ui/react-scroll-area',
             ],
-            // Radix UI Inputs - form controls
             'ui-inputs': [
               '@radix-ui/react-checkbox',
               '@radix-ui/react-radio-group',
@@ -138,19 +131,14 @@ export default defineConfig(({ mode }) => {
               '@radix-ui/react-toggle',
               '@radix-ui/react-toggle-group',
             ],
-            // Form handling libraries
             'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-            // Charts - large library, separate chunk
             'charts-vendor': ['recharts'],
-            // Maps - loaded on demand
             'maps-vendor': ['@react-google-maps/api'],
-            // Animations - framer-motion is large
             'animation-vendor': ['framer-motion'],
           },
         },
       },
     },
-    // Server configuration (only for development)
     server: isDevelopment ? {
       port: 5173,
       proxy: {
@@ -186,7 +174,6 @@ export default defineConfig(({ mode }) => {
         },
       }
     } : undefined,
-    // Preview server configuration
     preview: {
       port: 4173,
     },
