@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { LayoutDashboard, Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle, User } from "lucide-react"
+import { Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/logo.png"
 import { useState, useRef } from "react"
@@ -12,7 +12,6 @@ import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { SidebarToggleTab } from "@/components/SidebarToggleTab"
 
 const menuItems = [
-    { title: "Panel", icon: LayoutDashboard, url: "/admin" },
     { title: "Empleados", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
@@ -68,7 +67,7 @@ function AdminLayoutContent() {
                             <SidebarMenu>
                                 {menuItems.map((item) => {
                                     const isActive = location.pathname === item.url ||
-                                        (item.url !== '/admin' && location.pathname.startsWith(item.url))
+                                        location.pathname.startsWith(item.url)
                                     return (
                                         <SidebarMenuItem key={item.title}>
                                             <SidebarMenuButton

@@ -17,7 +17,6 @@ function PageLoader() {
 const Login = React.lazy(() => import('@/pages/Login'));
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
-const AdminDashboard = React.lazy(() => import('@/pages/admin/Dashboard'));
 const Empleados = React.lazy(() => import('@/pages/admin/Empleados'));
 const CreateEmployee = React.lazy(() => import('@/pages/admin/CreateEmployee'));
 const EditEmployee = React.lazy(() => import('@/pages/admin/EditEmployee'));
@@ -72,7 +71,7 @@ function RoleBasedRedirect() {
     const isAdmin = user?.role?.toUpperCase().includes('ADMIN');
 
     if (isAdmin) {
-        return <Navigate to="/admin" replace />;
+        return <Navigate to="/admin/servicios" replace />;
     }
 
     return <Navigate to="/messenger" replace />;
@@ -137,7 +136,7 @@ export function AppRoutes() {
                         </ProtectedRoute>
                     }
                 >
-                    <Route index element={<AdminDashboard />} />
+                    <Route index element={<Navigate to="/admin/servicios" replace />} />
 
                     <Route path="empleados" element={<Empleados />} />
                     <Route path="empleados/crear" element={<CreateEmployee />} />
