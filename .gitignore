@@ -44,3 +44,9 @@ android/.idea/
 android/local.properties
 ios/App/public/
 ios/App/App/public/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
