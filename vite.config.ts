@@ -6,6 +6,8 @@ import { VitePWA } from "vite-plugin-pwa"
 import { visualizer } from "rollup-plugin-visualizer"
 import pkg from './package.json'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   // Load environment variables based on mode
@@ -20,74 +22,69 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
-    plugins: [
-      react(),
-      tailwindcss(),
-      VitePWA({
-        strategies: 'injectManifest',
-        srcDir: 'src',
-        filename: 'sw.ts',
-        registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
-        manifest: {
-          name: env.VITE_APP_NAME || 'PLAK',
-          short_name: 'PLAK',
-          description: env.VITE_APP_DESCRIPTION || 'Sistema de gestión de mensajería PLAK',
-          theme_color: '#141414',
-          background_color: '#141414',
-          display: 'standalone',
-          start_url: '/',
-          icons: [
-            {
-              src: '/icons/icon-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/icons/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/icons/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable',
-            },
-          ],
-          screenshots: [
-            {
-              src: '/screenshots/desktop.png',
-              sizes: '1280x720',
-              type: 'image/png',
-            },
-            {
-              src: '/screenshots/mobile.png',
-              sizes: '390x844',
-              type: 'image/png',
-            },
-          ],
-        },
-        workbox: {
-          globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
-          navigateFallback: 'index.html',
-          navigateFallbackAllowlist: [/^\/(?!api)/],
-          // Configuración específica para injectManifest si fuera necesaria
-        },
-        devOptions: {
-          enabled: true,
-          type: 'module',
-        },
-      }),
-      visualizer({
-        filename: "stats.html",
-        open: false,
-        gzipSize: true,
-        brotliSize: true,
-      }),
-    ],
+    plugins: [react(), tailwindcss(), VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
+      manifest: {
+        name: env.VITE_APP_NAME || 'PLAK',
+        short_name: 'PLAK',
+        description: env.VITE_APP_DESCRIPTION || 'Sistema de gestión de mensajería PLAK',
+        theme_color: '#141414',
+        background_color: '#141414',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          {
+            src: '/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+        screenshots: [
+          {
+            src: '/screenshots/desktop.png',
+            sizes: '1280x720',
+            type: 'image/png',
+          },
+          {
+            src: '/screenshots/mobile.png',
+            sizes: '390x844',
+            type: 'image/png',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: isDevelopment ? [] : ['**/*.{js,css,html,ico,png,svg}'],
+        navigateFallback: 'index.html',
+        navigateFallbackAllowlist: [/^\/(?!api)/],
+        // Configuración específica para injectManifest si fuera necesaria
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
+    }), visualizer({
+      filename: "stats.html",
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }), cloudflare()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -193,5 +190,5 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: 4173,
     },
-  }
+  };
 })
