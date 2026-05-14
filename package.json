@@ -14,7 +14,7 @@
     "build:staging": "tsc -b && vite build --mode staging",
     "build:prod": "tsc -b && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview --mode production",
+    "preview": "npm run build && wrangler dev",
     "preview:staging": "vite preview --mode staging",
     "preview:dev": "vite preview --mode development",
     "test": "vitest",
@@ -24,7 +24,8 @@
     "cap:build": "npm run build && npx cap sync",
     "cap:sync": "npx cap sync",
     "cap:open": "npx cap open android",
-    "cap:run": "npx cap run android"
+    "cap:run": "npx cap run android",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.26",
@@ -97,6 +98,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.2.0",
+    "@cloudflare/vite-plugin": "^1.36.4",
     "@emotion/is-prop-valid": "^1.4.0",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.58.2",
@@ -121,6 +123,7 @@
     "typescript-eslint": "^8.57.2",
     "vite": "^7.3.3",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "wrangler": "^4.90.1"
   }
 }
