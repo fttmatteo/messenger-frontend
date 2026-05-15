@@ -4,20 +4,46 @@ Este proyecto utiliza un sistema de versionamiento centralizado para asegurar qu
 
 ## Cómo Subir de Versión
 
-Para actualizar la versión del proyecto, utiliza el script de PowerShell proporcionado en la raíz.
+Para actualizar la versión del proyecto tienes varias opciones según tu sistema:
 
-### Comando Estándar
+- Windows (PowerShell): usa el script PowerShell provisto (`sync-version.ps1`).
+- Linux / macOS (Bash): usa el script Bash equivalente (`sync-version.sh`).
+- Contenedor Docker: ejecuta el `sync-version.ps1` dentro de la imagen oficial de PowerShell si no quieres instalar `pwsh` localmente.
+
+### 1) Windows — PowerShell (recomendado si estás en Windows)
 
 Desde una terminal de PowerShell en la raíz del proyecto:
 ```powershell
 .\sync-version.ps1 1.8.5
 ```
 
-### En caso de Restricciones de Política (Execution Policy)
-
-Si recibes un error indicando que la ejecución de scripts está deshabilitada, utiliza el siguiente comando:
+Si recibes un error de Execution Policy:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sync-version.ps1 1.8.5
+```
+
+### 2) Linux / macOS — Bash
+
+Hemos añadido un script `sync-version.sh` que replica el comportamiento del `.ps1` y es ejecutable en sistemas Unix:
+```bash
+chmod +x ./sync-version.sh
+./sync-version.sh 1.8.5
+```
+
+Este script ejecuta `npm version --no-git-tag-version <versión>` y actualiza los badges `Version-...` en `README.md` y `README.en.md`.
+
+### 3) Opción con Docker (si no quieres instalar PowerShell localmente)
+
+```bash
+docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/powershell:latest pwsh -NoProfile -File ./sync-version.ps1 1.8.5
+```
+
+### 4) Alternativa mínima (sin scripts)
+
+Si prefieres no usar ninguno de los scripts, puedes actualizar manualmente con `npm` y `sed`:
+```bash
+npm version 1.8.5 --no-git-tag-version
+sed -i 's/Version-[0-9]\+\.[0-9]\+\.[0-9]\+/Version-1.8.5/g' README.md README.en.md
 ```
 
 ## ¿Qué archivos se actualizan?
