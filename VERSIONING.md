@@ -38,14 +38,6 @@ Este script ejecuta `npm version --no-git-tag-version <versión>` y actualiza lo
 docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/powershell:latest pwsh -NoProfile -File ./sync-version.ps1 1.8.5
 ```
 
-### 4) Alternativa mínima (sin scripts)
-
-Si prefieres no usar ninguno de los scripts, puedes actualizar manualmente con `npm` y `sed`:
-```bash
-npm version 1.8.5 --no-git-tag-version
-sed -i 's/Version-[0-9]\+\.[0-9]\+\.[0-9]\+/Version-1.8.5/g' README.md README.en.md
-```
-
 ## ¿Qué archivos se actualizan?
 
 El script realiza automáticamente las siguientes acciones:
