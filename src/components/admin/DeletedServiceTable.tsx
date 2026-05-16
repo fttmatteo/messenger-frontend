@@ -43,7 +43,7 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                 className="border-b transition-colors hover:bg-muted/50"
             >
                 <TableCell>
-                    <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" />
+                    <PlacaBadge plateNumber={service.plate.plateNumber}  size="sm" />
                 </TableCell>
                 <TableCell className="text-sm">{service.dealership.name}</TableCell>
                 <TableCell className="text-sm">

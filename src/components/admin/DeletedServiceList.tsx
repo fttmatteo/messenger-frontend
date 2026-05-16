@@ -36,7 +36,7 @@ export function DeletedServiceCard({ service, isRestoring, onRestore, itemVarian
                 <CardContent className="pt-4">
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0 space-y-2">
-                            <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} />
+                            <PlacaBadge plateNumber={service.plate.plateNumber}  />
                             <div className="space-y-1 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <Building2 className="h-3.5 w-3.5" />

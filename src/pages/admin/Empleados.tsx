@@ -15,8 +15,8 @@ import { Plus, PhoneCall, User, FileText, Users, Smartphone } from "lucide-react
 import { formatDisplayName } from "@/lib/format-utils"
 
 /**
- * Página principal de administración de mensajeros.
- * Muestra una lista paginada de todos los mensajeros registrados en el sistema.
+ * Página principal de administración de empleados.
+ * Muestra una lista paginada de todos los empleados registrados en el sistema.
  * Permite buscar por nombre o documento y navegar hacia las vistas de creación y edición.
  * Los administradores solo ven empleados con rol MESSENGER (filtrado server-side).
  */
@@ -42,17 +42,17 @@ export default function Empleados() {
         <div className="flex flex-col h-full gap-1 overflow-hidden">
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Mensajeros" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Mensajeros</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Empleados</h1>
                 </div>
 
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo mensajero
+                        Nuevo empleado
                     </Button>
                 </div>
             </div>
@@ -80,8 +80,8 @@ export default function Empleados() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Users />}
-                                emptyTitle="Sin mensajeros"
-                                emptyDescription="Aún no hay mensajeros registrados en el sistema"
+                                emptyTitle="Sin empleados"
+                                emptyDescription="Aún no hay empleados registrados en el sistema"
                                 className="py-0"
                             />
                         </div>

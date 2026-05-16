@@ -235,7 +235,7 @@ export default function UpdateStatus() {
                         <div className="flex flex-col items-center gap-3">
                             <PlacaBadge
                                 plateNumber={service.plate.plateNumber}
-                                plateType={service.plate.plateType}
+                                
                                 size="xl"
                             />
                             <div className="flex items-center gap-2 text-muted-foreground">

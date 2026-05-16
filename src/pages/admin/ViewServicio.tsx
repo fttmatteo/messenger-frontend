@@ -163,7 +163,7 @@ export default function ViewServicio() {
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Eliminar servicio?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta acción no se puede deshacer. El servicio de la placa <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="sm" className="inline-flex align-middle mx-1" /> será eliminado permanentemente.
+                            Esta acción no se puede deshacer. El servicio de chasis <PlacaBadge plateNumber={service.plate.plateNumber}  size="sm" className="inline-flex align-middle mx-1" /> será eliminado permanentemente.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

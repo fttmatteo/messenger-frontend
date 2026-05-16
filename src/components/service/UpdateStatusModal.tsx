@@ -109,7 +109,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                         <span>Actualizar estado</span>
                         <PlacaBadge
                             plateNumber={service.plate.plateNumber}
-                            plateType={service.plate.plateType}
+                            
                             size="sm"
                         />
                     </DialogTitle>

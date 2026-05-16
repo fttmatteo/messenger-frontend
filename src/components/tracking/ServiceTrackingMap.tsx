@@ -181,8 +181,8 @@ export function ServiceTrackingMap({
     if (loading) {
         return (
             <Card className={className}>
-                <CardHeader className="px-5 py-4">
-                    <CardTitle className="text-sm text-foreground font-medium">
+                <CardHeader className="p-2 pb-0">
+                    <CardTitle className="text-base text-foreground font-semibold">
                         Ubicaciones
                     </CardTitle>
                 </CardHeader>
@@ -195,8 +195,8 @@ export function ServiceTrackingMap({
     if (trackingData.length === 0 && !dealershipLat) {
         return (
             <Card className={className}>
-                <CardHeader className="px-5 py-4">
-                    <CardTitle className="text-sm text-foreground font-medium">
+                <CardHeader className="p-2 pb-0">
+                    <CardTitle className="text-base text-foreground font-semibold">
                         Ubicaciones
                     </CardTitle>
                 </CardHeader>
@@ -211,8 +211,8 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className || "h-full flex flex-col"}>
-            <CardHeader className="px-2 py-1 space-y-1">
-                <CardTitle className="text-sm text-foreground font-medium">
+            <CardHeader className="p-2 pb-0 space-y-1">
+                <CardTitle className="text-base text-foreground font-semibold">
                     Ubicaciones
                 </CardTitle>
 

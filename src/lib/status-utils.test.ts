@@ -51,8 +51,7 @@ describe('status-utils', () => {
 
     describe('getPlateTypeLabel', () => {
         it('should return correct label', () => {
-            expect(getPlateTypeLabel('CAR')).toBe('Carro');
-            expect(getPlateTypeLabel('MOTORCYCLE')).toBe('Moto');
+            expect(getPlateTypeLabel()).toBe('Moto');
         });
     });
 
@@ -74,15 +73,15 @@ describe('status-utils', () => {
         describe('ADMIN Rules', () => {
             it('should return all admin statuses', () => {
                 const statuses = getAvailableStatusesForUser('ADMIN');
-                expect(statuses.map(s => s.value)).toEqual(['CANCELED', 'RESOLVED']);
+                expect(statuses.map(s => s.value)).toEqual(['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED']);
             });
 
-            it('should not include messenger-only statuses', () => {
+            it('should include messenger-only statuses', () => {
                 const statuses = getAvailableStatusesForUser('ADMIN');
                 const values = statuses.map(s => s.value);
-                expect(values).not.toContain('PENDING');
-                expect(values).not.toContain('DELIVERED');
-                expect(values).not.toContain('RETURNED');
+                expect(values).toContain('PENDING');
+                expect(values).toContain('DELIVERED');
+                expect(values).toContain('RETURNED');
             });
 
             it('should use Revisado label for RESOLVED', () => {

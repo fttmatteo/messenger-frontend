@@ -24,7 +24,7 @@ export const STATUS_OPTIONS: StatusConfig[] = [
     {
         id: "PENDING",
         label: "Pendiente",
-        description: "La placa está pendiente de entrega",
+        description: "El chasis está pendiente de entrega",
         icon: Clock,
         requiresSignature: true,
         requiresPhotos: true,
@@ -33,7 +33,7 @@ export const STATUS_OPTIONS: StatusConfig[] = [
     {
         id: "DELIVERED",
         label: "Entregado",
-        description: "La placa fue entregada exitosamente",
+        description: "El chasis fue entregado exitosamente",
         icon: CheckCircle,
         requiresSignature: true,
         requiresPhotos: false,
@@ -42,7 +42,7 @@ export const STATUS_OPTIONS: StatusConfig[] = [
     {
         id: "RETURNED",
         label: "Devuelto",
-        description: "La placa no pudo ser entregada",
+        description: "El chasis no pudo ser entregado",
         icon: CornerDownLeft,
         requiresSignature: false,
         requiresPhotos: true,

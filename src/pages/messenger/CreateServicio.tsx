@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { useForm } from "react-hook-form"
@@ -39,6 +39,7 @@ type FormValues = z.infer<typeof formSchema>
 export default function MessengerCreateServicio() {
     const navigate = useNavigate()
     const { getCurrentLocation } = useSmartLocation()
+    const chasisInputRef = useRef<HTMLInputElement>(null)
 
 
     const [loading, setLoading] = useState(false)
@@ -111,13 +112,26 @@ export default function MessengerCreateServicio() {
             if (result.success && result.plate) {
                 setOcrSuccess(true)
                 form.setValue("manualPlateNumber", result.plate)
+
+                if (result.score !== null && result.score < 0.9) {
+                    showToast.warning("Confianza de lectura baja", {
+                        description: "Por favor revisa y corrige el número si es necesario",
+                        id: "low-confidence"
+                    })
+                    setTimeout(() => {
+                        chasisInputRef.current?.focus()
+                        chasisInputRef.current?.select()
+                    }, 300)
+                }
             } else {
                 setOcrSuccess(false)
                 setShowManualPlate(true)
+                setTimeout(() => chasisInputRef.current?.focus(), 300)
             }
         } catch {
             setOcrSuccess(false)
             setShowManualPlate(true)
+            setTimeout(() => chasisInputRef.current?.focus(), 300)
         } finally {
             setExtractingPlate(false)
         }
@@ -135,13 +149,26 @@ export default function MessengerCreateServicio() {
             if (result.success && result.plate) {
                 setOcrSuccess(true)
                 form.setValue("manualPlateNumber", result.plate)
+
+                if (result.score !== null && result.score < 0.9) {
+                    showToast.warning("Confianza de lectura baja", {
+                        description: "Por favor revisa y corrige el número si es necesario",
+                        id: "low-confidence-select"
+                    })
+                    setTimeout(() => {
+                        chasisInputRef.current?.focus()
+                        chasisInputRef.current?.select()
+                    }, 300)
+                }
             } else {
                 setOcrSuccess(false)
                 setShowManualPlate(true)
+                setTimeout(() => chasisInputRef.current?.focus(), 300)
             }
         } catch {
             setOcrSuccess(false)
             setShowManualPlate(true)
+            setTimeout(() => chasisInputRef.current?.focus(), 300)
         } finally {
             setExtractingPlate(false)
         }
@@ -185,6 +212,7 @@ export default function MessengerCreateServicio() {
             const isOcrError =
                 (errorMessage.toLowerCase().includes('ocr') ||
                     errorMessage.toLowerCase().includes('placa') ||
+                    errorMessage.toLowerCase().includes('chasis') ||
                     errorMessage.toLowerCase().includes('plate') ||
                     errorMessage.toLowerCase().includes('detectar') ||
                     errorMessage.toLowerCase().includes('reconocer')) &&
@@ -194,8 +222,8 @@ export default function MessengerCreateServicio() {
 
             if (isOcrError && !showManualPlate) {
                 setShowManualPlate(true)
-                showToast.warning("No se pudo detectar la placa", {
-                    description: "Por favor ingresa la placa manualmente",
+                showToast.warning("No se pudo detectar el chasis", {
+                    description: "Por favor ingresa el número manualmente",
                     id: "ocr-failed"
                 })
             } else {
@@ -223,7 +251,7 @@ export default function MessengerCreateServicio() {
                                     <div className="p-1.5 rounded-lg bg-primary/10">
                                         <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-sm font-bold tracking-tight">Foto de la placa</h3>
+                                    <h3 className="text-sm font-bold tracking-tight">Foto del chasis</h3>
                                     <span className="text-xs text-red-500 font-bold">*</span>
                                 </div>
                                 <FormField
@@ -277,7 +305,7 @@ export default function MessengerCreateServicio() {
                             </Card>
                         </div>
 
-                        {/* Preview de placa detectada por OCR */}
+                        {/* Preview de chasis detectado por OCR */}
                         {imagePreview && (
                             <div className="px-4 pb-2">
                                 <Card className={`p-4 border-border/50 transition-all ${extractingPlate ? 'animate-pulse' : ''
@@ -296,8 +324,8 @@ export default function MessengerCreateServicio() {
                                             )}
                                         </div>
                                         <h3 className="text-sm font-bold tracking-tight">
-                                            {extractingPlate ? 'Detectando placa...' :
-                                                ocrSuccess === true ? 'Placa detectada' : 'Ingresa la placa'}
+                                            {extractingPlate ? 'Detectando chasis...' :
+                                                ocrSuccess === true ? 'Chasis detectado' : 'Ingresa el chasis'}
                                         </h3>
                                     </div>
                                     {extractingPlate ? (
@@ -314,27 +342,29 @@ export default function MessengerCreateServicio() {
                                                     <FormItem>
                                                         <FormControl>
                                                             <Input
-                                                                name={field.name}
-                                                                ref={field.ref}
-                                                                onBlur={field.onBlur}
-                                                                value={field.value ? field.value.replace(/\s/g, '').replace(/^(.{3})(.+)$/, '$1 $2') : ''}
+                                                                {...field}
+                                                                ref={(e) => {
+                                                                    field.ref(e)
+                                                                    chasisInputRef.current = e
+                                                                }}
+                                                                value={field.value || ''}
                                                                 onChange={(e) => {
-                                                                    const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+                                                                    const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20)
                                                                     field.onChange(raw)
                                                                 }}
-                                                                className="h-14 font-mono font-black uppercase touch-manipulation !text-4xl tracking-wider text-center
+                                                                className="h-14 font-mono font-black uppercase touch-manipulation !text-2xl tracking-wider text-center
                                                                     bg-yellow-400 dark:bg-yellow-500 text-black dark:text-white
                                                                     border-2 border-black dark:border-white dark:ring-2 dark:ring-inset dark:ring-black
                                                                     rounded-lg shadow-sm
                                                                     placeholder:text-black/30 dark:placeholder:text-white/30
                                                                     focus-visible:ring-yellow-500/50
                                                                     dark:[text-shadow:1px_1px_0_#000,-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000]"
-                                                                maxLength={7}
+                                                                maxLength={20}
                                                                 autoComplete="off"
                                                             />
                                                         </FormControl>
                                                         <FormDescription className="text-xs text-center">
-                                                            {ocrSuccess === true ? 'Confirma o edita la placa' : 'Ingresa la placa del vehículo'}
+                                                            {ocrSuccess === true ? 'Confirma o edita el chasis' : 'Ingresa el número de chasis'}
                                                         </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>

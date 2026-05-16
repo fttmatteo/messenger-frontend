@@ -104,7 +104,7 @@ test.describe('Service Creation Flow', () => {
 
         const plateInput = page.locator('input[name="manualPlateNumber"]').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
-        await plateInput.fill('ABC 123');
+        await plateInput.fill('ABC1234567');
 
         await page.getByRole('button', { name: /crear servicio/i }).click();
 

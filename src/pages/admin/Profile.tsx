@@ -120,11 +120,11 @@ export default function Profile() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-4 px-4">
-                <div className="w-full space-y-3">
+            <div className="flex-1 overflow-y-auto pb-2 min-h-0">
+                <div className="w-full flex flex-col gap-2 h-full">
                     {/* Perfil Header Card */}
                     <Card>
-                        <CardContent className="py-3 px-6">
+                        <CardContent className="p-4">
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-14 w-14 border-2 border-background">
                                         <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
@@ -156,11 +156,11 @@ export default function Profile() {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <TabsContent value="personal" className="mt-0 focus-visible:outline-none">
-                                <Card>
-                                        <CardHeader className="py-3 px-6">
+                                <Card className="flex-1">
+                                        <CardHeader className="p-4 pb-2">
                                             <CardTitle className="text-base">Datos Personales</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="space-y-4 px-6 pb-4">
+                                        <CardContent className="space-y-4 p-4 pt-0">
                                             <div className="grid gap-4 md:grid-cols-3">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="document" className="flex items-center gap-2">
@@ -212,12 +212,12 @@ export default function Profile() {
                             </TabsContent>
 
                             <TabsContent value="security" className="mt-0 focus-visible:outline-none">
-                                <Card>
-                                        <CardHeader className="py-3 px-6">
+                                <Card className="flex-1">
+                                        <CardHeader className="p-4 pb-2">
                                             <CardTitle className="text-base">Seguridad</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="space-y-4 px-6 pb-4">
-                                            <div className="max-w-md space-y-4">
+                                        <CardContent className="space-y-4 p-4 pt-0">
+                                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-0">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="password" className="flex items-center gap-2">
                                                         <KeyRound className="h-4 w-4 text-muted-foreground" />
@@ -299,11 +299,11 @@ function ProfileSkeleton() {
                 <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-4 px-4">
-                <div className="w-full space-y-3">
+            <div className="flex-1 overflow-y-auto pb-2 min-h-0">
+                <div className="w-full flex flex-col gap-2 h-full">
                     {/* Perfil Header Card Skeleton */}
                     <Card>
-                        <CardContent className="py-3 px-6">
+                        <CardContent className="p-4">
                             <div className="flex items-center gap-4">
                                 <Skeleton static className="h-14 w-14 rounded-full border-2 border-background bg-muted/20" />
                                 <div className="flex-1 space-y-2">
@@ -322,11 +322,11 @@ function ProfileSkeleton() {
                         </div>
 
                         {/* Form Skeleton */}
-                        <Card>
-                            <CardHeader className="py-3 px-6">
+                        <Card className="flex-1">
+                            <CardHeader className="p-4 pb-2">
                                 <Skeleton static className="h-5 w-32 rounded bg-muted/20" />
                             </CardHeader>
-                            <CardContent className="space-y-4 px-6 pb-4">
+                            <CardContent className="space-y-4 p-4 pt-0">
                                 <div className="grid gap-4 md:grid-cols-3">
                                     {[1, 2, 3].map(i => (
                                         <div key={i} className="space-y-2">
