@@ -28,13 +28,13 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
             <CardContent className="space-y-4 flex-1 overflow-y-auto">
 
                 <div className="flex items-start gap-3">
-                    {createElement(getPlateTypeIcon(service.plate.plateType), {
+                    {createElement(getPlateTypeIcon(), {
                         className: "h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0"
                     })}
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Placa</p>
+                        <p className="text-sm font-medium">Chasis</p>
                         <div className="mt-1">
-                            <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="lg" />
+                            <PlacaBadge plateNumber={service.plate.plateNumber} size="lg" />
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <div className="flex items-start gap-3">
                     <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Mensajero</p>
+                        <p className="text-sm font-medium">Empleado</p>
                         <p className="text-sm text-muted-foreground">{messengerName}</p>
                         {messengerPhone && (
                             <p className="text-xs text-muted-foreground">

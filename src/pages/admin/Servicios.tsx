@@ -36,7 +36,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 /**
  * Página de administración de servicios de entrega.
  * Muestra una lista paginada de todos los servicios registrados.
- * Permite filtrar por estado, buscar por placa, concesionario o mensajero,
+ * Permite filtrar por estado, buscar por chasis, concesionario o empleado,
  * y realizar actualizaciones rápidas de estado mediante un modal.
  */
 export default function Servicios() {
@@ -122,9 +122,9 @@ export default function Servicios() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Placa</TableHead>
+                                        <TableHead>Chasis</TableHead>
                                         <TableHead>Concesionario</TableHead>
-                                        <TableHead>Mensajero</TableHead>
+                                        <TableHead>Empleado</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead>Creado</TableHead>
                                         <TableHead>Acción</TableHead>
@@ -154,7 +154,7 @@ export default function Servicios() {
                                         <TableRow>
                                             <TableHead className="w-[100px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
                                                 <div className="flex items-center">
-                                                    <Car className="h-4 w-4 mr-1" />Placa
+                                                    <Car className="h-4 w-4 mr-1" />Chasis
                                                     <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -166,7 +166,7 @@ export default function Servicios() {
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("messengerName")}>
                                                 <div className="flex items-center">
-                                                    <User className="h-4 w-4 mr-1 shrink-0" />Mensajero
+                                                    <User className="h-4 w-4 mr-1 shrink-0" />Empleado
                                                     <SortIndicator field="messengerName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -202,7 +202,7 @@ export default function Servicios() {
                                                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                                                 >
                                                     <TableCell>
-                                                        <PlacaBadge plateNumber={service.plate.plateNumber} plateType={service.plate.plateType} size="md" />
+                                                        <PlacaBadge plateNumber={service.plate.plateNumber}  size="md" />
                                                     </TableCell>
                                                     <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.dealership.name}>
                                                         {service.dealership.name}

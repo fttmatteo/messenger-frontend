@@ -79,7 +79,7 @@ export default function ServiciosPage() {
                         id="search-services"
                         name="search"
                         autoComplete="off"
-                        placeholder="Buscar por placa..."
+                        placeholder="Buscar por chasis..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-9 h-10 border-input/60"

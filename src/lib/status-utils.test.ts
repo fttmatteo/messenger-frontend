@@ -51,8 +51,7 @@ describe('status-utils', () => {
 
     describe('getPlateTypeLabel', () => {
         it('should return correct label', () => {
-            expect(getPlateTypeLabel('CAR')).toBe('Carro');
-            expect(getPlateTypeLabel('MOTORCYCLE')).toBe('Moto');
+            expect(getPlateTypeLabel()).toBe('Moto');
         });
     });
 

@@ -6,7 +6,6 @@ import MessengerCreateServicio from '../CreateServicio';
 import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
 
-// Mock de componentes y hooks
 vi.mock('@/services/service.service', () => ({
     serviceDeliveryService: {
         extractPlate: vi.fn(),
@@ -33,7 +32,6 @@ vi.mock('@/hooks/use-smart-location', () => ({
     })
 }));
 
-// Mock de navigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -51,7 +49,6 @@ vi.mock('react-router-dom', async () => {
 describe('CreateServicio Page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Mock de APIs
         server.use(
             http.get('http://localhost:8080/dealerships/allDealerships', () => {
                 return HttpResponse.json([
@@ -62,30 +59,29 @@ describe('CreateServicio Page', () => {
         );
         (serviceDeliveryService.extractPlate as Mock).mockResolvedValue({
             success: true,
-            plate: 'ABC123',
-            message: 'Placa detectada'
+            plate: 'ABC1234567890',
+            message: 'Chasis detectado'
         });
     });
 
     it('should render the creation form', async () => {
         renderWithProviders(<MessengerCreateServicio />);
 
-        expect(await screen.findByText('Foto de la placa')).toBeInTheDocument();
+        expect(await screen.findByText('Foto del chasis')).toBeInTheDocument();
         expect(screen.getByText('Concesionario destino')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
     });
 
-    it('should show plate preview after capturing a photo', async () => {
+    it('should show chasis preview after capturing a photo', async () => {
         const user = userEvent.setup();
         renderWithProviders(<MessengerCreateServicio />);
 
         const captureBtn = await screen.findByText('Capture Photo');
         await user.click(captureBtn);
 
-        // Debería aparecer la sección de placa detectada con los datos del mock
-        expect(await screen.findByText(/Placa detectada/i)).toBeInTheDocument();
-        expect(screen.getByDisplayValue('ABC 123')).toBeInTheDocument();
-        expect(screen.getByText(/Confirma o edita la placa/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Chasis detectado/i)).toBeInTheDocument();
+        expect(screen.getByDisplayValue('ABC1234567890')).toBeInTheDocument();
+        expect(screen.getByText(/Confirma o edita el chasis/i)).toBeInTheDocument();
     });
 
     it('should navigate back to /messenger when cancel is clicked', async () => {
@@ -102,10 +98,8 @@ describe('CreateServicio Page', () => {
         const user = userEvent.setup();
         renderWithProviders(<MessengerCreateServicio />);
 
-        // Esperar a que carguen los datos
         await screen.findByText('Concesionario destino');
 
-        // Cerrar cámara para habilitar el botón
         const closeCameraBtn = screen.getByText('Cancel Camera');
         await user.click(closeCameraBtn);
 

@@ -163,6 +163,6 @@ describe('ServiceDetails Page Integration', () => {
         renderWithRouter('1')
 
         expect(await screen.findByText(/evidencia visual/i)).toBeInTheDocument()
-        expect(screen.getByAltText(/placa del vehículo/i)).toHaveAttribute('src', 'http://example.com/photo.jpg')
+        expect(screen.getByAltText(/chasis del vehículo/i)).toHaveAttribute('src', 'http://example.com/photo.jpg')
     })
 })

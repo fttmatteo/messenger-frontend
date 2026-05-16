@@ -171,7 +171,7 @@ export default function ServiceDetails() {
                         <div className="flex flex-col items-center gap-3">
                             <PlacaBadge
                                 plateNumber={service.plate.plateNumber}
-                                plateType={service.plate.plateType}
+                                
                                 size="xl"
                             />
 
@@ -309,7 +309,7 @@ export default function ServiceDetails() {
                                 )}
                                 <img
                                     src={getImageUrl(service.photos.find(p => p.photoType === 'PLATE_DETECTION')?.photoPath || '')}
-                                    alt="Placa del vehículo"
+                                    alt="Chasis del vehículo"
                                     onLoad={() => setImageLoaded(true)}
                                     loading="lazy"
                                     decoding="async"

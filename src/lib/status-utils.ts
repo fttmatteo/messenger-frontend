@@ -1,5 +1,5 @@
 import type { ServiceStatus } from "@/types/service.types"
-import { Car, Bike, Truck } from "lucide-react"
+import { Bike } from "lucide-react"
 import { getStatusHexColor, getStatusLabel, getMergedColors, getStatusPillBackground } from "@/lib/status-colors"
 
 interface StatusBadgeConfig {
@@ -47,27 +47,17 @@ export function getStatusIconConfig(status: ServiceStatus | string, customColors
 }
 
 /**
- * Obtiene la etiqueta de visualización para un tipo de placa.
+ * Obtiene la etiqueta de visualización para el tipo de vehículo.
  */
-export function getPlateTypeLabel(plateType: string): string {
-    const types: Record<string, string> = {
-        CAR: 'Carro',
-        MOTORCYCLE: 'Moto',
-        MOTORCAR: 'Motocarro',
-    }
-    return types[plateType] || plateType
+export function getPlateTypeLabel(): string {
+    return 'Moto'
 }
 
 /**
- * Obtiene el componente de icono para un tipo de placa.
+ * Obtiene el componente de icono para el tipo de vehículo.
  */
-export function getPlateTypeIcon(plateType: string): typeof Car | typeof Bike | typeof Truck {
-    const icons: Record<string, typeof Car | typeof Bike | typeof Truck> = {
-        CAR: Car,
-        MOTORCYCLE: Bike,
-        MOTORCAR: Truck,
-    }
-    return icons[plateType] || Car
+export function getPlateTypeIcon(): typeof Bike {
+    return Bike
 }
 
 
@@ -96,6 +86,10 @@ export function getAvailableStatusesForUser(
     ]
 
     const ADMIN_STATUSES: AvailableStatus[] = [
+        { value: 'ASSIGNED', label: 'Asignado' },
+        { value: 'PENDING', label: 'Pendiente' },
+        { value: 'DELIVERED', label: 'Entregado' },
+        { value: 'RETURNED', label: 'Devuelto' },
         { value: 'CANCELED', label: 'Cancelado' },
         { value: 'RESOLVED', label: 'Revisado' },
     ]

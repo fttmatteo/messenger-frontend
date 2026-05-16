@@ -96,7 +96,6 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                 <div className="shrink-0">
                     <PlacaBadge
                         plateNumber={service.plate.plateNumber}
-                        plateType={service.plate.plateType}
                         size="lg"
                     />
                 </div>
