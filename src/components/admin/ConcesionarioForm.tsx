@@ -21,7 +21,9 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
     return (
         <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
             <div className="space-y-2">
-                <Label htmlFor="name">Nombre del concesionario</Label>
+                <Label htmlFor="name">
+                    Nombre del concesionario <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Input
                     id="name"
                     placeholder="Nombre concesionario"
@@ -35,7 +37,9 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
+                <Label htmlFor="phone">
+                    Teléfono <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Input
                     id="phone"
                     placeholder="3001234567"
@@ -49,7 +53,9 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="address">Dirección completa</Label>
+                <Label htmlFor="address">
+                    Dirección completa <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Textarea
                     id="address"
                     placeholder="Calle 123 #45-67, Medellin"
@@ -64,7 +70,9 @@ export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="zone">Zona</Label>
+                <Label htmlFor="zone">
+                    Zona <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Select
                     name="zone"
                     disabled={disabled}

@@ -55,7 +55,7 @@ export default function CreateEmployee() {
                 password: data.password,
                 role: "MESSENGER",
             })
-            setSuccess("El nuevo empleado ha sido registrado correctamente")
+            setSuccess("El nuevo transportista ha sido registrado correctamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -67,13 +67,13 @@ export default function CreateEmployee() {
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Empleados", href: "/admin/empleados" },
+                        { label: "Transportistas", href: "/admin/empleados" },
                         { label: "Nuevo" }
                     ]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo empleado</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
@@ -81,13 +81,15 @@ export default function CreateEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
                         <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
                             <div className="space-y-2">
-                                <Label htmlFor="document">Documento</Label>
+                                <Label htmlFor="document">
+                                    Documento <span className="text-red-500 ml-0.5">*</span>
+                                </Label>
                                 <Input
                                     id="document"
                                     placeholder="1234567890"
@@ -100,7 +102,9 @@ export default function CreateEmployee() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Teléfono</Label>
+                                <Label htmlFor="phone">
+                                    Teléfono <span className="text-red-500 ml-0.5">*</span>
+                                </Label>
                                 <Input
                                     id="phone"
                                     placeholder="3001234567"
@@ -113,7 +117,9 @@ export default function CreateEmployee() {
                             </div>
 
                             <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                                <Label htmlFor="fullName">Nombre completo</Label>
+                                <Label htmlFor="fullName">
+                                    Nombre completo <span className="text-red-500 ml-0.5">*</span>
+                                </Label>
                                 <Input
                                     id="fullName"
                                     placeholder="Juan Pérez García"
@@ -126,7 +132,9 @@ export default function CreateEmployee() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="password">Contraseña</Label>
+                                <Label htmlFor="password">
+                                    Contraseña <span className="text-red-500 ml-0.5">*</span>
+                                </Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -168,7 +176,7 @@ export default function CreateEmployee() {
                             </Button>
                             <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear empleado
+                                Crear transportista
                             </Button>
                         </div>
                     </form>

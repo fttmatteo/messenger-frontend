@@ -1,6 +1,6 @@
-import { test, expect, devices } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-test.use({ ...devices['Pixel 5'] });
+
 
 test.describe('Service Creation Flow', () => {
     test.beforeEach(async ({ page }) => {
@@ -9,20 +9,20 @@ test.describe('Service Creation Flow', () => {
         await page.addInitScript(() => {
             const mockUser = {
                 document: 123,
-                role: 'MESSENGER',
+                role: 'ADMIN',
                 id: 1,
-                uuid: 'm1',
-                name: 'E2E Creator',
+                uuid: 'a1',
+                name: 'E2E Admin',
                 isOnline: true
             };
             const userStr = JSON.stringify(mockUser);
-            window.localStorage.setItem('role', 'MESSENGER');
+            window.localStorage.setItem('role', 'ADMIN');
             window.localStorage.setItem('user', userStr);
-            window.localStorage.setItem('accessToken', 'mock-messenger-token');
+            window.localStorage.setItem('accessToken', 'mock-admin-token');
 
-            window.sessionStorage.setItem('role', 'MESSENGER');
+            window.sessionStorage.setItem('role', 'ADMIN');
             window.sessionStorage.setItem('user', userStr);
-            window.sessionStorage.setItem('accessToken', 'mock-messenger-token');
+            window.sessionStorage.setItem('accessToken', 'mock-admin-token');
 
             // @ts-expect-error - Mocking global object
             window.turnstile = {
@@ -36,8 +36,8 @@ test.describe('Service Creation Flow', () => {
             await route.fulfill({ json: { PENDING: '#6b7280', DELIVERED: '#10b981' } });
         });
 
-        await page.route('**/services/pending**', async route => {
-            await route.fulfill({ json: [] });
+        await page.route('**/services/allServicesPageable**', async route => {
+            await route.fulfill({ json: { content: [], totalElements: 0 } });
         });
 
         await page.route('**/dealerships/allDealerships', async route => {
@@ -53,12 +53,23 @@ test.describe('Service Creation Flow', () => {
             });
         });
 
+        await page.route('**/employees/allEmployees', async route => {
+            await route.fulfill({
+                json: [{
+                    idEmployee: 2,
+                    fullName: 'Test Messenger',
+                    role: 'MESSENGER',
+                    document: 456
+                }]
+            });
+        });
+
         await page.route('**/services/createService', async route => {
             await route.fulfill({
                 json: {
                     idServiceDelivery: 202,
                     uuid: 's202',
-                    plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
+                    plate: { idPlate: 1, plateNumber: 'ABC12345678', plateType: 'MOTORCYCLE' },
                     dealership: { idDealership: 1, uuid: 'd1', name: 'Test Dealership', address: 'Calle 123', phone: '555-1234', zone: 'Norte' },
                     currentStatus: 'PENDING',
                     createdAt: new Date().toISOString()
@@ -66,48 +77,45 @@ test.describe('Service Creation Flow', () => {
             });
         });
 
-        await page.route('**/services/extractPlate', async route => {
-            await route.fulfill({
-                json: { success: false, message: 'OCR Fallback' }
-            });
-        });
         await page.route('**/auth/ws-token', async route => {
             await route.fulfill({ json: { token: 'mock-ws-token' } });
         });
 
-        await page.goto('/messenger');
+        await page.goto('/admin/servicios');
         await page.waitForLoadState('networkidle');
     });
 
-    test('should create a new service delivery successfully from messenger dashboard', async ({ page }) => {
+    test('should create a new service delivery successfully from admin dashboard', async ({ page }) => {
         await expect(page).not.toHaveURL(/.*login/, { timeout: 15000 });
 
-        const fab = page.locator('button:has(svg.lucide-plus)').first();
-        await expect(fab).toBeVisible({ timeout: 20000 });
-        await fab.click();
+        const newServiceBtn = page.getByRole('button', { name: /nuevo/i }).first();
+        await expect(newServiceBtn).toBeVisible({ timeout: 20000 });
+        await newServiceBtn.click();
 
         await expect(page).toHaveURL(/.*crear/, { timeout: 20000 });
 
-        const trigger = page.locator('button[id="dealershipId"]').first();
-        await expect(trigger).toBeVisible({ timeout: 10000 });
-        await trigger.click();
-
-        const option = page.getByRole('option', { name: 'Test Dealership' }).first();
-        await expect(option).toBeVisible();
-        await option.click();
-
-        await page.locator('input[type="file"]').first().setInputFiles({
-            name: 'plate.jpg',
-            mimeType: 'image/jpeg',
-            buffer: Buffer.from('fake-image-content'),
-        });
-
         const plateInput = page.locator('input[name="manualPlateNumber"]').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
-        await plateInput.fill('ABC1234567');
+        await plateInput.fill('ABC1234567890');
+
+        const dealershipTrigger = page.locator('button[id="dealershipId"]').first();
+        await expect(dealershipTrigger).toBeVisible({ timeout: 10000 });
+        await dealershipTrigger.click();
+
+        const dealershipOption = page.getByRole('option', { name: 'Test Dealership' }).first();
+        await expect(dealershipOption).toBeVisible();
+        await dealershipOption.click();
+
+        const messengerTrigger = page.locator('button[id="messengerId"]').first();
+        await expect(messengerTrigger).toBeVisible({ timeout: 10000 });
+        await messengerTrigger.click();
+
+        const messengerOption = page.getByRole('option', { name: 'Test Messenger' }).first();
+        await expect(messengerOption).toBeVisible();
+        await messengerOption.click();
 
         await page.getByRole('button', { name: /crear servicio/i }).click();
 
-        await expect(page).toHaveURL(/.*\/messenger/, { timeout: 20000 });
+        await expect(page).toHaveURL(/.*\/admin\/servicios/, { timeout: 20000 });
     });
 });

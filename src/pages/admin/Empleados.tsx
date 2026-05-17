@@ -42,17 +42,17 @@ export default function Empleados() {
         <div className="flex flex-col h-full gap-1 overflow-hidden">
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Empleados" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Transportistas" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Empleados</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Transportistas</h1>
                 </div>
 
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo empleado
+                        Nuevo transportista
                     </Button>
                 </div>
             </div>
@@ -80,8 +80,8 @@ export default function Empleados() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Users />}
-                                emptyTitle="Sin empleados"
-                                emptyDescription="Aún no hay empleados registrados en el sistema"
+                                emptyTitle="Sin transportistas"
+                                emptyDescription="Aún no hay transportistas registrados en el sistema"
                                 className="py-0"
                             />
                         </div>

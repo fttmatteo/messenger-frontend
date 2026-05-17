@@ -102,10 +102,9 @@ export interface ServiceDelivery {
  * Parámetros requeridos para la creación de un nuevo servicio con imagen de placa.
  */
 export interface CreateServiceRequest {
-    image: File
     dealershipId: string
     messengerDocument?: string
-    manualPlateNumber?: string
+    manualPlateNumber: string
     latitude?: number
     longitude?: number
 }
