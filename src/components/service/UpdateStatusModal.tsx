@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { Loader2, Save, UserPlus } from "lucide-react"
-import { VoiceInputButton } from "@/components/ui/voice-input-button"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { useAuth } from "@/context/AuthContext"
@@ -216,21 +215,11 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="observation">Observaciones</Label>
-                            <VoiceInputButton
-                                onTranscript={(text) => {
-                                    setObservation(prev => {
-                                        const newValue = prev ? `${prev} ${text}` : text
-                                        return newValue.trim()
-                                    })
-                                }}
-                                disabled={updating}
-                                size="icon-sm"
-                            />
                         </div>
                         <div className="relative">
                             <Textarea
                                 id="observation"
-                                placeholder="Agrega observaciones sobre el cambio de estado... (o usa el micrófono)"
+                                placeholder="Agrega observaciones sobre el cambio de estado..."
                                 value={observation}
                                 onChange={(e) => setObservation(e.target.value)}
                                 rows={3}

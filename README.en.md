@@ -113,7 +113,6 @@ graph TD
 | **Evidence Capture** | Vector digital signature and **Dual WebP Optimization Pipeline** (Source compression + Server reinforcement) for maximum data savings. |
 | **Adaptive Performance** | Integration of **LazyMotion** and selective memoization of critical components (`ServiceCard`) for smooth scrolling on mid-range devices. |
 | **My Profile** | Centralized management of personal data and security with sensitive document masking. |
-| **Speech-to-Text** | Google Cloud Speech-to-Text integration for dictating service observations, ensuring high accuracy and reliability across all devices. |
 | **Safe Area Support** | Native adaptation for *Notches* and *Dynamic Islands* via `@capacitor-community/safe-area`, ensuring an immersive experience without UI clipping. |
 
 
