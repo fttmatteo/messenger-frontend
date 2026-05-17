@@ -71,7 +71,7 @@ export default function MessengerDetails() {
                 })
             } catch (err) {
                 // Fallback a autenticación por cookie/header si el endpoint ws-token falla
-                logger.debug('WS token unavailable in Details, using fallback', err)
+                logger.debug('Token de WS no disponible en Detalles, usando alternativa', err)
                 trackingService.connect(undefined, () => {
                     trackingService.subscribeToAll(handleTrackingUpdate)
                 })
@@ -123,7 +123,7 @@ export default function MessengerDetails() {
                 setIsActive(false)
             }
         } catch (error) {
-            logger.error("Error fetching messenger data in MessengerDetails:", error)
+            logger.error("Error al obtener los datos del mensajero en MessengerDetails:", error)
         } finally {
             setLoading(false)
         }
@@ -144,7 +144,7 @@ export default function MessengerDetails() {
                 setHistoryData([])
             }
         } catch (error) {
-            logger.error("Error fetching history in MessengerDetails:", error)
+            logger.error("Error al obtener el historial en MessengerDetails:", error)
             setHistoryData([])
         } finally {
             setLoadingHistory(false)

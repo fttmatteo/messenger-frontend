@@ -60,7 +60,7 @@ export default function ViewServicio() {
             setService(data)
             setError(null)
         } catch (error) {
-            logger.apiError("Error fetching service in ViewServicio", error)
+            logger.apiError("Error al obtener el servicio en ViewServicio", error)
             const message = getErrorMessage(error)
             setError(message)
             setGlobalError(message)

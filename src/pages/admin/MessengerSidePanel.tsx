@@ -69,7 +69,7 @@ export function MessengerSidePanel({
             const emp = await employeeService.getById(messengerUuid)
             setEmployee(emp)
         } catch (error) {
-            logger.error("Error fetching messenger details in MessengerSidePanel:", error)
+            logger.error("Error al obtener los detalles del mensajero en MessengerSidePanel:", error)
         }
     }, [messengerUuid])
 
@@ -123,7 +123,7 @@ export function MessengerSidePanel({
             setHistory(milestones)
 
         } catch (error) {
-            logger.error("Error fetching activity in MessengerSidePanel:", error)
+            logger.error("Error al obtener la actividad en MessengerSidePanel:", error)
             setHistoryError("No se pudo cargar la actividad")
         } finally {
             setLoadingHistory(false)

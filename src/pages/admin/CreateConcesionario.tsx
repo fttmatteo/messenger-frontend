@@ -124,7 +124,7 @@ export default function CreateConcesionario() {
                 setError("No se encontraron coordenadas para esta dirección. Intenta ser más específico.")
             }
         } catch (error) {
-            logger.error("Geocoding error", error)
+            logger.error("Error de geocodificación", error)
             setError("Error obteniendo ubicación. Verifica tu conexión a internet.")
         } finally {
             setGeocoding(false)
@@ -145,7 +145,7 @@ export default function CreateConcesionario() {
                 await dealershipService.geocode(created.uuid)
                 setSuccess("Concesionario creado y ubicado exitosamente")
             } catch (geocodeError) {
-                logger.error("Auto geocoding failed", geocodeError)
+                logger.error("La geocodificación automática falló", geocodeError)
                 setSuccess("Concesionario creado, pero falló la geocodificación automática")
             }
 

@@ -78,7 +78,7 @@ export default function LiveTracking() {
                     bulkLocations = await trackingApiService.getBulkLastLocations(offlineUuids)
                 } catch (e) {
                     if (isAxiosError(e) && e.response?.status !== 404) {
-                        logger.apiError(`Error fetching bulk locations`, e)
+                        logger.apiError(`Error al obtener ubicaciones masivas`, e)
                     }
                 }
             }
@@ -127,7 +127,7 @@ export default function LiveTracking() {
             }
 
         } catch (error) {
-            logger.error("Error fetching messengers in LiveTracking:", error)
+            logger.error("Error al obtener los mensajeros en LiveTracking:", error)
             if (isAxiosError(error) && error.response?.status !== 404) {
                 setError(getErrorMessage(error))
             }
@@ -182,7 +182,7 @@ export default function LiveTracking() {
                     trackingService.subscribeToPresence(handleTrackingUpdate)
                 })
             } catch (err) {
-                logger.debug('WS token unavailable for Admin, using cookie fallback', err)
+                logger.debug('Token de WS no disponible para Admin, usando cookie alternativa', err)
                 trackingService.connect(undefined, () => {
                     setConnected(true)
                     trackingService.subscribeToAll(handleTrackingUpdate)

@@ -94,13 +94,13 @@ export default function ServiceDetails() {
                     triggerNavigation(position.coords.latitude, position.coords.longitude)
                 },
                 (error) => {
-                    logger.warn("High accuracy geolocation error", error)
+                    logger.warn("Error de geolocalización de alta precisión", error)
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
                             triggerNavigation(pos.coords.latitude, pos.coords.longitude)
                         },
                         (err) => {
-                            logger.warn("Low accuracy geolocation error", err)
+                            logger.warn("Error de geolocalización de baja precisión", err)
                             triggerNavigation()
                         },
                         {

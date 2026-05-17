@@ -15,6 +15,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PlacaBadge } from "@/components/PlacaBadge"
+import { useSmartLocation } from "@/hooks/use-smart-location"
+import { createLogger } from "@/utils/logger"
+
+const logger = createLogger('UpdateStatusModal')
 
 interface UpdateStatusModalProps {
     open: boolean
@@ -31,6 +35,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
     const { colors } = useStatusColors()
+    const { getCurrentLocation } = useSmartLocation()
     const [newStatus, setNewStatus] = useState<ServiceStatus>(service.currentStatus)
     const [observation, setObservation] = useState('')
     const [updating, setUpdating] = useState(false)
@@ -62,9 +67,25 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
     const handleUpdateStatus = async () => {
         try {
             setUpdating(true)
+            
+            let latitude: number | undefined
+            let longitude: number | undefined
+
+            if (user?.role === 'ADMIN') {
+                try {
+                    const loc = await getCurrentLocation()
+                    latitude = loc.latitude
+                    longitude = loc.longitude
+                } catch (error) {
+                    logger.warn("No se pudo obtener la ubicación del administrador para la actualización de estado", error)
+                }
+            }
+
             await serviceDeliveryService.updateStatus(service.uuid, {
                 status: newStatus,
                 observation: observation || undefined,
+                latitude,
+                longitude,
             })
 
             setSuccess(`Estado de servicio ${service.plate.plateNumber} actualizado`)
