@@ -96,25 +96,44 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="relative flex items-center bg-card/60 border border-border/50 rounded-xl overflow-hidden shadow-sm h-[72px]"
+                    className="relative flex flex-col bg-card/60 border border-border/40 rounded-xl overflow-hidden shadow-sm p-3.5 pl-4.5 gap-2.5"
                 >
-                    {/* Status Strip Skeleton */}
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-muted/20" />
+                    {/* Banda lateral del estado */}
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-muted/20" />
 
-                    <div className="flex items-center w-full pl-4 pr-3 py-3 gap-3">
-                        {/* Plate Badge Skeleton */}
-                        <div className="flex flex-col items-center gap-1">
-                            <Skeleton static className="h-8 w-full max-w-[80px] rounded bg-muted/20" />
-                            <Skeleton static className="h-2.5 w-full max-w-[48px] rounded bg-muted/10" />
+                    {/* Cabecera (Chasis + Estado) */}
+                    <div className="flex items-center justify-between">
+                        <Skeleton static className="h-7 w-28 rounded bg-muted/20" />
+                        <Skeleton static className="h-5 w-16 rounded-full bg-muted/20" />
+                    </div>
+
+                    {/* Cuerpo de Detalles */}
+                    <div className="space-y-2">
+                        {/* Concesionario */}
+                        <div className="flex items-center gap-2">
+                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
+                            <div className="space-y-1 flex-1">
+                                <Skeleton static className="h-4 w-44 rounded bg-muted/15" />
+                                <Skeleton static className="h-2.5 w-16 rounded bg-muted/10" />
+                            </div>
                         </div>
 
-                        {/* Spacer */}
-                        <div className="flex-1" />
+                        {/* Dirección */}
+                        <div className="flex items-center gap-2">
+                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
+                            <Skeleton static className="h-3 w-56 rounded bg-muted/10" />
+                        </div>
 
-                        {/* Action Buttons Skeleton */}
-                        <div className="flex items-center gap-3">
-                            <Skeleton static className="h-9 w-9 rounded-full bg-muted/20" />
-                            <Skeleton static className="h-9 w-9 rounded-full bg-muted/20" />
+                        {/* Teléfono */}
+                        <div className="flex items-center gap-2">
+                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
+                            <Skeleton static className="h-3 w-32 rounded bg-muted/10" />
+                        </div>
+
+                        {/* Reloj de Fecha */}
+                        <div className="flex items-center gap-2">
+                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
+                            <Skeleton static className="h-3 w-28 rounded bg-muted/10" />
                         </div>
                     </div>
                 </div>
