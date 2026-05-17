@@ -12,7 +12,6 @@ import { PlacaBadge } from "@/components/PlacaBadge"
 import { getErrorMessage } from "@/lib/error-utils"
 import { getStatusIconConfig } from "@/lib/status-utils"
 import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
-import { VoiceInputButton } from "@/components/ui/voice-input-button"
 import { showToast } from "@/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
@@ -371,16 +370,6 @@ export default function UpdateStatus() {
                                             <span className="text-xs text-muted-foreground">(opcional)</span>
                                         )}
                                     </div>
-                                    <VoiceInputButton
-                                        onTranscript={(text) => {
-                                            setObservation(prev => {
-                                                const newValue = prev ? `${prev} ${text}` : text
-                                                return newValue.trim()
-                                            })
-                                        }}
-                                        disabled={submitting}
-                                        size="icon-sm"
-                                    />
                                 </div>
                                 <div className="relative">
                                     <Textarea
@@ -388,10 +377,10 @@ export default function UpdateStatus() {
                                         id="observation"
                                         placeholder={
                                             selectedOption.value === 'RETURNED'
-                                                ? 'Motivo de la devolución... (o usa el micrófono para dictar)'
+                                                ? 'Motivo de la devolución...'
                                                 : selectedOption.value === 'PENDING'
-                                                    ? 'Motivo del servicio pendiente... (o usa el micrófono para dictar)'
-                                                    : 'Notas adicionales... (o usa el micrófono para dictar)'
+                                                    ? 'Motivo del servicio pendiente...'
+                                                    : 'Notas adicionales...'
                                         }
                                         value={observation}
                                         onChange={(e) => {

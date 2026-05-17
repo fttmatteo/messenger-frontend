@@ -99,7 +99,7 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
                     setLoading(false)
                 }
             } catch (err) {
-                logger.error('Reverse geocode error', err)
+                logger.error('Error de geocodificación inversa', err)
                 if (isMounted) {
                     setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
                     setLoading(false)
