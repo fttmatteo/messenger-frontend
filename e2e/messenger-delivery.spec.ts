@@ -116,11 +116,6 @@ test.describe('Messenger Delivery Execution', () => {
         await expect(serviceItem).toBeVisible({ timeout: 20000 });
         await serviceItem.click();
 
-        await expect(page).toHaveURL(/.*servicio\/s101/, { timeout: 20000 });
-
-        const updateBtn = page.getByRole('button', { name: /actualizar/i }).first();
-        await updateBtn.click();
-
         await expect(page).toHaveURL(/.*servicio\/s101\/actualizar/, { timeout: 20000 });
 
         await page.getByText(/entregado/i).first().click();
