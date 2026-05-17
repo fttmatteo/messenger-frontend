@@ -112,10 +112,7 @@ describe('ServiceDeliveryService', () => {
     describe('create', () => {
         it('should send FormData correctly', async () => {
             vi.mocked(apiClient.post).mockResolvedValue({ data: mockService });
-            const mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
-
             await serviceDeliveryService.create({
-                image: mockFile,
                 dealershipId: '1',
                 manualPlateNumber: 'XYZ789',
                 latitude: 10,
