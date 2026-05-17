@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X } from "lucide-react"
+import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X, Plus } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/lib/status-utils"
@@ -112,7 +112,12 @@ export default function Servicios() {
                     )}
                 </div>
 
-                <div className="hidden md:flex md:flex-1"></div>
+                <div className="hidden md:flex md:flex-1 justify-end">
+                    <Button onClick={() => navigate("/admin/servicios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                        <Plus className="h-3 w-3 mr-1" />
+                        Nuevo servicio
+                    </Button>
+                </div>
             </div>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">

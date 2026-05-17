@@ -53,16 +53,15 @@ class ServiceDeliveryService {
 
     /**
      * Crea un nuevo servicio de entrega.
-     * Permite adjuntar una imagen para procesamiento OCR y registrar metadatos iniciales GPS.
+     * Permite adjuntar una imagen del chasis y registrar metadatos iniciales GPS.
      * @param request - Datos del nuevo servicio.
      */
     async create(request: CreateServiceRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
-        formData.append('image', request.image)
         formData.append('dealershipId', request.dealershipId)
 
         if (request.messengerDocument) {
-            formData.append('messengerDocument', request.messengerDocument)
+            formData.append('messengerId', request.messengerDocument)
         }
 
         if (request.manualPlateNumber) {
@@ -81,19 +80,7 @@ class ServiceDeliveryService {
         return ServiceDeliverySchema.parse(response.data)
     }
 
-    /**
-     * Extrae la placa de una imagen mediante OCR sin crear el servicio.
-     * Permite previsualizar la placa detectada y corregirla si es necesario.
-     * @param image - Imagen de la placa a procesar
-     * @returns Objeto con la placa detectada, estado de éxito y nivel de confianza
-     */
-    async extractPlate(image: File): Promise<{ plate: string | null; success: boolean; message: string; score: number | null }> {
-        const formData = new FormData()
-        formData.append('image', image)
 
-        const response = await apiClient.post('/services/extractPlate', formData)
-        return response.data
-    }
 
     /**
      * Actualiza el estado de un servicio capturando evidencias obligatorias.

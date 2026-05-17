@@ -1,12 +1,10 @@
 import { useMessengerServices } from "@/hooks/use-messenger-services"
 import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
-import { RefreshCw, Database, Building2, Plus } from "lucide-react"
+import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useMemo, useRef, useCallback } from "react"
-import { useNavigate } from "react-router-dom"
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
+import { useState, useMemo, useCallback } from "react"
 
 /**
  * Panel principal (Dashboard) para la aplicación del mensajero.
@@ -17,25 +15,6 @@ export default function MessengerDashboard() {
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedDealership, setSelectedDealership] = useState<string>("all")
-    const [isFabVisible, setIsFabVisible] = useState(true)
-    const lastScrollY = useRef(0)
-    const navigate = useNavigate()
-
-    const { scrollY } = useScroll({ 
-        container: { current: typeof document !== 'undefined' ? document.getElementById('main-content') : null } as React.RefObject<HTMLElement> 
-    })
-
-    useMotionValueEvent(scrollY, "change", (latest) => {
-        const isScrollingDown = latest > lastScrollY.current
-
-        if (isScrollingDown && latest > 100) {
-            if (isFabVisible) setIsFabVisible(false)
-        } else if (!isScrollingDown) {
-            if (!isFabVisible) setIsFabVisible(true)
-        }
-
-        lastScrollY.current = latest
-    })
 
     const handleRefresh = useCallback(async () => {
         if (!isOnline || isRefreshing) return
@@ -134,32 +113,6 @@ export default function MessengerDashboard() {
                 />
             </div>
 
-            <AnimatePresence>
-                {isFabVisible && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: 15 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 15 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                            mass: 0.5
-                        }}
-                        className="fixed bottom-[calc(0.75rem+var(--safe-area-bottom))] left-1/2 -translate-x-1/2 z-50 will-change-transform"
-                    >
-                        <Button
-                            onClick={() => navigate('/messenger/crear')}
-                            className="h-14 w-14 rounded-full bg-primary shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-primary/20 hover:scale-110 active:scale-90 transition-all duration-300 group"
-                            size="icon"
-                        >
-                            <div className="relative flex items-center justify-center">
-                                <Plus className="h-7 w-7 text-primary-foreground group-hover:rotate-90 transition-transform duration-500 ease-out" strokeWidth={3} />
-                            </div>
-                        </Button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {error && !loading && (
                 <div className="fixed bottom-[calc(6rem+var(--safe-area-bottom))] left-4 right-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-lg z-40 animate-in fade-in slide-in-from-bottom-2">

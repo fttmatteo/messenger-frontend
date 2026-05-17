@@ -131,14 +131,7 @@ describe('ServiceDeliveryService', () => {
         });
     });
 
-    describe('extractPlate', () => {
-        it('should return plate from API', async () => {
-            const mockData = { plate: 'XYZ123', success: true, message: 'OK' };
-            vi.mocked(apiClient.post).mockResolvedValue({ data: mockData });
-            const result = await serviceDeliveryService.extractPlate(new File([], 'test.jpg'));
-            expect(result).toEqual(mockData);
-        });
-    });
+
 
     describe('updateStatus', () => {
         it('should send evidence as FormData', async () => {

@@ -31,7 +31,7 @@ const MessengerDetails = React.lazy(() => import('@/pages/admin/MessengerDetails
 const Configuracion = React.lazy(() => import('@/pages/admin/Configuracion'));
 const Profile = React.lazy(() => import('@/pages/admin/Profile'));
 const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
-const MessengerCreateServicio = React.lazy(() => import('@/pages/messenger/CreateServicio'));
+const AdminCreateServicio = React.lazy(() => import('@/pages/admin/CreateServicio'));
 const MessengerServiceDetails = React.lazy(() => import('@/pages/messenger/ServiceDetails'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
@@ -148,6 +148,7 @@ export function AppRoutes() {
                     <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
 
                     <Route path="servicios" element={<Servicios />} />
+                    <Route path="servicios/crear" element={<AdminCreateServicio />} />
                     <Route path="servicios/:id" element={<ViewServicio />} />
 
                     <Route path="eliminados" element={<Eliminados />} />
@@ -167,7 +168,6 @@ export function AppRoutes() {
                     }
                 >
                     <Route index element={<MessengerDashboard />} />
-                    <Route path="crear" element={<MessengerCreateServicio />} />
                     <Route path="servicio/:id" element={<MessengerServiceDetails />} />
                     <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
 

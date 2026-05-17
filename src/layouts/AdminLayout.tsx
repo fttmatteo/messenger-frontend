@@ -12,7 +12,7 @@ import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { SidebarToggleTab } from "@/components/SidebarToggleTab"
 
 const menuItems = [
-    { title: "Empleados", icon: Users, url: "/admin/empleados" },
+    { title: "Transportistas", icon: Users, url: "/admin/empleados" },
     { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
     { title: "Servicios", icon: Bike, url: "/admin/servicios" },
     { title: "Monitoreo", icon: Map, url: "/admin/tracking" },

@@ -94,7 +94,7 @@ export default function EditEmployee() {
                 password: data.password || "",
                 role: "MESSENGER",
             })
-            setSuccess("Empleado actualizado exitosamente")
+            setSuccess("Transportista actualizado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -106,7 +106,7 @@ export default function EditEmployee() {
         try {
             setDeleting(true)
             await employeeService.delete(id)
-            setSuccess("Empleado eliminado exitosamente")
+            setSuccess("Transportista eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -124,13 +124,13 @@ export default function EditEmployee() {
             <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Empleados", href: "/admin/empleados" },
+                        { label: "Transportistas", href: "/admin/empleados" },
                         { label: "Editar" }
                     ]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar empleado</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
@@ -138,7 +138,7 @@ export default function EditEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del empleado</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -246,10 +246,10 @@ export default function EditEmployee() {
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>
-                                            ¿Eliminar empleado?
+                                            ¿Eliminar transportista?
                                         </AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente este empleado del sistema.
+                                            Esta acción no se puede deshacer. Se eliminará permanentemente este transportista del sistema.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

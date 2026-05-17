@@ -89,7 +89,7 @@ describe('Safe Area Integrity Audit', () => {
     it('Páginas con elementos fijos deben mantener el cálculo de seguridad', () => {
         const dashboardPath = path.resolve(__dirname, '../pages/messenger/Dashboard.tsx')
         const dashboardContent = fs.readFileSync(dashboardPath, 'utf-8')
-        expect(dashboardContent).toContain('bottom-[calc(0.75rem+var(--safe-area-bottom))]')
+        expect(dashboardContent).toContain('bottom-[calc(6rem+var(--safe-area-bottom))]')
 
         const statusPath = path.resolve(__dirname, '../pages/messenger/UpdateStatus.tsx')
         const statusContent = fs.readFileSync(statusPath, 'utf-8')
