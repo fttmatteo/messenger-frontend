@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.11.0-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.11.1-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -16,7 +16,7 @@
 
 **Plataforma de alta ingeniería para gestión de mensajería.**
 
-[🇺🇸 English Version](README.en.md) • [Descripción](#descripción-general) • [Capturas](#capturas-de-pantalla) • [Características](#características-principales) • [Calidad](#estrategia-de-calidad-y-pruebas) • [Tecnologías](#stack-tecnológico) • [Arquitectura](#arquitectura-del-proyecto) • [Instalación](#instalación-y-despliegue) • [Seguridad](#seguridad) • [Tips](#tips-de-operación-móvil) • [Contacto](#contacto)
+[🇺🇸 English Version](README.en.md) • [Descripción](#descripción-general) • [Características](#características-principales) • [Calidad](#estrategia-de-calidad-y-pruebas) • [Tecnologías](#stack-tecnológico) • [Arquitectura](#arquitectura-del-proyecto) • [Instalación](#instalación-y-despliegue) • [Seguridad](#seguridad) • [Tips](#tips-de-operación-móvil) • [Contacto](#contacto)
 
 </div>
 
@@ -38,37 +38,6 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 | Monitoreo de flota en tiempo real con Google Maps | Instalable en cualquier dispositivo móvil |
 | Gestión de concesionarios y empleados | Capaz de trabajar offline con auto-sincronización |
 | Auditoría de servicios con evidencia digital | Firma digital y captura de fotos |
-
----
-
-## Capturas de Pantalla
-
-### Admin Dashboard
-| Login | Monitoreo en Vivo |
-|:---:|:---:|
-| ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/14_Admin_Monitoreo.png) |
-| *Acceso al sistema administrativo* | *Posición de la flota en tiempo real con Google Maps* |
-
-| Gestión de Servicios | Detalles del Servicio |
-|:---:|:---:|
-| ![Services](docs/screenshots/admin/11_Admin_Servicios.png) | ![Service Details](docs/screenshots/admin/12_Admin_Detalles_Servicio.png) |
-| *Listado y filtrado de servicios* | *Timeline detallado con evidencias fotográficas* |
-
-| Empleados | Concesionarios |
-|:---:|:---:|
-| ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
-| *Gestión del personal* | *Administración de concesionarios* |
-
-### Messenger PWA
-| Login | Servicios Asignados | Actualización de Estado |
-|:---:|:---:|:---:|
-| ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
-| *Acceso mensajeros* | *Lista de entregas asignadas* | *Cambio de estado* |
-
-| Detalles del Servicio | Crear Servicio | Mi Perfil |
-|:---:|:---:|:---:|
-| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio.jpeg) | ![History](docs/screenshots/messenger/13_Messenger_Crear_Servicio_1.jpeg) | ![Settings](docs/screenshots/messenger/19_Messenger_Sidebar_MiPerfil_1.jpeg) |
-| *Información completa* | *Creación de servicio* | *Datos de perfil* |
 
 ---
 

@@ -36,7 +36,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 /**
  * Página de administración de servicios de entrega.
  * Muestra una lista paginada de todos los servicios registrados.
- * Permite filtrar por estado, buscar por chasis, concesionario o empleado,
+ * Permite filtrar por estado, buscar por chasis, concesionario o transportista,
  * y realizar actualizaciones rápidas de estado mediante un modal.
  */
 export default function Servicios() {
@@ -129,7 +129,7 @@ export default function Servicios() {
                                     <TableRow>
                                         <TableHead>Chasis</TableHead>
                                         <TableHead>Concesionario</TableHead>
-                                        <TableHead>Empleado</TableHead>
+                                        <TableHead>Transportista</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead>Creado</TableHead>
                                         <TableHead>Acción</TableHead>
@@ -171,7 +171,7 @@ export default function Servicios() {
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("messengerName")}>
                                                 <div className="flex items-center">
-                                                    <User className="h-4 w-4 mr-1 shrink-0" />Empleado
+                                                    <User className="h-4 w-4 mr-1 shrink-0" />Transportista
                                                     <SortIndicator field="messengerName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
