@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
+      includeAssets: ['favicon.ico', 'favicon-*.png', 'icons/*.png', 'screenshots/*.png', 'assets/*.png', 'assets/*.svg'],
       manifest: {
         name: env.VITE_APP_NAME || 'PLAK',
         short_name: 'PLAK',

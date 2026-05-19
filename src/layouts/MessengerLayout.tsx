@@ -8,7 +8,7 @@ import { showToast } from "@/config/toast-config"
 import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import logo from "@/assets/logo.png"
+import logoHorizontal from "@/assets/logo-horizontal.png"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { MobileOnlyGuard } from "@/components/guards"
 import { useNetwork } from "@/hooks/use-network"
@@ -492,7 +492,7 @@ export default function MessengerLayout() {
                                 <SheetContent side="left" className={cn("w-[280px] p-0 border-r bg-background flex flex-col pt-safe", isSheetBlocked && "pointer-events-none")}>
                                     <SheetHeader className="p-4 pb-1 text-left">
                                         <div className="flex flex-col items-center gap-1 mb-4">
-                                            <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
+                                            <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
                                             <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
                                             <SheetTitle className="sr-only">{APP_CONFIG.name}</SheetTitle>
                                             <SheetDescription className="sr-only">Menú de navegación del mensajero</SheetDescription>

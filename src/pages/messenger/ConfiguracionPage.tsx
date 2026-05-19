@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "next-themes"
 import { Card } from "@/components/ui/card"
-import { Palette, ChevronRight } from "lucide-react"
+import { Palette, ChevronRight, Cookie } from "lucide-react"
 import { APP_CONFIG } from "@/lib/app-config"
 
 function getThemeLabel(theme: string | undefined) {
@@ -50,6 +50,34 @@ export default function ConfiguracionPage() {
                         </div>
                     </button>
 
+                </Card>
+            </div>
+
+            <div className="space-y-4">
+                <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] px-1">
+                    Legal
+                </p>
+
+                <Card className="border-border/40 bg-card overflow-hidden rounded-2xl shadow-sm">
+                    <button
+                        onClick={() => navigate('/politica-cookies')}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-muted/40 active:scale-[0.98] transition-all text-left touch-manipulation group"
+                    >
+                        <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-primary/5 text-primary group-hover:bg-primary/10 transition-colors">
+                            <Cookie className="h-5 w-5" strokeWidth={2.5} />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de Cookies</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5 font-bold uppercase tracking-wide">
+                                Almacenamiento Local y Privacidad (SIC)
+                             </p>
+                        </div>
+
+                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                    </button>
                 </Card>
             </div>
 

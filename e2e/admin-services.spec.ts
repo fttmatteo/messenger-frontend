@@ -19,6 +19,8 @@ test.describe('Service Creation Flow', () => {
             window.localStorage.setItem('role', 'ADMIN');
             window.localStorage.setItem('user', userStr);
             window.localStorage.setItem('accessToken', 'mock-admin-token');
+            window.localStorage.setItem('plak_cookie_consent', 'accepted');
+            window.localStorage.setItem('CapacitorStorage.plak_cookie_consent', 'accepted');
 
             window.sessionStorage.setItem('role', 'ADMIN');
             window.sessionStorage.setItem('user', userStr);

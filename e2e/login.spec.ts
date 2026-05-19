@@ -6,6 +6,8 @@ test.describe('Login E2E Flow', () => {
 
         /* eslint-disable @typescript-eslint/no-explicit-any */
         await page.addInitScript(() => {
+            window.localStorage.setItem('plak_cookie_consent', 'accepted');
+            window.localStorage.setItem('CapacitorStorage.plak_cookie_consent', 'accepted');
             // @ts-expect-error - Mocking global object
             window.turnstile = {
                 render: (_container: any, options: any) => {

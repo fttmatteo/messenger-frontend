@@ -1,11 +1,11 @@
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel, getStatusPillBackground } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check } from "lucide-react"
+import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check, Cookie } from "lucide-react"
 import { showToast } from "@/config/toast-config"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
@@ -60,6 +60,13 @@ const SETTINGS_SECTIONS = [
         description: 'Personaliza los colores de cada estado de servicio',
         icon: Palette
     },
+    {
+        id: 'cookies',
+        title: 'Política de Cookies',
+        description: 'Almacenamiento local, privacidad y normativa SIC',
+        icon: Cookie,
+        path: '/politica-cookies'
+    },
 ]
 
 /**
@@ -69,6 +76,7 @@ const SETTINGS_SECTIONS = [
  * Utiliza parámetros de búsqueda en la URL para navegar entre secciones.
  */
 export default function Configuracion() {
+    const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const activeSection = searchParams.get('section')
     const { colors, updateColor, resetToDefaults, isModified } = useStatusColors()
@@ -142,7 +150,13 @@ export default function Configuracion() {
                                 <div
                                     key={section.id}
                                     className="flex items-center gap-4 p-4 rounded-lg border bg-card cursor-pointer hover:bg-muted/50 transition-colors"
-                                    onClick={() => setActiveSection(section.id)}
+                                    onClick={() => {
+                                        if (section.path) {
+                                            navigate(section.path);
+                                        } else {
+                                            setActiveSection(section.id);
+                                        }
+                                    }}
                                 >
                                     <div className="rounded-lg bg-primary/10 p-3 text-primary">
                                         <IconComponent className="h-5 w-5" />

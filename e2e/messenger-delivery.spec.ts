@@ -22,6 +22,8 @@ test.describe('Messenger Delivery Execution', () => {
             window.localStorage.setItem('role', 'MESSENGER');
             window.localStorage.setItem('user', userStr);
             window.localStorage.setItem('accessToken', 'mock-messenger-token');
+            window.localStorage.setItem('plak_cookie_consent', 'accepted');
+            window.localStorage.setItem('CapacitorStorage.plak_cookie_consent', 'accepted');
 
             window.sessionStorage.setItem('role', 'MESSENGER');
             window.sessionStorage.setItem('user', userStr);

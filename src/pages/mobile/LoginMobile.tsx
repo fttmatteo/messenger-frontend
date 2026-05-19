@@ -158,21 +158,21 @@ export default function LoginMobile() {
                     <div className="absolute top-2 right-2 z-10">
                         <ModeToggle showLabel={false} />
                     </div>
-                    <CardHeader className="space-y-0 pb-1.5 pt-8">
-                        <div className="flex flex-col items-center justify-center mb-0.5">
+                    <CardHeader className="space-y-0 pb-1.5 pt-3">
+                        <div className="flex flex-col items-center justify-center mb-2.5">
                             {(!logoLoaded || logoError) && (
-                                <div className="h-9 w-9 flex items-center justify-center bg-primary/10 rounded-lg">
-                                    <Package className="h-5 w-5 text-primary" />
+                                <div className="h-20 w-20 flex items-center justify-center bg-primary/10 rounded-2xl">
+                                    <Package className="h-10 w-10 text-primary" />
                                 </div>
                             )}
                             <img
                                 src={logo}
                                 alt="PLAK Logo"
-                                className={`h-9 w-9 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
+                                className={`h-20 w-20 object-contain ${logoLoaded && !logoError ? '' : 'hidden'}`}
                                 onLoad={() => setLogoLoaded(true)}
                                 onError={() => setLogoError(true)}
                             />
-                            <span className="text-[10px] font-medium text-muted-foreground leading-none mt-0.5">v{APP_CONFIG.version}</span>
+                            <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1.5">v{APP_CONFIG.version}</span>
                         </div>
                         <div className="flex items-center justify-center">
                             <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
@@ -274,8 +274,17 @@ export default function LoginMobile() {
                     </CardContent>
                 </Card>
 
-                <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight">
-                    Plak es un software desarrollado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a soporte@plak.digital
+                <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
+                    <p>Plak es un software desarrollado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a soporte@plak.digital</p>
+                    <p>
+                        <button 
+                            type="button"
+                            onClick={() => navigate('/politica-cookies')}
+                            className="hover:underline text-primary font-semibold cursor-pointer"
+                        >
+                            Política de Cookies y Almacenamiento Local
+                        </button>
+                    </p>
                 </div>
 
 

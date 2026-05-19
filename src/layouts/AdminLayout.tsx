@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle, User } from "lucide-react"
 import { cn } from "@/lib/utils"
-import logo from "@/assets/logo.png"
+import logoHorizontal from "@/assets/logo-horizontal.png"
 import { useState, useRef } from "react"
 import { AdminUIProvider } from "@/context/AdminUIContext"
 import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
@@ -55,7 +55,7 @@ function AdminLayoutContent() {
                 <SidebarHeader className="border-b border-sidebar-border pt-safe">
                     <div className="flex items-center justify-between px-2 py-2">
                         <div className="flex flex-col items-center gap-1">
-                            <img src={logo} alt="PLAK" className="h-9 w-auto object-contain" />
+                            <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
                             <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
                         </div>
                         <ModeToggle showLabel={false} />
