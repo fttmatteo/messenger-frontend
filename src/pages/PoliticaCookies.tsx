@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -100,6 +101,10 @@ const STORAGE_ITEMS: StorageItem[] = [
 export default function PoliticaCookies() {
     const navigate = useNavigate();
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, []);
+
     const handleBack = () => {
         // Si hay historial en el navegador, volvemos atrás; si no, redirigimos al login
         if (window.history.length > 1) {
@@ -125,8 +130,8 @@ export default function PoliticaCookies() {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground py-6 sm:py-8 px-4 sm:px-6 lg:px-8 animate-in fade-in duration-300">
-            <div className="max-w-4xl mx-auto space-y-6">
+        <div className="min-h-screen bg-background text-foreground pt-safe pb-safe animate-in fade-in duration-300">
+            <div className="max-w-4xl mx-auto space-y-6 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
                 
                 {/* Botón de Retorno */}
                 <div className="flex items-center justify-between pb-4 border-b border-border/40">
@@ -138,7 +143,7 @@ export default function PoliticaCookies() {
                         <ChevronLeft className="h-5 w-5" />
                         <span>Volver</span>
                     </Button>
-                    <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest">
+                    <div className="text-xs font-black text-muted-foreground/60 uppercase tracking-widest">
                         {APP_CONFIG.name} v{APP_CONFIG.version}
                     </div>
                 </div>
@@ -149,7 +154,7 @@ export default function PoliticaCookies() {
                         <Cookie className="h-8 w-8 animate-pulse" />
                     </div>
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
-                        Política de Cookies y Almacenamiento Local
+                        Política de Cookies
                     </h1>
                     <p className="text-foreground/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
                         Transparencia y cumplimiento de la Ley 1581 de 2012 respecto al almacenamiento de datos en tu navegador o terminal.
@@ -192,7 +197,7 @@ export default function PoliticaCookies() {
                         
                         {/* VISTA ESCRITORIO (Table Layout) */}
                         <div className="hidden md:block overflow-x-auto rounded-xl border border-border/40 shadow-inner">
-                            <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                            <table className="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr className="bg-muted/70 text-foreground font-semibold border-b border-border/40">
                                         <th className="p-3">Llave / Clave</th>
@@ -207,13 +212,13 @@ export default function PoliticaCookies() {
                                         <tr key={item.key} className="hover:bg-muted/10 transition-colors">
                                             <td className="p-3 font-semibold text-foreground font-mono">{item.key}</td>
                                             <td className="p-3">
-                                                <span className={`inline-block px-2 py-0.5 rounded-full border text-[10px] font-semibold ${getBadgeStyle(item.type)}`}>
+                                                <span className={`inline-block px-2 py-0.5 rounded-full border text-xs font-semibold ${getBadgeStyle(item.type)}`}>
                                                     {item.type}
                                                 </span>
                                             </td>
-                                            <td className="p-3 text-xs sm:text-sm">{item.purpose}</td>
-                                            <td className="p-3 text-xs sm:text-sm">{item.data}</td>
-                                            <td className="p-3 text-xs sm:text-sm shrink-0 whitespace-nowrap">{item.duration}</td>
+                                            <td className="p-3 text-sm">{item.purpose}</td>
+                                            <td className="p-3 text-sm">{item.data}</td>
+                                            <td className="p-3 text-sm shrink-0 whitespace-nowrap">{item.duration}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -228,20 +233,20 @@ export default function PoliticaCookies() {
                                         <span className="font-bold text-foreground text-sm font-mono break-all">
                                             {item.key}
                                         </span>
-                                        <span className={`px-2 py-0.5 rounded-full border text-[9px] font-semibold ${getBadgeStyle(item.type)}`}>
+                                        <span className={`px-2 py-0.5 rounded-full border text-xs font-semibold ${getBadgeStyle(item.type)}`}>
                                             {item.type}
                                         </span>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <p className="text-xs text-foreground/80 leading-relaxed">
+                                        <p className="text-sm text-foreground/80 leading-relaxed">
                                             <strong className="text-foreground/90 font-medium">Propósito:</strong> {item.purpose}
                                         </p>
-                                        <p className="text-xs text-foreground/85 leading-relaxed">
+                                        <p className="text-sm text-foreground/85 leading-relaxed">
                                             <strong className="text-foreground/90 font-medium">Valores:</strong> {item.data}
                                         </p>
                                     </div>
                                     <div className="flex justify-end pt-2 border-t border-border/10">
-                                        <span className="text-[10px] text-muted-foreground font-semibold bg-muted/40 px-2 py-0.5 rounded">
+                                        <span className="text-xs text-muted-foreground font-semibold bg-muted/40 px-2 py-0.5 rounded">
                                             Duración: {item.duration}
                                         </span>
                                     </div>
@@ -251,39 +256,47 @@ export default function PoliticaCookies() {
                     </CardContent>
                 </Card>
 
-                {/* Sección 3: Derechos de los Usuarios y Contacto */}
+                {/* Sección 3: Gestión de Almacenamiento y Contacto */}
                 <Card className="border-border/40 bg-card/60 backdrop-blur-sm rounded-2xl shadow-sm">
                     <CardHeader className="flex flex-row items-center gap-4 pb-3">
                         <div className="p-2.5 bg-primary/5 rounded-xl text-primary">
                             <HelpCircle className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-lg font-bold">3. Derechos y Configuración</CardTitle>
+                        <CardTitle className="text-lg font-bold">3. Gestión y Desactivación</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-foreground/80 leading-relaxed space-y-3">
+                    <CardContent className="text-sm text-foreground/80 leading-relaxed space-y-4">
                         <p>
-                            Al ser de naturaleza estrictamente técnica, la desactivación de estas tecnologías podría comprometer gravemente el funcionamiento de la aplicación, inhabilitando el inicio de sesión y la visualización de rutas.
-                        </p>
-                        <p>
-                            No obstante, de conformidad con la <strong>Ley 1581 de 2012</strong>, tienes derecho a conocer, actualizar y rectificar tus datos personales almacenados en el sistema en cualquier momento.
+                            Al ser tecnologías de carácter estrictamente técnico, la desactivación o borrado de estos registros a través de los ajustes de tu navegador o celular (limpieza de caché) provocará el cierre inmediato de tu sesión y podría impedir el funcionamiento correcto de las herramientas de sincronización offline.
                         </p>
                         
+                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-xl flex items-center justify-center gap-1.5 w-full sm:w-auto font-bold border-primary/20 text-primary hover:bg-primary/5"
+                                onClick={() => navigate('/politica-privacidad')}
+                            >
+                                <Shield className="h-4 w-4" />
+                                Ver Política de Privacidad (Datos Personales)
+                            </Button>
+                        </div>
+
                         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-muted/30 p-4 rounded-xl border border-border/30 mt-4">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-background rounded-lg border border-border/40 text-primary">
                                     <Mail className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte Técnico y Privacidad</p>
-                                    <p className="text-[11px] text-foreground/70">Desarrollado por Mateo Valencia Ardila</p>
+                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte Técnico de la Plataforma</p>
                                 </div>
                             </div>
                             <Button 
-                                variant="outline" 
+                                variant="default" 
                                 size="sm" 
-                                className="rounded-xl flex items-center gap-1.5 w-full sm:w-auto"
-                                onClick={() => window.open('mailto:soporte@plak.digital')}
+                                className="rounded-xl flex items-center gap-1.5 w-full sm:w-auto font-bold"
+                                onClick={() => window.open('mailto:contacto@plak.digital')}
                             >
-                                soporte@plak.digital
+                                contacto@plak.digital
                             </Button>
                         </div>
                     </CardContent>

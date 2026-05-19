@@ -7,6 +7,20 @@ import { Cookie, Info } from 'lucide-react';
 
 const CONSENT_KEY = 'plak_cookie_consent';
 
+const getCookie = (name: string): string | null => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    return null;
+};
+
+const setCookie = (name: string, value: string, days: number) => {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `; expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax; Secure`;
+};
+
 /**
  * Componente de Banner de Cookies y Almacenamiento Local.
  * Informa al usuario sobre el uso de tecnologías de almacenamiento local
@@ -20,20 +34,29 @@ export default function CookieBanner() {
     useEffect(() => {
         const checkConsent = async () => {
             try {
-                // Verificar si ya se aceptó la política
-                const { value } = await Preferences.get({ key: CONSENT_KEY });
-                if (value !== 'accepted') {
-                    // Fallback de localStorage por seguridad
-                    const localValue = localStorage.getItem(CONSENT_KEY);
-                    if (localValue !== 'accepted') {
-                        // Esperar un momento antes de mostrar el banner para una mejor UX
-                        const timer = setTimeout(() => setShow(true), 1500);
-                        return () => clearTimeout(timer);
-                    }
+                const cookieConsent = getCookie(CONSENT_KEY);
+                if (cookieConsent === 'accepted') {
+                    return;
                 }
+
+                const { value } = await Preferences.get({ key: CONSENT_KEY });
+                if (value === 'accepted') {
+                    setCookie(CONSENT_KEY, 'accepted', 365);
+                    return;
+                }
+
+                const localValue = localStorage.getItem(CONSENT_KEY);
+                if (localValue === 'accepted') {
+                    setCookie(CONSENT_KEY, 'accepted', 365);
+                    return;
+                }
+
+                const timer = setTimeout(() => setShow(true), 1500);
+                return () => clearTimeout(timer);
             } catch {
-                // Si falla Preferences por alguna razón, usamos localStorage
-                if (localStorage.getItem(CONSENT_KEY) !== 'accepted') {
+                const cookieConsent = getCookie(CONSENT_KEY);
+                const localConsent = localStorage.getItem(CONSENT_KEY);
+                if (cookieConsent !== 'accepted' && localConsent !== 'accepted') {
                     setShow(true);
                 }
             }
@@ -44,16 +67,17 @@ export default function CookieBanner() {
 
     const handleAccept = async () => {
         try {
+            setCookie(CONSENT_KEY, 'accepted', 365);
             await Preferences.set({ key: CONSENT_KEY, value: 'accepted' });
             localStorage.setItem(CONSENT_KEY, 'accepted');
         } catch {
+            setCookie(CONSENT_KEY, 'accepted', 365);
             localStorage.setItem(CONSENT_KEY, 'accepted');
         }
         setShow(false);
     };
 
-    // Si ya aceptó o si está navegando actualmente en la página de política de cookies, no mostrar el banner.
-    if (location.pathname === '/politica-cookies') {
+    if (location.pathname === '/politica-cookies' || location.pathname === '/politica-privacidad') {
         return null;
     }
 
@@ -78,22 +102,22 @@ export default function CookieBanner() {
                             </div>
                             <div className="space-y-1.5 flex-1 min-w-0">
                                 <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                                    Política de Cookies y Almacenamiento Local
-                                    <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                    Política de Cookies
+                                    <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                         SIC
                                     </span>
                                 </h3>
-                                <p className="text-xs text-foreground/80 leading-relaxed">
+                                <p className="text-sm text-foreground/80 leading-relaxed">
                                     Utilizamos almacenamiento local y cookies técnicas estrictamente necesarias para garantizar la seguridad de tu inicio de sesión y el funcionamiento óptimo de la aplicación.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-2 pt-1 border-t border-border/30">
+                        <div className="flex justify-end gap-2 pt-2 border-t border-border/30">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs font-semibold rounded-xl w-full sm:w-auto hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
+                                className="text-sm font-semibold rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
                                 onClick={() => navigate('/politica-cookies')}
                             >
                                 <Info className="h-3.5 w-3.5" />
@@ -103,10 +127,10 @@ export default function CookieBanner() {
                             <Button
                                 variant="default"
                                 size="sm"
-                                className="text-xs font-bold rounded-xl w-full sm:flex-1 shadow-sm transition-all active:scale-[0.98]"
+                                className="text-sm font-bold rounded-xl shadow-sm transition-all active:scale-[0.98]"
                                 onClick={handleAccept}
                             >
-                                Aceptar y Continuar
+                                Aceptar
                             </Button>
                         </div>
                     </div>
