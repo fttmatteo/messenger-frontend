@@ -128,14 +128,14 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                 </div>
 
                 {/* Cuerpo de Detalles */}
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                     {/* Concesionario Destino */}
-                    <div className="flex items-start gap-2 text-xs">
-                        <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" strokeWidth={2} />
+                    <div className="flex items-start gap-2 text-sm">
+                        <Building2 className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" strokeWidth={2} />
                         <div className="min-w-0">
-                            <span className="font-bold text-foreground truncate block">{service.dealership.name}</span>
+                            <span className="font-bold text-foreground truncate block text-sm">{service.dealership.name}</span>
                             {service.dealership.zone && (
-                                <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{service.dealership.zone}</span>
+                                <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">{service.dealership.zone}</span>
                             )}
                         </div>
                     </div>
@@ -144,10 +144,10 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                     {service.dealership.address && (
                         <div
                             onClick={handleNavigate}
-                            className="flex items-center gap-2 text-[11px] text-primary hover:text-primary/80 font-bold cursor-pointer underline underline-offset-2 w-fit max-w-full transition-colors"
+                            className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-bold cursor-pointer underline underline-offset-2 w-fit max-w-full transition-colors"
                             title="Haz clic para navegar con Google Maps"
                         >
-                            <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2} />
+                            <MapPin className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
                             <span className="truncate">{service.dealership.address}</span>
                         </div>
                     )}
@@ -156,9 +156,9 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                     {service.dealership.phone && (
                         <div
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-2 text-[11px] text-primary hover:text-primary/80 font-bold w-fit max-w-full transition-colors"
+                            className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-bold w-fit max-w-full transition-colors"
                         >
-                            <Phone className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2} />
+                            <Phone className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
                             <a
                                 href={`tel:${service.dealership.phone}`}
                                 className="underline underline-offset-2 cursor-pointer"
@@ -170,16 +170,16 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                     )}
 
                     {/* Fecha de Asignación */}
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
-                        <Clock className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-semibold">
+                        <Clock className="h-4 w-4 shrink-0" strokeWidth={2} />
                         <span>{formatDateTime(service.createdAt)}</span>
                     </div>
                 </div>
 
                 {/* Observaciones (si existen) */}
                 {service.observation && (
-                    <div className="flex items-start gap-1.5 bg-muted/40 border border-border/20 rounded-lg p-2 text-[10px] text-muted-foreground italic leading-relaxed">
-                        <MessageSquare className="h-3 w-3 shrink-0 text-muted-foreground/60 mt-0.5" />
+                    <div className="flex items-start gap-2 bg-muted/65 border border-border/40 rounded-lg p-2.5 text-xs text-foreground/95 font-medium leading-relaxed shadow-sm">
+                        <MessageSquare className="h-4 w-4 shrink-0 text-primary mt-0.5" />
                         <p className="line-clamp-2">{service.observation}</p>
                     </div>
                 )}
