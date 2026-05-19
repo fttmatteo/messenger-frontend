@@ -21,7 +21,7 @@ const GRID_ITEMS = Array.from({ length: 144 })
  */
 const AnimatedLogoBackground = React.memo(function AnimatedLogoBackground() {
     return (
-        <div className="fixed inset-0 -z-20 w-full h-full overflow-hidden bg-background pointer-events-none select-none">
+        <div className="fixed inset-0 -z-20 w-screen h-screen overflow-hidden bg-background pointer-events-none select-none">
             {/* Animaciones CSS locales para renderizado en el compositor de la GPU */}
             <style>{`
                 @keyframes driftGrid {
@@ -85,7 +85,7 @@ const AnimatedLogoBackground = React.memo(function AnimatedLogoBackground() {
 
             {/* Cuadrícula repetitiva de iconos con desplazamiento */}
             <div 
-                className="absolute inset-[-100px] grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-16 p-16 opacity-[0.075] dark:opacity-[0.055] text-primary animate-grid-drift"
+                className="absolute top-[-100px] left-[-100px] w-[calc(100%+200px)] h-[calc(100%+200px)] grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-8 sm:gap-12 md:gap-16 p-16 opacity-[0.075] dark:opacity-[0.055] text-primary animate-grid-drift overflow-hidden"
             >
                 {GRID_ITEMS.map((_, idx) => {
                     const IconComponent = ICONS_LIST[idx % ICONS_LIST.length]

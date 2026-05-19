@@ -80,7 +80,7 @@ const STORAGE_ITEMS: StorageItem[] = [
     {
         key: 'role',
         type: 'Preferences / Storage',
-        purpose: 'Protección de rutas de acceso seguro en el cliente (Admin vs Mensajero).',
+        purpose: 'Protección de rutas de acceso seguro en el cliente (Admin vs Transportista).',
         data: 'Rol del usuario activo (ADMIN / MESSENGER).',
         duration: 'Sesión / Permanente'
     },
@@ -106,7 +106,6 @@ export default function PoliticaCookies() {
     }, []);
 
     const handleBack = () => {
-        // Si hay historial en el navegador, volvemos atrás; si no, redirigimos al login
         if (window.history.length > 1) {
             navigate(-1);
         } else {
@@ -114,7 +113,6 @@ export default function PoliticaCookies() {
         }
     };
 
-    // Obtener clase de color para cada tipo de almacenamiento en el badge móvil
     const getBadgeStyle = (type: string) => {
         const lowerType = type.toLowerCase();
         if (lowerType.includes('cookie')) {

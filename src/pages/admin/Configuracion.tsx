@@ -5,17 +5,15 @@ import { StatusColorPicker } from "@/components/settings/StatusColorPicker"
 import { useStatusColors } from "@/hooks/use-status-colors"
 import { DEFAULT_STATUS_COLORS, getStatusLabel, getStatusPillBackground } from "@/lib/status-colors"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check, Cookie } from "lucide-react"
+import { Palette, RotateCcw, ChevronRight, Sun, Moon, Monitor, Check, Cookie, Shield } from "lucide-react"
 import { showToast } from "@/config/toast-config"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { APP_CONFIG } from "@/lib/app-config"
 
 
-// Orden de estados para visualización
 const STATUS_ORDER = ['ASSIGNED', 'PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED', 'DELETED']
 
-// Opciones de tema para la sección de apariencia
 type ThemeOption = 'light' | 'dark' | 'system'
 
 interface ThemeOptionItem {
@@ -46,7 +44,6 @@ const themeOptions: ThemeOptionItem[] = [
     }
 ]
 
-// Secciones de configuración - agregar más aquí en el futuro
 const SETTINGS_SECTIONS = [
     {
         id: 'appearance',
@@ -66,6 +63,13 @@ const SETTINGS_SECTIONS = [
         description: 'Almacenamiento local, privacidad y normativa SIC',
         icon: Cookie,
         path: '/politica-cookies'
+    },
+    {
+        id: 'privacy',
+        title: 'Política de Privacidad',
+        description: 'Protección de datos personales y Ley 1581 (Habeas Data)',
+        icon: Shield,
+        path: '/politica-privacidad'
     },
 ]
 
