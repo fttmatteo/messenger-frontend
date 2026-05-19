@@ -41,37 +41,6 @@ The carrier experience is fully optimized as a standalone Android application. B
 
 ---
 
-## Screenshots
-
-### Admin Dashboard
-| Login | Live Monitoring |
-|:---:|:---:|
-| ![Admin Login](docs/screenshots/admin/1_Admin_Login.png) | ![Live Tracking](docs/screenshots/admin/14_Admin_Monitoreo.png) |
-| *Administrative system access* | *Real-time fleet position on Google Maps* |
-
-| Service Management | Service Details |
-|:---:|:---:|
-| ![Services](docs/screenshots/admin/11_Admin_Servicios.png) | ![Service Details](docs/screenshots/admin/12_Admin_Detalles_Servicio.png) |
-| *Listing and filtering of services* | *Detailed timeline with photo evidence* |
-
-| Employees | Dealerships |
-|:---:|:---:|
-| ![Employees](docs/screenshots/admin/4_Admin_Empleados.png) | ![Dealerships](docs/screenshots/admin/7_Admin_Concesionarios.png) |
-| *Staff management* | *Dealership administration* |
-
-### Messenger PWA
-| Login | Assigned Services | Update Status |
-|:---:|:---:|:---:|
-| ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
-| *Carrier access* | *Assigned deliveries list* | *Status change* |
-
-| Service Details | New Service | My Profile |
-|:---:|:---:|:---:|
-| ![Details](docs/screenshots/messenger/3_Messenger_Detalles_Servicio.jpeg) | ![History](docs/screenshots/messenger/13_Messenger_Crear_Servicio_1.jpeg) | ![Settings](docs/screenshots/messenger/19_Messenger_Sidebar_MiPerfil_1.jpeg) |
-| *Complete information* | *Create Service* | *Date Profile* |
-
----
-
 ## Key Features
 
 ### Robustness & Resilience (Offline-First)
@@ -303,12 +272,5 @@ For inquiries about this project:
 - **Author**: [Mateo Valencia Ardila](https://github.com/fttmatteo)
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Website**: [plak.digital](https://www.plak.digital)
-
-**Scripts (Backend):**
-
-- [**Start Test Services**](../messenger-backend/scripts/start-test-services.sh): Starts MySQL and Redis containers for local integration tests.
-- [**Flyway Verification**](../messenger-backend/messenger/verify_flyway.sh): Validates database connection and status of Flyway migrations.
-- [**Security Headers Test**](../messenger-backend/test-security-headers.sh): Performs automated audit of CSP, CORS, and HTTP security headers.
-- [**Rate Limiting Test**](../messenger-backend/test-rate-limiting.sh): Simulates request bursts to validate the effectiveness of Rate Limiting.
 
 > **Copyright (C) 2026 Mateo Valencia Ardila. All rights reserved. The source code for this application is protected by copyright laws. DNDA Registration No. 13-108-139. Copying, distributing, or modifying this application without express authorization is strictly prohibited.**
