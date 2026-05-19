@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-1.11.2-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-1.11.3-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -26,7 +26,7 @@
 **PLAK Messenger Frontend** es la interfaz de usuario crítica para operaciones de logística urbana. Construida con arquitectura empresarial, orquesta la gestión de flotas en tiempo real mientras asegura la continuidad del negocio incluso bajo condiciones de red adversas.
 
 ### App Nativa (Android)
-La experiencia del mensajero está completamente optimizada como una aplicación independiente para Android. Al instalar el APK nativo, los usuarios obtienen:
+La experiencia del transportista está completamente optimizada como una aplicación independiente para Android. Al instalar el APK nativo, los usuarios obtienen:
 - **Acceso Instantáneo**: Inicio directo desde la pantalla principal del teléfono.
 - **Experiencia Inmersiva**: Interfaz a pantalla completa real, sin barras de navegación del navegador que estorben.
 - **Operación Confiable**: Seguimiento en segundo plano persistente y sincronización offline perfectamente adaptada al dispositivo.
@@ -34,7 +34,7 @@ La experiencia del mensajero está completamente optimizada como una aplicación
 ### Dos Experiencias Optimizadas
 | **Centro de Comando** | **App de Campo** |
 |:---|:---|
-| Dashboard Administrativo para control de operaciones | Aplicación Web Progresiva para mensajeros |
+| Dashboard Administrativo para control de operaciones | Aplicación Web Progresiva para transportistas |
 | Monitoreo de flota en tiempo real con Google Maps | Instalable en cualquier dispositivo móvil |
 | Gestión de concesionarios y empleados | Capaz de trabajar offline con auto-sincronización |
 | Auditoría de servicios con evidencia digital | Firma digital y captura de fotos |
@@ -83,7 +83,6 @@ graph TD
 | **Rendimiento Adaptativo** | Integración de **LazyMotion** y memoización selectiva de componentes críticos (`ServiceCard`) para scroll fluido en dispositivos de gama media. |
 | **Mi Perfil** | Gestión centralizada de datos personales y seguridad con enmascaramiento de documentos sensibles. |
 | **Safe Area Support** | Adaptación nativa para *Notches* y *Dynamic Islands* mediante `@capacitor-community/safe-area`, garantizando una experiencia inmersiva sin recortes de UI. |
-
 
 ---
 
@@ -248,7 +247,7 @@ VITE_TURNSTILE_SITE_KEY=tu_turnstile_site_key
 |:---|:---|
 | **Autenticación JWT** | Rotación automática de tokens via interceptores de Axios con **Persistencia Híbrida Segura**: Cookies `HttpOnly` (Web) y `@capacitor/preferences` (App Nativa). |
 | **Prevención XSS** | Escapado integrado de React + **Content Security Policy (CSP)** estricto que bloquea inyecciones de scripts no autorizados. |
-| **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Messenger) a nivel de router |
+| **Guardias de Ruta** | Protección de rutas basada en roles (Admin vs Transportista) a nivel de router |
 | **Solo HTTPS** | Conexiones seguras forzadas en producción |
 | **Validación de Entrada** | Todas las entradas de usuario validadas con esquemas Zod (alineadas con el backend, ej: mín. 6 caracteres para claves) |
 | **Enmascaramiento de Datos** | Ofuscación automática de documentos sensibles en la interfaz (solo últimos 4 dígitos visibles) |

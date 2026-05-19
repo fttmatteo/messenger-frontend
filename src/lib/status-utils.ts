@@ -74,7 +74,7 @@ interface AvailableStatus {
  * 
  * Reglas de Negocio:
  * - MESSENGER solo puede usar: PENDING, DELIVERED, RETURNED
- * - ADMIN solo puede usar: CANCELED, RESOLVED
+ * - ADMIN puede usar todos los estados: ASSIGNED, PENDING, DELIVERED, RETURNED, CANCELED, RESOLVED
  */
 export function getAvailableStatusesForUser(
     role: UserRole

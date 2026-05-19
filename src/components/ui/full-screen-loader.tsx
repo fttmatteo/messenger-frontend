@@ -23,7 +23,7 @@ export function FullScreenLoader({ message = "Iniciando sesión..." }: FullScree
                             <img
                                 src={logo}
                                 alt="Logo"
-                                className="h-8 w-8 object-contain animate-bounce-slow"
+                                className="h-10 w-10 object-contain animate-bounce-slow"
                             />
                         </div>
                     </div>

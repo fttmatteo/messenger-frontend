@@ -80,7 +80,7 @@ const STORAGE_ITEMS: StorageItem[] = [
     {
         key: 'role',
         type: 'Preferences / Storage',
-        purpose: 'Protección de rutas de acceso seguro en el cliente (Admin vs Mensajero).',
+        purpose: 'Protección de rutas de acceso seguro en el cliente (Admin vs Transportista).',
         data: 'Rol del usuario activo (ADMIN / MESSENGER).',
         duration: 'Sesión / Permanente'
     },
@@ -106,7 +106,6 @@ export default function PoliticaCookies() {
     }, []);
 
     const handleBack = () => {
-        // Si hay historial en el navegador, volvemos atrás; si no, redirigimos al login
         if (window.history.length > 1) {
             navigate(-1);
         } else {
@@ -114,7 +113,6 @@ export default function PoliticaCookies() {
         }
     };
 
-    // Obtener clase de color para cada tipo de almacenamiento en el badge móvil
     const getBadgeStyle = (type: string) => {
         const lowerType = type.toLowerCase();
         if (lowerType.includes('cookie')) {
@@ -268,19 +266,6 @@ export default function PoliticaCookies() {
                         <p>
                             Al ser tecnologías de carácter estrictamente técnico, la desactivación o borrado de estos registros a través de los ajustes de tu navegador o celular (limpieza de caché) provocará el cierre inmediato de tu sesión y podría impedir el funcionamiento correcto de las herramientas de sincronización offline.
                         </p>
-                        
-                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="rounded-xl flex items-center justify-center gap-1.5 w-full sm:w-auto font-bold border-primary/20 text-primary hover:bg-primary/5"
-                                onClick={() => navigate('/politica-privacidad')}
-                            >
-                                <Shield className="h-4 w-4" />
-                                Ver Política de Privacidad (Datos Personales)
-                            </Button>
-                        </div>
-
                         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-muted/30 p-4 rounded-xl border border-border/30 mt-4">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-background rounded-lg border border-border/40 text-primary">

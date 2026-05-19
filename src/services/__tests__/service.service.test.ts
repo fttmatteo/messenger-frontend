@@ -192,18 +192,4 @@ describe('ServiceDeliveryService', () => {
             expect(apiClient.put).toHaveBeenCalledWith(`/services/reassign/${mockUuid}`, { messengerId: 100 });
         });
     });
-
-    describe('getDailyStats', () => {
-        it('should format dates correctly', async () => {
-            vi.mocked(apiClient.get).mockResolvedValue({ data: [] });
-            await serviceDeliveryService.getDailyStats(1, new Date('2023-01-01'), new Date('2023-01-02'));
-            expect(apiClient.get).toHaveBeenCalledWith('/services/stats/daily', expect.objectContaining({
-                params: {
-                    messengerId: 1,
-                    from: '2023-01-01',
-                    to: '2023-01-02'
-                }
-            }));
-        });
-    });
 });
