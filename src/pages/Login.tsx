@@ -292,7 +292,7 @@ export default function Login() {
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full h-10 text-sm font-medium" disabled={isSubmitting || !turnstileToken}>
+                            <Button type="submit" className="w-full h-10 text-sm font-bold shadow-sm transition-all active:scale-[0.98]" disabled={isSubmitting || !turnstileToken}>
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
@@ -300,14 +300,27 @@ export default function Login() {
                 </Card>
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
-                    <p>Plak es un software desarrollado por Mateo Valencia Ardila. Para soporte técnico, por favor contáctanos a soporte@plak.digital</p>
                     <p>
+                        Para soporte técnico, contáctanos a{' '}
+                        <a href="mailto:contacto@plak.digital" className="hover:underline text-primary font-semibold">
+                            contacto@plak.digital
+                        </a>
+                    </p>
+                    <p className="flex items-center justify-center gap-1.5 flex-wrap">
                         <button 
                             type="button"
                             onClick={() => navigate('/politica-cookies')}
-                            className="hover:underline text-primary font-semibold cursor-pointer"
+                            className="underline text-primary font-semibold cursor-pointer"
                         >
-                            Política de Cookies y Almacenamiento Local
+                            Política de Cookies
+                        </button>
+                        <span className="text-muted-foreground/60">•</span>
+                        <button 
+                            type="button"
+                            onClick={() => navigate('/politica-privacidad')}
+                            className="underline text-primary font-semibold cursor-pointer"
+                        >
+                            Política de Privacidad
                         </button>
                     </p>
                 </div>
