@@ -1,5 +1,5 @@
 import apiClient from './api-client'
-import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, DailyStats, PaginatedResponse, ServiceStatus } from '@/types/service.types'
+import type { ServiceDelivery, CreateServiceRequest, UpdateServiceStatusRequest, PaginatedResponse, ServiceStatus } from '@/types/service.types'
 import { ServiceDeliverySchema, PaginatedSchema } from '@/schemas/api-schemas'
 
 /**
@@ -171,22 +171,6 @@ class ServiceDeliveryService {
     async reassign(uuid: string, messengerId: number): Promise<ServiceDelivery> {
         const response = await apiClient.put(`/services/reassign/${uuid}`, { messengerId })
         return ServiceDeliverySchema.parse(response.data)
-    }
-
-    /**
-     * Obtener estadísticas diarias para un mensajero
-     */
-    async getDailyStats(messengerId: number, from: Date, to: Date): Promise<DailyStats[]> {
-        const fromDate = from.toISOString().split('T')[0]
-        const toDate = to.toISOString().split('T')[0]
-        const response = await apiClient.get('/services/stats/daily', {
-            params: {
-                messengerId,
-                from: fromDate,
-                to: toDate
-            }
-        })
-        return response.data
     }
 }
 

@@ -14,7 +14,7 @@
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-Proprietary-red.svg?style=for-the-badge)](LICENSE)
 
-**High-engineering platform for messenger management.**
+**High-engineering platform for carrier management.**
 
 [🇪🇸 Versión en Español](README.md) • [Overview](#overview) • [Screenshots](#screenshots) • [Features](#key-features) • [Testing](#quality-strategy--testing) • [Tech Stack](#tech-stack) • [Architecture](#project-architecture) • [Installation](#installation--deployment) • [Security](#security) • [Tips](#operation-tips-mobile) • [Contact](#contact)
 
@@ -26,7 +26,7 @@
 **PLAK Messenger Frontend** is the mission-critical user interface for urban logistics operations. Built with enterprise-grade architecture, it orchestrates real-time fleet management while ensuring business continuity even under adverse network conditions.
 
 ### Native App (Android)
-The messenger experience is fully optimized as a standalone Android application. By installing the native APK, users get:
+The carrier experience is fully optimized as a standalone Android application. By installing the native APK, users get:
 - **Instant Access**: Launch directly from the home screen.
 - **Immersive Experience**: True full-screen interface without browser navigation bars.
 - **Reliable Operation**: Persistent background tracking and seamless offline synchronization tailored for the device.
@@ -34,7 +34,7 @@ The messenger experience is fully optimized as a standalone Android application.
 ### Two Optimized Experiences
 | **Command Center** | **Field App** |
 |:---|:---|
-| Admin Dashboard for operations control | Progressive Web App for messengers |
+| Admin Dashboard for operations control | Progressive Web App for carriers |
 | Real-time fleet monitoring on Google Maps | Installable on any mobile device |
 | Dealership & employee management | Offline-capable with auto-sync |
 | Service auditing with digital evidence | Digital signature & photo capture |
@@ -63,7 +63,7 @@ The messenger experience is fully optimized as a standalone Android application.
 | Login | Assigned Services | Update Status |
 |:---:|:---:|:---:|
 | ![Login](docs/screenshots/messenger/1_Messenger_Login.jpeg) | ![Assigned](docs/screenshots/messenger/2_Messenger_Asignados.jpeg) | ![Update Status](docs/screenshots/messenger/7_Messenger_Actualizar_Estado_Entregado_1.jpeg) |
-| *Messenger access* | *Assigned deliveries list* | *Status change* |
+| *Carrier access* | *Assigned deliveries list* | *Status change* |
 
 | Service Details | New Service | My Profile |
 |:---:|:---:|:---:|
@@ -279,7 +279,7 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 |:---|:---|
 | **JWT Authentication** | Automatic token rotation via Axios interceptors with **Secure Hybrid Persistence**: `HttpOnly` Cookies (Web) and `@capacitor/preferences` (Native App). |
 | **XSS Prevention** | Built-in React escaping + strict **Content Security Policy (CSP)** blocking unauthorized script injections. |
-| **Route Guards** | Role-based route protection (Admin vs Messenger) at router level |
+| **Route Guards** | Role-based route protection (Admin vs Carrier) at router level |
 | **Solo HTTPS** | Enforced secure connections in production |
 | **Input Validation** | All user inputs validated with Zod schemas (aligned with backend, e.g., min 6 chars for passwords) |
 | **Data Masking** | Automatic obfuscation of sensitive documents in the UI (only last 4 digits visible) |
