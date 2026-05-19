@@ -21,6 +21,7 @@ import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
 import { FullScreenLoader } from "@/components/ui/full-screen-loader"
 import { TurnstileWidget } from "@/components/ui/turnstile-widget"
 import { useTurnstileReset } from "@/hooks/use-turnstile-reset"
+import AnimatedLogoBackground from "@/components/AnimatedLogoBackground"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
@@ -171,7 +172,8 @@ export default function Login() {
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-3 overflow-hidden">
+            <AnimatedLogoBackground />
+            <div className="flex flex-col items-center justify-center min-h-screen bg-transparent p-3 overflow-hidden">
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                     <div className="absolute top-3 left-3 z-10">
                         <Button
