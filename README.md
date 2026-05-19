@@ -273,4 +273,11 @@ Para consultas sobre este proyecto:
 - **Email**: [contacto@plak.digital](mailto:contacto@plak.digital)
 - **Sitio Web**: [plak.digital](https://plak.digital)
 
+**Scripts (Backend):**
+
+- [**Levantar Servicios de Prueba**](../messenger-backend/scripts/start-test-services.sh): Levanta bases de datos MySQL y Redis para pruebas de integración locales.
+- [**Verificación de Flyway**](../messenger-backend/messenger/verify_flyway.sh): Valida la conexión a la base de datos y el estado de las migraciones de Flyway.
+- [**Prueba de Headers de Seguridad**](../messenger-backend/test-security-headers.sh): Realiza auditoría automatizada sobre políticas CSP, CORS y headers de seguridad HTTP.
+- [**Prueba de Limitación de Tasa**](../messenger-backend/test-rate-limiting.sh): Simula ráfagas de peticiones para validar la efectividad de Rate Limiting.
+
 > **Copyright (C) 2026 Mateo Valencia Ardila. Todos los derechos reservados. El código fuente de esta aplicación está protegido por las leyes de derechos de autor. Registro DNDA No. 13-108-139. Queda estrictamente prohibida su copia, distribución o modificación sin autorización expresa.**
