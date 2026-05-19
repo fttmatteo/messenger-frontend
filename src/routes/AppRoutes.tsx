@@ -15,6 +15,7 @@ function PageLoader() {
 }
 
 const Login = React.lazy(() => import('@/pages/Login'));
+const PoliticaCookies = React.lazy(() => import('@/pages/PoliticaCookies'));
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
 const Empleados = React.lazy(() => import('@/pages/admin/Empleados'));
@@ -116,6 +117,7 @@ export function AppRoutes() {
         <Suspense fallback={<PageLoader />}>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/politica-cookies" element={<PoliticaCookies />} />
 
 
                 <Route

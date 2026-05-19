@@ -7,6 +7,7 @@ import { AppRoutes } from './routes/AppRoutes';
 import { Toaster } from '@/components/ui/sonner';
 import { SessionExpiredDialog } from './components/dialogs';
 import { LazyMotion, domMax } from 'framer-motion';
+import CookieBanner from './components/CookieBanner';
 
 /**
  * Componente envoltorio que proporciona StatusColorProvider con el ID del usuario actual.
@@ -41,6 +42,7 @@ export function App() {
               </LazyMotion>
               <Toaster />
               <SessionExpiredDialog />
+              <CookieBanner />
             </StatusColorWrapper>
           </AuthProvider>
         </NetworkProvider>
