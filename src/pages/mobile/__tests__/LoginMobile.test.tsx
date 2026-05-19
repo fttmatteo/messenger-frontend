@@ -61,6 +61,11 @@ vi.mock('@/components/ui/turnstile-widget', () => ({
     }
 }))
 
+// Mock AnimatedLogoBackground
+vi.mock('@/components/AnimatedLogoBackground', () => ({
+    default: () => <div data-testid="animated-background" />
+}))
+
 // Mock Lucide icons
 vi.mock('lucide-react', async (importOriginal) => {
     const actual = await importOriginal<typeof import('lucide-react')>()
