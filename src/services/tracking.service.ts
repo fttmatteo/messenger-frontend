@@ -85,8 +85,7 @@ class TrackingService {
         };
 
         this.client.onStompError = (frame) => {
-            logger.error('El Broker reportó un error: ' + frame.headers['message']);
-            logger.error('Detalles adicionales: ' + frame.body);
+            logger.error('Error del broker STOMP:', frame.headers['message']);
         };
 
         this.client.onWebSocketClose = () => {

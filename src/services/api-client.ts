@@ -83,8 +83,11 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
-        if (!originalRequest?._retry || error.response?.status !== 401) {
-            logger.apiError('Error en petición API', error);
+        if (!originalRequest?._retry) {
+            const status = error.response?.status;
+            if (status !== 401 && (!status || status >= 500)) {
+                logger.apiError('Error en petición API', error);
+            }
         }
 
         if (error.response?.status === 401 && !originalRequest._retry) {

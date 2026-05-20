@@ -224,7 +224,7 @@ class OfflineSyncService {
                                 await this.handleFailedAction(action)
                             }
                         } else {
-                            logger.warn(`No hay handler registrado para la acción ${action.type}. Se omitirá el backoff para reintento rápido.`)
+                            logger.error(`No hay handler registrado para la acción ${action.type}. Se omitirá el backoff para reintento rápido.`)
                         }
                     }
                 } catch {

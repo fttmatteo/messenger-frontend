@@ -126,7 +126,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         window.addEventListener('offline', handleOffline)
 
         return () => {
-            logger.info('Limpiando listeners de red')
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
         }

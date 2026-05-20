@@ -196,13 +196,13 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                 const file = files[i]
                 if (file.type.startsWith('image/')) {
                     if (file.size > 10 * 1024 * 1024) {
-                        logger.info(`Imagen ${file.name} grande detectada, optimizando...`)
+                        logger.debug(`Imagen grande detectada (${(file.size / 1024 / 1024).toFixed(1)} MB), optimizando...`)
                     }
                     try {
                         const optimized = await compressImage(file, IMAGE_CONFIG.PHOTO_QUALITY, IMAGE_CONFIG.MAX_WIDTH)
                         newPhotos.push(optimized)
                     } catch (err) {
-                        logger.error(`Error optimizando ${file.name}:`, err)
+                        logger.error(`Error optimizando imagen (${(file.size / 1024 / 1024).toFixed(1)} MB):`, err)
                         if (file.size <= 10 * 1024 * 1024) {
                             newPhotos.push(file)
                         }

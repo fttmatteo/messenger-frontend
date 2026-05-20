@@ -15,16 +15,27 @@ import { isNative } from "@/lib/capacitor"
 
 const logger = createLogger('PWA')
 
-// Registrar el Service Worker para PWA con callbacks mejorados (Solo si no es app nativa)
+window.addEventListener('vite:preloadError', (event) => {
+  logger.error('Error de precarga de Vite detectado. Recargando aplicación...', event);
+  window.location.reload();
+});
+
+window.addEventListener('error', (event) => {
+  const errorText = event.message || '';
+  const isChunkError = /Failed to fetch dynamically imported module|Loading chunk/i.test(errorText);
+  if (isChunkError) {
+    logger.error('Fallo en carga de módulo dinámico. Recargando página...', event);
+    window.location.reload();
+  }
+}, true);
+
 
 let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined = undefined;
 
 if (isNative()) {
   logger.info('App ejecutándose en modo nativo (Capacitor), omitiendo Service Worker');
-  // Safe area se maneja nativamente en MainActivity.java via WindowInsetsCompat
   document.documentElement.classList.add('native-app');
 } else {
-  // Configuración Web/PWA original
   updateSW = registerSW({
     immediate: true,
     onOfflineReady() {
@@ -49,7 +60,6 @@ if (isNative()) {
   })
 }
 
-// Exponer la función de actualización globalmente para uso de NetworkContext
 (window as Window & typeof globalThis & { __updateSW?: typeof updateSW }).__updateSW = updateSW;
 
 createRoot(document.getElementById("root")!).render(
