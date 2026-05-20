@@ -48,26 +48,22 @@ const SETTINGS_SECTIONS = [
     {
         id: 'appearance',
         title: 'Apariencia',
-        description: 'Configura el tema de la aplicación',
         icon: Sun
     },
     {
         id: 'colors',
         title: 'Colores de Estados',
-        description: 'Personaliza los colores de cada estado de servicio',
         icon: Palette
     },
     {
         id: 'cookies',
         title: 'Política de Cookies',
-        description: 'Almacenamiento local, privacidad y normativa SIC',
         icon: Cookie,
         path: '/politica-cookies'
     },
     {
         id: 'privacy',
         title: 'Política de Privacidad',
-        description: 'Protección de datos personales y Ley 1581 (Habeas Data)',
         icon: Shield,
         path: '/politica-privacidad'
     },
@@ -167,7 +163,6 @@ export default function Configuracion() {
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-semibold">{section.title}</p>
-                                        <p className="text-sm text-muted-foreground">{section.description}</p>
                                     </div>
                                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                                 </div>
