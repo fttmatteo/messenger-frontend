@@ -49,6 +49,14 @@ test.describe('Offline Resilience & Sync', () => {
                         phone: '7654321',
                         zone: 'Norte'
                     },
+                    originDealership: {
+                        idDealership: 1,
+                        uuid: 'd1',
+                        name: 'Concesionario Sur',
+                        address: 'Calle 10 #5-10',
+                        phone: '1234567',
+                        zone: 'Sur'
+                    },
                     currentStatus: 'PENDING',
                     createdAt: new Date().toISOString()
                 }
@@ -117,6 +125,7 @@ test.describe('Offline Resilience & Sync', () => {
                     uuid: 's202',
                     plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
                     dealership: { idDealership: 2, uuid: 'd2', name: 'Concesionario Norte' },
+                    originDealership: { idDealership: 1, uuid: 'd1', name: 'Concesionario Sur' },
                     currentStatus: 'DELIVERED',
                     createdAt: new Date().toISOString()
                 }) 

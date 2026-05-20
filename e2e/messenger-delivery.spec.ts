@@ -58,6 +58,14 @@ test.describe('Messenger Delivery Execution', () => {
                             phone: '1234567',
                             zone: 'Sur'
                         },
+                        originDealership: {
+                            idDealership: 2,
+                            uuid: 'd2',
+                            name: 'E2E Origin Dealership',
+                            address: 'Calle Falsa 123',
+                            phone: '7654321',
+                            zone: 'Norte'
+                        },
                         currentStatus: 'ASSIGNED',
                         createdAt: new Date().toISOString(),
                         history: [],
@@ -95,6 +103,14 @@ test.describe('Messenger Delivery Execution', () => {
                         address: 'Av. Principal 45',
                         phone: '1234567',
                         zone: 'Sur'
+                    },
+                    originDealership: {
+                        idDealership: 2,
+                        uuid: 'd2',
+                        name: 'E2E Origin Dealership',
+                        address: 'Calle Falsa 123',
+                        phone: '7654321',
+                        zone: 'Norte'
                     },
                     currentStatus: 'ASSIGNED',
                     createdAt: new Date().toISOString(),
