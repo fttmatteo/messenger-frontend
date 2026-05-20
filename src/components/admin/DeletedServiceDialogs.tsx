@@ -18,7 +18,7 @@ export function EmptyTrashDialog({ isOpen, onOpenChange, onConfirm, count }: Emp
                 <AlertDialogHeader>
                     <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción archivará permanentemente <strong>{count} servicio(s)</strong> de la papelera. Los datos se preservarán en el archivo para consulta futura.
+                        Esta acción eliminará permanentemente <strong>{count} servicio(s)</strong> de la papelera.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -53,12 +53,12 @@ export function ConfirmTrashActionDialog({ isOpen, onOpenChange, onConfirm, plat
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{isRestore ? '¿Restaurar servicio?' : '¿Archivar permanentemente?'}</AlertDialogTitle>
+                    <AlertDialogTitle>{isRestore ? '¿Restaurar servicio?' : '¿Eliminar permanentemente?'}</AlertDialogTitle>
                     <AlertDialogDescription>
                         {isRestore ? (
-                            <>El servicio con placa <strong>{plateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.</>
+                            <>El servicio con chasis <strong>{plateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.</>
                         ) : (
-                            <>El servicio con placa <strong>{plateNumber}</strong> será archivado permanentemente. Los datos se preservarán para consulta futura.</>
+                            <>El servicio con chasis <strong>{plateNumber}</strong> será eliminado permanentemente.</>
                         )}
                     </AlertDialogDescription>
                 </AlertDialogHeader>

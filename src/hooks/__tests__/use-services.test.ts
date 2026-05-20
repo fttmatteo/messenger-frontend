@@ -23,6 +23,7 @@ const mockService: ServiceDelivery = {
     uuid: 'service-uuid-1',
     plate: { idPlate: 1, plateNumber: 'ABC123', plateType: 'CAR' },
     dealership: { idDealership: 1, uuid: 'dealer-uuid-1', name: 'Test', address: 'Add', phone: '123', zone: 'Z' },
+    originDealership: { idDealership: 2, uuid: 'dealer-uuid-2', name: 'Origin Test', address: 'Origin Add', phone: '456', zone: 'OZ' },
     currentStatus: 'PENDING',
     photos: [],
     history: [],

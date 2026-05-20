@@ -49,6 +49,14 @@ describe('Servicios Admin Page Integration', () => {
                                 phone: '555-1111',
                                 zone: 'North'
                             },
+                            originDealership: {
+                                idDealership: 202,
+                                uuid: 'e49cfc1b-08fb-44b4-af04-cc9172be53fa',
+                                name: 'Origin-Alpha',
+                                address: '456 Origin',
+                                phone: '555-3333',
+                                zone: 'South'
+                            },
                             messenger: {
                                 idEmployee: 301,
                                 uuid: '899a6317-8bbc-4d96-81b0-c586041f0945',

@@ -45,6 +45,7 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                 <TableCell>
                     <PlacaBadge plateNumber={service.plate.plateNumber}  size="sm" />
                 </TableCell>
+                <TableCell className="text-sm">{service.originDealership.name}</TableCell>
                 <TableCell className="text-sm">{service.dealership.name}</TableCell>
                 <TableCell className="text-sm">
                     <Tooltip>
@@ -104,7 +105,7 @@ export function DeletedServiceRow({ service, isRestoring, isDeleting, onRestore,
                                     )}
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>Archivar permanentemente</TooltipContent>
+                            <TooltipContent>Eliminar permanentemente</TooltipContent>
                         </Tooltip>
                     </div>
                 </TableCell>
@@ -143,8 +144,9 @@ export function DeletedServiceTable({ services, restoringId, deletingId, onResto
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Placa</TableHead>
-                    <TableHead>Concesionario</TableHead>
+                    <TableHead>Chasis</TableHead>
+                    <TableHead>Origen</TableHead>
+                    <TableHead>Destino</TableHead>
                     <TableHead>Mensajero</TableHead>
                     <TableHead>Eliminado</TableHead>
                     <TableHead>Tiempo restante</TableHead>

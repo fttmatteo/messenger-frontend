@@ -104,6 +104,14 @@ describe('UpdateStatus Page Integration', () => {
                         phone: '555-0000',
                         zone: 'Z1'
                     },
+                    originDealership: {
+                        idDealership: 11,
+                        uuid: 'e49cfc1b-08fb-44b4-af04-cc9172be53fa',
+                        name: 'Origin Dealership',
+                        address: '456 Origin St',
+                        phone: '555-1111',
+                        zone: 'Z2'
+                    },
                     history: [],
                     photos: [],
                     createdAt: new Date().toISOString()

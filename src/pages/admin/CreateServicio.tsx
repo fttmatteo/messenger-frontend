@@ -21,9 +21,13 @@ import { getErrorMessage } from "@/lib/error-utils"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 const formSchema = z.object({
-    dealershipId: z.string().min(1, "El concesionario es obligatorio"),
+    dealershipId: z.string().min(1, "El concesionario destino es obligatorio"),
+    originDealershipId: z.string().min(1, "El concesionario origen es obligatorio"),
     messengerId: z.string().min(1, "El mensajero es obligatorio"),
     manualPlateNumber: z.string().min(10, "El chasis debe tener mínimo 10 caracteres").max(20, "El chasis no puede tener más de 20 caracteres"),
+}).refine((data) => data.originDealershipId !== data.dealershipId, {
+    message: "El concesionario origen y destino no pueden ser el mismo",
+    path: ["originDealershipId"],
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -42,6 +46,7 @@ export default function AdminCreateServicio() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             dealershipId: "",
+            originDealershipId: "",
             messengerId: "",
             manualPlateNumber: "",
         },
@@ -68,7 +73,6 @@ export default function AdminCreateServicio() {
                     employeeService.getAll()
                 ])
                 setDealerships(dealershipsData)
-                // Filter only messengers
                 setMessengers(employeesData.filter(e => e.role === 'MESSENGER'))
             } catch (error) {
                 setError(getErrorMessage(error))
@@ -85,7 +89,8 @@ export default function AdminCreateServicio() {
 
             await serviceDeliveryService.create({
                 dealershipId: values.dealershipId,
-                messengerDocument: values.messengerId, // Admin sends the selected messenger ID or Document
+                originDealershipId: values.originDealershipId,
+                messengerDocument: values.messengerId,
                 manualPlateNumber: values.manualPlateNumber
             })
 
@@ -166,11 +171,54 @@ export default function AdminCreateServicio() {
 
                                 <FormField
                                     control={form.control}
+                                    name="originDealershipId"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <Label htmlFor="originDealershipId">
+                                                Concesionario Origen <span className="text-red-500 ml-0.5">*</span>
+                                            </Label>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                disabled={loadingData}
+                                                name="originDealershipId"
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger id="originDealershipId" className="h-11 touch-manipulation">
+                                                        <SelectValue placeholder="Selecciona origen" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="max-h-[300px]">
+                                                    {groupedDealerships.map(([zone, zoneDealerships]) => (
+                                                        <SelectGroup key={zone}>
+                                                            <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
+                                                                {zone}
+                                                            </SelectLabel>
+                                                            {zoneDealerships.map((dealership) => (
+                                                                <SelectItem
+                                                                    key={dealership.idDealership}
+                                                                    value={String(dealership.idDealership)}
+                                                                    className="py-3 pl-4"
+                                                                >
+                                                                    {dealership.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="dealershipId"
                                     render={({ field }) => (
                                         <FormItem className="space-y-2">
                                             <Label htmlFor="dealershipId">
-                                                Concesionario <span className="text-red-500 ml-0.5">*</span>
+                                                Concesionario Destino <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
                                             <Select
                                                 onValueChange={field.onChange}

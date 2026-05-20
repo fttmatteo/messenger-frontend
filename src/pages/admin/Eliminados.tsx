@@ -16,7 +16,6 @@ import { DeletedServiceTable } from "@/components/admin/DeletedServiceTable"
 import { EmptyTrashDialog } from "@/components/admin/DeletedServiceDialogs"
 import { TablePagination } from "@/components/ui/table-pagination"
 
-// Variantes de animación
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -112,7 +111,6 @@ export default function Eliminados() {
         }
     }
 
-    // Componente de estado vacío
     const EmptyState = () => (
         <Empty className="py-12">
             <EmptyHeader>
@@ -193,8 +191,9 @@ export default function Eliminados() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>Placa</TableHead>
-                                            <TableHead>Concesionario</TableHead>
+                                            <TableHead>Chasis</TableHead>
+                                            <TableHead>Origen</TableHead>
+                                            <TableHead>Destino</TableHead>
                                             <TableHead>Mensajero</TableHead>
                                             <TableHead>Eliminado</TableHead>
                                             <TableHead>Tiempo restante</TableHead>

@@ -211,6 +211,42 @@ export default function ServiceDetails() {
                     </Card>
                 </div>
 
+                    <div className="px-4 pb-2">
+                        <Card className="p-4 border-border/50">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="p-1.5 rounded-lg bg-primary/10">
+                                    <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
+                                </div>
+                                <h3 className="text-sm font-bold tracking-tight">Concesionario origen</h3>
+                            </div>
+                            <div className="space-y-2">
+                                <div>
+                                    <p className="font-bold text-base tracking-tight">{service.originDealership.name}</p>
+                                    <p className="text-sm text-muted-foreground font-medium">{service.originDealership.zone}</p>
+                                </div>
+
+                                {service.originDealership.address && (
+                                    <div className="flex items-start gap-2 text-sm">
+                                        <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" strokeWidth={2.5} />
+                                        <span className="font-medium">{service.originDealership.address}</span>
+                                    </div>
+                                )}
+
+                                {service.originDealership.phone && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Phone className="h-4 w-4 text-muted-foreground" strokeWidth={2.5} />
+                                        <a
+                                            href={`tel:${service.originDealership.phone}`}
+                                            className="text-primary font-bold underline underline-offset-4"
+                                        >
+                                            {service.originDealership.phone}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        </Card>
+                    </div>
+
                 <div className="px-4 pb-2">
                     <Card className="p-4 border-border/50">
                         <div className="flex items-center gap-2 mb-3">

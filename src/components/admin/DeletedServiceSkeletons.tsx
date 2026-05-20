@@ -9,11 +9,15 @@ import { TableRow, TableCell } from "@/components/ui/table"
 export function DeletedServiceRowSkeleton() {
     return (
         <TableRow className="hover:bg-transparent border-b border-border/50">
-            {/* Placa */}
+            {/* Chasis */}
             <TableCell className="py-4">
                 <Skeleton static className="h-7 w-20 rounded-md bg-muted/20" />
             </TableCell>
-            {/* Concesionario */}
+            {/* Origen */}
+            <TableCell className="py-4">
+                <Skeleton static className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
+            </TableCell>
+            {/* Destino */}
             <TableCell className="py-4">
                 <Skeleton static className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
             </TableCell>
@@ -54,7 +58,7 @@ export function DeletedServiceCardSkeleton() {
             <CardContent className="pt-4">
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0 space-y-3">
-                        {/* Placa */}
+                        {/* Chasis */}
                         <Skeleton static className="h-7 w-20 rounded-md bg-muted/20" />
 
                         <div className="space-y-2">

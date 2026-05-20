@@ -45,7 +45,8 @@ describe('AdminCreateServicio Page', () => {
         renderWithProviders(<AdminCreateServicio />);
 
         expect(await screen.findByText('Información del servicio')).toBeInTheDocument();
-        expect(screen.getByText(/Concesionario/i, { selector: 'label' })).toBeInTheDocument();
+        expect(screen.getByText(/Concesionario origen/i, { selector: 'label' })).toBeInTheDocument();
+        expect(screen.getByText(/Concesionario destino/i, { selector: 'label' })).toBeInTheDocument();
         expect(screen.getByText(/Transportista/i, { selector: 'label' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
     });
@@ -64,7 +65,7 @@ describe('AdminCreateServicio Page', () => {
         const user = userEvent.setup();
         renderWithProviders(<AdminCreateServicio />);
 
-        await screen.findByText(/Concesionario/i, { selector: 'label' });
+        await screen.findByText(/Concesionario origen/i, { selector: 'label' });
         await waitFor(() => {
             expect(screen.getAllByRole('combobox').length).toBeGreaterThan(0);
         });

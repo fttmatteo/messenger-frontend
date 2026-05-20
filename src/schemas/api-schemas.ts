@@ -118,6 +118,7 @@ export const ServiceDeliverySchema = z.object({
     uuid: z.string(),
     plate: PlateInfoSchema,
     dealership: DealershipInfoSchema,
+    originDealership: DealershipInfoSchema,
     messenger: EmployeeInfoSchema.nullable().optional(),
     currentStatus: ServiceStatusSchema,
     observation: z.string().optional(),

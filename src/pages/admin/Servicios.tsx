@@ -128,7 +128,8 @@ export default function Servicios() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Chasis</TableHead>
-                                        <TableHead>Concesionario</TableHead>
+                                        <TableHead>Origen</TableHead>
+                                        <TableHead>Destino</TableHead>
                                         <TableHead>Transportista</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead>Creado</TableHead>
@@ -163,9 +164,15 @@ export default function Servicios() {
                                                     <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
+                                            <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("originDealershipName")}>
+                                                <div className="flex items-center">
+                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Origen
+                                                    <SortIndicator field="originDealershipName" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Concesionario
+                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Destino
                                                     <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -208,6 +215,9 @@ export default function Servicios() {
                                                 >
                                                     <TableCell>
                                                         <PlacaBadge plateNumber={service.plate.plateNumber}  size="md" />
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.originDealership.name}>
+                                                        {service.originDealership.name}
                                                     </TableCell>
                                                     <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.dealership.name}>
                                                         {service.dealership.name}

@@ -59,6 +59,7 @@ class ServiceDeliveryService {
     async create(request: CreateServiceRequest): Promise<ServiceDelivery> {
         const formData = new FormData()
         formData.append('dealershipId', request.dealershipId)
+        formData.append('originDealershipId', request.originDealershipId)
 
         if (request.messengerDocument) {
             formData.append('messengerId', request.messengerDocument)

@@ -54,6 +54,16 @@ describe('ServiceDetails Page Integration', () => {
             latitude: 10,
             longitude: 10
         },
+        originDealership: {
+            idDealership: 2,
+            uuid: 'dealer-uuid-2',
+            name: 'Origin Dealership',
+            address: '456 Origin Rd',
+            phone: '555-0299',
+            zone: 'SOUTH',
+            latitude: 10,
+            longitude: 10
+        },
         photos: [],
         createdAt: '2023-01-01T00:00:00Z',
         history: []
