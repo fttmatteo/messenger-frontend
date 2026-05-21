@@ -221,6 +221,7 @@ export default function LoginMobile() {
                                         variant="ghost"
                                         size="icon"
                                         className="absolute right-0 top-0 h-full px-2 py-2 hover:bg-transparent"
+                                        aria-label="Toggle password visibility"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
