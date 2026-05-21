@@ -142,7 +142,7 @@ export default function EditEmployee() {
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
-                        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
                                 <Input
@@ -157,19 +157,6 @@ export default function EditEmployee() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Teléfono</Label>
-                                <Input
-                                    id="phone"
-                                    placeholder="3001234567"
-                                    autoComplete="tel"
-                                    {...register("phone")}
-                                />
-                                {errors.phone && (
-                                    <p className="text-sm text-red-500">{errors.phone.message}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2 lg:col-span-1">
                                 <Label htmlFor="fullName">Nombre completo</Label>
                                 <Input
                                     id="fullName"
@@ -179,6 +166,19 @@ export default function EditEmployee() {
                                 />
                                 {errors.fullName && (
                                     <p className="text-sm text-red-500">{errors.fullName.message}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Teléfono</Label>
+                                <Input
+                                    id="phone"
+                                    placeholder="3001234567"
+                                    autoComplete="tel"
+                                    {...register("phone")}
+                                />
+                                {errors.phone && (
+                                    <p className="text-sm text-red-500">{errors.phone.message}</p>
                                 )}
                             </div>
 
@@ -211,7 +211,6 @@ export default function EditEmployee() {
                                     <p className="text-sm text-red-500">{errors.password.message}</p>
                                 )}
                             </div>
-
                         </div>
 
                         <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">

@@ -127,7 +127,7 @@ export default function AdminCreateServicio() {
                 <CardContent className="flex-1 overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
-                            <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                                 <FormField
                                     control={form.control}
                                     name="manualPlateNumber"
@@ -164,6 +164,41 @@ export default function AdminCreateServicio() {
                                             <FormDescription className="text-[10px]">
                                                 Entre 10 y 20 caracteres
                                             </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="messengerId"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <Label htmlFor="messengerId">
+                                                Transportista <span className="text-red-500 ml-0.5">*</span>
+                                            </Label>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                disabled={loadingData}
+                                                name="messengerId"
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
+                                                        <SelectValue placeholder="Selecciona el transportista" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="max-h-[300px]">
+                                                    {messengers.map((messenger) => (
+                                                        <SelectItem
+                                                            key={messenger.idEmployee}
+                                                            value={String(messenger.idEmployee)}
+                                                        >
+                                                            {messenger.fullName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -247,41 +282,6 @@ export default function AdminCreateServicio() {
                                                                 </SelectItem>
                                                             ))}
                                                         </SelectGroup>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="messengerId"
-                                    render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <Label htmlFor="messengerId">
-                                                Transportista <span className="text-red-500 ml-0.5">*</span>
-                                            </Label>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                disabled={loadingData}
-                                                name="messengerId"
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona el transportista" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent className="max-h-[300px]">
-                                                    {messengers.map((messenger) => (
-                                                        <SelectItem
-                                                            key={messenger.idEmployee}
-                                                            value={String(messenger.idEmployee)}
-                                                        >
-                                                            {messenger.fullName}
-                                                        </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
