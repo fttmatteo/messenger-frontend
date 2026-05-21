@@ -42,7 +42,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
-            title: "Ubicación del concesionario",
+                            title: "Ubicación del Concesionario",
             content: new google.maps.marker.PinElement({
                 background: '#10b981',
                 borderColor: 'white',
@@ -155,7 +155,7 @@ export default function Concesionarios() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
                 </div>
@@ -183,10 +183,10 @@ export default function Concesionarios() {
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo concesionario
+                        Nuevo Concesionario
                     </Button>
                 </div>
-            </div>
+            </Card>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">
                 <CardContent className="flex-1 flex flex-col min-h-0 !overflow-hidden">
@@ -213,8 +213,8 @@ export default function Concesionarios() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Store />}
-                                emptyTitle="Sin concesionarios"
-                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                emptyTitle="Sin Concesionarios"
+                                emptyDescription="Aún No Hay Concesionarios Registrados en el Sistema"
                                 className="py-0"
                             />
                         </div>

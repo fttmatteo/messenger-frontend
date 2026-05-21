@@ -15,10 +15,10 @@ import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
 const employeeSchema = z.object({
-    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
-    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
-    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    password: z.string().min(1, "La contraseña es requerida").min(6, "Mínimo 6 caracteres"),
+    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Números"),
+    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
+    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
+    password: z.string().min(1, "La Contraseña Es Requerida").min(6, "Mínimo 6 Caracteres"),
     role: z.literal("MESSENGER"),
 })
 
@@ -55,7 +55,7 @@ export default function CreateEmployee() {
                 password: data.password,
                 role: "MESSENGER",
             })
-            setSuccess("El nuevo transportista ha sido registrado correctamente")
+            setSuccess("El Nuevo Transportista Ha Sido Registrado Correctamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -64,7 +64,7 @@ export default function CreateEmployee() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Transportistas", href: "/admin/empleados" },
@@ -73,19 +73,19 @@ export default function CreateEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo transportista</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del Transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
-                        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">
                                     Documento <span className="text-red-500 ml-0.5">*</span>
@@ -102,6 +102,21 @@ export default function CreateEmployee() {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="fullName">
+                                    Nombre Completo <span className="text-red-500 ml-0.5">*</span>
+                                </Label>
+                                <Input
+                                    id="fullName"
+                                    placeholder="Juan Pérez García"
+                                    autoComplete="name"
+                                    {...register("fullName")}
+                                />
+                                {errors.fullName && (
+                                    <p className="text-sm text-red-500">{errors.fullName.message}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="phone">
                                     Teléfono <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
@@ -113,21 +128,6 @@ export default function CreateEmployee() {
                                 />
                                 {errors.phone && (
                                     <p className="text-sm text-red-500">{errors.phone.message}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                                <Label htmlFor="fullName">
-                                    Nombre completo <span className="text-red-500 ml-0.5">*</span>
-                                </Label>
-                                <Input
-                                    id="fullName"
-                                    placeholder="Juan Pérez García"
-                                    autoComplete="name"
-                                    {...register("fullName")}
-                                />
-                                {errors.fullName && (
-                                    <p className="text-sm text-red-500">{errors.fullName.message}</p>
                                 )}
                             </div>
 
@@ -162,7 +162,6 @@ export default function CreateEmployee() {
                                     <p className="text-sm text-red-500">{errors.password.message}</p>
                                 )}
                             </div>
-
                         </div>
 
                         <div className="flex gap-4 pt-6 mt-auto border-t">
@@ -176,7 +175,7 @@ export default function CreateEmployee() {
                             </Button>
                             <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear transportista
+                                Crear Transportista
                             </Button>
                         </div>
                     </form>

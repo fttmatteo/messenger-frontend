@@ -18,12 +18,17 @@ import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useSmartLocation } from "@/hooks/use-smart-location"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 const formSchema = z.object({
-    dealershipId: z.string().min(1, "El concesionario es obligatorio"),
-    messengerId: z.string().min(1, "El mensajero es obligatorio"),
-    manualPlateNumber: z.string().min(10, "El chasis debe tener mínimo 10 caracteres").max(20, "El chasis no puede tener más de 20 caracteres"),
+    dealershipId: z.string().min(1, "El Concesionario Destino Es Obligatorio"),
+    originDealershipId: z.string().min(1, "El Concesionario Origen Es Obligatorio"),
+    messengerId: z.string().min(1, "El Mensajero Es Obligatorio"),
+    manualPlateNumber: z.string().min(10, "El Chasis Debe Tener Mínimo 10 Caracteres").max(20, "El Chasis No Puede Tener Más De 20 Caracteres"),
+}).refine((data) => data.originDealershipId !== data.dealershipId, {
+    message: "El Concesionario Origen y Destino No Pueden Ser El Mismo",
+    path: ["originDealershipId"],
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -32,6 +37,7 @@ export default function AdminCreateServicio() {
     const navigate = useNavigate()
     const { setSuccess, setError } = useAdminUI()
     const chasisInputRef = useRef<HTMLInputElement>(null)
+    const { getCurrentLocation } = useSmartLocation()
 
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
@@ -42,6 +48,7 @@ export default function AdminCreateServicio() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             dealershipId: "",
+            originDealershipId: "",
             messengerId: "",
             manualPlateNumber: "",
         },
@@ -68,7 +75,6 @@ export default function AdminCreateServicio() {
                     employeeService.getAll()
                 ])
                 setDealerships(dealershipsData)
-                // Filter only messengers
                 setMessengers(employeesData.filter(e => e.role === 'MESSENGER'))
             } catch (error) {
                 setError(getErrorMessage(error))
@@ -83,13 +89,26 @@ export default function AdminCreateServicio() {
         try {
             setLoading(true)
 
+            let latitude: number | undefined
+            let longitude: number | undefined
+            try {
+                const loc = await getCurrentLocation()
+                latitude = loc.latitude
+                longitude = loc.longitude
+            } catch {
+                // La ubicación es opcional: si falla, se continúa sin ella
+            }
+
             await serviceDeliveryService.create({
                 dealershipId: values.dealershipId,
-                messengerDocument: values.messengerId, // Admin sends the selected messenger ID or Document
-                manualPlateNumber: values.manualPlateNumber
+                originDealershipId: values.originDealershipId,
+                messengerDocument: values.messengerId,
+                manualPlateNumber: values.manualPlateNumber,
+                latitude,
+                longitude
             })
 
-            setSuccess("Servicio creado exitosamente")
+            setSuccess("Servicio Creado Exitosamente")
             navigate("/admin/servicios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -100,7 +119,7 @@ export default function AdminCreateServicio() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Servicios", href: "/admin/servicios" },
@@ -108,21 +127,21 @@ export default function AdminCreateServicio() {
                     ]} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo servicio</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Servicio</h1>
                 </div>
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold flex items-center gap-2">
-                        Información del servicio
+                        Información del Servicio
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
-                            <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                                 <FormField
                                     control={form.control}
                                     name="manualPlateNumber"
@@ -166,21 +185,56 @@ export default function AdminCreateServicio() {
 
                                 <FormField
                                     control={form.control}
-                                    name="dealershipId"
+                                    name="messengerId"
                                     render={({ field }) => (
                                         <FormItem className="space-y-2">
-                                            <Label htmlFor="dealershipId">
-                                                Concesionario <span className="text-red-500 ml-0.5">*</span>
+                                            <Label htmlFor="messengerId">
+                                                Transportista <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 disabled={loadingData}
-                                                name="dealershipId"
+                                                name="messengerId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="dealershipId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona destino" />
+                                                    <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
+                                                        <SelectValue placeholder="Selecciona el Transportista" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="max-h-[300px]">
+                                                    {messengers.map((messenger) => (
+                                                        <SelectItem
+                                                            key={messenger.idEmployee}
+                                                            value={String(messenger.idEmployee)}
+                                                        >
+                                                            {messenger.fullName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="originDealershipId"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <Label htmlFor="originDealershipId">
+                                                Concesionario Origen <span className="text-red-500 ml-0.5">*</span>
+                                            </Label>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                disabled={loadingData}
+                                                name="originDealershipId"
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger id="originDealershipId" className="h-11 touch-manipulation">
+                                                        <SelectValue placeholder="Selecciona Origen" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="max-h-[300px]">
@@ -209,31 +263,39 @@ export default function AdminCreateServicio() {
 
                                 <FormField
                                     control={form.control}
-                                    name="messengerId"
+                                    name="dealershipId"
                                     render={({ field }) => (
                                         <FormItem className="space-y-2">
-                                            <Label htmlFor="messengerId">
-                                                Transportista <span className="text-red-500 ml-0.5">*</span>
+                                            <Label htmlFor="dealershipId">
+                                                Concesionario Destino <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 disabled={loadingData}
-                                                name="messengerId"
+                                                name="dealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona el transportista" />
+                                                    <SelectTrigger id="dealershipId" className="h-11 touch-manipulation">
+                                                        <SelectValue placeholder="Selecciona Destino" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="max-h-[300px]">
-                                                    {messengers.map((messenger) => (
-                                                        <SelectItem
-                                                            key={messenger.idEmployee}
-                                                            value={String(messenger.idEmployee)}
-                                                        >
-                                                            {messenger.fullName}
-                                                        </SelectItem>
+                                                    {groupedDealerships.map(([zone, zoneDealerships]) => (
+                                                        <SelectGroup key={zone}>
+                                                            <SelectLabel className="text-xs font-semibold text-primary bg-muted/50 py-2 px-2">
+                                                                {zone}
+                                                            </SelectLabel>
+                                                            {zoneDealerships.map((dealership) => (
+                                                                <SelectItem
+                                                                    key={dealership.idDealership}
+                                                                    value={String(dealership.idDealership)}
+                                                                    className="py-3 pl-4"
+                                                                >
+                                                                    {dealership.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
@@ -264,7 +326,7 @@ export default function AdminCreateServicio() {
                                             Creando...
                                         </>
                                     ) : (
-                                        "Crear servicio"
+                                        "Crear Servicio"
                                     )}
                                 </Button>
                             </div>

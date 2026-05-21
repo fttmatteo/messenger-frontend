@@ -81,7 +81,7 @@ export default function Servicios() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
                 </div>
@@ -99,7 +99,7 @@ export default function Servicios() {
                             <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
+                            <SelectItem value="all" className="text-xs">Todos los Estados</SelectItem>
                             {AVAILABLE_STATUSES.map(status => (
                                 <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
                             ))}
@@ -115,10 +115,10 @@ export default function Servicios() {
                 <div className="hidden md:flex md:flex-1 justify-end">
                     <Button onClick={() => navigate("/admin/servicios/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo servicio
+                        Nuevo Servicio
                     </Button>
                 </div>
-            </div>
+            </Card>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">
                 <CardContent className="flex-1 flex flex-col min-h-0 !overflow-hidden">
@@ -128,7 +128,8 @@ export default function Servicios() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Chasis</TableHead>
-                                        <TableHead>Concesionario</TableHead>
+                                        <TableHead>Origen</TableHead>
+                                        <TableHead>Destino</TableHead>
                                         <TableHead>Transportista</TableHead>
                                         <TableHead>Estado</TableHead>
                                         <TableHead>Creado</TableHead>
@@ -146,8 +147,8 @@ export default function Servicios() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<PackageCheck />}
-                                emptyTitle="Sin servicios"
-                                emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
+                                emptyTitle="Sin Servicios"
+                                emptyDescription="Aún No Hay Servicios de Entrega Registrados en el Sistema"
                                 className="py-0"
                             />
                         </div>
@@ -163,9 +164,15 @@ export default function Servicios() {
                                                     <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
+                                            <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("originDealershipName")}>
+                                                <div className="flex items-center">
+                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Origen
+                                                    <SortIndicator field="originDealershipName" currentSortField={sortField} sortDirection={sortDirection} />
+                                                </div>
+                                            </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Concesionario
+                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Destino
                                                     <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -208,6 +215,9 @@ export default function Servicios() {
                                                 >
                                                     <TableCell>
                                                         <PlacaBadge plateNumber={service.plate.plateNumber}  size="md" />
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.originDealership.name}>
+                                                        {service.originDealership.name}
                                                     </TableCell>
                                                     <TableCell className="max-w-[150px] md:max-w-[200px] truncate font-medium" title={service.dealership.name}>
                                                         {service.dealership.name}

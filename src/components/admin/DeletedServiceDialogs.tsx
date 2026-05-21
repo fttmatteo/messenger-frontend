@@ -1,5 +1,6 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
+import { useState } from "react"
 
 interface EmptyTrashDialogProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export function EmptyTrashDialog({ isOpen, onOpenChange, onConfirm, count }: Emp
                 <AlertDialogHeader>
                     <AlertDialogTitle>¿Vaciar papelera?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción archivará permanentemente <strong>{count} servicio(s)</strong> de la papelera. Los datos se preservarán en el archivo para consulta futura.
+                        Esta acción eliminará permanentemente <strong>{count} servicio(s)</strong> de la papelera.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -47,18 +48,35 @@ interface ConfirmTrashActionDialogProps {
  * Diálogo de confirmación para restaurar un servicio o eliminarlo de forma permanente.
  */
 export function ConfirmTrashActionDialog({ isOpen, onOpenChange, onConfirm, plateNumber, type }: ConfirmTrashActionDialogProps) {
-    const isRestore = type === 'restore'
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
+    const [lastType, setLastType] = useState(type)
+    const [lastPlateNumber, setLastPlateNumber] = useState(plateNumber)
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen)
+        if (isOpen) {
+            setLastType(type)
+            setLastPlateNumber(plateNumber)
+        }
+    } else if (isOpen) {
+        if (type !== lastType) setLastType(type)
+        if (plateNumber !== lastPlateNumber) setLastPlateNumber(plateNumber)
+    }
+
+    const activeType = isOpen ? type : lastType
+    const activePlateNumber = isOpen ? plateNumber : lastPlateNumber
+    const isRestore = activeType === 'restore'
 
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{isRestore ? '¿Restaurar servicio?' : '¿Archivar permanentemente?'}</AlertDialogTitle>
+                    <AlertDialogTitle>{isRestore ? '¿Restaurar servicio?' : '¿Eliminar permanentemente?'}</AlertDialogTitle>
                     <AlertDialogDescription>
                         {isRestore ? (
-                            <>El servicio con placa <strong>{plateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.</>
+                            <>El servicio con chasis <strong>{activePlateNumber}</strong> será restaurado y volverá a aparecer en la lista de servicios.</>
                         ) : (
-                            <>El servicio con placa <strong>{plateNumber}</strong> será archivado permanentemente. Los datos se preservarán para consulta futura.</>
+                            <>El servicio con chasis <strong>{activePlateNumber}</strong> será eliminado permanentemente.</>
                         )}
                     </AlertDialogDescription>
                 </AlertDialogHeader>

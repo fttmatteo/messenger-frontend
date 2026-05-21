@@ -148,7 +148,7 @@ describe('LoginMobile Page', () => {
 
         await waitFor(() => {
             expect(showToast.error).toHaveBeenCalledWith(
-                expect.stringContaining('15 minutos'),
+                expect.stringContaining('15 Minutos'),
                 expect.anything()
             )
         })

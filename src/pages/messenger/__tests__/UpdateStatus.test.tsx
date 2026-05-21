@@ -12,7 +12,6 @@ import { useNetwork } from '@/hooks/use-network'
 import { offlineSyncService } from '@/services/offline-sync.service'
 
 
-// Mock de useSmartLocation para evitar avisos de GPS real en los tests
 vi.mock('@/hooks/use-smart-location', () => ({
     useSmartLocation: () => ({
         getCurrentLocation: vi.fn().mockResolvedValue({ latitude: 10, longitude: 20 })
@@ -87,8 +86,7 @@ vi.mock('@/components/messenger/EvidenceCapture', () => ({
 describe('UpdateStatus Page Integration', () => {
     vi.setConfig({ testTimeout: 15000 });
     beforeEach(() => {
-        localStorage.setItem('role', 'MESSENGER') // Requerido por algunos hooks o servicios
-        // Manejar explícitamente el id 123 para esta suite de tests
+        localStorage.setItem('role', 'MESSENGER')
         server.use(
             http.get('http://localhost:8080/services/findByServiceId/123', () => {
                 return HttpResponse.json({
@@ -103,6 +101,14 @@ describe('UpdateStatus Page Integration', () => {
                         address: '123 Main St',
                         phone: '555-0000',
                         zone: 'Z1'
+                    },
+                    originDealership: {
+                        idDealership: 11,
+                        uuid: 'e49cfc1b-08fb-44b4-af04-cc9172be53fa',
+                        name: 'Origin Dealership',
+                        address: '456 Origin St',
+                        phone: '555-1111',
+                        zone: 'Z2'
                     },
                     history: [],
                     photos: [],
@@ -131,15 +137,13 @@ describe('UpdateStatus Page Integration', () => {
         const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as unknown as import('@/types/service.types').ServiceDelivery)
 
         renderWithRouter('123')
-        await screen.findByText(/ABC/i)
+        await screen.findByTitle(/ABC-123/i)
 
-        // Select Entregado (Default in some tests, let's be explicit)
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
         const confirmBtn = screen.getByRole('button', { name: /confirmar entregado/i })
         await userEvent.click(confirmBtn)
 
-        // Modal confirm highlight
         const finalConfirm = screen.getByRole('button', { name: 'Confirmar' })
         await userEvent.click(finalConfirm)
 
@@ -164,7 +168,7 @@ describe('UpdateStatus Page Integration', () => {
         const queueSpy = vi.mocked(offlineSyncService.queueAction)
 
         renderWithRouter('123')
-        await screen.findByText(/ABC/i)
+        await screen.findByTitle(/ABC-123/i)
 
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
@@ -183,22 +187,18 @@ describe('UpdateStatus Page Integration', () => {
 
     it('should validate photo requirements for RETURNED status', async () => {
         renderWithRouter('123')
-        await screen.findByText(/ABC/i)
+        await screen.findByTitle(/ABC-123/i)
 
-        // RETURNED usually requires photos and observation
         await userEvent.click(screen.getByText('Devuelto'))
 
         const confirmBtn = screen.getByRole('button', { name: /confirmar devuelto/i })
         expect(confirmBtn).toBeDisabled()
 
-        // Add observation
         const textarea = screen.getByPlaceholderText(/Motivo de la devolución/i)
         await userEvent.type(textarea, 'Cliente no estaba')
 
-        expect(confirmBtn).toBeDisabled() // Still needs photos
+        expect(confirmBtn).toBeDisabled()
 
-        // We can't easily simulate EvidenceCapture here without mocking it too, 
-        // but let's assume it works if we mock EvidenceCapture like SignatureCanvas
     })
 
     it('should show error state and navigate back when service is not found', async () => {

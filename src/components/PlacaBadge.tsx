@@ -20,12 +20,15 @@ export function PlacaBadge({
     }
 
     const formattedChasis = formatPlate(plateNumber)
+    const len = formattedChasis.length
+    const firstPart = len > 4 ? formattedChasis.slice(0, len - 4) : ""
+    const lastFour = len > 4 ? formattedChasis.slice(len - 4) : formattedChasis
 
     const sizeClasses = {
-        sm: 'text-xs px-1.5 py-0.5 rounded',
-        md: 'text-sm px-2.5 py-1 rounded-md',
-        lg: 'text-lg px-3.5 py-1.5 rounded-lg',
-        xl: 'text-xl px-4 py-2 rounded-lg',
+        sm: 'text-[11px] px-1.5 py-0.5 rounded',
+        md: 'text-xs px-2 py-0.5 rounded-md',
+        lg: 'text-sm px-2.5 py-1 rounded-md',
+        xl: 'text-base px-3 py-1.5 rounded-lg',
     }
 
     return (
@@ -39,8 +42,11 @@ export function PlacaBadge({
             )}
             title={`Chasis ${plateNumber}`}
         >
-            <span className="font-mono font-black break-all">
-                {formattedChasis}
+            <span className="font-sans font-black break-all flex items-baseline leading-none">
+                {firstPart && <span>{firstPart}</span>}
+                <span className="text-[1.25em] ml-0.5">
+                    {lastFour}
+                </span>
             </span>
         </span>
     )

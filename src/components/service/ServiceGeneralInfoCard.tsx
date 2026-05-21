@@ -43,24 +43,52 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Concesionario</p>
+                        <p className="text-sm font-medium">Concesionario Origen</p>
+                        <p className="text-sm text-muted-foreground">{service.originDealership.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {service.originDealership.address} • {service.originDealership.zone}
+                        </p>
+                        {service.originDealership.phone && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <a href={`tel:${service.originDealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                            <PhoneCall className="h-3 w-3" />
+                                            {service.originDealership.phone}
+                                        </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Llamar</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                    <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1">
+                        <p className="text-sm font-medium">Concesionario Destino</p>
                         <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
                         <p className="text-xs text-muted-foreground">
                             {service.dealership.address} • {service.dealership.zone}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
-                                        <PhoneCall className="h-3 w-3" />
-                                        {service.dealership.phone}
-                                    </a>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Llamar</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </p>
+                        {service.dealership.phone && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
+                                            <PhoneCall className="h-3 w-3" />
+                                            {service.dealership.phone}
+                                        </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Llamar</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -68,7 +96,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <div className="flex items-start gap-3">
                     <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Empleado</p>
+                        <p className="text-sm font-medium">Transportista</p>
                         <p className="text-sm text-muted-foreground">{messengerName}</p>
                         {messengerPhone && (
                             <p className="text-xs text-muted-foreground">

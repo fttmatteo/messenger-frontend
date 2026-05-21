@@ -86,7 +86,7 @@ export interface ServiceDelivery {
     uuid: string
     plate: PlateInfo
     dealership: DealershipInfo
-    // El backend puede omitir o devolver null para el mensajero cuando no está asignado
+    originDealership: DealershipInfo
     messenger?: EmployeeInfo | null
     currentStatus: ServiceStatus
     observation?: string
@@ -94,7 +94,6 @@ export interface ServiceDelivery {
     photos: PhotoInfo[]
     history: StatusHistoryInfo[]
     createdAt: string
-    /** Fecha en que el servicio fue movido a la papelera (borrado lógico). Solo presente para servicios eliminados. */
     deletedAt?: string
 }
 
@@ -103,6 +102,7 @@ export interface ServiceDelivery {
  */
 export interface CreateServiceRequest {
     dealershipId: string
+    originDealershipId: string
     messengerDocument?: string
     manualPlateNumber: string
     latitude?: number

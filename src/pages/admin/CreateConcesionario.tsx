@@ -37,7 +37,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
-            title: "Ubicación del concesionario",
+            title: "Ubicación del Concesionario",
             content: new google.maps.marker.PinElement({
                 background: '#10b981',
                 borderColor: 'white',
@@ -95,21 +95,21 @@ export default function CreateConcesionario() {
         if (!currentAddress || currentAddress.length < 5) return
 
         if (!isMapsApiLoaded) {
-            setError("Cargando servicios de mapas... Por favor intenta de nuevo en un momento.")
+            setError("Cargando Servicios de Mapas... Por Favor Intenta de Nuevo en un Momento.")
             return
         }
 
         setGeocoding(true)
         try {
             if (!window.google?.maps?.Geocoder) {
-                setError("Servicio de geocodificación no disponible en este momento")
+                setError("Servicio de Geocodificación No Disponible en Este Momento")
                 setGeocoding(false)
                 return
             }
             const geocoder = new google.maps.Geocoder()
             const addressToGeocode = currentAddress.toLowerCase().includes('medellin') || currentAddress.toLowerCase().includes('antioquia')
                 ? currentAddress
-                : `${currentAddress}, Medellin, Colombia`
+                : `${currentAddress}, Medellín, Colombia`
 
             const response = await geocoder.geocode({ address: addressToGeocode })
 
@@ -121,11 +121,11 @@ export default function CreateConcesionario() {
                 })
                 setPreviewDone(true)
             } else {
-                setError("No se encontraron coordenadas para esta dirección. Intenta ser más específico.")
+                setError("No Se Encontraron Coordenadas para Esta Dirección. Intenta Ser Más Específico.")
             }
         } catch (error) {
-            logger.error("Error de geocodificación", error)
-            setError("Error obteniendo ubicación. Verifica tu conexión a internet.")
+            logger.error("Error de Geocodificación", error)
+            setError("Error Obteniendo Ubicación. Verifica Tu Conexión a Internet.")
         } finally {
             setGeocoding(false)
         }
@@ -143,10 +143,10 @@ export default function CreateConcesionario() {
 
             try {
                 await dealershipService.geocode(created.uuid)
-                setSuccess("Concesionario creado y ubicado exitosamente")
+                setSuccess("Concesionario Creado y Ubicado Exitosamente")
             } catch (geocodeError) {
-                logger.error("La geocodificación automática falló", geocodeError)
-                setSuccess("Concesionario creado, pero falló la geocodificación automática")
+                logger.error("La Geocodificación Automática Falló", geocodeError)
+                setSuccess("Concesionario Creado, pero Falló la Geocodificación Automática")
             }
 
             navigate("/admin/concesionarios")
@@ -157,7 +157,7 @@ export default function CreateConcesionario() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Concesionarios", href: "/admin/concesionarios" },
@@ -166,16 +166,16 @@ export default function CreateConcesionario() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo concesionario</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Concesionario</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0 overflow-y-auto">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
+                        <CardTitle className="text-base text-foreground font-semibold">Información del Concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -193,7 +193,7 @@ export default function CreateConcesionario() {
                                 </Button>
                                 <Button type="submit" size="sm" disabled={isSubmitting}>
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Crear concesionario
+                                    Crear Concesionario
                                 </Button>
                             </div>
                         </form>
@@ -226,7 +226,7 @@ export default function CreateConcesionario() {
                                     disabled={geocoding || isSubmitting || !currentAddress}
                                 >
                                     {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Actualizar vista previa
+                                    Actualizar Vista Previa
                                 </Button>
                             </>
                         ) : (
@@ -234,13 +234,13 @@ export default function CreateConcesionario() {
                                 <div className="flex-1 min-h-[200px] rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
                                     <div className="text-center text-muted-foreground px-4">
                                         <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                        <p className="text-xs">Ingresa una dirección para previsualizar</p>
+                                        <p className="text-xs">Ingresa una Dirección para Previsualizar</p>
                                     </div>
                                 </div>
                                 {previewDone ? (
-                                    <Badge variant="destructive" className="justify-center">No encontrada</Badge>
+                                    <Badge variant="destructive" className="justify-center">No Encontrada</Badge>
                                 ) : (
-                                    <Badge variant="secondary" className="justify-center">Pendiente de ubicar</Badge>
+                                    <Badge variant="secondary" className="justify-center">Pendiente de Ubicar</Badge>
                                 )}
                                 <Button
                                     className="w-full mt-auto"
@@ -250,7 +250,7 @@ export default function CreateConcesionario() {
                                 >
                                     {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     <MapPin className="mr-2 h-4 w-4" />
-                                    Previsualizar ubicación
+                                    Previsualizar Ubicación
                                 </Button>
                             </>
                         )}

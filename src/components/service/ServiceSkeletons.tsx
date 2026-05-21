@@ -12,7 +12,11 @@ export function TableRowSkeleton() {
             <TableCell className="min-w-[100px] py-4">
                 <Skeleton static className="h-7 w-[90px] rounded-md bg-muted/20" />
             </TableCell>
-            {/* Concesionario - max-w-[200px] */}
+            {/* Origen - max-w-[200px] */}
+            <TableCell className="max-w-[200px] py-4">
+                <Skeleton static className="h-4 w-full max-w-[128px] rounded bg-muted/20" />
+            </TableCell>
+            {/* Destino - max-w-[200px] */}
             <TableCell className="max-w-[200px] py-4">
                 <Skeleton static className="h-4 w-full max-w-[128px] rounded bg-muted/20" />
             </TableCell>

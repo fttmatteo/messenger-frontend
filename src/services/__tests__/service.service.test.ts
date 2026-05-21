@@ -38,6 +38,14 @@ describe('ServiceDeliveryService', () => {
             phone: '555-1234',
             zone: 'NORTH'
         },
+        originDealership: {
+            idDealership: 2,
+            uuid: 'a29cfc1b-08fb-44b4-af04-cc9172be53f9',
+            name: 'Origin Dealership',
+            address: '456 Origin St',
+            phone: '555-5678',
+            zone: 'SOUTH'
+        },
         currentStatus: 'PENDING' as ServiceStatus,
         photos: [],
         history: [],
@@ -114,6 +122,7 @@ describe('ServiceDeliveryService', () => {
             vi.mocked(apiClient.post).mockResolvedValue({ data: mockService });
             await serviceDeliveryService.create({
                 dealershipId: '1',
+                originDealershipId: '2',
                 manualPlateNumber: 'XYZ789',
                 latitude: 10,
                 longitude: 20
@@ -124,6 +133,7 @@ describe('ServiceDeliveryService', () => {
             expect(call[1]).toBeInstanceOf(FormData);
             const formData = call[1] as FormData;
             expect(formData.get('dealershipId')).toBe('1');
+            expect(formData.get('originDealershipId')).toBe('2');
             expect(formData.get('manualPlateNumber')).toBe('XYZ789');
         });
     });

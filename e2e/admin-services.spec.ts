@@ -44,14 +44,24 @@ test.describe('Service Creation Flow', () => {
 
         await page.route('**/dealerships/allDealerships', async route => {
             await route.fulfill({
-                json: [{
-                    idDealership: 1,
-                    uuid: 'd1',
-                    name: 'Test Dealership',
-                    address: 'Calle 123',
-                    phone: '555-1234',
-                    zone: 'Norte'
-                }]
+                json: [
+                    {
+                        idDealership: 1,
+                        uuid: 'd1',
+                        name: 'Test Dealership',
+                        address: 'Calle 123',
+                        phone: '555-1234',
+                        zone: 'Norte'
+                    },
+                    {
+                        idDealership: 2,
+                        uuid: 'd2',
+                        name: 'Origin Dealership',
+                        address: 'Calle 456',
+                        phone: '555-5678',
+                        zone: 'Sur'
+                    }
+                ]
             });
         });
 
@@ -73,6 +83,7 @@ test.describe('Service Creation Flow', () => {
                     uuid: 's202',
                     plate: { idPlate: 1, plateNumber: 'ABC12345678', plateType: 'MOTORCYCLE' },
                     dealership: { idDealership: 1, uuid: 'd1', name: 'Test Dealership', address: 'Calle 123', phone: '555-1234', zone: 'Norte' },
+                    originDealership: { idDealership: 2, uuid: 'd2', name: 'Origin Dealership', address: 'Calle 456', phone: '555-5678', zone: 'Sur' },
                     currentStatus: 'PENDING',
                     createdAt: new Date().toISOString()
                 }
@@ -99,6 +110,14 @@ test.describe('Service Creation Flow', () => {
         const plateInput = page.locator('input[name="manualPlateNumber"]').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
         await plateInput.fill('ABC1234567890');
+
+        const originTrigger = page.locator('button[id="originDealershipId"]').first();
+        await expect(originTrigger).toBeVisible({ timeout: 10000 });
+        await originTrigger.click();
+
+        const originOption = page.getByRole('option', { name: 'Origin Dealership' }).first();
+        await expect(originOption).toBeVisible();
+        await originOption.click();
 
         const dealershipTrigger = page.locator('button[id="dealershipId"]').first();
         await expect(dealershipTrigger).toBeVisible({ timeout: 10000 });

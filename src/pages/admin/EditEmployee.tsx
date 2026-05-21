@@ -16,9 +16,9 @@ import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
 
 const employeeSchema = z.object({
-    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
-    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
-    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
+    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Números"),
+    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
+    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
     password: z.string().optional(),
     role: z.literal("MESSENGER"),
 })
@@ -94,7 +94,7 @@ export default function EditEmployee() {
                 password: data.password || "",
                 role: "MESSENGER",
             })
-            setSuccess("Transportista actualizado exitosamente")
+            setSuccess("Transportista Actualizado Exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -106,7 +106,7 @@ export default function EditEmployee() {
         try {
             setDeleting(true)
             await employeeService.delete(id)
-            setSuccess("Transportista eliminado exitosamente")
+            setSuccess("Transportista Eliminado Exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -121,7 +121,7 @@ export default function EditEmployee() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Transportistas", href: "/admin/empleados" },
@@ -130,19 +130,19 @@ export default function EditEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar transportista</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar Transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del Transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
-                        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-3 content-start">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
                                 <Input
@@ -153,6 +153,19 @@ export default function EditEmployee() {
                                 />
                                 {errors.document && (
                                     <p className="text-sm text-red-500">{errors.document.message}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fullName">Nombre Completo</Label>
+                                <Input
+                                    id="fullName"
+                                    placeholder="Juan Pérez García"
+                                    autoComplete="name"
+                                    {...register("fullName")}
+                                />
+                                {errors.fullName && (
+                                    <p className="text-sm text-red-500">{errors.fullName.message}</p>
                                 )}
                             </div>
 
@@ -169,26 +182,13 @@ export default function EditEmployee() {
                                 )}
                             </div>
 
-                            <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                                <Label htmlFor="fullName">Nombre completo</Label>
-                                <Input
-                                    id="fullName"
-                                    placeholder="Juan Pérez García"
-                                    autoComplete="name"
-                                    {...register("fullName")}
-                                />
-                                {errors.fullName && (
-                                    <p className="text-sm text-red-500">{errors.fullName.message}</p>
-                                )}
-                            </div>
-
                             <div className="space-y-2">
-                                <Label htmlFor="password">Nueva contraseña (opcional)</Label>
+                                <Label htmlFor="password">Nueva Contraseña (opcional)</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Dejar vacío para no cambiar"
+                                        placeholder="Dejar Vacío para no Cambiar"
                                         className="pr-10"
                                         autoComplete="new-password"
                                         {...register("password")}
@@ -211,7 +211,6 @@ export default function EditEmployee() {
                                     <p className="text-sm text-red-500">{errors.password.message}</p>
                                 )}
                             </div>
-
                         </div>
 
                         <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">

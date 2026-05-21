@@ -49,7 +49,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
-            title: "Ubicación del concesionario",
+            title: "Ubicación del Concesionario",
             content: new google.maps.marker.PinElement({
                 background: '#10b981',
                 borderColor: 'white',
@@ -141,7 +141,7 @@ export default function EditConcesionario() {
                 zone: data.zone,
                 whatsappPin: data.whatsappPin,
             })
-            setSuccess("Concesionario actualizado exitosamente")
+            setSuccess("Concesionario Actualizado Exitosamente")
             navigate("/admin/concesionarios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -153,7 +153,7 @@ export default function EditConcesionario() {
         if (!id) return
 
         if (!isMapsApiLoaded) {
-            setError("Cargando servicios de mapas... Por favor intenta de nuevo.")
+            setError("Cargando Servicios de Mapas... Por Favor Intenta de Nuevo.")
             return
         }
 
@@ -175,7 +175,7 @@ export default function EditConcesionario() {
                 lng: result.longitude,
             })
             setInitialAddress(capitalizeWords(data.address.trim()))
-            setSuccess("Guardado y geocodificado correctamente")
+            setSuccess("Guardado y Geocodificado Correctamente")
         } catch (error) {
             setError(getErrorMessage(error))
         } finally {
@@ -188,7 +188,7 @@ export default function EditConcesionario() {
         try {
             setDeleting(true)
             await dealershipService.delete(id)
-            setSuccess("Concesionario eliminado exitosamente")
+            setSuccess("Concesionario Eliminado Exitosamente")
             navigate("/admin/concesionarios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -203,7 +203,7 @@ export default function EditConcesionario() {
 
     return (
         <div className="flex flex-col h-full gap-1">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Concesionarios", href: "/admin/concesionarios" },
@@ -212,16 +212,16 @@ export default function EditConcesionario() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar concesionario</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar Concesionario</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
+                        <CardTitle className="text-base text-foreground font-semibold">Información del Concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">

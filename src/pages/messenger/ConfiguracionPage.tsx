@@ -1,17 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { useTheme } from "next-themes"
 import { Card } from "@/components/ui/card"
 import { Palette, ChevronRight, Cookie, Shield } from "lucide-react"
 import { APP_CONFIG } from "@/lib/app-config"
-
-function getThemeLabel(theme: string | undefined) {
-    switch (theme) {
-        case 'light': return 'Claro'
-        case 'dark': return 'Oscuro'
-        case 'system': return 'Sistema'
-        default: return 'Sistema'
-    }
-}
 
 /**
  * Página de configuración principal para la aplicación del mensajero.
@@ -19,7 +9,6 @@ function getThemeLabel(theme: string | undefined) {
  * como la apariencia, y muestra información sobre la versión de la aplicación.
  */
 export default function ConfiguracionPage() {
-    const { theme } = useTheme()
     const navigate = useNavigate()
 
     return (
@@ -40,9 +29,6 @@ export default function ConfiguracionPage() {
 
                         <div className="flex-1 min-w-0">
                             <p className="font-bold text-sm tracking-tight text-foreground/90">Apariencia</p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5 font-bold uppercase tracking-wide">
-                                Tema: {getThemeLabel(theme)}
-                            </p>
                         </div>
 
                         <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">

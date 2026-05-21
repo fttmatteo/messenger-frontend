@@ -80,7 +80,7 @@ const STORAGE_ITEMS: StorageItem[] = [
     {
         key: 'role',
         type: 'Preferences / Storage',
-        purpose: 'Protección de rutas de acceso seguro en el cliente (Admin vs Transportista).',
+        purpose: 'Protección de rutas de acceso seguro en el cliente (Administrador vs Transportista).',
         data: 'Rol del usuario activo (ADMIN / MESSENGER).',
         duration: 'Sesión / Permanente'
     },
@@ -272,7 +272,7 @@ export default function PoliticaCookies() {
                                     <Mail className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte Técnico de la Plataforma</p>
+                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte Técnico</p>
                                 </div>
                             </div>
                             <Button 

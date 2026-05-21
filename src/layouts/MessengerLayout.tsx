@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils"
 import { isNative } from "@/lib/capacitor"
 import { registerPlugin } from "@capacitor/core"
 
-// Plugin nativo para Foreground Service de ubicación persistente (solo APK)
 interface LocationServicePlugin {
     startService(options: { messengerId: number; backendUrl: string; authCookie: string }): Promise<{ started: boolean }>;
     stopService(): Promise<{ stopped: boolean }>;
@@ -58,11 +57,9 @@ export default function MessengerLayout() {
 
 
     useEffect(() => {
-        // Aseguramos que el html y body ocupen todo el espacio disponible
-        // pero sin bloquear la posición fixed que puede romper el safe-area-bottom
         document.documentElement.style.height = '100%'
         document.body.style.height = '100%'
-        document.body.style.overflow = 'hidden' // Evita el doble scrollbar
+        document.body.style.overflow = 'hidden'
 
         return () => {
             document.documentElement.style.height = ''
@@ -72,15 +69,10 @@ export default function MessengerLayout() {
     }, [])
 
     const getPageTitle = () => {
-        if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
-
-        if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('perfil')) return 'Mi Perfil'
-        if (location.pathname.includes('actualizar')) return 'Actualizar estado'
-        if (location.pathname.includes('servicio/')) return 'Detalle servicio'
-        if (location.pathname.includes('crear')) return 'Nuevo servicio'
+        if (location.pathname.includes('actualizar')) return 'Actualizar Servicio'
         return null
     }
 
@@ -395,7 +387,7 @@ export default function MessengerLayout() {
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
             >
-                Saltar al contenido principal
+                 Saltar al Contenido Principal
             </a>
             <header
                 className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm pt-safe"
@@ -484,7 +476,7 @@ export default function MessengerLayout() {
                                         variant="ghost"
                                         size="icon"
                                         className="h-9 w-9 -ml-2 rounded-full hover:bg-muted transition-all active:scale-95"
-                                        aria-label="Abrir menú"
+                                        aria-label="Abrir Menú"
                                     >
                                         <Menu className="h-5 w-5" />
                                     </Button>
@@ -495,7 +487,7 @@ export default function MessengerLayout() {
                                             <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
                                             <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
                                             <SheetTitle className="sr-only">{APP_CONFIG.name}</SheetTitle>
-                                            <SheetDescription className="sr-only">Menú de navegación del mensajero</SheetDescription>
+                                            <SheetDescription className="sr-only">Menú de Navegación del Transportista</SheetDescription>
                                         </div>
 
                                         <div className={cn(
@@ -514,7 +506,7 @@ export default function MessengerLayout() {
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                                             </div>
                                                             <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-[0.15em]">
-                                                                Sin conexión
+                                                                Sin Conexión
                                                             </span>
                                                         </>
                                                     ) : isOnline ? (
@@ -524,7 +516,7 @@ export default function MessengerLayout() {
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                                             </div>
                                                             <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-[0.15em]">
-                                                                En línea
+                                                                En Línea
                                                             </span>
                                                         </>
                                                     ) : (
@@ -620,7 +612,7 @@ export default function MessengerLayout() {
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Cerrar Sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Se detendrá el rastreo GPS y cerrarás tu sesión.
+                            Se Detendrá El Rastreo GPS Y Cerrarás Tu Sesión.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

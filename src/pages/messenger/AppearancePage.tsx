@@ -16,13 +16,13 @@ const themeOptions: ThemeOptionItem[] = [
     {
         value: 'light',
         label: 'Claro',
-        description: 'Fondo blanco',
+        description: 'Fondo Blanco',
         icon: <Sun className="h-6 w-6" strokeWidth={2.5} />
     },
     {
         value: 'dark',
         label: 'Oscuro',
-        description: 'Fondo oscuro',
+        description: 'Fondo Oscuro',
         icon: <Moon className="h-6 w-6" strokeWidth={2.5} />
     },
     {
@@ -46,7 +46,7 @@ export default function AppearancePage() {
             <div className="space-y-6">
                 <div>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 mb-4">
-                        Modo de interfaz
+                        Modo de Interfaz
                     </p>
 
                     <div className="grid gap-3">
@@ -67,7 +67,7 @@ export default function AppearancePage() {
                                         className={cn(
                                             "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300",
                                             isSelected
-                                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
+                                                ? "bg-primary text-primary-foreground scale-110"
                                                 : "bg-muted text-muted-foreground"
                                         )}
                                     >

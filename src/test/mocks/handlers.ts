@@ -54,6 +54,14 @@ export const handlers: RequestHandler[] = [
                 phone: '555-0123',
                 zone: 'NORTH'
             },
+            originDealership: {
+                idDealership: 2,
+                uuid: 'a29cfc1b-08fb-44b4-af04-cc9172be53f9',
+                name: 'Origin Dealership',
+                address: '456 Origin St',
+                phone: '555-4567',
+                zone: 'SOUTH'
+            },
             history: []
         });
     }),
@@ -74,6 +82,14 @@ export const handlers: RequestHandler[] = [
                 phone: '555-0123',
                 zone: 'NORTH'
             },
+            originDealership: {
+                idDealership: 2,
+                uuid: 'a29cfc1b-08fb-44b4-af04-cc9172be53f9',
+                name: 'Origin Dealership',
+                address: '456 Origin St',
+                phone: '555-4567',
+                zone: 'SOUTH'
+            },
             createdAt: new Date().toISOString()
         });
     }),
@@ -88,6 +104,7 @@ export const handlers: RequestHandler[] = [
                     uuid: '550e8400-e29b-41d4-a716-446655440000',
                     plate: { idPlate: 1, plateNumber: 'ADM-001', plateType: 'CAR' },
                     dealership: { idDealership: 1, uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9', name: 'Admin Dealer', address: '123 St', phone: '555-5555', zone: 'NORTH' },
+                    originDealership: { idDealership: 2, uuid: 'a29cfc1b-08fb-44b4-af04-cc9172be53f9', name: 'Origin Dealer', address: '456 St', phone: '555-6666', zone: 'SOUTH' },
                     messenger: { idEmployee: 1, uuid: 'm1', document: 12345, fullName: 'Test Messenger', phone: '123', role: 'MESSENGER' },
                     currentStatus: 'ASSIGNED',
                     createdAt: new Date().toISOString()

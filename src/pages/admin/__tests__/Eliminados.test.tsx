@@ -41,6 +41,14 @@ describe('Eliminados Page Integration', () => {
                                 phone: '555-1234',
                                 zone: 'South'
                             },
+                            originDealership: {
+                                idDealership: 202,
+                                uuid: 'origin-dealership-uuid',
+                                name: 'Origin Dealership',
+                                address: 'Origin Street 456',
+                                phone: '555-9876',
+                                zone: 'North'
+                            },
                             messenger: {
                                 idEmployee: 501,
                                 uuid: 'messenger-uuid',

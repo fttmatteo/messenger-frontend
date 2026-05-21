@@ -16,7 +16,6 @@ import { DeletedServiceTable } from "@/components/admin/DeletedServiceTable"
 import { EmptyTrashDialog } from "@/components/admin/DeletedServiceDialogs"
 import { TablePagination } from "@/components/ui/table-pagination"
 
-// Variantes de animación
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -112,7 +111,6 @@ export default function Eliminados() {
         }
     }
 
-    // Componente de estado vacío
     const EmptyState = () => (
         <Empty className="py-12">
             <EmptyHeader>
@@ -129,7 +127,7 @@ export default function Eliminados() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Eliminados" }]} />
                 </div>
@@ -156,7 +154,7 @@ export default function Eliminados() {
                         <div className="w-[140px]" />
                     )}
                 </div>
-            </div>
+            </Card>
 
             <div className="flex-1 min-h-0 flex flex-col">
                 {isMobile ? (
@@ -193,8 +191,9 @@ export default function Eliminados() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>Placa</TableHead>
-                                            <TableHead>Concesionario</TableHead>
+                                            <TableHead>Chasis</TableHead>
+                                            <TableHead>Origen</TableHead>
+                                            <TableHead>Destino</TableHead>
                                             <TableHead>Mensajero</TableHead>
                                             <TableHead>Eliminado</TableHead>
                                             <TableHead>Tiempo restante</TableHead>

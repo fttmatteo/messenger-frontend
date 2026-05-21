@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { trackingApiService } from "@/services/tracking-api.service"
 import { locationService } from "@/services/location.service"
 import type { TrackingHistoryItem } from "@/types/location.types"
-import { MapPin } from "lucide-react"
+import { MapPin, Navigation2, Flag, Home } from "lucide-react"
 import type { ServiceStatus } from "@/types/service.types"
 import { getStatusBadge } from "@/lib/status-utils"
 import { useStatusColors } from "@/hooks/use-status-colors"
@@ -17,6 +17,9 @@ interface ServiceTrackingMapProps {
     dealershipLat?: number
     dealershipLng?: number
     dealershipName?: string
+    originDealershipLat?: number
+    originDealershipLng?: number
+    originDealershipName?: string
     serviceStatus?: ServiceStatus
     className?: string
 }
@@ -78,6 +81,9 @@ export function ServiceTrackingMap({
     dealershipLat,
     dealershipLng,
     dealershipName,
+    originDealershipLat,
+    originDealershipLng,
+    originDealershipName,
     serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
@@ -217,14 +223,24 @@ export function ServiceTrackingMap({
                 </CardTitle>
 
                 <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-4 text-sm font-normal">
+                    <div className="flex items-center gap-4 text-sm font-normal flex-wrap">
+                        {originDealershipLat && originDealershipLng && (
+                            <button
+                                onClick={() => panTo({ lat: originDealershipLat, lng: originDealershipLng })}
+                                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
+                                title={`Ir a origen: ${originDealershipName ?? 'Concesionario origen'}`}
+                            >
+                                <Home className="h-4 w-4 text-blue-500" />
+                                <span className="text-muted-foreground">Origen</span>
+                            </button>
+                        )}
                         {firstPosition && (
                             <button
                                 onClick={() => panTo(firstPosition)}
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
-                                title="Ir a inicio"
+                                title="Ir a inicio de ruta"
                             >
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: startColor }} />
+                                <Navigation2 className="h-4 w-4" style={{ color: startColor }} />
                                 <span className="text-muted-foreground">Inicio</span>
                             </button>
                         )}
@@ -234,7 +250,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title="Ir a posición actual"
                             >
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: endColor }} />
+                                <MapPin className="h-4 w-4" style={{ color: endColor }} />
                                 <span className="text-muted-foreground">Actual</span>
                             </button>
                         )}
@@ -244,7 +260,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title="Ir a destino"
                             >
-                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                                <Flag className="h-4 w-4 text-orange-500" />
                                 <span className="text-muted-foreground">Destino</span>
                             </button>
                         )}
@@ -280,10 +296,20 @@ export function ServiceTrackingMap({
                     >
 
 
+                        {originDealershipLat && originDealershipLng && (
+                            <AdvancedMarker
+                                position={{ lat: originDealershipLat, lng: originDealershipLng }}
+                                title={originDealershipName || "Concesionario origen"}
+                                color="#3b82f6"
+                                label="O"
+                            />
+                        )}
+
+
                         {firstPosition && (
                             <AdvancedMarker
                                 position={firstPosition}
-                                title="Inicio - Asignado"
+                                title="Inicio de ruta"
                                 color={startColor}
                                 label="A"
                             />
@@ -303,8 +329,9 @@ export function ServiceTrackingMap({
                         {dealershipLat && dealershipLng && (
                             <AdvancedMarker
                                 position={{ lat: dealershipLat, lng: dealershipLng }}
-                                title={dealershipName || "Concesionario"}
+                                title={dealershipName || "Concesionario destino"}
                                 color="#f97316"
+                                label="D"
                             />
                         )}
                     </Map>
