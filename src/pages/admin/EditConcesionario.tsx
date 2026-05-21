@@ -203,7 +203,7 @@ export default function EditConcesionario() {
 
     return (
         <div className="flex flex-col h-full gap-1">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Concesionarios", href: "/admin/concesionarios" },
@@ -216,7 +216,7 @@ export default function EditConcesionario() {
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </div>
+            </Card>
 
             <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">

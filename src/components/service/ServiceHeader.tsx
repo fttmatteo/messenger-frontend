@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
@@ -28,7 +29,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
     const statusConfig = getStatusIconConfig(service.currentStatus, colors)
 
     return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] mb-2 gap-4">
+        <Card className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
 
             <div className="flex-1">
                 <AdminBreadcrumb segments={[
@@ -76,6 +77,6 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
                     </Button>
                 )}
             </div>
-        </div>
+        </Card>
     )
 }

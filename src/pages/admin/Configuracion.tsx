@@ -105,7 +105,7 @@ export default function Configuracion() {
 
     return (
         <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
                 <div className="flex-1">
                     {activeSection === null ? (
                         <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
@@ -138,7 +138,7 @@ export default function Configuracion() {
                         </Button>
                     )}
                 </div>
-            </div>
+            </Card>
 
 
             {activeSection === null ? (
