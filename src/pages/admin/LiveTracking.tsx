@@ -78,7 +78,7 @@ export default function LiveTracking() {
                     bulkLocations = await trackingApiService.getBulkLastLocations(offlineUuids)
                 } catch (e) {
                     if (isAxiosError(e) && e.response?.status !== 404) {
-                        logger.apiError(`Error al obtener ubicaciones masivas`, e)
+                        logger.apiError(`Error al Obtener Ubicaciones Masivas`, e)
                     }
                 }
             }
@@ -116,7 +116,7 @@ export default function LiveTracking() {
             })
 
             if (manual) {
-                setSuccess(`Monitoreo actualizado`)
+                setSuccess(`Monitoreo Actualizado`)
             }
 
             if (!manual && updatedMessengers.length > 0) {
@@ -127,7 +127,7 @@ export default function LiveTracking() {
             }
 
         } catch (error) {
-            logger.error("Error al obtener los mensajeros en LiveTracking:", error)
+            logger.error("Error al Obtener los Mensajeros en LiveTracking:", error)
             if (isAxiosError(error) && error.response?.status !== 404) {
                 setError(getErrorMessage(error))
             }

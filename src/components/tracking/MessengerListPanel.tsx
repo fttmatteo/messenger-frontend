@@ -64,7 +64,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                 <ScrollArea className="flex-1">
                     {messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
-                            No hay mensajeros disponibles
+                            No Hay Mensajeros Disponibles
                         </div>
                     ) : (
                         <div className="divide-y">
@@ -122,7 +122,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                                             <p className="text-xs text-muted-foreground">
                                                 <Clock className="h-3 w-3 inline mr-1" />
                                                 {hasRecentUpdate
-                                                    ? "Actualizado ahora"
+                                                    ? "Actualizado Ahora"
                                                     : formatDistanceToNow(lastUpdateDate, { addSuffix: true, locale: es })}
                                             </p>
                                         )}

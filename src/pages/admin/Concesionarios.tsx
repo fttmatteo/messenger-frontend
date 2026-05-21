@@ -42,7 +42,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
-            title: "Ubicación del concesionario",
+                            title: "Ubicación del Concesionario",
             content: new google.maps.marker.PinElement({
                 background: '#10b981',
                 borderColor: 'white',
@@ -183,7 +183,7 @@ export default function Concesionarios() {
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo concesionario
+                        Nuevo Concesionario
                     </Button>
                 </div>
             </Card>
@@ -213,8 +213,8 @@ export default function Concesionarios() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Store />}
-                                emptyTitle="Sin concesionarios"
-                                emptyDescription="Aún no hay concesionarios registrados en el sistema"
+                                emptyTitle="Sin Concesionarios"
+                                emptyDescription="Aún No Hay Concesionarios Registrados en el Sistema"
                                 className="py-0"
                             />
                         </div>

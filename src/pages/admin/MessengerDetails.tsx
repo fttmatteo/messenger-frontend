@@ -172,8 +172,8 @@ export default function MessengerDetails() {
                     <User className="h-12 w-12 text-muted-foreground" />
                 </div>
                 <div className="text-center">
-                    <h2 className="text-xl font-semibold">Transportista no encontrado</h2>
-                    <p className="text-muted-foreground">No pudimos cargar la información del transportista.</p>
+                    <h2 className="text-xl font-semibold">Transportista No Encontrado</h2>
+                    <p className="text-muted-foreground">No Pudimos Cargar la Información del Transportista.</p>
                 </div>
                 <Button onClick={() => navigate("/admin/tracking")}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
@@ -210,7 +210,7 @@ export default function MessengerDetails() {
                         )}
                     >
                         <MapPin className="h-3 w-3" />
-                        {isActive ? "Activo ahora" : "Desconectado"}
+                        {isActive ? "Activo Ahora" : "Desconectado"}
                     </Badge>
                 </div>
             </Card>

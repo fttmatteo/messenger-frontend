@@ -79,7 +79,7 @@ export default function ServiciosPage() {
                         id="search-services"
                         name="search"
                         autoComplete="off"
-                        placeholder="Buscar por chasis..."
+                        placeholder="Buscar por Chasis..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-9 h-10 border-input/60"
@@ -108,7 +108,7 @@ export default function ServiciosPage() {
                                     statusFilter === "all" ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
                                 )}
                             >
-                                <span>Ver todos</span>
+                                <span>Ver Todos</span>
                                 {statusFilter === "all" && <Check className="h-4 w-4" />}
                             </button>
                             <div className="h-px bg-border my-1" />
@@ -171,7 +171,7 @@ export default function ServiciosPage() {
                     {statusFilter !== 'all' && <span className="shrink-0 opacity-40">·</span>}
                     <span className="truncate">
                         {searchTerm.trim() || statusFilter !== "all"
-                            ? "Historial global"
+                            ? "Historial Global"
                             : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))
                         }
                     </span>
@@ -196,9 +196,9 @@ export default function ServiciosPage() {
                     loading={loading}
                     emptyMessage={
                         statusFilter !== 'all'
-                            ? `No hay servicios "${getStatusLabel(statusFilter)}"`
-                            : searchTerm ? "No se encontraron resultados"
-                                : `No hay servicios para esta fecha`
+                            ? `No Hay Servicios "${getStatusLabel(statusFilter)}"`
+                            : searchTerm ? "No Se Encontraron Resultados"
+                                : `No Hay Servicios para Esta Fecha`
                     }
                 />
             </div>

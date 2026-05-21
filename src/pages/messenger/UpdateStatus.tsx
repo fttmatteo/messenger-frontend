@@ -205,7 +205,7 @@ export default function UpdateStatus() {
 
             navigate('/messenger')
         } catch (error) {
-            showToast.error('Error al actualizar', {
+            showToast.error('Error al Actualizar', {
                 description: getErrorMessage(error),
                 id: 'update-status-error',
             })
@@ -227,7 +227,7 @@ export default function UpdateStatus() {
                 </div>
                 <div>
                     <p className="font-medium text-lg mb-1">Error</p>
-                    <p className="text-muted-foreground text-sm">{error || 'Servicio no encontrado'}</p>
+                    <p className="text-muted-foreground text-sm">{error || 'Servicio No Encontrado'}</p>
                 </div>
                 <Button variant="outline" onClick={() => navigate("/messenger", { replace: true })}>Volver</Button>
             </div>
@@ -266,7 +266,7 @@ export default function UpdateStatus() {
 
                 <div className="px-4 py-3">
                     <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] mb-3 px-1">
-                        Seleccionar estado
+                        Seleccionar Estado
                     </p>
                     <div className="space-y-3">
                         {statusOptions.map((option) => {
@@ -337,7 +337,7 @@ export default function UpdateStatus() {
                                         <div className="p-1.5 rounded-lg bg-primary/10">
                                             <PenLine className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-bold tracking-tight">Firma del asesor</h3>
+                                        <h3 className="text-sm font-bold tracking-tight">Firma del Asesor</h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <SignatureCanvas
@@ -354,7 +354,7 @@ export default function UpdateStatus() {
                                             <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
                                         <h3 className="text-sm font-bold tracking-tight">
-                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
+                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de Evidencia' : 'Foto de Evidencia'}
                                         </h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
@@ -387,9 +387,9 @@ export default function UpdateStatus() {
                                         id="observation"
                                         placeholder={
                                             selectedOption.value === 'RETURNED'
-                                                ? 'Motivo de la devolución...'
+                                                ? 'Motivo de la Devolución...'
                                                 : selectedOption.value === 'PENDING'
-                                                    ? 'Motivo del servicio pendiente...'
+                                                    ? 'Motivo del Servicio Pendiente...'
                                                     : 'Notas adicionales...'
                                         }
                                         value={observation}
@@ -430,7 +430,7 @@ export default function UpdateStatus() {
                                     <selectedOption.icon className="h-5 w-5" />
                                 </span>
                             )}
-                            {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un estado'}
+                            {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un Estado'}
                         </>
                     )}
                 </Button>

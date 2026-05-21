@@ -35,17 +35,17 @@ export function DesktopOnlyGuard() {
 
                     <div className="text-center space-y-2 sm:space-y-3">
                         <p className="text-base sm:text-lg font-medium">
-                            El panel de administrador está diseñado para escritorios.
+                            El Panel de Administrador Está Diseñado para Escritorios.
                         </p>
                         <p className="text-muted-foreground text-xs sm:text-sm">
-                            Por favor, accede desde un ordenador para gestionar el sistema.
+                            Por Favor, Accede Desde un Ordenador para Gestionar el Sistema.
                         </p>
                     </div>
 
                     <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-4">
                         <p className="text-amber-800 dark:text-amber-200 text-xs sm:text-sm text-center">
-                            <strong>¿Por qué solo escritorio?</strong><br />
-                            La gestión avanzada requiere una pantalla grande para visualizar tablas, mapas y estadísticas correctamente.
+                            <strong>¿Por Qué Solo Escritorio?</strong><br />
+                            La Gestión Avanzada Requiere una Pantalla Grande para Visualizar Tablas, Mapas y Estadísticas Correctamente.
                         </p>
                     </div>
                 </CardContent>
@@ -56,7 +56,7 @@ export function DesktopOnlyGuard() {
                         className="gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 w-full sm:w-auto"
                     >
                         <LogOut className="h-4 w-4" />
-                        Cerrar sesión
+                        Cerrar Sesión
                     </Button>
                 </CardFooter>
             </Card>

@@ -27,19 +27,19 @@ const themeOptions: ThemeOptionItem[] = [
     {
         value: 'light',
         label: 'Claro',
-        description: 'Tema con fondo blanco',
+        description: 'Tema con Fondo Blanco',
         icon: <Sun className="h-5 w-5" />
     },
     {
         value: 'dark',
         label: 'Oscuro',
-        description: 'Tema con fondo oscuro',
+        description: 'Tema con Fondo Oscuro',
         icon: <Moon className="h-5 w-5" />
     },
     {
         value: 'system',
         label: 'Sistema',
-        description: 'Usa la preferencia del dispositivo',
+        description: 'Usa la Preferencia del Dispositivo',
         icon: <Monitor className="h-5 w-5" />
     }
 ]
@@ -100,7 +100,7 @@ export default function Configuracion() {
 
     const handleResetAll = () => {
         resetToDefaults()
-        showToast.success('Colores restaurados a valores por defecto', { id: 'reset-colors-success' })
+        showToast.success('Colores Restaurados a Valores Por Defecto', { id: 'reset-colors-success' })
     }
 
     return (
@@ -121,7 +121,7 @@ export default function Configuracion() {
 
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">
-                        {activeSection === 'colors' ? 'Colores de estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
+                        {activeSection === 'colors' ? 'Colores de Estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
                     </h1>
                 </div>
 
@@ -181,7 +181,7 @@ export default function Configuracion() {
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="py-2 px-4">
                         <CardDescription>
-                            Selecciona el tema de la aplicación
+                            Selecciona El Tema De La Aplicación
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
@@ -230,7 +230,7 @@ export default function Configuracion() {
                 <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="py-2 px-4">
                         <CardDescription>
-                            Click en un estado para cambiar su color
+                            Haz Clic En Un Estado Para Cambiar Su Color
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
@@ -246,7 +246,7 @@ export default function Configuracion() {
                         </div>
 
                         <div className="mt-auto pt-3 border-t flex items-center gap-4 flex-wrap">
-                            <span className="text-xs text-muted-foreground">Vista previa:</span>
+                            <span className="text-xs text-muted-foreground">Vista Previa:</span>
                             {STATUS_ORDER.map(status => (
                                 <div
                                     key={status}

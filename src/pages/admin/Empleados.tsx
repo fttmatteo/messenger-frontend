@@ -52,7 +52,7 @@ export default function Empleados() {
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo transportista
+                        Nuevo Transportista
                     </Button>
                 </div>
             </Card>
@@ -80,8 +80,8 @@ export default function Empleados() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Users />}
-                                emptyTitle="Sin transportistas"
-                                emptyDescription="Aún no hay transportistas registrados en el sistema"
+                                emptyTitle="Sin Transportistas"
+                                emptyDescription="Aún No Hay Transportistas Registrados en el Sistema"
                                 className="py-0"
                             />
                         </div>

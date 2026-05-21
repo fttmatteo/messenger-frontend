@@ -17,10 +17,10 @@ import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const profileSchema = z.object({
-    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
-    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
+    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
+    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
     password: z.string().optional().refine(val => !val || val.length >= 6, {
-        message: "La contraseña debe tener al menos 6 caracteres"
+        message: "La Contraseña Debe Tener Al Menos 6 Caracteres"
     }),
 })
 
@@ -63,7 +63,7 @@ export default function Profile() {
                     password: "",
                 })
             } catch (error) {
-                showToast.error("Error al cargar perfil: " + getErrorMessage(error))
+                showToast.error("Error al Cargar Perfil: " + getErrorMessage(error))
             } finally {
                 setLoading(false)
             }
@@ -86,11 +86,11 @@ export default function Profile() {
             
             updateUser({ name: updated.fullName })
             
-            showToast.success("Perfil actualizado correctamente")
+            showToast.success("Perfil Actualizado Correctamente")
             
             reset({ ...data, password: "" })
         } catch (error) {
-            showToast.error("Error al actualizar perfil: " + getErrorMessage(error))
+            showToast.error("Error al Actualizar Perfil: " + getErrorMessage(error))
         } finally {
             setSaving(false)
         }

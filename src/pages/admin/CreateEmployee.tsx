@@ -15,10 +15,10 @@ import { capitalizeWords } from "@/lib/format-utils"
 import { getErrorMessage } from "@/lib/error-utils"
 
 const employeeSchema = z.object({
-    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
-    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
-    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
-    password: z.string().min(1, "La contraseña es requerida").min(6, "Mínimo 6 caracteres"),
+    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Números"),
+    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
+    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
+    password: z.string().min(1, "La Contraseña Es Requerida").min(6, "Mínimo 6 Caracteres"),
     role: z.literal("MESSENGER"),
 })
 
@@ -55,7 +55,7 @@ export default function CreateEmployee() {
                 password: data.password,
                 role: "MESSENGER",
             })
-            setSuccess("El nuevo transportista ha sido registrado correctamente")
+            setSuccess("El Nuevo Transportista Ha Sido Registrado Correctamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -73,7 +73,7 @@ export default function CreateEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo transportista</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
@@ -81,7 +81,7 @@ export default function CreateEmployee() {
 
             <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del Transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -103,7 +103,7 @@ export default function CreateEmployee() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">
-                                    Nombre completo <span className="text-red-500 ml-0.5">*</span>
+                                    Nombre Completo <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
                                 <Input
                                     id="fullName"
@@ -175,7 +175,7 @@ export default function CreateEmployee() {
                             </Button>
                             <Button type="submit" size="sm" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear transportista
+                                Crear Transportista
                             </Button>
                         </div>
                     </form>

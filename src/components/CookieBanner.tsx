@@ -108,7 +108,7 @@ export default function CookieBanner() {
                                     </span>
                                 </h3>
                                 <p className="text-sm text-foreground/80 leading-relaxed">
-                                    Utilizamos almacenamiento local y cookies técnicas estrictamente necesarias para garantizar la seguridad de tu inicio de sesión y el funcionamiento óptimo de la aplicación.
+                                    Utilizamos Almacenamiento Local y Cookies Técnicas Estrictamente Necesarias para Garantizar la Seguridad de tu Inicio de Sesión y el Funcionamiento Óptimo de la Aplicación.
                                 </p>
                             </div>
                         </div>
@@ -121,7 +121,7 @@ export default function CookieBanner() {
                                 onClick={() => navigate('/politica-cookies')}
                             >
                                 <Info className="h-3.5 w-3.5" />
-                                Saber más
+                                Saber Más
                             </Button>
                             
                             <Button

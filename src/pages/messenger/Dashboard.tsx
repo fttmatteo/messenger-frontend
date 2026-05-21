@@ -52,14 +52,14 @@ export default function MessengerDashboard() {
                                     <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                 </div>
                                 <div className="flex-1 min-w-0 text-left">
-                                    <SelectValue placeholder="Filtrar por concesionario" />
+                                    <SelectValue placeholder="Filtrar por Concesionario" />
                                 </div>
                             </div>
                         </SelectTrigger>
                         <SelectContent align="start" className="w-[280px] rounded-2xl border-border/60 bg-card shadow-2xl p-1 custom-scrollbar">
                             <SelectItem value="all" className="rounded-xl font-semibold my-0.5">
                                 <div className="flex items-center justify-between w-full gap-4">
-                                    <span className="truncate">Todos los concesionarios</span>
+                                    <span className="truncate">Todos los Concesionarios</span>
                                     <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
                                         {pendingServices.length}
                                     </span>
@@ -100,7 +100,7 @@ export default function MessengerDashboard() {
                 {isFromCache && !loading && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
                         <Database className="h-3 w-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest italic">offline cache</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest italic">Offline Cache</span>
                     </div>
                 )}
             </div>
@@ -109,7 +109,7 @@ export default function MessengerDashboard() {
                 <ServiceList
                     services={filteredServices}
                     loading={loading}
-                    emptyMessage={selectedDealership === "all" ? "No tienes servicios asignados" : "No hay servicios en este concesionario"}
+                    emptyMessage={selectedDealership === "all" ? "No Tienes Servicios Asignados" : "No Hay Servicios en Este Concesionario"}
                 />
             </div>
 

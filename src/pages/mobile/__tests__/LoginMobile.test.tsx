@@ -148,7 +148,7 @@ describe('LoginMobile Page', () => {
 
         await waitFor(() => {
             expect(showToast.error).toHaveBeenCalledWith(
-                expect.stringContaining('15 minutos'),
+                expect.stringContaining('15 Minutos'),
                 expect.anything()
             )
         })
@@ -176,7 +176,7 @@ describe('LoginMobile Page', () => {
     it('should toggle password visibility and handle checkbox', async () => {
         renderLogin()
         const passInput = await screen.findByPlaceholderText(/ingrese su contraseña/i)
-        fireEvent.click(screen.getByRole('button', { name: /toggle password visibility/i }))
+        fireEvent.click(screen.getByRole('button', { name: /alternar visibilidad de contraseña/i }))
         expect(passInput).toHaveAttribute('type', 'text')
         fireEvent.click(screen.getByRole('checkbox'))
     })

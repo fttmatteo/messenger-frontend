@@ -99,7 +99,7 @@ export default function Servicios() {
                             <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all" className="text-xs">Todos los estados</SelectItem>
+                            <SelectItem value="all" className="text-xs">Todos los Estados</SelectItem>
                             {AVAILABLE_STATUSES.map(status => (
                                 <SelectItem key={status.value} value={status.value} className="text-xs">{status.label}</SelectItem>
                             ))}
@@ -115,7 +115,7 @@ export default function Servicios() {
                 <div className="hidden md:flex md:flex-1 justify-end">
                     <Button onClick={() => navigate("/admin/servicios/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo servicio
+                        Nuevo Servicio
                     </Button>
                 </div>
             </Card>
@@ -147,8 +147,8 @@ export default function Servicios() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<PackageCheck />}
-                                emptyTitle="Sin servicios"
-                                emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
+                                emptyTitle="Sin Servicios"
+                                emptyDescription="Aún No Hay Servicios de Entrega Registrados en el Sistema"
                                 className="py-0"
                             />
                         </div>

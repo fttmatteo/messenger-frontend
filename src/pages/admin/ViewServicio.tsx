@@ -49,7 +49,7 @@ export default function ViewServicio() {
 
     const fetchService = useCallback(async () => {
         if (!id) {
-            setError("ID de servicio no proporcionado")
+            setError("ID de Servicio No Proporcionado")
             setLoading(false)
             return
         }
@@ -103,11 +103,11 @@ export default function ViewServicio() {
                 <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
                     <Trash2 className="h-6 w-6 text-red-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar servicio</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Error al Cargar Servicio</h3>
                 <p className="text-muted-foreground mb-6 max-w-sm">{error}</p>
                 <Button onClick={() => navigate("/admin/servicios")}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Volver al listado
+                    Volver al Listado
                 </Button>
             </div>
         )
@@ -116,10 +116,10 @@ export default function ViewServicio() {
     if (!service) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
-                <p className="text-muted-foreground mb-4">Servicio no encontrado</p>
+                <p className="text-muted-foreground mb-4">Servicio No Encontrado</p>
                 <Button onClick={() => navigate("/admin/servicios")}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Volver al listado
+                    Volver al Listado
                 </Button>
             </div>
         )
@@ -164,7 +164,7 @@ export default function ViewServicio() {
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar servicio?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Eliminar Servicio?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Esta acción no se puede deshacer. El servicio de chasis <PlacaBadge plateNumber={service.plate.plateNumber}  size="sm" className="inline-flex align-middle mx-1" /> será eliminado permanentemente.
                         </AlertDialogDescription>
@@ -181,7 +181,7 @@ export default function ViewServicio() {
                             ) : (
                                 <Trash2 className="mr-2 h-4 w-4" />
                             )}
-                            Eliminar servicio
+                            Eliminar Servicio
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

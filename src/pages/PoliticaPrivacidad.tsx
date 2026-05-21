@@ -77,7 +77,7 @@ export default function PoliticaPrivacidad() {
                                     <span>Identificación</span>
                                 </div>
                                 <p className="text-xs text-foreground/70 leading-relaxed">
-                                    Nombres completos, número de documento de identidad (cédula) y rol asignado en la plataforma (Coordinador o Transportista) para el control de accesos seguros.
+                                    Nombres completos, número de documento de identidad (cédula) y rol asignado en la plataforma (Administrador o Transportista) para el control de accesos seguros.
                                 </p>
                             </div>
 
@@ -119,7 +119,7 @@ export default function PoliticaPrivacidad() {
                         <ul className="list-disc pl-5 space-y-2 text-foreground/80 my-2">
                             <li><strong>Gestión Operativa:</strong> Sincronizar, despachar y dar seguimiento en tiempo real a las entregas entre concesionarios y transportistas.</li>
                             <li><strong>Seguridad Vial y Logística:</strong> Permitir a los administradores visualizar la ubicación en vivo de los transportistas para coordinar rutas eficientes y garantizar el auxilio en carretera de ser necesario.</li>
-                            <li><strong>Soporte de Auditoría:</strong> Conservar la firma digital y las fotos en la base de datos como comprobantes fehacientes de entrega, disponibles únicamente para los coordinadores de la plataforma y el concesionario solicitante.</li>
+                            <li><strong>Soporte de Auditoría:</strong> Conservar la firma digital y las fotos en la base de datos como comprobantes fehacientes de entrega, disponibles únicamente para los administradores de la plataforma y el concesionario solicitante.</li>
                         </ul>
                         <div className="bg-muted/40 border-l-4 border-primary p-3.5 rounded-r-xl my-2 text-foreground/90 font-medium text-xs">
                             <strong>Seguridad de Datos:</strong> Toda la información transmitida entre el celular, la aplicación web y nuestros servidores viaja cifrada mediante protocolos de seguridad HTTPS/TLS y se almacena en bases de datos con accesos estrictamente restringidos.
@@ -133,7 +133,7 @@ export default function PoliticaPrivacidad() {
                         <div className="p-2.5 bg-primary/5 rounded-xl text-primary">
                             <HelpCircle className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-lg font-bold">3. Derechos del Titular (Ley 1581 de 2012)</CardTitle>
+                        <CardTitle className="text-lg font-bold">3. Habeas Data (Ley 1581 de 2012)</CardTitle>
                     </CardHeader>
                     <CardContent className="text-sm text-foreground/80 leading-relaxed space-y-3">
                         <p>
@@ -167,7 +167,7 @@ export default function PoliticaPrivacidad() {
                                     <Mail className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Tratamiento de Datos y Habeas Data</p>
+                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Tratamiento de Datos</p>
                                 </div>
                             </div>
                             <Button 
