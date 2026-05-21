@@ -54,7 +54,7 @@ export default function ConfiguracionPage() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de Cookies</p>
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de cookies</p>
                         </div>
 
                         <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
@@ -71,7 +71,7 @@ export default function ConfiguracionPage() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de Privacidad</p>
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de privacidad</p>
                         </div>
 
                         <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">

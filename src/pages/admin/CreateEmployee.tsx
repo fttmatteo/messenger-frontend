@@ -38,10 +38,14 @@ export default function CreateEmployee() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, isDirty },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
         defaultValues: {
+            document: "",
+            fullName: "",
+            phone: "",
+            password: "",
             role: "MESSENGER",
         },
     })
@@ -174,7 +178,7 @@ export default function CreateEmployee() {
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" size="sm" disabled={isSubmitting}>
+                            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Crear transportista
                             </Button>

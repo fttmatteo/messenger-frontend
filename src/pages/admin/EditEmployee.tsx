@@ -43,7 +43,7 @@ export default function EditEmployee() {
         register,
         handleSubmit,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, isDirty },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
     })
@@ -209,7 +209,7 @@ export default function EditEmployee() {
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" size="sm" disabled={isSubmitting}>
+                            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
                                 {isSubmitting ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (

@@ -84,7 +84,7 @@ export default function EditConcesionario() {
         resolver: zodResolver(dealershipSchema),
     })
 
-    const { handleSubmit, reset, watch, formState: { isSubmitting } } = form
+    const { handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = form
     const currentAddress = watch("address")
     // Normalizar ambos lados para detectar cambios reales
     const addressChanged = currentAddress?.trim() !== "" && currentAddress?.trim() !== initialAddress.trim()
@@ -226,7 +226,7 @@ export default function EditConcesionario() {
                                 >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" size="sm" disabled={isSubmitting}>
+                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     ) : (

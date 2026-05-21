@@ -55,7 +55,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     }, [resolvedTheme])
 
     if (!isLoaded) {
-        return <div className={`w-full h-full bg-muted animate-pulse rounded-lg ${className || ''}`} />
+        return <div className={`w-full h-full bg-muted rounded-lg ${className || ''}`} />
     }
 
     return (

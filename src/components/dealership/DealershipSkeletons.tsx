@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { TableRow, TableCell } from "@/components/ui/table"
 
 /**
@@ -74,77 +74,75 @@ export function CardSkeleton() {
  */
 export function DealershipFormSkeleton() {
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-500">
-            {/* Header Skeleton */}
-            <div className="flex items-center justify-between min-h-[48px] mb-2 gap-4">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <Skeleton static className="h-4 w-48 rounded bg-muted/20" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <Skeleton static className="h-8 w-64 rounded-md bg-muted/20" />
+                    <Skeleton static className="h-6 w-48 rounded-md bg-muted/20" />
                 </div>
-                <div className="flex-1 flex justify-end">
-                    <Skeleton static className="h-8 w-32 rounded-md bg-muted/20" />
-                </div>
+                <div className="hidden md:flex md:flex-1"></div>
             </div>
 
-            <div className="flex-1 grid gap-4 lg:grid-cols-3 min-h-0">
-                {/* Main Form Information Card */}
-                <Card className="lg:col-span-2 flex flex-col border-border/50">
-                    <CardContent className="pt-6 flex-1 overflow-y-auto">
-                        <div className="h-full flex flex-col">
-                            <div className="flex-1 grid gap-6 md:grid-cols-2 content-start">
-                                {/* Name Field */}
-                                <div className="space-y-2.5">
-                                    <Skeleton static className="h-4 w-40 rounded bg-muted/10" />
-                                    <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="h-full grid gap-2 lg:grid-cols-3 overflow-y-auto pb-2">
+                    {/* Main Form Information Card */}
+                    <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
+                        <CardHeader className="p-2 pb-0">
+                            <Skeleton static className="h-5 w-48 rounded bg-muted/20" />
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="h-full flex flex-col">
+                                <div className="flex-1 grid gap-6 md:grid-cols-2 content-start">
+                                    {/* Name Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-40 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Phone Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-28 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Address Field - Spans 2 cols */}
+                                    <div className="space-y-2.5 md:col-span-2">
+                                        <Skeleton static className="h-4 w-32 rounded bg-muted/10" />
+                                        <Skeleton static className="h-20 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Zone Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-20 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
                                 </div>
 
-                                {/* Phone Field */}
-                                <div className="space-y-2.5">
-                                    <Skeleton static className="h-4 w-28 rounded bg-muted/10" />
-                                    <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
-                                </div>
-
-                                {/* Address Field - Spans 2 cols */}
-                                <div className="space-y-2.5 md:col-span-2">
-                                    <Skeleton static className="h-4 w-32 rounded bg-muted/10" />
-                                    <Skeleton static className="h-20 w-full rounded-md bg-muted/20" />
-                                </div>
-
-                                {/* Zone Field */}
-                                <div className="space-y-2.5">
-                                    <Skeleton static className="h-4 w-20 rounded bg-muted/10" />
-                                    <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                {/* Buttons Footer */}
+                                <div className="flex flex-wrap gap-4 pt-6 mt-auto border-t border-border/50">
+                                    <Skeleton static className="h-9 w-24 rounded-md bg-muted/20" />
+                                    <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
+                                    <Skeleton static className="h-9 w-24 rounded-md bg-muted/20 ml-auto" />
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
 
-                            {/* Buttons Footer */}
-                            <div className="flex flex-wrap gap-4 pt-6 mt-auto border-t border-border/50">
-                                <Skeleton static className="h-9 w-24 rounded-md bg-muted/20" />
-                                <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
-                                <Skeleton static className="h-9 w-24 rounded-md bg-muted/20 ml-auto" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Location/Map Card Skeleton */}
-                <Card className="flex flex-col h-fit border-border/50">
-                    <CardContent className="pt-6 flex flex-col gap-5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Skeleton static className="h-5 w-5 rounded-full bg-muted/20" />
-                            <Skeleton static className="h-6 w-40 rounded bg-muted/20" />
-                        </div>
-                        <Skeleton static className="h-[220px] w-full rounded-xl bg-muted/10 bordre border-border/40" />
-                        <Skeleton static className="h-6 w-32 rounded-full bg-muted/20" />
-                        <div className="flex gap-2">
-                            <Skeleton static className="h-9 flex-1 rounded-md bg-muted/20" />
-                            <Skeleton static className="h-9 flex-1 rounded-md bg-muted/20" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
+                    {/* Location/Map Card Skeleton */}
+                    <Card className="flex flex-col gap-1 py-1">
+                        <CardHeader className="p-2 pb-0">
+                            <Skeleton static className="h-5 w-32 rounded bg-muted/20" />
+                        </CardHeader>
+                        <CardContent className="flex-1 flex flex-col gap-3">
+                            <Skeleton static className="flex-1 min-h-[200px] w-full rounded-xl bg-muted/10 border border-border/40" />
+                            <Skeleton static className="h-6 w-32 rounded-full bg-muted/20" />
+                            <Skeleton static className="h-9 w-full rounded-md bg-muted/20" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </CardContent>
+        </Card>
     )
 }

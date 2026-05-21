@@ -277,13 +277,13 @@ export default function LiveTracking() {
                         className="h-6 w-6 p-0 hover:bg-muted"
                         title="Actualizar datos"
                     >
-                        <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className="h-3 w-3" />
                     </Button>
                 </div>
             </div>
 
             <div className={cn(
-                "absolute right-4 top-4 bottom-4 transition-all duration-300 z-10",
+                "absolute right-4 top-4 bottom-4 z-10",
                 isPanelCollapsed ? "w-9" : "w-72",
                 showMessengerDetails && "opacity-0 pointer-events-none translate-x-full"
             )}>

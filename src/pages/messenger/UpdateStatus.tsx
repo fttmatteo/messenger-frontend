@@ -266,7 +266,7 @@ export default function UpdateStatus() {
 
                 <div className="px-4 py-3">
                     <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.18em] mb-3 px-1">
-                        Seleccionar Estado
+                        Seleccionar estado
                     </p>
                     <div className="space-y-3">
                         {statusOptions.map((option) => {
@@ -337,7 +337,7 @@ export default function UpdateStatus() {
                                         <div className="p-1.5 rounded-lg bg-primary/10">
                                             <PenLine className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
-                                        <h3 className="text-sm font-bold tracking-tight">Firma del Asesor</h3>
+                                        <h3 className="text-sm font-bold tracking-tight">Firma del asesor</h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
                                     <SignatureCanvas
@@ -354,7 +354,7 @@ export default function UpdateStatus() {
                                             <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                         </div>
                                         <h3 className="text-sm font-bold tracking-tight">
-                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de Evidencia' : 'Foto de Evidencia'}
+                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
                                         </h3>
                                         <span className="text-xs text-red-500 font-bold">*</span>
                                     </div>
@@ -387,9 +387,9 @@ export default function UpdateStatus() {
                                         id="observation"
                                         placeholder={
                                             selectedOption.value === 'RETURNED'
-                                                ? 'Motivo de la Devolución...'
+                                                ? 'Motivo de la devolución...'
                                                 : selectedOption.value === 'PENDING'
-                                                    ? 'Motivo del Servicio Pendiente...'
+                                                    ? 'Motivo del servicio pendiente...'
                                                     : 'Notas adicionales...'
                                         }
                                         value={observation}
@@ -430,7 +430,7 @@ export default function UpdateStatus() {
                                     <selectedOption.icon className="h-5 w-5" />
                                 </span>
                             )}
-                            {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un Estado'}
+                            {selectedOption ? `Confirmar ${selectedOption.label}` : 'Selecciona un estado'}
                         </>
                     )}
                 </Button>

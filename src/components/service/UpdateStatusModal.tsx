@@ -262,7 +262,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                     <Button
                         size="sm"
                         onClick={handleUpdateStatus}
-                        disabled={updating || availableStatuses.length === 0}
+                        disabled={updating || availableStatuses.length === 0 || (newStatus === service.currentStatus && !observation.trim())}
                     >
                         {updating ? (
                             <>

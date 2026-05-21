@@ -279,7 +279,7 @@ export default function LoginMobile() {
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
                     <p>
-                        Soporte Técnico -{' '}
+                        Soporte técnico -{' '}
                         <a href="mailto:contacto@plak.digital" className="hover:underline text-primary font-semibold">
                             contacto@plak.digital
                         </a>
@@ -290,7 +290,7 @@ export default function LoginMobile() {
                             onClick={() => navigate('/politica-cookies')}
                             className="underline text-primary font-semibold cursor-pointer"
                         >
-                            Política de Cookies
+                            Política de cookies
                         </button>
                         <span className="text-muted-foreground/60">•</span>
                         <button
@@ -298,7 +298,7 @@ export default function LoginMobile() {
                             onClick={() => navigate('/politica-privacidad')}
                             className="underline text-primary font-semibold cursor-pointer"
                         >
-                            Política de Privacidad
+                            Política de privacidad
                         </button>
                     </p>
                 </div>

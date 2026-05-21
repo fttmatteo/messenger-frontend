@@ -13,13 +13,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
   const isMobile = useIsMobile()
 
-  const position: ToasterProps["position"] = isMobile ? "bottom-center" : "bottom-right"
-
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      position={position}
+      className="toaster group !fixed"
+      position="top-center"
       expand={true}
       offset={isMobile ? "calc(var(--safe-area-bottom) + 16px)" : 32}
       gap={12}
