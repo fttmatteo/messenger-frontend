@@ -16,7 +16,6 @@ vi.mock('@/config/toast-config', () => ({
     }
 }))
 
-// Mock de useOutletContext para query de búsqueda
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom')
     return {
@@ -25,7 +24,6 @@ vi.mock('react-router-dom', async () => {
     }
 })
 
-// Mock de useStatusColors para evitar problemas de contexto si es necesario, pero usamos el Provider
 /**
  * Suite de pruebas de integración para la página de lista de servicios del administrador.
  * Verifica la correcta carga de datos, manejo de estados vacíos y visualización de la lista
@@ -96,17 +94,13 @@ describe('Servicios Admin Page Integration', () => {
     it('should load and display services list', async () => {
         renderPage()
 
-        // Esperar a que desaparezca el skeleton
         await waitFor(() => {
             expect(screen.queryByTestId('service-skeleton-0')).not.toBeInTheDocument()
         }, { timeout: 4000 })
 
-        // Verificar concesionario primero
         expect(await screen.findByText(/Dealership-Alpha/i)).toBeInTheDocument()
 
-        // Luego verificar partes de la placa
-        expect(await screen.findByText(/ADM/i)).toBeInTheDocument()
-        expect(await screen.findByText(/001/i)).toBeInTheDocument()
+        expect(await screen.findByTitle(/ADM-001/i)).toBeInTheDocument()
         expect(await screen.findByText(/Messenger-Beta/i)).toBeInTheDocument()
         expect(await screen.findByText(/Asignado/i)).toBeInTheDocument()
     })
@@ -144,10 +138,8 @@ describe('Servicios Admin Page Integration', () => {
             expect(screen.queryByTestId('service-skeleton-0')).not.toBeInTheDocument()
         }, { timeout: 4000 })
 
-        // El componente UI debe manejar el rechazo lanzando un Toast (gestionado por el hook useServices)
         expect(showToast.error).toHaveBeenCalledWith("Error al cargar servicios", expect.any(Object))
 
-        // La tabla debe mostrarse vacía
         expect(await screen.findByText(/Sin servicios/i)).toBeInTheDocument()
     })
 })
