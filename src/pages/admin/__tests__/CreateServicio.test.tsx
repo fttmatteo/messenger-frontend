@@ -44,7 +44,7 @@ describe('AdminCreateServicio Page', () => {
     it('should render the creation form for admin', async () => {
         renderWithProviders(<AdminCreateServicio />);
 
-        expect(await screen.findByText('Información del servicio')).toBeInTheDocument();
+        expect(await screen.findByText('Información del Servicio')).toBeInTheDocument();
         expect(screen.getByText(/Concesionario origen/i, { selector: 'label' })).toBeInTheDocument();
         expect(screen.getByText(/Concesionario destino/i, { selector: 'label' })).toBeInTheDocument();
         expect(screen.getByText(/Transportista/i, { selector: 'label' })).toBeInTheDocument();
