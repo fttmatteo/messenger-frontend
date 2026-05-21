@@ -176,7 +176,7 @@ describe('LoginMobile Page', () => {
     it('should toggle password visibility and handle checkbox', async () => {
         renderLogin()
         const passInput = await screen.findByPlaceholderText(/ingrese su contraseña/i)
-        fireEvent.click(screen.getByRole('button', { name: /alternar visibilidad de contraseña/i }))
+        fireEvent.click(screen.getByRole('button', { name: /toggle password visibility/i }))
         expect(passInput).toHaveAttribute('type', 'text')
         fireEvent.click(screen.getByRole('checkbox'))
     })

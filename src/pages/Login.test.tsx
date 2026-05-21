@@ -121,7 +121,7 @@ describe('Login Page', () => {
         const passwordInput = screen.getByPlaceholderText('Ingrese Su Contraseña') as HTMLInputElement;
         expect(passwordInput.type).toBe('password');
 
-        const toggleButton = screen.getByRole('button', { name: /alternar visibilidad de contraseña/i });
+        const toggleButton = screen.getByRole('button', { name: /toggle password visibility/i });
         await user.click(toggleButton);
 
         expect(passwordInput.type).toBe('text');
