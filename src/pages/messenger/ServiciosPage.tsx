@@ -79,7 +79,7 @@ export default function ServiciosPage() {
                         id="search-services"
                         name="search"
                         autoComplete="off"
-                        placeholder="Buscar por Chasis..."
+                        placeholder="Buscar por chasis..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-9 h-10 border-input/60"
@@ -171,7 +171,7 @@ export default function ServiciosPage() {
                     {statusFilter !== 'all' && <span className="shrink-0 opacity-40">·</span>}
                     <span className="truncate">
                         {searchTerm.trim() || statusFilter !== "all"
-                            ? "Historial Global"
+                            ? "Historial global"
                             : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))
                         }
                     </span>
@@ -196,9 +196,9 @@ export default function ServiciosPage() {
                     loading={loading}
                     emptyMessage={
                         statusFilter !== 'all'
-                            ? `No Hay Servicios "${getStatusLabel(statusFilter)}"`
-                            : searchTerm ? "No Se Encontraron Resultados"
-                                : `No Hay Servicios para Esta Fecha`
+                            ? `No hay servicios "${getStatusLabel(statusFilter)}"`
+                            : searchTerm ? "No se encontraron resultados"
+                                : `No hay servicios para esta fecha`
                     }
                 />
             </div>

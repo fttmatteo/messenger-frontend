@@ -64,7 +64,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                 <ScrollArea className="flex-1">
                     {messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
-                            No Hay Mensajeros Disponibles
+                            No hay mensajeros disponibles
                         </div>
                     ) : (
                         <div className="divide-y">

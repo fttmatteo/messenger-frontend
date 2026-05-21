@@ -149,7 +149,7 @@ export default function Profile() {
                     <Tabs defaultValue="personal" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 max-w-[320px] mb-2 bg-muted/50 p-1">
                             <TabsTrigger value="personal" className="text-xs py-1 data-[state=active]:bg-background">
-                                Información Personal
+                                Información personal
                             </TabsTrigger>
                             <TabsTrigger value="security" className="text-xs py-1 data-[state=active]:bg-background">
                                 Seguridad

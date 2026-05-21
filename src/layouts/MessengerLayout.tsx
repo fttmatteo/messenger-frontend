@@ -387,7 +387,7 @@ export default function MessengerLayout() {
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
             >
-                 Saltar al Contenido Principal
+                 Saltar al contenido principal
             </a>
             <header
                 className="sticky top-0 left-0 right-0 z-40 flex flex-col border-b bg-background shadow-sm pt-safe"
@@ -433,7 +433,7 @@ export default function MessengerLayout() {
                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                             </div>
                                             <span className="text-[11px] font-black text-green-600 dark:text-green-400 uppercase tracking-[0.18em]">
-                                                En Línea
+                                                En línea
                                             </span>
                                         </>
                                     ) : (
@@ -476,7 +476,7 @@ export default function MessengerLayout() {
                                         variant="ghost"
                                         size="icon"
                                         className="h-9 w-9 -ml-2 rounded-full hover:bg-muted transition-all active:scale-95"
-                                        aria-label="Abrir Menú"
+                                        aria-label="Abrir menú"
                                     >
                                         <Menu className="h-5 w-5" />
                                     </Button>
@@ -485,9 +485,8 @@ export default function MessengerLayout() {
                                     <SheetHeader className="p-4 pb-1 text-left">
                                         <div className="flex flex-col items-center gap-1 mb-4">
                                             <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
-                                            <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
                                             <SheetTitle className="sr-only">{APP_CONFIG.name}</SheetTitle>
-                                            <SheetDescription className="sr-only">Menú de Navegación del Transportista</SheetDescription>
+                                            <SheetDescription className="sr-only">Menú de navegación del transportista</SheetDescription>
                                         </div>
 
                                         <div className={cn(
@@ -506,7 +505,7 @@ export default function MessengerLayout() {
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                                             </div>
                                                             <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-[0.15em]">
-                                                                Sin Conexión
+                                                                Sin conexión
                                                             </span>
                                                         </>
                                                     ) : isOnline ? (
@@ -516,7 +515,7 @@ export default function MessengerLayout() {
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                                             </div>
                                                             <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-[0.15em]">
-                                                                En Línea
+                                                                En línea
                                                             </span>
                                                         </>
                                                     ) : (

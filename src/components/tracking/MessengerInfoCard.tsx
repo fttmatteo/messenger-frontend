@@ -21,7 +21,7 @@ export function MessengerInfoCard({ employee, speed, lastUpdate, currentLocation
             <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                     <User className="h-4 w-4 text-primary" />
-                    Información General
+                    Información general
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

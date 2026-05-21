@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import logoHorizontal from "@/assets/logo-horizontal.png"
 import { useState, useRef } from "react"
 import { AdminUIProvider } from "@/context/AdminUIContext"
-import { APP_CONFIG, openSupportEmail } from "@/lib/app-config"
+import { openSupportEmail } from "@/lib/app-config"
 import { SidebarToggleTab } from "@/components/SidebarToggleTab"
 
 const menuItems = [
@@ -49,15 +49,12 @@ function AdminLayoutContent() {
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
             >
-                Saltar al Contenido Principal
+                Saltar al contenido principal
             </a>
             <Sidebar collapsible="offcanvas" className="h-screen">
                 <SidebarHeader className="border-b border-sidebar-border pt-safe">
                     <div className="flex items-center justify-between px-2 py-2">
-                        <div className="flex flex-col items-center gap-1">
-                            <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
-                            <span className="text-[10px] font-medium text-muted-foreground leading-none">v{APP_CONFIG.version}</span>
-                        </div>
+                        <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
                         <ModeToggle showLabel={false} />
                     </div>
                 </SidebarHeader>

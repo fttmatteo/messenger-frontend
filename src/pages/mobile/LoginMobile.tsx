@@ -290,7 +290,7 @@ export default function LoginMobile() {
                             onClick={() => navigate('/politica-cookies')}
                             className="underline text-primary font-semibold cursor-pointer"
                         >
-                            Política de Cookies
+                            Política de cookies
                         </button>
                         <span className="text-muted-foreground/60">•</span>
                         <button
@@ -298,7 +298,7 @@ export default function LoginMobile() {
                             onClick={() => navigate('/politica-privacidad')}
                             className="underline text-primary font-semibold cursor-pointer"
                         >
-                            Política de Privacidad
+                            Política de privacidad
                         </button>
                     </p>
                 </div>
