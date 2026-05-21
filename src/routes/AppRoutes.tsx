@@ -34,7 +34,6 @@ const Configuracion = React.lazy(() => import('@/pages/admin/Configuracion'));
 const Profile = React.lazy(() => import('@/pages/admin/Profile'));
 const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
 const AdminCreateServicio = React.lazy(() => import('@/pages/admin/CreateServicio'));
-const MessengerServiceDetails = React.lazy(() => import('@/pages/messenger/ServiceDetails'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
@@ -172,7 +171,6 @@ export function AppRoutes() {
                     }
                 >
                     <Route index element={<MessengerDashboard />} />
-                    <Route path="servicio/:id" element={<MessengerServiceDetails />} />
                     <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
 
                     <Route path="servicios" element={<MessengerServiciosPage />} />

@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils"
 import { isNative } from "@/lib/capacitor"
 import { registerPlugin } from "@capacitor/core"
 
-// Plugin nativo para Foreground Service de ubicación persistente (solo APK)
 interface LocationServicePlugin {
     startService(options: { messengerId: number; backendUrl: string; authCookie: string }): Promise<{ started: boolean }>;
     stopService(): Promise<{ stopped: boolean }>;
@@ -58,11 +57,9 @@ export default function MessengerLayout() {
 
 
     useEffect(() => {
-        // Aseguramos que el html y body ocupen todo el espacio disponible
-        // pero sin bloquear la posición fixed que puede romper el safe-area-bottom
         document.documentElement.style.height = '100%'
         document.body.style.height = '100%'
-        document.body.style.overflow = 'hidden' // Evita el doble scrollbar
+        document.body.style.overflow = 'hidden'
 
         return () => {
             document.documentElement.style.height = ''
@@ -72,15 +69,10 @@ export default function MessengerLayout() {
     }, [])
 
     const getPageTitle = () => {
-        if (location.pathname.includes('historial-estadisticas')) return 'Historial estadísticas'
-
-        if (location.pathname.includes('estadisticas')) return 'Estadísticas'
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('perfil')) return 'Mi Perfil'
-        if (location.pathname.includes('actualizar')) return 'Actualizar estado'
-        if (location.pathname.includes('servicio/')) return 'Detalle servicio'
-        if (location.pathname.includes('crear')) return 'Nuevo servicio'
+        if (location.pathname.includes('actualizar')) return 'Actualizar Servicio'
         return null
     }
 

@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { getErrorMessage } from "@/lib/error-utils"
+import { useSmartLocation } from "@/hooks/use-smart-location"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 const formSchema = z.object({
@@ -36,6 +37,7 @@ export default function AdminCreateServicio() {
     const navigate = useNavigate()
     const { setSuccess, setError } = useAdminUI()
     const chasisInputRef = useRef<HTMLInputElement>(null)
+    const { getCurrentLocation } = useSmartLocation()
 
     const [loading, setLoading] = useState(false)
     const [dealerships, setDealerships] = useState<Dealership[]>([])
@@ -87,11 +89,23 @@ export default function AdminCreateServicio() {
         try {
             setLoading(true)
 
+            let latitude: number | undefined
+            let longitude: number | undefined
+            try {
+                const loc = await getCurrentLocation()
+                latitude = loc.latitude
+                longitude = loc.longitude
+            } catch {
+                // La ubicación es opcional: si falla, se continúa sin ella
+            }
+
             await serviceDeliveryService.create({
                 dealershipId: values.dealershipId,
                 originDealershipId: values.originDealershipId,
                 messengerDocument: values.messengerId,
-                manualPlateNumber: values.manualPlateNumber
+                manualPlateNumber: values.manualPlateNumber,
+                latitude,
+                longitude
             })
 
             setSuccess("Servicio creado exitosamente")

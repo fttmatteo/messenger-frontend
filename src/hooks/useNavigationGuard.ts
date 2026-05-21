@@ -15,15 +15,10 @@ function matchRoute(path: string): { matched: string | null; parent: string | nu
     }
 
     if (/^\/messenger\/servicio\/[^/]+\/actualizar$/.test(path)) {
-        const serviceId = path.match(/^\/messenger\/servicio\/([^/]+)\/actualizar$/)?.[1];
         return {
             matched: '/messenger/servicio/:id/actualizar',
-            parent: serviceId ? `/messenger/servicio/${serviceId}` : '/messenger'
+            parent: '/messenger'
         };
-    }
-
-    if (/^\/messenger\/servicio\/[^/]+$/.test(path)) {
-        return { matched: '/messenger/servicio/:id', parent: '/messenger' };
     }
 
     return { matched: null, parent: null };

@@ -147,6 +147,9 @@ export default function ViewServicio() {
                     dealershipLat={service.dealership.latitude}
                     dealershipLng={service.dealership.longitude}
                     dealershipName={service.dealership.name}
+                    originDealershipLat={service.originDealership.latitude}
+                    originDealershipLng={service.originDealership.longitude}
+                    originDealershipName={service.originDealership.name}
                     serviceStatus={service.currentStatus}
                 />
             </div>

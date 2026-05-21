@@ -64,6 +64,16 @@ export default function UpdateStatus() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const signatureRef = useRef<SignatureCanvasRef>(null)
 
+    const handleSelectStatus = (status: ServiceStatus) => {
+        if (status !== selectedStatus) {
+            signatureRef.current?.clear()
+            setHasSignature(false)
+            setPhotos([])
+            setObservation('')
+        }
+        setSelectedStatus(status)
+    }
+
     const statusOptions = useMemo(() => {
         return STATUS_OPTIONS
             .filter(option => !service || option.id !== service.currentStatus)
@@ -265,7 +275,7 @@ export default function UpdateStatus() {
                                 <motion.button
                                     key={option.value}
                                     type="button"
-                                    onClick={() => setSelectedStatus(option.value)}
+                                    onClick={() => handleSelectStatus(option.value)}
                                     className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left touch-manipulation ${!isSelected ? 'border-border/40 bg-card hover:bg-muted/30' : ''
                                         }`}
                                     style={isSelected ? {

@@ -1,4 +1,4 @@
-import { MapPin, Building2, Clock, MessageSquare, Phone } from "lucide-react"
+import { Clock, MessageSquare, Phone, MapPin, Flag } from "lucide-react"
 import type { ServiceDelivery } from "@/types/service.types"
 import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/components/PlacaBadge"
@@ -29,12 +29,12 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
     const statusColor = colors[service.currentStatus] || '#6b7280'
     const statusConfig = getStatusIconConfig(service.currentStatus, colors)
 
-    const handleNavigate = (e: React.MouseEvent) => {
+    const handleNavigate = (dealership: ServiceDelivery['dealership'], e: React.MouseEvent) => {
         e.stopPropagation()
 
-        if (!service?.dealership) return
+        if (!dealership) return
 
-        const { latitude, longitude, address } = service.dealership
+        const { latitude, longitude, address } = dealership
 
         const toastId = showToast.loading("Obteniendo ubicación...", { duration: 2000 })
 
@@ -127,59 +127,90 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                     )}
                 </div>
 
-                {/* Cuerpo de Detalles */}
-                <div className="space-y-2">
-                    {/* Concesionario Destino */}
-                    <div className="flex items-start gap-2 text-sm">
-                        <Building2 className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" strokeWidth={2} />
-                        <div className="min-w-0">
-                            <span className="font-bold text-foreground truncate block text-sm">{service.dealership.name}</span>
-                            {service.dealership.zone && (
-                                <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">{service.dealership.zone}</span>
-                            )}
-                        </div>
+                <div className="space-y-3.5">
+                    {/* Ruta de Concesionarios */}
+                    <div className="flex flex-col pl-1">
+                        {/* Origen Row */}
+                        {service.originDealership && (
+                            <div className="flex gap-3 items-stretch">
+                                {/* Left Column: Icon and Line */}
+                                <div className="flex flex-col items-center shrink-0 w-[18px] relative z-10">
+                                    <MapPin className="h-[18px] w-[18px] text-muted-foreground shrink-0 mt-0.5" strokeWidth={2} />
+                                    <div className="flex-1 w-0.5 border-l border-dashed border-muted-foreground/30 my-1" />
+                                </div>
+                                
+                                {/* Right Column: Content */}
+                                <div className="flex-1 min-w-0 pb-4">
+                                    <span className="text-[11px] text-muted-foreground font-black uppercase tracking-wider block leading-none font-bold">Origen</span>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span
+                                            onClick={(e) => handleNavigate(service.originDealership, e)}
+                                            className="font-extrabold text-primary hover:text-primary/80 cursor-pointer underline underline-offset-2 text-[15px] truncate block max-w-[85%]"
+                                            title="Haz clic para navegar con Google Maps al origen"
+                                        >
+                                            {service.originDealership.name}
+                                        </span>
+                                        {service.originDealership.phone && (
+                                            <a
+                                                href={`tel:${service.originDealership.phone}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="text-primary hover:text-primary/80 transition-colors p-1 -m-1 rounded-full hover:bg-muted/30 flex items-center justify-center"
+                                                title={`Llamar al origen: ${service.originDealership.phone}`}
+                                            >
+                                                <Phone className="h-[18px] w-[18px] shrink-0 text-primary" strokeWidth={2} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Destino Row */}
+                        {service.dealership && (
+                            <div className="flex gap-3 items-stretch">
+                                {/* Left Column: Icon */}
+                                <div className="flex flex-col items-center shrink-0 w-[18px] z-10">
+                                    <Flag className="h-[18px] w-[18px] text-muted-foreground shrink-0 mt-0.5" strokeWidth={2} />
+                                </div>
+
+                                {/* Right Column: Content */}
+                                <div className="flex-1 min-w-0">
+                                    <span className="text-[11px] text-muted-foreground font-black uppercase tracking-wider block leading-none font-bold">Destino</span>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span
+                                            onClick={(e) => handleNavigate(service.dealership, e)}
+                                            className="font-extrabold text-primary hover:text-primary/80 cursor-pointer underline underline-offset-2 text-[15px] truncate block max-w-[85%]"
+                                            title="Haz clic para navegar con Google Maps al destino"
+                                        >
+                                            {service.dealership.name}
+                                        </span>
+                                        {service.dealership.phone && (
+                                            <a
+                                                href={`tel:${service.dealership.phone}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="text-primary hover:text-primary/80 transition-colors p-1 -m-1 rounded-full hover:bg-muted/30 flex items-center justify-center"
+                                                title={`Llamar al destino: ${service.dealership.phone}`}
+                                            >
+                                                <Phone className="h-[18px] w-[18px] shrink-0 text-primary" strokeWidth={2} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Dirección Clickable para Navegación en Mapas */}
-                    {service.dealership.address && (
-                        <div
-                            onClick={handleNavigate}
-                            className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-bold cursor-pointer underline underline-offset-2 w-fit max-w-full transition-colors"
-                            title="Haz clic para navegar con Google Maps"
-                        >
-                            <MapPin className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
-                            <span className="truncate">{service.dealership.address}</span>
-                        </div>
-                    )}
-
-                    {/* Teléfono del Concesionario Clickable para Llamar */}
-                    {service.dealership.phone && (
-                        <div
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-bold w-fit max-w-full transition-colors"
-                        >
-                            <Phone className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
-                            <a
-                                href={`tel:${service.dealership.phone}`}
-                                className="underline underline-offset-2 cursor-pointer"
-                                title="Haz clic para llamar al concesionario"
-                            >
-                                {service.dealership.phone}
-                            </a>
-                        </div>
-                    )}
-
                     {/* Fecha de Asignación */}
-                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-semibold">
-                        <Clock className="h-4 w-4 shrink-0" strokeWidth={2} />
+                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-semibold pl-1">
+                        <Clock className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
                         <span>{formatDateTime(service.createdAt)}</span>
                     </div>
                 </div>
 
                 {/* Observaciones (si existen) */}
                 {service.observation && (
-                    <div className="flex items-start gap-2 bg-muted/65 border border-border/40 rounded-lg p-2.5 text-xs text-foreground/95 font-medium leading-relaxed shadow-sm">
-                        <MessageSquare className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                    <div className="flex items-start gap-2.5 bg-muted/65 border border-border/40 rounded-lg p-3 text-[13px] text-foreground/95 font-medium leading-relaxed shadow-sm">
+                        <MessageSquare className="h-[18px] w-[18px] shrink-0 text-primary mt-0.5" />
                         <p className="line-clamp-2">{service.observation}</p>
                     </div>
                 )}
