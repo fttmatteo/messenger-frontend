@@ -94,7 +94,7 @@ export default function PoliticaPrivacidad() {
                             <div className="p-4 bg-muted/20 rounded-xl border border-border/40 space-y-2">
                                 <div className="flex items-center gap-2 text-primary font-bold">
                                     <Edit3 className="h-4.5 w-4.5" />
-                                    <span>Evidencia Digital</span>
+                                    <span>Evidencia digital</span>
                                 </div>
                                 <p className="text-xs text-foreground/70 leading-relaxed">
                                     Firmas digitales en pantalla táctil y capturas fotográficas opcionales cargadas por los transportistas como soporte legal para validar la entrega de los servicios.
@@ -117,9 +117,9 @@ export default function PoliticaPrivacidad() {
                             De acuerdo con la legislación vigente, los datos personales recolectados en esta aplicación tienen las siguientes finalidades legítimas:
                         </p>
                         <ul className="list-disc pl-5 space-y-2 text-foreground/80 my-2">
-                            <li><strong>Gestión Operativa:</strong> Sincronizar, despachar y dar seguimiento en tiempo real a las entregas entre concesionarios y transportistas.</li>
-                            <li><strong>Seguridad Vial y Logística:</strong> Permitir a los administradores visualizar la ubicación en vivo de los transportistas para coordinar rutas eficientes y garantizar el auxilio en carretera de ser necesario.</li>
-                            <li><strong>Soporte de Auditoría:</strong> Conservar la firma digital y las fotos en la base de datos como comprobantes fehacientes de entrega, disponibles únicamente para los administradores de la plataforma y el concesionario solicitante.</li>
+                            <li><strong>Gestión operativa:</strong> Sincronizar, despachar y dar seguimiento en tiempo real a las entregas entre concesionarios y transportistas.</li>
+                            <li><strong>Seguridad vial y logística:</strong> Permitir a los administradores visualizar la ubicación en vivo de los transportistas para coordinar rutas eficientes y garantizar el auxilio en carretera de ser necesario.</li>
+                            <li><strong>Soporte de auditoría:</strong> Conservar la firma digital y las fotos en la base de datos como comprobantes fehacientes de entrega, disponibles únicamente para los administradores de la plataforma y el concesionario solicitante.</li>
                         </ul>
                         <div className="bg-muted/40 border-l-4 border-primary p-3.5 rounded-r-xl my-2 text-foreground/90 font-medium text-xs">
                             <strong>Seguridad de Datos:</strong> Toda la información transmitida entre el celular, la aplicación web y nuestros servidores viaja cifrada mediante protocolos de seguridad HTTPS/TLS y se almacena en bases de datos con accesos estrictamente restringidos.

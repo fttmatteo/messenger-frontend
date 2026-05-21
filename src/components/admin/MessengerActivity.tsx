@@ -42,7 +42,7 @@ export function MessengerProductivity({ stats }: MessengerProductivityProps) {
             <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                     <TrendingUp className="h-3 w-3" />
-                    Resumen del Día
+                    Resumen del día
                 </h4>
             </div>
 

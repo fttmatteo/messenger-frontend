@@ -43,7 +43,7 @@ export function TablePagination({
     const hasResults = totalItems > 0
 
     return (
-        <div className="mt-auto pt-2 flex items-center justify-between gap-4">
+        <div className="mt-auto pt-2 pb-4 flex items-center justify-between gap-4">
             {/* Left: Results info */}
             <p className="text-xs text-muted-foreground min-w-[200px]">
                 {hasResults ? (

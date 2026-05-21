@@ -34,14 +34,14 @@ test.describe('Login E2E Flow', () => {
     });
 
     test('should validate document format', async ({ page }) => {
-        await page.getByPlaceholder('Ingrese su número de documento').fill('abc1234');
+        await page.getByPlaceholder('Ingrese número de documento').fill('abc1234');
         await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
         await expect(page.getByText('Solo se permiten números')).toBeVisible();
     });
 
     test('should toggle password visibility', async ({ page }) => {
-        const passwordInput = page.getByPlaceholder('Ingrese su contraseña');
+        const passwordInput = page.getByPlaceholder('Ingrese contraseña');
         await passwordInput.fill('secret');
 
         await expect(passwordInput).toHaveAttribute('type', 'password');
@@ -61,8 +61,8 @@ test.describe('Login E2E Flow', () => {
             await route.fulfill({ json });
         });
 
-        await page.getByPlaceholder('Ingrese su número de documento').fill('12345678');
-        await page.getByPlaceholder('Ingrese su contraseña').fill('password123');
+        await page.getByPlaceholder('Ingrese número de documento').fill('12345678');
+        await page.getByPlaceholder('Ingrese contraseña').fill('password123');
 
         await page.getByRole('button', { name: /iniciar sesión/i }).click();
         await expect(page).toHaveURL(/.*\/admin/);

@@ -56,7 +56,7 @@ export function DesktopOnlyGuard() {
                         className="gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 w-full sm:w-auto"
                     >
                         <LogOut className="h-4 w-4" />
-                        Cerrar Sesión
+                        Cerrar sesión
                     </Button>
                 </CardFooter>
             </Card>

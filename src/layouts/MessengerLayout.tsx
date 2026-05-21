@@ -71,7 +71,7 @@ export default function MessengerLayout() {
     const getPageTitle = () => {
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
-        if (location.pathname.includes('perfil')) return 'Mi Perfil'
+        if (location.pathname.includes('perfil')) return 'Perfil'
         if (location.pathname.includes('actualizar')) return 'Actualizar Servicio'
         return null
     }
@@ -555,7 +555,7 @@ export default function MessengerLayout() {
                                             onClick={() => { navigate('/messenger/perfil'); setIsSidebarOpen(false); }}
                                         >
                                             <User className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                                            <span className="font-medium text-sm">Mi Perfil</span>
+                                            <span className="font-medium text-sm">Perfil</span>
                                         </Button>
                                         <Button
                                             variant="ghost"
@@ -583,7 +583,7 @@ export default function MessengerLayout() {
                                             onClick={() => { handleLogout(); setIsSidebarOpen(false); }}
                                         >
                                             <LogOut className="h-5 w-5" />
-                                            <span className="text-sm">Cerrar Sesión</span>
+                                            <span className="text-sm">Cerrar sesión</span>
                                         </Button>
                                     </div>
                                 </SheetContent>
@@ -610,9 +610,9 @@ export default function MessengerLayout() {
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Cerrar Sesión?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Se Detendrá El Rastreo GPS Y Cerrarás Tu Sesión.
+                            Se detendrá el rastreo GPS y cerrarás tu sesión.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

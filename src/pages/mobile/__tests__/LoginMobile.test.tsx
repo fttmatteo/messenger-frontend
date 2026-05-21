@@ -125,7 +125,7 @@ describe('LoginMobile Page', () => {
         mockLogin.mockRejectedValue(new Error('Invalid credentials'))
         renderLogin()
         fireEvent.change(await screen.findByLabelText(/documento/i), { target: { value: '12345678' } })
-        fireEvent.change(screen.getByPlaceholderText(/ingrese su contraseña/i), { target: { value: 'password123' } })
+        fireEvent.change(screen.getByPlaceholderText(/ingrese contraseña/i), { target: { value: 'password123' } })
         fireEvent.click(screen.getByText(/verify turnstile/i))
         const submitBtn = await screen.findByRole('button', { name: /iniciar sesión/i })
         fireEvent.click(submitBtn)
@@ -141,14 +141,14 @@ describe('LoginMobile Page', () => {
         renderLogin()
 
         fireEvent.change(await screen.findByLabelText(/documento/i), { target: { value: '12345678' } })
-        fireEvent.change(screen.getByPlaceholderText(/ingrese su contraseña/i), { target: { value: 'password' } })
+        fireEvent.change(screen.getByPlaceholderText(/ingrese contraseña/i), { target: { value: 'password' } })
         fireEvent.click(screen.getByText(/verify turnstile/i))
         const submitBtn = await screen.findByRole('button', { name: /iniciar sesión/i })
         fireEvent.click(submitBtn)
 
         await waitFor(() => {
             expect(showToast.error).toHaveBeenCalledWith(
-                expect.stringContaining('15 Minutos'),
+                expect.stringContaining('15 minutos'),
                 expect.anything()
             )
         })
@@ -175,7 +175,7 @@ describe('LoginMobile Page', () => {
 
     it('should toggle password visibility and handle checkbox', async () => {
         renderLogin()
-        const passInput = await screen.findByPlaceholderText(/ingrese su contraseña/i)
+        const passInput = await screen.findByPlaceholderText(/ingrese contraseña/i)
         fireEvent.click(screen.getByRole('button', { name: /toggle password visibility/i }))
         expect(passInput).toHaveAttribute('type', 'text')
         fireEvent.click(screen.getByRole('checkbox'))

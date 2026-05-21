@@ -228,7 +228,7 @@ export function MessengerSidePanel({
                                 ? "bg-emerald-500/10 text-emerald-500"
                                 : "bg-muted text-muted-foreground"
                         )}>
-                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? '• En Línea' : 'Fuera De Línea'}
+                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? '• En línea' : 'Fuera de línea'}
                         </Badge>
                     </div>
                 </div>

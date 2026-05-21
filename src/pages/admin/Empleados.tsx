@@ -39,8 +39,8 @@ export default function Empleados() {
     } = useEmployees({ searchQuery })
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Transportistas" }]} />
                 </div>
@@ -52,13 +52,12 @@ export default function Empleados() {
                 <div className="flex-1 flex justify-end">
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
-                        Nuevo Transportista
+                        Nuevo transportista
                     </Button>
                 </div>
-            </Card>
+            </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0 !overflow-hidden">
-                <CardContent className="flex-1 flex flex-col min-h-0 !overflow-hidden">
+            <CardContent className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
                     {loading ? (
                         <div className="flex-1 overflow-auto min-h-0">
                             <Table>
@@ -80,8 +79,8 @@ export default function Empleados() {
                                 isSearchResult={!!searchQuery}
                                 searchQuery={searchQuery}
                                 emptyIcon={<Users />}
-                                emptyTitle="Sin Transportistas"
-                                emptyDescription="Aún No Hay Transportistas Registrados en el Sistema"
+                                emptyTitle="Sin transportistas"
+                                emptyDescription="Aún no hay transportistas registrados en el sistema"
                                 className="py-0"
                             />
                         </div>
@@ -151,8 +150,7 @@ export default function Empleados() {
                         </>
                     )}
                 </CardContent>
-            </Card>
-        </div >
+        </Card>
     )
 }
 

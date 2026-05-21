@@ -17,23 +17,10 @@ import { DealershipFormSkeleton } from "@/components/dealership/DealershipSkelet
 import { getErrorMessage } from "@/lib/error-utils"
 import { ConcesionarioForm } from "@/components/admin/ConcesionarioForm"
 import { dealershipSchema, type DealershipFormValues } from "@/schemas/dealership.schema"
+import { capitalizeWords } from "@/utils/stringUtils"
 
 /**
- * Capitaliza la primera letra de cada palabra en una cadena de texto.
- * Ejemplo: "MUNDO YAMAHA" → "Mundo Yamaha"
- * 
- * @param {string} str - Cadena de texto a capitalizar.
- * @returns {string} Cadena de texto capitalizada.
- */
-function capitalizeWords(str: string): string {
-    return str
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-}
 
-/**
  * Marcador personalizado para mostrar la ubicación actual o actualizada del concesionario.
  * 
  * @param {Object} props - Propiedades del componente.
@@ -49,7 +36,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
         const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
-            title: "Ubicación del Concesionario",
+            title: "Ubicación del concesionario",
             content: new google.maps.marker.PinElement({
                 background: '#10b981',
                 borderColor: 'white',
@@ -141,7 +128,7 @@ export default function EditConcesionario() {
                 zone: data.zone,
                 whatsappPin: data.whatsappPin,
             })
-            setSuccess("Concesionario Actualizado Exitosamente")
+            setSuccess("Concesionario actualizado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -153,7 +140,7 @@ export default function EditConcesionario() {
         if (!id) return
 
         if (!isMapsApiLoaded) {
-            setError("Cargando Servicios de Mapas... Por Favor Intenta de Nuevo.")
+            setError("Cargando servicios de mapas... Por favor intenta de nuevo.")
             return
         }
 
@@ -175,7 +162,7 @@ export default function EditConcesionario() {
                 lng: result.longitude,
             })
             setInitialAddress(capitalizeWords(data.address.trim()))
-            setSuccess("Guardado y Geocodificado Correctamente")
+            setSuccess("Guardado y geocodificado correctamente")
         } catch (error) {
             setError(getErrorMessage(error))
         } finally {
@@ -188,7 +175,7 @@ export default function EditConcesionario() {
         try {
             setDeleting(true)
             await dealershipService.delete(id)
-            setSuccess("Concesionario Eliminado Exitosamente")
+            setSuccess("Concesionario eliminado exitosamente")
             navigate("/admin/concesionarios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -202,8 +189,9 @@ export default function EditConcesionario() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Concesionarios", href: "/admin/concesionarios" },
@@ -212,16 +200,17 @@ export default function EditConcesionario() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar Concesionario</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar concesionario</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </Card>
+            </div>
 
-            <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0">
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="h-full grid gap-2 lg:grid-cols-3 overflow-y-auto pb-2">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="text-base text-foreground font-semibold">Información del Concesionario</CardTitle>
+                        <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -350,7 +339,9 @@ export default function EditConcesionario() {
                         )}
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
+        </>
     )
 }

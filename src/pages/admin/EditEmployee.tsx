@@ -14,31 +14,17 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Loader2, Eye, EyeOff, Trash2, Save } from "lucide-react"
 import { EmployeeFormSkeleton } from "@/components/employee/EmployeeSkeletons"
 import { getErrorMessage } from "@/lib/error-utils"
+import { capitalizeWords } from "@/utils/stringUtils"
 
 const employeeSchema = z.object({
-    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Números"),
-    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
-    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
+    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo números"),
+    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
+    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
     password: z.string().optional(),
     role: z.literal("MESSENGER"),
 })
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
-
-/**
- * Capitaliza la primera letra de cada palabra en una cadena de texto.
- * Ejemplo: "MATEO VALENCIA ARDILA" → "Mateo Valencia Ardila"
- * 
- * @param {string} str - Cadena de texto a capitalizar.
- * @returns {string} Cadena de texto capitalizada.
- */
-function capitalizeWords(str: string): string {
-    return str
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-}
 
 /**
  * Página para editar la información de un empleado existente.
@@ -94,7 +80,7 @@ export default function EditEmployee() {
                 password: data.password || "",
                 role: "MESSENGER",
             })
-            setSuccess("Transportista Actualizado Exitosamente")
+            setSuccess("Transportista actualizado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -106,7 +92,7 @@ export default function EditEmployee() {
         try {
             setDeleting(true)
             await employeeService.delete(id)
-            setSuccess("Transportista Eliminado Exitosamente")
+            setSuccess("Transportista eliminado exitosamente")
             navigate("/admin/empleados")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -120,8 +106,9 @@ export default function EditEmployee() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Transportistas", href: "/admin/empleados" },
@@ -130,15 +117,15 @@ export default function EditEmployee() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar Transportista</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Editar transportista</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </Card>
+            </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+            <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
                 <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del Transportista</CardTitle>
+                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -157,7 +144,7 @@ export default function EditEmployee() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fullName">Nombre Completo</Label>
+                                <Label htmlFor="fullName">Nombre completo</Label>
                                 <Input
                                     id="fullName"
                                     placeholder="Juan Pérez García"
@@ -183,12 +170,12 @@ export default function EditEmployee() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="password">Nueva Contraseña (opcional)</Label>
+                                <Label htmlFor="password">Nueva contraseña (opcional)</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Dejar Vacío para no Cambiar"
+                                        placeholder="Dejar vacío para no cambiar"
                                         className="pr-10"
                                         autoComplete="new-password"
                                         {...register("password")}
@@ -213,7 +200,7 @@ export default function EditEmployee() {
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
+                        <div className="flex flex-wrap gap-3 pt-6 pb-4 mt-auto border-t">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -271,7 +258,8 @@ export default function EditEmployee() {
                         </div>
                     </form>
                 </CardContent>
-            </Card>
-        </div>
+            </div>
+        </Card>
+        </>
     )
 }

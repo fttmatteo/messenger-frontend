@@ -22,12 +22,12 @@ import { useSmartLocation } from "@/hooks/use-smart-location"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 
 const formSchema = z.object({
-    dealershipId: z.string().min(1, "El Concesionario Destino Es Obligatorio"),
-    originDealershipId: z.string().min(1, "El Concesionario Origen Es Obligatorio"),
-    messengerId: z.string().min(1, "El Mensajero Es Obligatorio"),
-    manualPlateNumber: z.string().min(10, "El Chasis Debe Tener Mínimo 10 Caracteres").max(20, "El Chasis No Puede Tener Más De 20 Caracteres"),
+    dealershipId: z.string().min(1, "El concesionario destino es obligatorio"),
+    originDealershipId: z.string().min(1, "El concesionario origen es obligatorio"),
+    messengerId: z.string().min(1, "El mensajero es obligatorio"),
+    manualPlateNumber: z.string().min(10, "El chasis debe tener mínimo 10 caracteres").max(20, "El chasis no puede tener más de 20 caracteres"),
 }).refine((data) => data.originDealershipId !== data.dealershipId, {
-    message: "El Concesionario Origen y Destino No Pueden Ser El Mismo",
+    message: "El concesionario origen y destino no pueden ser el mismo",
     path: ["originDealershipId"],
 })
 
@@ -108,7 +108,7 @@ export default function AdminCreateServicio() {
                 longitude
             })
 
-            setSuccess("Servicio Creado Exitosamente")
+            setSuccess("Servicio creado exitosamente")
             navigate("/admin/servicios")
         } catch (error) {
             setError(getErrorMessage(error))
@@ -118,8 +118,9 @@ export default function AdminCreateServicio() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Servicios", href: "/admin/servicios" },
@@ -127,15 +128,15 @@ export default function AdminCreateServicio() {
                     ]} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Servicio</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo servicio</h1>
                 </div>
                 <div className="hidden md:flex md:flex-1"></div>
-            </Card>
+            </div>
 
-            <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+            <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold flex items-center gap-2">
-                        Información del Servicio
+                        Información del servicio
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
@@ -199,7 +200,7 @@ export default function AdminCreateServicio() {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona el Transportista" />
+                                                        <SelectValue placeholder="Selecciona el transportista" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="max-h-[300px]">
@@ -224,7 +225,7 @@ export default function AdminCreateServicio() {
                                     render={({ field }) => (
                                         <FormItem className="space-y-2">
                                             <Label htmlFor="originDealershipId">
-                                                Concesionario Origen <span className="text-red-500 ml-0.5">*</span>
+                                                Concesionario origen <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
                                             <Select
                                                 onValueChange={field.onChange}
@@ -234,7 +235,7 @@ export default function AdminCreateServicio() {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger id="originDealershipId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona Origen" />
+                                                        <SelectValue placeholder="Selecciona origen" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="max-h-[300px]">
@@ -267,7 +268,7 @@ export default function AdminCreateServicio() {
                                     render={({ field }) => (
                                         <FormItem className="space-y-2">
                                             <Label htmlFor="dealershipId">
-                                                Concesionario Destino <span className="text-red-500 ml-0.5">*</span>
+                                                Concesionario destino <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
                                             <Select
                                                 onValueChange={field.onChange}
@@ -277,7 +278,7 @@ export default function AdminCreateServicio() {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger id="dealershipId" className="h-11 touch-manipulation">
-                                                        <SelectValue placeholder="Selecciona Destino" />
+                                                        <SelectValue placeholder="Selecciona destino" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="max-h-[300px]">
@@ -305,7 +306,7 @@ export default function AdminCreateServicio() {
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-6 mt-auto border-t">
+                            <div className="flex gap-4 pt-6 pb-4 mt-auto border-t">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -326,14 +327,15 @@ export default function AdminCreateServicio() {
                                             Creando...
                                         </>
                                     ) : (
-                                        "Crear Servicio"
+                                        "Crear servicio"
                                     )}
                                 </Button>
                             </div>
                         </form>
                     </Form>
                 </CardContent>
-            </Card>
-        </div>
+            </div>
+        </Card>
+        </>
     )
 }

@@ -70,9 +70,9 @@ describe('Login Page', () => {
         renderWithProviders(<Login />);
 
         await waitFor(() => {
-            expect(screen.getByText('Inicio de Sesión')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('Ingrese Su Número De Documento')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('Ingrese Su Contraseña')).toBeInTheDocument();
+            expect(screen.getByText('Inicio de sesión')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Ingrese número de documento')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Ingrese contraseña')).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument();
         });
     });
@@ -88,8 +88,8 @@ describe('Login Page', () => {
         await user.click(submitButton);
 
         await waitFor(() => {
-            expect(screen.getByText('El Documento Es Requerido')).toBeInTheDocument();
-            expect(screen.getByText('La Contraseña Es Requerida')).toBeInTheDocument();
+            expect(screen.getByText('El documento es requerido')).toBeInTheDocument();
+            expect(screen.getByText('La contraseña es requerida')).toBeInTheDocument();
         });
     });
 
@@ -107,7 +107,7 @@ describe('Login Page', () => {
         await user.click(submitButton);
 
         await waitFor(() => {
-            expect(screen.getByText('Solo Se Permiten Números')).toBeInTheDocument();
+            expect(screen.getByText('Solo se permiten números')).toBeInTheDocument();
         });
     });
 
@@ -118,7 +118,7 @@ describe('Login Page', () => {
         const user = userEvent.setup();
         renderWithProviders(<Login />);
 
-        const passwordInput = screen.getByPlaceholderText('Ingrese Su Contraseña') as HTMLInputElement;
+        const passwordInput = screen.getByPlaceholderText('Ingrese contraseña') as HTMLInputElement;
         expect(passwordInput.type).toBe('password');
 
         const toggleButton = screen.getByRole('button', { name: /toggle password visibility/i });
@@ -146,8 +146,8 @@ describe('Login Page', () => {
 
         renderWithProviders(<Login />);
 
-        const documentInput = screen.getByPlaceholderText('Ingrese Su Número De Documento');
-        const passwordInput = screen.getByPlaceholderText('Ingrese Su Contraseña');
+        const documentInput = screen.getByPlaceholderText('Ingrese número de documento');
+        const passwordInput = screen.getByPlaceholderText('Ingrese contraseña');
         const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
 
         await user.type(documentInput, '12345678');
@@ -188,12 +188,12 @@ describe('Login Page', () => {
 
         renderWithProviders(<Login />);
 
-        const documentInput = screen.getByPlaceholderText('Ingrese Su Número De Documento');
-        const passwordInput = screen.getByPlaceholderText('Ingrese Su Contraseña');
+        const documentInput = screen.getByPlaceholderText('Ingrese número de documento');
+        const passwordInput = screen.getByPlaceholderText('Ingrese contraseña');
 
         // Buscar checkbox por texto de etiqueta en lugar de rol para evitar ambigüedad
         // La etiqueta "Recordar contraseña" está asociada con el checkbox
-        const rememberMeCheckbox = screen.getByLabelText('Recordar Contraseña');
+        const rememberMeCheckbox = screen.getByLabelText('Recordar contraseña');
         const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
 
         await user.type(documentInput, '12345678');

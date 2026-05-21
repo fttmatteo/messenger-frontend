@@ -7,7 +7,7 @@ import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, MapPin } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
-import { capitalizeWords } from "@/lib/format-utils"
+import { capitalizeWords } from "@/utils/stringUtils"
 import { getErrorMessage } from "@/lib/error-utils"
 import { useState, useRef, useEffect } from "react"
 import { Map } from "@/components/Map"
@@ -69,7 +69,6 @@ export default function CreateConcesionario() {
     const [geocoding, setGeocoding] = useState(false)
     const [previewDone, setPreviewDone] = useState(false)
 
-    // Cargar la API de Google Maps a nivel de página para que el Geocoder esté disponible
     const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -95,14 +94,14 @@ export default function CreateConcesionario() {
         if (!currentAddress || currentAddress.length < 5) return
 
         if (!isMapsApiLoaded) {
-            setError("Cargando Servicios de Mapas... Por Favor Intenta de Nuevo en un Momento.")
+            setError("Cargando servicios de mapas... Por favor intenta de nuevo en un momento.")
             return
         }
 
         setGeocoding(true)
         try {
             if (!window.google?.maps?.Geocoder) {
-                setError("Servicio de Geocodificación No Disponible en Este Momento")
+                setError("Servicio de geocodificación no disponible en este momento")
                 setGeocoding(false)
                 return
             }
@@ -121,11 +120,11 @@ export default function CreateConcesionario() {
                 })
                 setPreviewDone(true)
             } else {
-                setError("No Se Encontraron Coordenadas para Esta Dirección. Intenta Ser Más Específico.")
+                setError("No se encontraron coordenadas para esta dirección. Intenta ser más específico.")
             }
         } catch (error) {
             logger.error("Error de Geocodificación", error)
-            setError("Error Obteniendo Ubicación. Verifica Tu Conexión a Internet.")
+            setError("Error obteniendo ubicación. Verifica tu conexión a internet.")
         } finally {
             setGeocoding(false)
         }
@@ -143,10 +142,10 @@ export default function CreateConcesionario() {
 
             try {
                 await dealershipService.geocode(created.uuid)
-                setSuccess("Concesionario Creado y Ubicado Exitosamente")
+                setSuccess("Concesionario creado y ubicado exitosamente")
             } catch (geocodeError) {
                 logger.error("La Geocodificación Automática Falló", geocodeError)
-                setSuccess("Concesionario Creado, pero Falló la Geocodificación Automática")
+                setSuccess("Concesionario creado, pero falló la geocodificación automática")
             }
 
             navigate("/admin/concesionarios")
@@ -156,8 +155,9 @@ export default function CreateConcesionario() {
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
                         { label: "Concesionarios", href: "/admin/concesionarios" },
@@ -166,16 +166,17 @@ export default function CreateConcesionario() {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo Concesionario</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo concesionario</h1>
                 </div>
 
                 <div className="hidden md:flex md:flex-1"></div>
-            </Card>
+            </div>
 
-            <div className="flex-1 grid gap-2 lg:grid-cols-3 min-h-0 overflow-y-auto">
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="h-full grid gap-2 lg:grid-cols-3 overflow-y-auto pb-2">
                 <Card className="lg:col-span-2 flex flex-col gap-1 py-1 min-h-0">
                     <CardHeader className="p-2 pb-0">
-                        <CardTitle className="text-base text-foreground font-semibold">Información del Concesionario</CardTitle>
+                        <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
@@ -193,7 +194,7 @@ export default function CreateConcesionario() {
                                 </Button>
                                 <Button type="submit" size="sm" disabled={isSubmitting}>
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Crear Concesionario
+                                    Crear concesionario
                                 </Button>
                             </div>
                         </form>
@@ -226,7 +227,7 @@ export default function CreateConcesionario() {
                                     disabled={geocoding || isSubmitting || !currentAddress}
                                 >
                                     {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Actualizar Vista Previa
+                                    Actualizar vista previa
                                 </Button>
                             </>
                         ) : (
@@ -234,13 +235,13 @@ export default function CreateConcesionario() {
                                 <div className="flex-1 min-h-[200px] rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
                                     <div className="text-center text-muted-foreground px-4">
                                         <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                        <p className="text-xs">Ingresa una Dirección para Previsualizar</p>
+                                        <p className="text-xs">Ingresa una dirección para previsualizar</p>
                                     </div>
                                 </div>
                                 {previewDone ? (
-                                    <Badge variant="destructive" className="justify-center">No Encontrada</Badge>
+                                    <Badge variant="destructive" className="justify-center">No encontrada</Badge>
                                 ) : (
-                                    <Badge variant="secondary" className="justify-center">Pendiente de Ubicar</Badge>
+                                    <Badge variant="secondary" className="justify-center">Pendiente de ubicar</Badge>
                                 )}
                                 <Button
                                     className="w-full mt-auto"
@@ -250,13 +251,15 @@ export default function CreateConcesionario() {
                                 >
                                     {geocoding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     <MapPin className="mr-2 h-4 w-4" />
-                                    Previsualizar Ubicación
+                                    Previsualizar ubicación
                                 </Button>
                             </>
                         )}
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
+        </>
     )
 }

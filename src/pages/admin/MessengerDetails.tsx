@@ -172,8 +172,8 @@ export default function MessengerDetails() {
                     <User className="h-12 w-12 text-muted-foreground" />
                 </div>
                 <div className="text-center">
-                    <h2 className="text-xl font-semibold">Transportista No Encontrado</h2>
-                    <p className="text-muted-foreground">No Pudimos Cargar la Información del Transportista.</p>
+                    <h2 className="text-xl font-semibold">Transportista no encontrado</h2>
+                    <p className="text-muted-foreground">No pudimos cargar la información del transportista.</p>
                 </div>
                 <Button onClick={() => navigate("/admin/tracking")}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
@@ -184,8 +184,9 @@ export default function MessengerDetails() {
     }
 
     return (
-        <div className="space-y-4 animate-in fade-in duration-500">
-            <Card className="grid grid-cols-1 md:grid-cols-3 items-center gap-3 !py-2 !px-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 animate-in fade-in duration-500 !p-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3 py-2 px-4 border-b shrink-0">
                 <div className="justify-self-start">
                     <AdminBreadcrumb
                         segments={[
@@ -213,9 +214,10 @@ export default function MessengerDetails() {
                         {isActive ? "Activo Ahora" : "Desconectado"}
                     </Badge>
                 </div>
-            </Card>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-2 overflow-y-auto pb-2">
                 <div className="space-y-6">
                     <MessengerInfoCard
                         employee={employee}
@@ -246,7 +248,9 @@ export default function MessengerDetails() {
                         </MapComponent>
                     </CardContent>
                 </Card>
-            </div>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
+        </>
     )
 }

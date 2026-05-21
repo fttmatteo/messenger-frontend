@@ -108,7 +108,7 @@ export default function CookieBanner() {
                                     </span>
                                 </h3>
                                 <p className="text-sm text-foreground/80 leading-relaxed">
-                                    Utilizamos Almacenamiento Local y Cookies Técnicas Estrictamente Necesarias para Garantizar la Seguridad de tu Inicio de Sesión y el Funcionamiento Óptimo de la Aplicación.
+                                    Utilizamos almacenamiento local y cookies técnicas estrictamente necesarias para garantizar la seguridad de tu inicio de sesión y el funcionamiento óptimo de la aplicación.
                                 </p>
                             </div>
                         </div>

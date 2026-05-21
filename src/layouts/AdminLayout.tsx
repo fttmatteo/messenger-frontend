@@ -91,11 +91,11 @@ function AdminLayoutContent() {
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 onClick={() => navigate("/admin/perfil")}
-                                tooltip="Mi Perfil"
+                                tooltip="Perfil"
                                 className="text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
                             >
                                 <User className="h-4 w-4" />
-                                <span className="text-xs font-medium">Mi Perfil</span>
+                                <span className="text-xs font-medium">Perfil</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
@@ -111,11 +111,11 @@ function AdminLayoutContent() {
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 onClick={handleLogout}
-                                tooltip="Cerrar Sesión"
+                                tooltip="Cerrar sesión"
                                 className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                             >
                                 <LogOut className="h-4 w-4" />
-                                <span className="text-xs font-medium">Cerrar Sesión</span>
+                                <span className="text-xs font-medium">Cerrar sesión</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
@@ -123,7 +123,7 @@ function AdminLayoutContent() {
             </Sidebar>
             <SidebarToggleTab />
             <SidebarInset className="overflow-hidden flex flex-col h-screen pt-safe">
-                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col pb-safe overscroll-none custom-scrollbar", isTrackingPage ? "p-0 overflow-hidden" : "p-2 overflow-y-auto")} role="main">
+                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col pb-safe overscroll-none custom-scrollbar", isTrackingPage ? "p-0 overflow-hidden" : "px-2 pb-0 pt-0 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>
             </SidebarInset>
@@ -131,7 +131,7 @@ function AdminLayoutContent() {
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Cerrar Sesión?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
                         <AlertDialogDescription>
                             ¿Estás seguro que deseas cerrar sesión?
                         </AlertDialogDescription>
