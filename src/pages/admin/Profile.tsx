@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext"
 import { profileService, type ProfileUpdateRequest } from "@/services/profile.service"
 import { showToast } from "@/config/toast-config"
 import { getErrorMessage } from "@/lib/error-utils"
+import { capitalizeWords } from "@/utils/stringUtils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,10 +18,10 @@ import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const profileSchema = z.object({
-    fullName: z.string().min(1, "El Nombre Es Requerido").min(3, "Mínimo 3 Caracteres"),
-    phone: z.string().min(1, "El Teléfono Es Requerido").regex(/^\d{10}$/, "10 Dígitos Requeridos"),
+    fullName: z.string().min(1, "El nombre es requerido").min(3, "Mínimo 3 caracteres"),
+    phone: z.string().min(1, "El teléfono es requerido").regex(/^\d{10}$/, "10 dígitos requeridos"),
     password: z.string().optional().refine(val => !val || val.length >= 6, {
-        message: "La Contraseña Debe Tener Al Menos 6 Caracteres"
+        message: "La contraseña debe tener al menos 6 caracteres"
     }),
 })
 
@@ -63,7 +64,7 @@ export default function Profile() {
                     password: "",
                 })
             } catch (error) {
-                showToast.error("Error al Cargar Perfil: " + getErrorMessage(error))
+                showToast.error("Error al cargar perfil: " + getErrorMessage(error))
             } finally {
                 setLoading(false)
             }
@@ -75,7 +76,7 @@ export default function Profile() {
         try {
             setSaving(true)
             const updateData: ProfileUpdateRequest = {
-                fullName: data.fullName,
+                fullName: capitalizeWords(data.fullName),
                 phone: data.phone,
             }
             if (data.password) {
@@ -86,11 +87,11 @@ export default function Profile() {
             
             updateUser({ name: updated.fullName })
             
-            showToast.success("Perfil Actualizado Correctamente")
+            showToast.success("Perfil actualizado correctamente")
             
-            reset({ ...data, password: "" })
+            reset({ ...data, fullName: capitalizeWords(data.fullName), password: "" })
         } catch (error) {
-            showToast.error("Error al Actualizar Perfil: " + getErrorMessage(error))
+            showToast.error("Error al actualizar perfil: " + getErrorMessage(error))
         } finally {
             setSaving(false)
         }
@@ -108,20 +109,21 @@ export default function Profile() {
         .slice(0, 2) || "U"
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             {/* Header Section - Hidden on Mobile */}
-            <Card className="hidden md:flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+            <div className="hidden md:flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Mi Perfil" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Perfil" }]} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Mi Perfil</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Perfil</h1>
                 </div>
                 <div className="hidden md:flex md:flex-1"></div>
-            </Card>
+            </div>
 
-            <div className="flex-1 overflow-y-auto pb-2 min-h-0">
-                <div className="w-full flex flex-col gap-2 h-full">
+            <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
+                <div className="w-full flex flex-col gap-2 h-full overflow-y-auto pb-2">
                     {/* Perfil Header Card */}
                     <Card>
                         <CardContent className="p-4">
@@ -158,7 +160,7 @@ export default function Profile() {
                             <TabsContent value="personal" className="mt-0 focus-visible:outline-none">
                                 <Card className="flex-1">
                                         <CardHeader className="p-4 pb-2">
-                                            <CardTitle className="text-base">Datos Personales</CardTitle>
+                                            <CardTitle className="text-base">Datos personales</CardTitle>
                                         </CardHeader>
                                         <CardContent className="space-y-4 p-4 pt-0">
                                             <div className="grid gap-4 md:grid-cols-3">
@@ -276,7 +278,8 @@ export default function Profile() {
                     </Tabs>
                 </div>
             </div>
-        </div>
+        </Card>
+        </>
     )
 }
 

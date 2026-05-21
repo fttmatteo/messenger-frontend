@@ -205,7 +205,7 @@ export default function UpdateStatus() {
 
             navigate('/messenger')
         } catch (error) {
-            showToast.error('Error al Actualizar', {
+            showToast.error('Error al actualizar', {
                 description: getErrorMessage(error),
                 id: 'update-status-error',
             })

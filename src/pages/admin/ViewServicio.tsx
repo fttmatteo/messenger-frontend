@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { serviceDeliveryService } from "@/services/service.service"
 import type { ServiceDelivery } from "@/types/service.types"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { PlacaBadge } from "@/components/PlacaBadge"
@@ -49,7 +50,7 @@ export default function ViewServicio() {
 
     const fetchService = useCallback(async () => {
         if (!id) {
-            setError("ID de Servicio No Proporcionado")
+            setError("ID de servicio no proporcionado")
             setLoading(false)
             return
         }
@@ -103,11 +104,11 @@ export default function ViewServicio() {
                 <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
                     <Trash2 className="h-6 w-6 text-red-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Error al Cargar Servicio</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar servicio</h3>
                 <p className="text-muted-foreground mb-6 max-w-sm">{error}</p>
                 <Button onClick={() => navigate("/admin/servicios")}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Volver al Listado
+                    Volver al listado
                 </Button>
             </div>
         )
@@ -116,17 +117,18 @@ export default function ViewServicio() {
     if (!service) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
-                <p className="text-muted-foreground mb-4">Servicio No Encontrado</p>
+                <p className="text-muted-foreground mb-4">Servicio no encontrado</p>
                 <Button onClick={() => navigate("/admin/servicios")}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Volver al Listado
+                    Volver al listado
                 </Button>
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
@@ -134,7 +136,8 @@ export default function ViewServicio() {
                 deleting={deleting}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0 overflow-hidden">
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 h-full overflow-y-auto lg:overflow-hidden pb-2">
                 <ServiceGeneralInfoCard service={service} />
 
                 <ServiceHistoryTimeline
@@ -152,7 +155,9 @@ export default function ViewServicio() {
                     originDealershipName={service.originDealership.name}
                     serviceStatus={service.currentStatus}
                 />
-            </div>
+                </div>
+            </CardContent>
+        </Card>
 
             <UpdateStatusModal
                 open={updateDialogOpen}
@@ -164,7 +169,7 @@ export default function ViewServicio() {
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar Servicio?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Eliminar servicio?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Esta acción no se puede deshacer. El servicio de chasis <PlacaBadge plateNumber={service.plate.plateNumber}  size="sm" className="inline-flex align-middle mx-1" /> será eliminado permanentemente.
                         </AlertDialogDescription>
@@ -181,7 +186,7 @@ export default function ViewServicio() {
                             ) : (
                                 <Trash2 className="mr-2 h-4 w-4" />
                             )}
-                            Eliminar Servicio
+                            Eliminar servicio
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -192,6 +197,6 @@ export default function ViewServicio() {
                 src={selectedImage}
                 onClose={() => setSelectedImage(null)}
             />
-        </div >
+        </>
     )
 }

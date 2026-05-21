@@ -24,8 +24,8 @@ import { useTurnstileReset } from "@/hooks/use-turnstile-reset"
 import AnimatedLogoBackground from "@/components/AnimatedLogoBackground"
 
 const loginSchema = z.object({
-    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Se Permiten Números"),
-    password: z.string().min(1, "La Contraseña Es Requerida"),
+    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
+    password: z.string().min(1, "La contraseña es requerida"),
     rememberMe: z.boolean().optional(),
 })
 
@@ -67,7 +67,7 @@ export default function Login() {
 
     const handleTurnstileError = useCallback(() => {
         setTurnstileToken(null)
-        showToast.error("Error Al Cargar La Verificación De Seguridad. Por Favor, Verifica Tu Conexión O Deshabilita Bloqueadores De Anuncios.")
+        showToast.error("Error al cargar la verificación de seguridad. Por favor, verifica tu conexión o deshabilita bloqueadores de anuncios.")
     }, [])
 
     const handleTurnstileExpire = useCallback(() => {
@@ -76,7 +76,7 @@ export default function Login() {
 
     const onSubmit = async (data: LoginFormValues) => {
         if (!turnstileToken) {
-            showToast.error("Por Favor, Espera A Que Se Complete La Verificación De Seguridad.")
+            showToast.error("Por favor, espera a que se complete la verificación de seguridad.")
             return
         }
 
@@ -99,7 +99,7 @@ export default function Login() {
             if (err.statusCode === 429) {
                 // Mostrar notificación persistente de Sonner
                 const toastId = showToast.error(
-                    `Demasiados Intentos Fallidos. Intenta De Nuevo En 15 Minutos.`,
+                    `Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.`,
                     {
                         duration: Infinity, // Persistente mientras esté bloqueado
                         closeButton: false,
@@ -114,7 +114,7 @@ export default function Login() {
                     if (counter <= 0) {
                         clearInterval(interval);
                         showToast.dismiss(toastId);
-                        showToast.success('Cuenta Desbloqueada. Puedes Intentar De Nuevo.', {
+                        showToast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
                             duration: 4000,
                         });
                         return;
@@ -122,7 +122,7 @@ export default function Login() {
 
                     // Actualizar el toast con el tiempo restante
                     showToast.error(
-                        `Demasiados Intentos Fallidos. Intenta De Nuevo En ${counter} Minuto${counter !== 1 ? 's' : ''}`,
+                        `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
                         {
                             id: toastId,
                             duration: Infinity,
@@ -207,7 +207,7 @@ export default function Login() {
                             <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1.5">v{APP_CONFIG.version}</span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de Sesión</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent className="pb-3 pt-0">
@@ -223,7 +223,7 @@ export default function Login() {
                                     id="document"
                                     type="text"
                                     inputMode="numeric"
-                                    placeholder="Ingrese Su Número De Documento"
+                                    placeholder="Ingrese número de documento"
                                     autoComplete="username"
                                     {...register("document")}
                                     className="h-10 text-sm"
@@ -241,7 +241,7 @@ export default function Login() {
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Ingrese Su Contraseña"
+                                        placeholder="Ingrese contraseña"
                                         autoComplete="current-password"
                                         {...register("password")}
                                         className="pr-10 h-10 text-sm"
@@ -259,7 +259,7 @@ export default function Login() {
                                         ) : (
                                             <Eye className="h-5 w-5 text-muted-foreground" />
                                         )}
-                                        <span className="sr-only">Alternar Visibilidad De Contraseña</span>
+                                        <span className="sr-only">Alternar visibilidad de contraseña</span>
                                     </Button>
                                 </div>
                             </div>
@@ -280,7 +280,7 @@ export default function Login() {
                                         )}
                                     />
                                         <Label htmlFor="rememberMe" className="text-xs text-muted-foreground font-normal cursor-pointer">
-                                        Recordar Contraseña
+                                        Recordar contraseña
                                     </Label>
                                 </div>
                             </div>
@@ -296,7 +296,7 @@ export default function Login() {
                             </div>
 
                             <Button type="submit" className="w-full h-10 text-sm font-bold shadow-sm transition-all active:scale-[0.98]" disabled={isSubmitting || !turnstileToken}>
-                                {isSubmitting ? "Iniciando Sesión..." : "Iniciar Sesión"}
+                                {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
                     </CardContent>
@@ -304,7 +304,7 @@ export default function Login() {
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
                     <p>
-                        Para Soporte Técnico, Contáctanos A{' '}
+                        Soporte Técnico -{' '}
                         <a href="mailto:contacto@plak.digital" className="hover:underline text-primary font-semibold">
                             contacto@plak.digital
                         </a>
@@ -333,9 +333,9 @@ export default function Login() {
                 <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>¿Salir De La Aplicación?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Salir de la aplicación?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                ¿Estás Seguro Que Deseas Salir? Esto Cerrará La Aplicación.
+                                ¿Estás seguro que deseas salir? Esto cerrará la aplicación.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

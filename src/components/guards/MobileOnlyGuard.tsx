@@ -66,7 +66,7 @@ export function MobileOnlyGuard() {
                                     className="w-full gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                                 >
                                     <LogOut className="h-4 w-4" />
-                                    Cerrar Sesión y Volver Más Tarde
+                                    Cerrar sesión y volver más tarde
                                 </Button>
                             </div>
                         </CardContent>

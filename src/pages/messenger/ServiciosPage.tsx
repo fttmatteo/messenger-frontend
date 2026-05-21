@@ -108,7 +108,7 @@ export default function ServiciosPage() {
                                     statusFilter === "all" ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
                                 )}
                             >
-                                <span>Ver Todos</span>
+                                <span>Ver todos</span>
                                 {statusFilter === "all" && <Check className="h-4 w-4" />}
                             </button>
                             <div className="h-px bg-border my-1" />

@@ -27,19 +27,19 @@ const themeOptions: ThemeOptionItem[] = [
     {
         value: 'light',
         label: 'Claro',
-        description: 'Tema con Fondo Blanco',
+        description: 'Tema con fondo blanco',
         icon: <Sun className="h-5 w-5" />
     },
     {
         value: 'dark',
         label: 'Oscuro',
-        description: 'Tema con Fondo Oscuro',
+        description: 'Tema con fondo oscuro',
         icon: <Moon className="h-5 w-5" />
     },
     {
         value: 'system',
         label: 'Sistema',
-        description: 'Usa la Preferencia del Dispositivo',
+        description: 'Usa la preferencia del dispositivo',
         icon: <Monitor className="h-5 w-5" />
     }
 ]
@@ -52,7 +52,7 @@ const SETTINGS_SECTIONS = [
     },
     {
         id: 'colors',
-        title: 'Colores de Estados',
+        title: 'Colores de estados',
         icon: Palette
     },
     {
@@ -100,12 +100,13 @@ export default function Configuracion() {
 
     const handleResetAll = () => {
         resetToDefaults()
-        showToast.success('Colores Restaurados a Valores Por Defecto', { id: 'reset-colors-success' })
+        showToast.success('Colores restaurados a valores por defecto', { id: 'reset-colors-success' })
     }
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     {activeSection === null ? (
                         <AdminBreadcrumb segments={[{ label: "Configuración" }]} />
@@ -121,7 +122,7 @@ export default function Configuracion() {
 
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">
-                        {activeSection === 'colors' ? 'Colores de Estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
+                        {activeSection === 'colors' ? 'Colores de estados' : activeSection === 'appearance' ? 'Apariencia' : 'Configuración'}
                     </h1>
                 </div>
 
@@ -138,11 +139,11 @@ export default function Configuracion() {
                         </Button>
                     )}
                 </div>
-            </Card>
+            </div>
 
 
             {activeSection === null ? (
-                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
+                <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
                     <CardContent className="p-0 space-y-2 overflow-y-auto">
                         {SETTINGS_SECTIONS.map((section) => {
                             const IconComponent = section.icon
@@ -176,15 +177,15 @@ export default function Configuracion() {
                             {APP_CONFIG.name} v{APP_CONFIG.version}
                         </p>
                     </div>
-                </Card>
+                </div>
             ) : activeSection === 'appearance' ? (
-                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                    <CardHeader className="py-2 px-4">
+                <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
+                    <CardHeader className="pb-2 pt-0 px-4">
                         <CardDescription>
-                            Selecciona El Tema De La Aplicación
+                            Selecciona el tema de la aplicación
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 pt-0 overflow-y-auto">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             {themeOptions.map((option) => {
                                 const isSelected = theme === option.value
@@ -225,28 +226,17 @@ export default function Configuracion() {
                             })}
                         </div>
                     </CardContent>
-                </Card>
+                </div>
             ) : activeSection === 'colors' ? (
-                <Card className="flex-1 flex flex-col gap-1 py-1 min-h-0">
-                    <CardHeader className="py-2 px-4">
+                <div className="flex-1 flex flex-col pt-0 pb-0 px-2 sm:px-4 min-h-0">
+                    <CardHeader className="pb-1 pt-0 px-4">
                         <CardDescription>
-                            Haz Clic En Un Estado Para Cambiar Su Color
+                            Haz clic en un estado para cambiar su color
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 overflow-y-auto">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                            {STATUS_ORDER.map(status => (
-                                <StatusColorPicker
-                                    key={status}
-                                    status={status}
-                                    color={colors[status] || DEFAULT_STATUS_COLORS[status]}
-                                    onColorChange={updateColor}
-                                />
-                            ))}
-                        </div>
-
-                        <div className="mt-auto pt-3 border-t flex items-center gap-4 flex-wrap">
-                            <span className="text-xs text-muted-foreground">Vista Previa:</span>
+                    <CardContent className="flex-1 flex flex-col min-h-0 px-4 pb-4 pt-0 overflow-y-auto">
+                        <div className="mb-4 pb-3 border-b flex items-center gap-4 flex-wrap">
+                            <span className="text-xs text-muted-foreground">Vista previa:</span>
                             {STATUS_ORDER.map(status => (
                                 <div
                                     key={status}
@@ -263,9 +253,21 @@ export default function Configuracion() {
                                 </div>
                             ))}
                         </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                            {STATUS_ORDER.map(status => (
+                                <StatusColorPicker
+                                    key={status}
+                                    status={status}
+                                    color={colors[status] || DEFAULT_STATUS_COLORS[status]}
+                                    onColorChange={updateColor}
+                                />
+                            ))}
+                        </div>
                     </CardContent>
-                </Card>
+                </div>
             ) : null}
-        </div>
+        </Card>
+        </>
     )
 }

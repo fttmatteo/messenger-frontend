@@ -126,8 +126,9 @@ export default function Eliminados() {
     )
 
     return (
-        <div className="flex flex-col h-full gap-1 overflow-hidden">
-            <Card className="flex flex-row items-center justify-between min-h-[48px] !py-2 !px-4 mb-2 gap-4 shrink-0 rounded-xl">
+        <>
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[{ label: "Eliminados" }]} />
                 </div>
@@ -154,11 +155,11 @@ export default function Eliminados() {
                         <div className="w-[140px]" />
                     )}
                 </div>
-            </Card>
+            </div>
 
             <div className="flex-1 min-h-0 flex flex-col">
                 {isMobile ? (
-                    <div className="flex-1 overflow-y-auto pr-1">
+                    <div className="flex-1 overflow-y-auto pr-1 pb-4">
                         <p className="text-sm text-muted-foreground mb-3">
                             {services.length} elemento(s) en papelera
                         </p>
@@ -180,61 +181,64 @@ export default function Eliminados() {
                         )}
                     </div>
                 ) : (
-                    <Card className="flex flex-col flex-1 h-full overflow-hidden !overflow-hidden">
+                    <div className="flex flex-col flex-1 h-full overflow-hidden !overflow-hidden">
                         <CardHeader className="p-2 pb-0">
                             <CardDescription>
                                 {services.length} elemento(s) en papelera. Los elementos se archivarán permanentemente después de 60 días.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1 overflow-auto">
-                            {loading ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Chasis</TableHead>
-                                            <TableHead>Origen</TableHead>
-                                            <TableHead>Destino</TableHead>
-                                            <TableHead>Mensajero</TableHead>
-                                            <TableHead>Eliminado</TableHead>
-                                            <TableHead>Tiempo restante</TableHead>
-                                            <TableHead className="text-center">Acción</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <DeletedServiceRowSkeleton key={i} />
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : services.length === 0 ? (
-                                <EmptyState />
-                            ) : (
-                                <DeletedServiceTable
-                                    services={services}
-                                    restoringId={restoring}
-                                    deletingId={deleting}
-                                    onRestore={handleRestore}
-                                    onDelete={handlePermanentDelete}
-                                    itemVariants={itemVariants}
+                        <CardContent className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                            <div className="flex-1 overflow-auto min-h-0">
+                                {loading ? (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Chasis</TableHead>
+                                                <TableHead>Origen</TableHead>
+                                                <TableHead>Destino</TableHead>
+                                                <TableHead>Mensajero</TableHead>
+                                                <TableHead>Eliminado</TableHead>
+                                                <TableHead>Tiempo restante</TableHead>
+                                                <TableHead className="text-center">Acción</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <DeletedServiceRowSkeleton key={i} />
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                ) : services.length === 0 ? (
+                                    <EmptyState />
+                                ) : (
+                                    <DeletedServiceTable
+                                        services={services}
+                                        restoringId={restoring}
+                                        deletingId={deleting}
+                                        onRestore={handleRestore}
+                                        onDelete={handlePermanentDelete}
+                                        itemVariants={itemVariants}
+                                    />
+                                )}
+                            </div>
+                            {!loading && services.length > 0 && (
+                                <TablePagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    totalItems={totalElements}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={(items) => {
+                                        setItemsPerPage(items)
+                                        setCurrentPage(1)
+                                    }}
                                 />
                             )}
                         </CardContent>
-                        {!loading && services.length > 0 && (
-                            <TablePagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                totalItems={totalElements}
-                                itemsPerPage={itemsPerPage}
-                                onPageChange={setCurrentPage}
-                                onItemsPerPageChange={(items) => {
-                                    setItemsPerPage(items)
-                                    setCurrentPage(1)
-                                }}
-                            />
-                        )}
-                    </Card>
+                    </div>
                 )}
             </div>
+        </Card>
 
             <EmptyTrashDialog
                 isOpen={isEmptyTrashDialogOpen}
@@ -242,6 +246,6 @@ export default function Eliminados() {
                 onConfirm={handleEmptyTrash}
                 count={services.length}
             />
-        </div>
+        </>
     )
 }

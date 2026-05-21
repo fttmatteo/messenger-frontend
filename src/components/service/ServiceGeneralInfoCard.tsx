@@ -43,7 +43,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Concesionario Origen</p>
+                        <p className="text-sm font-medium">Concesionario origen</p>
                         <p className="text-sm text-muted-foreground">{service.originDealership.name}</p>
                         <p className="text-xs text-muted-foreground">
                             {service.originDealership.address} • {service.originDealership.zone}
@@ -69,7 +69,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium">Concesionario Destino</p>
+                        <p className="text-sm font-medium">Concesionario destino</p>
                         <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
                         <p className="text-xs text-muted-foreground">
                             {service.dealership.address} • {service.dealership.zone}

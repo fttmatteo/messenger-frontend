@@ -175,7 +175,7 @@ export default function PoliticaCookies() {
                             Estas tecnologías de almacenamiento local en el terminal incluyen <strong>`localStorage`</strong>, <strong>`sessionStorage`</strong> y las preferencias nativas del dispositivo <strong>`@capacitor/preferences`</strong>.
                         </p>
                         <div className="bg-muted/40 border-l-4 border-primary p-3.5 rounded-r-xl my-2 text-foreground/90 font-medium">
-                            <strong>Nota Importante:</strong> El 100% de las tecnologías utilizadas en <strong>{APP_CONFIG.name}</strong> son de carácter técnico y funcional (estrictamente necesarias). No utilizamos cookies publicitarias, comerciales, ni de seguimiento de terceros.
+                            <strong>Nota importante:</strong> El 100% de las tecnologías utilizadas en <strong>{APP_CONFIG.name}</strong> son de carácter técnico y funcional (estrictamente necesarias). No utilizamos cookies publicitarias, comerciales, ni de seguimiento de terceros.
                         </div>
                     </CardContent>
                 </Card>
@@ -200,7 +200,7 @@ export default function PoliticaCookies() {
                                     <tr className="bg-muted/70 text-foreground font-semibold border-b border-border/40">
                                         <th className="p-3">Llave / Clave</th>
                                         <th className="p-3">Tipo / Método</th>
-                                        <th className="p-3">Finalidad Principal</th>
+                                        <th className="p-3">Finalidad principal</th>
                                         <th className="p-3">Datos que Contiene</th>
                                         <th className="p-3">Duración</th>
                                     </tr>
@@ -272,7 +272,7 @@ export default function PoliticaCookies() {
                                     <Mail className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte Técnico</p>
+                                    <p className="font-bold text-foreground text-sm leading-none mb-0.5">Soporte técnico</p>
                                 </div>
                             </div>
                             <Button 

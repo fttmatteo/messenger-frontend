@@ -22,8 +22,8 @@ import { useTurnstileReset } from "@/hooks/use-turnstile-reset"
 import AnimatedLogoBackground from "@/components/AnimatedLogoBackground"
 
 const loginSchema = z.object({
-    document: z.string().min(1, "El Documento Es Requerido").regex(/^\d+$/, "Solo Se Permiten Números"),
-    password: z.string().min(1, "La Contraseña Es Requerida"),
+    document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
+    password: z.string().min(1, "La contraseña es requerida"),
     rememberMe: z.boolean().optional(),
 })
 
@@ -51,7 +51,7 @@ export default function LoginMobile() {
 
     const handleTurnstileError = useCallback(() => {
         setTurnstileToken(null)
-        showToast.error("Error Al Cargar La Verificación De Seguridad. Por Favor, Verifica Tu Conexión O Deshabilita Bloqueadores De Anuncios.")
+        showToast.error("Error al cargar la verificación de seguridad. Por favor, verifica tu conexión o deshabilita bloqueadores de anuncios.")
     }, [])
 
     const handleTurnstileExpire = useCallback(() => {
@@ -72,7 +72,7 @@ export default function LoginMobile() {
 
     const onSubmit = async (data: LoginFormValues) => {
         if (!turnstileToken) {
-            showToast.error("Por Favor, Espera A Que Se Complete La Verificación De Seguridad.")
+            showToast.error("Por favor, espera a que se complete la verificación de seguridad.")
             return
         }
 
@@ -97,7 +97,7 @@ export default function LoginMobile() {
             if (err.statusCode === 429) {
                 // Mostrar notificación persistente de Sonner con mismo diseño
                 const toastId = showToast.error(
-                    `Demasiados Intentos Fallidos. Intenta De Nuevo En 15 Minutos.`,
+                    `Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.`,
                     {
                         duration: Infinity, // Persistente mientras esté bloqueado
                         closeButton: false,
@@ -114,7 +114,7 @@ export default function LoginMobile() {
                         if (toastId) {
                             showToast.dismiss(toastId);
                         }
-                            showToast.success('Cuenta Desbloqueada. Puedes Intentar De Nuevo.', {
+                            showToast.success('Cuenta desbloqueada. Puedes intentar de nuevo.', {
                             duration: 4000,
                         });
                         return;
@@ -122,7 +122,7 @@ export default function LoginMobile() {
 
                     // Actualizar el toast con el tiempo restante
                     showToast.error(
-                        `Demasiados Intentos Fallidos. Intenta De Nuevo En ${counter} Minuto${counter !== 1 ? 's' : ''}`,
+                        `Demasiados intentos fallidos. Intenta de nuevo en ${counter} minuto${counter !== 1 ? 's' : ''}`,
                         {
                             id: toastId,
                             duration: Infinity,
@@ -177,7 +177,7 @@ export default function LoginMobile() {
                             <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1.5">v{APP_CONFIG.version}</span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de Sesión</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-center tracking-tight">Inicio de sesión</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent className="pb-3 pt-0">
@@ -193,7 +193,7 @@ export default function LoginMobile() {
                                     id="document"
                                     type="text"
                                     inputMode="numeric"
-                                    placeholder="Ingrese Su Número De Documento"
+                                    placeholder="Ingrese número de documento"
                                     autoComplete="username"
                                     {...register("document")}
                                     className="h-10 text-base"
@@ -211,7 +211,7 @@ export default function LoginMobile() {
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Ingrese Su Contraseña"
+                                        placeholder="Ingrese contraseña"
                                         autoComplete="current-password"
                                         {...register("password")}
                                         className="pr-10 h-10 text-base"
@@ -229,7 +229,7 @@ export default function LoginMobile() {
                                         ) : (
                                             <Eye className="h-4 w-4 text-muted-foreground" />
                                         )}
-                                        <span className="sr-only">Alternar Visibilidad De Contraseña</span>
+                                        <span className="sr-only">Alternar visibilidad de contraseña</span>
                                     </Button>
                                 </div>
                             </div>
@@ -250,7 +250,7 @@ export default function LoginMobile() {
                                         )}
                                     />
                                         <Label htmlFor="rememberMe" className="text-sm text-muted-foreground font-normal cursor-pointer">
-                                        Recordar Contraseña
+                                        Recordar contraseña
                                     </Label>
                                 </div>
                             </div>
@@ -271,7 +271,7 @@ export default function LoginMobile() {
                                 className="w-full h-10 text-base font-bold shadow-sm transition-all active:scale-[0.98]"
                                 disabled={isSubmitting || !turnstileToken}
                             >
-                                {isSubmitting ? "Iniciando Sesión..." : "Iniciar Sesión"}
+                                {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
                     </CardContent>
@@ -279,7 +279,7 @@ export default function LoginMobile() {
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
                     <p>
-                        Para Soporte Técnico, Contáctanos A{' '}
+                        Soporte Técnico -{' '}
                         <a href="mailto:contacto@plak.digital" className="hover:underline text-primary font-semibold">
                             contacto@plak.digital
                         </a>

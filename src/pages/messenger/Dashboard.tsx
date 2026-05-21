@@ -100,7 +100,7 @@ export default function MessengerDashboard() {
                 {isFromCache && !loading && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
                         <Database className="h-3 w-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest italic">Offline Cache</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest italic">Offline cache</span>
                     </div>
                 )}
             </div>
