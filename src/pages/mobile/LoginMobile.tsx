@@ -279,7 +279,7 @@ export default function LoginMobile() {
 
                 <div className="mt-2 text-center text-[9px] text-muted-foreground max-w-[300px] px-4 leading-tight space-y-1">
                     <p>
-                        Soporte Técnico -{' '}
+                        Soporte técnico -{' '}
                         <a href="mailto:contacto@plak.digital" className="hover:underline text-primary font-semibold">
                             contacto@plak.digital
                         </a>

@@ -96,7 +96,7 @@ export function CardSkeleton() {
  */
 export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     return (
-        <div className="space-y-2 animate-in fade-in duration-500">
+        <div className="space-y-2">
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
@@ -151,7 +151,7 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
  */
 export function ServiceDetailsSkeleton() {
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-500">
+        <div className="flex flex-col h-full">
             <div className="flex-1 overflow-auto">
                 {/* Hero Card Skeleton */}
                 <div className="p-4 pb-2">
@@ -208,7 +208,7 @@ export function ServiceDetailsSkeleton() {
  */
 export function UpdateServiceStatusSkeleton() {
     return (
-        <div className="animate-in fade-in duration-500 pb-24">
+        <div className="pb-24">
             {/* Hero Card Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-6 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
@@ -255,7 +255,7 @@ export function UpdateServiceStatusSkeleton() {
  */
 export function CreateServiceSkeleton() {
     return (
-        <div className="pb-24 animate-in fade-in duration-500">
+        <div className="pb-24">
             {/* Photo Section Skeleton */}
             <div className="p-4 pb-2">
                 <Card className="p-5 border-border/50 rounded-2xl">

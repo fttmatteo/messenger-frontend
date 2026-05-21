@@ -1,17 +1,16 @@
 import { cn } from "@/lib/utils"
 
 interface SkeletonProps extends React.ComponentProps<"div"> {
-  /** When true, disables the pulse animation */
+  /** This property is kept for backward compatibility but animations are fully disabled */
   static?: boolean
 }
 
-function Skeleton({ className, static: isStatic, ...props }: SkeletonProps) {
+function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
       data-slot="skeleton"
       className={cn(
         "bg-accent rounded-md",
-        !isStatic && "animate-pulse",
         className
       )}
       {...props}

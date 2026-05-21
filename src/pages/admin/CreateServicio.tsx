@@ -318,7 +318,7 @@ export default function AdminCreateServicio() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={loading || loadingData}
+                                    disabled={loading || loadingData || !form.formState.isDirty}
                                     size="sm"
                                 >
                                     {loading ? (

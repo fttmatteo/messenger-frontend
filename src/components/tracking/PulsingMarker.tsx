@@ -25,11 +25,24 @@ export const PulsingMarker = memo(function PulsingMarker({
         lat: messenger.latitude,
         lng: messenger.longitude
     }), [messenger.latitude, messenger.longitude])
+    
     const title = messenger.messengerName || `Mensajero #${messenger.messengerId}`
     const color = isOnline ? '#10b981' : '#6b7280'
     const isActive = isOnline
+    
     const map = useGoogleMap()
     const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
+
+    const latestMessenger = useRef(messenger)
+    const latestOnClick = useRef(onClick)
+    const latestOnDeselect = useRef(onDeselect)
+
+    useEffect(() => {
+        latestMessenger.current = messenger
+        latestOnClick.current = onClick
+        latestOnDeselect.current = onDeselect
+    }, [messenger, onClick, onDeselect])
 
     useEffect(() => {
         if (!map || !window.google?.maps?.marker) return
@@ -37,6 +50,39 @@ export const PulsingMarker = memo(function PulsingMarker({
         const container = document.createElement('div')
         container.style.position = 'relative'
         container.style.cursor = 'pointer'
+        containerRef.current = container
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            content: container,
+        })
+        
+        marker.addListener('gmp-click', () => {
+            if (latestOnClick.current && latestMessenger.current) {
+                latestOnClick.current(latestMessenger.current)
+            }
+        })
+
+        markerRef.current = marker
+
+        return () => {
+            marker.map = null
+            markerRef.current = null
+        }
+    }, [map])
+
+    useEffect(() => {
+        if (!markerRef.current) return
+        markerRef.current.position = position
+        markerRef.current.title = title
+        markerRef.current.zIndex = isSelected ? 100 : undefined
+    }, [position, title, isSelected])
+
+    useEffect(() => {
+        if (!containerRef.current || !window.google?.maps?.marker) return
+        
+        const container = containerRef.current
+        container.innerHTML = ''
 
         if (isActive) {
             const pulse = document.createElement('div')
@@ -49,7 +95,7 @@ export const PulsingMarker = memo(function PulsingMarker({
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                animation: pulse 2s infinite;
+                animation: pulse 4s infinite;
                 pointer-events: none; 
             `
             container.appendChild(pulse)
@@ -73,8 +119,7 @@ export const PulsingMarker = memo(function PulsingMarker({
             glyphColor: 'white',
             scale: isActive ? 1.2 : 1,
         })
-        container.appendChild(pinElement as unknown as Node)
-
+        container.appendChild(pinElement.element)
 
         if (isSelected) {
             const popup = document.createElement('div')
@@ -91,14 +136,12 @@ export const PulsingMarker = memo(function PulsingMarker({
                 gap: 8px;
             `
 
-
             const nameSpan = document.createElement('span')
             nameSpan.textContent = title
             nameSpan.className = "text-xs font-semibold"
             popup.appendChild(nameSpan)
 
-
-            if (onDeselect) {
+            if (latestOnDeselect.current) {
                 const closeBtn = document.createElement('button')
                 closeBtn.innerHTML = '✕'
                 closeBtn.className = "text-muted-foreground hover:text-foreground ml-1"
@@ -112,41 +155,19 @@ export const PulsingMarker = memo(function PulsingMarker({
                 `
                 closeBtn.addEventListener('click', (e) => {
                     e.stopPropagation()
-                    onDeselect()
+                    if (latestOnDeselect.current) {
+                        latestOnDeselect.current()
+                    }
                 })
                 popup.appendChild(closeBtn)
             }
 
             container.appendChild(popup)
             container.style.zIndex = '1000'
+        } else {
+            container.style.zIndex = ''
         }
-
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-            map,
-            position,
-            title,
-            content: container,
-            zIndex: isSelected ? 100 : undefined
-        })
-
-        marker.addListener('gmp-click', () => {
-            onClick(messenger)
-        })
-
-        markerRef.current = marker
-
-        return () => {
-            if (markerRef.current) {
-                markerRef.current.map = null
-            }
-        }
-    }, [map, color, onClick, onDeselect, position, title, isActive, messenger, isSelected])
-
-    useEffect(() => {
-        if (markerRef.current) {
-            markerRef.current.position = position
-        }
-    }, [position])
+    }, [isActive, color, isSelected, title])
 
     return null
 })

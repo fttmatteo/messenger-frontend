@@ -87,7 +87,7 @@ export default function CreateConcesionario() {
         },
     })
 
-    const { handleSubmit, watch, formState: { isSubmitting } } = form
+    const { handleSubmit, watch, formState: { isSubmitting, isDirty } } = form
     const currentAddress = watch("address")
 
     const handlePreviewLocation = async () => {
@@ -192,7 +192,7 @@ export default function CreateConcesionario() {
                                 >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" size="sm" disabled={isSubmitting}>
+                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Crear concesionario
                                 </Button>
