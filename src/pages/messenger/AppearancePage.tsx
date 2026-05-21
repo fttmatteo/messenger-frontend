@@ -67,7 +67,7 @@ export default function AppearancePage() {
                                         className={cn(
                                             "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300",
                                             isSelected
-                                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
+                                                ? "bg-primary text-primary-foreground scale-110"
                                                 : "bg-muted text-muted-foreground"
                                         )}
                                     >
