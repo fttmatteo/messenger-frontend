@@ -4,21 +4,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Preferences } from '@capacitor/preferences';
 import { Button } from '@/components/ui/button';
 import { Cookie, Info } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 const CONSENT_KEY = 'plak_cookie_consent';
 
 const getCookie = (name: string): string | null => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    try {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    } catch (e) {
+        logger.warn('Error reading cookie:', e);
+    }
     return null;
 };
 
 const setCookie = (name: string, value: string, days: number) => {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = `; expires=${date.toUTCString()}`;
-    document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax; Secure`;
+    try {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = `expires=${date.toUTCString()}`;
+        const maxAge = `max-age=${days * 24 * 60 * 60}`;
+        const isSecure = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `${name}=${value || ""}; ${expires}; ${maxAge}; path=/; SameSite=Lax${isSecure}`;
+    } catch (e) {
+        logger.warn('Error setting cookie:', e);
+    }
 };
 
 /**
@@ -32,6 +43,8 @@ export default function CookieBanner() {
     const location = useLocation();
 
     useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>;
+
         const checkConsent = async () => {
             try {
                 const cookieConsent = getCookie(CONSENT_KEY);
@@ -39,42 +52,60 @@ export default function CookieBanner() {
                     return;
                 }
 
-                const { value } = await Preferences.get({ key: CONSENT_KEY });
-                if (value === 'accepted') {
-                    setCookie(CONSENT_KEY, 'accepted', 365);
-                    return;
+                try {
+                    const { value } = await Preferences.get({ key: CONSENT_KEY });
+                    if (value === 'accepted') {
+                        setCookie(CONSENT_KEY, 'accepted', 365);
+                        return;
+                    }
+                } catch (e) {
+                    logger.warn('Preferences API not available or failed', e);
                 }
 
-                const localValue = localStorage.getItem(CONSENT_KEY);
-                if (localValue === 'accepted') {
-                    setCookie(CONSENT_KEY, 'accepted', 365);
-                    return;
+                try {
+                    const localValue = localStorage.getItem(CONSENT_KEY);
+                    if (localValue === 'accepted') {
+                        setCookie(CONSENT_KEY, 'accepted', 365);
+                        return;
+                    }
+                } catch (e) {
+                    logger.warn('LocalStorage not available', e);
                 }
 
-                const timer = setTimeout(() => setShow(true), 1500);
-                return () => clearTimeout(timer);
-            } catch {
-                const cookieConsent = getCookie(CONSENT_KEY);
-                const localConsent = localStorage.getItem(CONSENT_KEY);
-                if (cookieConsent !== 'accepted' && localConsent !== 'accepted') {
-                    setShow(true);
-                }
+                timer = setTimeout(() => setShow(true), 1500);
+            } catch (e) {
+                logger.warn('Error in checkConsent:', e);
+                setShow(true);
             }
         };
 
         checkConsent();
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     const handleAccept = async () => {
+        setShow(false);
+
         try {
             setCookie(CONSENT_KEY, 'accepted', 365);
-            await Preferences.set({ key: CONSENT_KEY, value: 'accepted' });
-            localStorage.setItem(CONSENT_KEY, 'accepted');
-        } catch {
-            setCookie(CONSENT_KEY, 'accepted', 365);
-            localStorage.setItem(CONSENT_KEY, 'accepted');
+            
+            try {
+                localStorage.setItem(CONSENT_KEY, 'accepted');
+            } catch (e) {
+                logger.warn('No se pudo guardar en localStorage', e);
+            }
+
+            try {
+                await Preferences.set({ key: CONSENT_KEY, value: 'accepted' });
+            } catch (e) {
+                logger.warn('No se pudo guardar en Preferences', e);
+            }
+        } catch (error) {
+            logger.error('Error general guardando el consentimiento:', error);
         }
-        setShow(false);
     };
 
     if (location.pathname === '/politica-cookies' || location.pathname === '/politica-privacidad') {
@@ -102,7 +133,7 @@ export default function CookieBanner() {
                             </div>
                             <div className="space-y-1.5 flex-1 min-w-0">
                                 <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                                    Política de Cookies
+                                    Política de cookies
                                     <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                         SIC
                                     </span>
@@ -121,7 +152,7 @@ export default function CookieBanner() {
                                 onClick={() => navigate('/politica-cookies')}
                             >
                                 <Info className="h-3.5 w-3.5" />
-                                Saber Más
+                                Saber más
                             </Button>
                             
                             <Button

@@ -41,13 +41,6 @@ export function DesktopOnlyGuard() {
                             Por Favor, Accede Desde un Ordenador para Gestionar el Sistema.
                         </p>
                     </div>
-
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-4">
-                        <p className="text-amber-800 dark:text-amber-200 text-xs sm:text-sm text-center">
-                            <strong>¿Por Qué Solo Escritorio?</strong><br />
-                            La Gestión Avanzada Requiere una Pantalla Grande para Visualizar Tablas, Mapas y Estadísticas Correctamente.
-                        </p>
-                    </div>
                 </CardContent>
                 <CardFooter className="flex justify-center pt-2 pb-4 sm:pb-6 shrink-0 z-10 bg-card rounded-b-xl">
                     <Button

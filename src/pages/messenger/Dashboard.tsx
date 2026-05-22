@@ -3,7 +3,7 @@ import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel, SelectSeparator } from "@/components/ui/select"
 import { useState, useMemo, useCallback } from "react"
 
 /**
@@ -23,19 +23,33 @@ export default function MessengerDashboard() {
         setIsRefreshing(false)
     }, [isOnline, isRefreshing, refetch])
 
-    const dealerships = useMemo(() => {
-        const map = new Map<number, string>();
+    const { originDealerships, destinationDealerships } = useMemo(() => {
+        const originMap = new Map<number, string>();
+        const destMap = new Map<number, string>();
         pendingServices.forEach(s => {
-            if (s.dealership && !map.has(s.dealership.idDealership)) {
-                map.set(s.dealership.idDealership, s.dealership.name);
+            if (s.originDealership && !originMap.has(s.originDealership.idDealership)) {
+                originMap.set(s.originDealership.idDealership, s.originDealership.name);
+            }
+            if (s.dealership && !destMap.has(s.dealership.idDealership)) {
+                destMap.set(s.dealership.idDealership, s.dealership.name);
             }
         });
-        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+        return {
+            originDealerships: Array.from(originMap.entries()).map(([id, name]) => ({ id, name })),
+            destinationDealerships: Array.from(destMap.entries()).map(([id, name]) => ({ id, name }))
+        };
     }, [pendingServices]);
 
     const filteredServices = useMemo(() => {
         if (selectedDealership === "all") return pendingServices;
-        return pendingServices.filter(s => String(s.dealership.idDealership) === selectedDealership);
+        const [type, idStr] = selectedDealership.split('-');
+        if (!type || !idStr) return pendingServices;
+        
+        return pendingServices.filter(s => {
+            if (type === 'orig') return String(s.originDealership.idDealership) === idStr;
+            if (type === 'dest') return String(s.dealership.idDealership) === idStr;
+            return false;
+        });
     }, [pendingServices, selectedDealership]);
 
     return (
@@ -65,19 +79,52 @@ export default function MessengerDashboard() {
                                     </span>
                                 </div>
                             </SelectItem>
-                            {dealerships.map((d) => {
-                                const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
-                                return (
-                                    <SelectItem key={d.id} value={String(d.id)} className="rounded-xl my-0.5">
-                                        <div className="flex items-center justify-between w-full gap-4">
-                                            <span className="truncate">{d.name}</span>
-                                            <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
-                                                {count}
-                                            </span>
-                                        </div>
-                                    </SelectItem>
-                                );
-                            })}
+                            {originDealerships.length > 0 && (
+                                <>
+                                    <SelectSeparator className="my-1 bg-border/50" />
+                                    <SelectGroup>
+                                        <SelectLabel className="px-3 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                            Origen
+                                        </SelectLabel>
+                                        {originDealerships.map((d) => {
+                                            const count = pendingServices.filter(s => s.originDealership.idDealership === Number(d.id)).length;
+                                            return (
+                                                <SelectItem key={`orig-${d.id}`} value={`orig-${d.id}`} className="rounded-xl my-0.5">
+                                                    <div className="flex items-center justify-between w-full gap-4">
+                                                        <span className="truncate pl-1">{d.name}</span>
+                                                        <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
+                                                            {count}
+                                                        </span>
+                                                    </div>
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectGroup>
+                                </>
+                            )}
+                            {destinationDealerships.length > 0 && (
+                                <>
+                                    <SelectSeparator className="my-1 bg-border/50" />
+                                    <SelectGroup>
+                                        <SelectLabel className="px-3 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                            Destino
+                                        </SelectLabel>
+                                        {destinationDealerships.map((d) => {
+                                            const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
+                                            return (
+                                                <SelectItem key={`dest-${d.id}`} value={`dest-${d.id}`} className="rounded-xl my-0.5">
+                                                    <div className="flex items-center justify-between w-full gap-4">
+                                                        <span className="truncate pl-1">{d.name}</span>
+                                                        <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
+                                                            {count}
+                                                        </span>
+                                                    </div>
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectGroup>
+                                </>
+                            )}
                         </SelectContent>
                     </Select>
                 </div>

@@ -27,10 +27,8 @@ export default function ServiciosPage() {
     const [statusFilterOpen, setStatusFilterOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState<string>("all")
 
-    // Obtener la fecha del último cambio de estado para un servicio
     const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
         if (service.history && service.history.length > 0) {
-            // Obtener la fecha de cambio más reciente del historial
             const lastChange = service.history[service.history.length - 1]
             return new Date(lastChange.changeDate)
         }
@@ -38,8 +36,6 @@ export default function ServiciosPage() {
     }, [])
 
     const filteredServices = useMemo(() => {
-        // Usamos búsqueda global si hay un término de búsqueda O un filtro de estado activo.
-        // De lo contrario, filtramos por la fecha seleccionada.
         const isGlobalSearch = searchTerm.trim() !== "" || statusFilter !== "all"
 
         let services = isGlobalSearch
@@ -48,18 +44,18 @@ export default function ServiciosPage() {
                 isSameDay(getLastChangeDate(service), selectedDate)
             )
 
-        // Aplicar filtro de estado
         if (statusFilter !== "all") {
             services = services.filter(s => s.currentStatus === statusFilter)
         }
 
-        // Aplicar filtro de búsqueda de placa/concesionario
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
             services = services.filter(service =>
                 service.plate.plateNumber.toLowerCase().includes(term) ||
                 service.dealership.name.toLowerCase().includes(term) ||
-                service.dealership.zone?.toLowerCase().includes(term)
+                service.dealership.zone?.toLowerCase().includes(term) ||
+                service.originDealership?.name.toLowerCase().includes(term) ||
+                service.originDealership?.zone?.toLowerCase().includes(term)
             )
         }
 
