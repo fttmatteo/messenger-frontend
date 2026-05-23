@@ -10,8 +10,8 @@ import { employeeService } from "@/services/employee.service"
 import type { Dealership } from "@/types/dealership.types"
 import type { Employee } from "@/types/employee.types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from "@/components/ui/form"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -139,9 +139,9 @@ export default function AdminCreateServicio() {
                         Información del servicio
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
+                        <CardContent className="flex-1 overflow-y-auto">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                                 <FormField
                                     control={form.control}
@@ -176,9 +176,6 @@ export default function AdminCreateServicio() {
                                                     placeholder="ABC1234567"
                                                 />
                                             </FormControl>
-                                            <FormDescription className="text-[10px]">
-                                                Entre 10 y 20 caracteres
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -305,35 +302,35 @@ export default function AdminCreateServicio() {
                                     )}
                                 />
                             </div>
+                        </CardContent>
 
-                            <div className="flex gap-4 pt-6 pb-4 mt-auto border-t">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => navigate("/admin/servicios")}
-                                    disabled={loading}
-                                >
-                                    Cancelar
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={loading || loadingData || !form.formState.isDirty}
-                                    size="sm"
-                                >
-                                    {loading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Creando...
-                                        </>
-                                    ) : (
-                                        "Crear servicio"
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-                </CardContent>
+                        <CardFooter className="flex gap-4 p-4 pt-4 mt-auto border-t bg-muted/5">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate("/admin/servicios")}
+                                disabled={loading}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={loading || loadingData || !form.formState.isDirty}
+                                size="sm"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creando...
+                                    </>
+                                ) : (
+                                    "Crear servicio"
+                                )}
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </Form>
             </div>
         </Card>
         </>

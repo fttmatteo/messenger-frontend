@@ -8,7 +8,7 @@ import { useAdminUI } from "@/context/AdminUIContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Loader2, Eye, EyeOff, Trash2, Save } from "lucide-react"
@@ -127,8 +127,8 @@ export default function EditEmployee() {
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto">
-                    <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
+                    <CardContent className="flex-1 overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">Documento</Label>
@@ -199,65 +199,65 @@ export default function EditEmployee() {
                                 )}
                             </div>
                         </div>
+                    </CardContent>
 
-                        <div className="flex flex-wrap gap-3 pt-6 pb-4 mt-auto border-t">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate(-1)}
-                            >
-                                Cancelar
-                            </Button>
-                            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
-                                {isSubmitting ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Save className="mr-2 h-4 w-4" />
-                                )}
-                                Guardar cambios
-                            </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="ml-auto text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(-1)}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                            {isSubmitting ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Save className="mr-2 h-4 w-4" />
+                            )}
+                            Guardar cambios
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="ml-auto text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Eliminar
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        ¿Eliminar transportista?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Esta acción no se puede deshacer. Se eliminará permanentemente este transportista del sistema.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleDelete}
+                                        disabled={deleting}
+                                        className="bg-red-500 text-white hover:bg-red-600"
                                     >
-                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        {deleting ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                        )}
                                         Eliminar
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            ¿Eliminar transportista?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Se eliminará permanentemente este transportista del sistema.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={handleDelete}
-                                            disabled={deleting}
-                                            className="bg-red-500 text-white hover:bg-red-600"
-                                        >
-                                            {deleting ? (
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                            )}
-                                            Eliminar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </form>
-                </CardContent>
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </CardFooter>
+                </form>
             </div>
         </Card>
         </>

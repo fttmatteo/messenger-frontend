@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { getErrorMessage } from "@/lib/error-utils"
@@ -88,8 +88,8 @@ export default function CreateEmployee() {
                 <CardHeader className="p-2 pb-0">
                     <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto">
-                    <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
+                    <CardContent className="flex-1 overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">
@@ -168,23 +168,23 @@ export default function CreateEmployee() {
                                 )}
                             </div>
                         </div>
+                    </CardContent>
 
-                        <div className="flex gap-4 pt-6 pb-4 mt-auto border-t">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate("/admin/empleados")}
-                            >
-                                Cancelar
-                            </Button>
-                            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Crear transportista
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
+                    <CardFooter className="flex gap-4 p-4 pt-4 mt-auto border-t bg-muted/5">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate("/admin/empleados")}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Crear transportista
+                        </Button>
+                    </CardFooter>
+                </form>
             </div>
         </Card>
         </>
