@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-2.0.1-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-2.0.2-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)

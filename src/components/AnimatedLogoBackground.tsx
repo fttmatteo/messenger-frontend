@@ -21,7 +21,7 @@ const GRID_ITEMS = Array.from({ length: 144 })
  */
 const AnimatedLogoBackground = React.memo(function AnimatedLogoBackground() {
     return (
-        <div className="fixed inset-0 -z-20 w-screen h-screen overflow-hidden bg-background pointer-events-none select-none">
+        <div className="fixed top-0 left-0 w-screen h-[100vh] @supports(height:100lvh):h-[100lvh] -z-20 overflow-hidden bg-background pointer-events-none select-none">
             {/* Animaciones CSS locales para renderizado en el compositor de la GPU */}
             <style>{`
                 @keyframes driftGrid {
