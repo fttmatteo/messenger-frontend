@@ -117,24 +117,20 @@ export default function Eliminados() {
                 <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Servicios eliminados</h1>
 
                 <div className="flex-1 flex justify-end">
-                    {services.length > 0 ? (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            disabled={emptying}
-                            onClick={() => setIsEmptyTrashDialogOpen(true)}
-                            className="h-8 text-xs text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                        >
-                            {emptying ? (
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                                <Trash2 className="h-4 w-4 mr-2" />
-                            )}
-                            Vaciar papelera
-                        </Button>
-                    ) : (
-                        <div className="w-[140px]" />
-                    )}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={emptying || services.length === 0 || loading}
+                        onClick={() => setIsEmptyTrashDialogOpen(true)}
+                        className="shrink-0 h-8 text-xs text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    >
+                        {emptying ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                            <Trash2 className="h-4 w-4 mr-2" />
+                        )}
+                        Vaciar papelera
+                    </Button>
                 </div>
             </div>
 
