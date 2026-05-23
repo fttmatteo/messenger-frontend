@@ -80,10 +80,10 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toContain('-webkit-fill-available')
     })
 
-    it('Sonner toaster debe usar el offset dinámico con safe-area-bottom', () => {
+    it('Sonner toaster debe usar el offset dinámico con safe-area-top', () => {
         const sonnerPath = path.resolve(__dirname, '../components/ui/sonner.tsx')
         const content = fs.readFileSync(sonnerPath, 'utf-8')
-        expect(content).toContain('calc(var(--safe-area-bottom) + 16px)')
+        expect(content).toContain('calc(var(--safe-area-top) + 16px)')
     })
 
     it('Páginas con elementos fijos deben mantener el cálculo de seguridad', () => {
