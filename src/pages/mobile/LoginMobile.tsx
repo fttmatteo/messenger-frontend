@@ -143,7 +143,7 @@ export default function LoginMobile() {
         <>
             {isSubmitting && <FullScreenLoader />}
             <AnimatedLogoBackground />
-            <div className="flex flex-col items-center justify-center min-h-[100vh] @supports(height:100lvh):min-h-[100lvh] bg-transparent p-3">
+            <div className="flex flex-col items-center justify-center h-[100vh] @supports(height:100lvh):h-[100lvh] bg-transparent p-3 overflow-hidden">
                 <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
                     <div className="absolute top-2 left-2 z-10">
                         <Button

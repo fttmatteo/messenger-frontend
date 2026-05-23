@@ -52,7 +52,7 @@ export default function MessengerDashboard() {
     }, [pendingServices, selectedDealership]);
 
     return (
-        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-16">
+        <div className="flex flex-col p-3 gap-3 relative min-h-full pb-4">
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <div className="relative w-full">
