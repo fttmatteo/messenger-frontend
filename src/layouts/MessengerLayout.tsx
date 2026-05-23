@@ -599,7 +599,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden overscroll-none custom-scrollbar pb-safe"
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden overscroll-none custom-scrollbar"
                 style={{ scrollPaddingTop: 'calc(3rem + var(--safe-area-top))' }}
                 role="main"
             >
