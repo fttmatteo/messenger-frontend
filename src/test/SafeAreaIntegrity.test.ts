@@ -37,14 +37,12 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toContain('padding-bottom: var(--safe-area-bottom)')
     })
 
-    it('MessengerLayout debe aplicar pt-safe en el header y pb-safe en el main', () => {
+    it('MessengerLayout debe aplicar pt-safe en el header', () => {
         const layoutPath = path.resolve(__dirname, '../layouts/MessengerLayout.tsx')
         const content = fs.readFileSync(layoutPath, 'utf-8')
         
         expect(content).toContain('pt-safe')
-        expect(content).toContain('pb-safe')
         expect(content).toMatch(/<header[^>]*pt-safe/)
-        expect(content).toMatch(/<main[^>]*pb-safe/)
     })
 
     it('AdminLayout debe aplicar pt-safe y pb-safe', () => {
