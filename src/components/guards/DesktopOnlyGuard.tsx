@@ -19,7 +19,7 @@ export function DesktopOnlyGuard() {
                         <img src={logo} alt="PLAK" className="h-12 w-12 sm:h-16 sm:w-16 object-contain" />
                     </div>
                     <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
-                        Solo Escritorio
+                        Solo escritorio
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 sm:space-y-6 overflow-y-auto custom-scrollbar px-4 sm:px-6">
@@ -35,17 +35,10 @@ export function DesktopOnlyGuard() {
 
                     <div className="text-center space-y-2 sm:space-y-3">
                         <p className="text-base sm:text-lg font-medium">
-                            El Panel de Administrador Está Diseñado para Escritorios.
+                            El Panel de Administrador está diseñado para escritorios.
                         </p>
                         <p className="text-muted-foreground text-xs sm:text-sm">
-                            Por Favor, Accede Desde un Ordenador para Gestionar el Sistema.
-                        </p>
-                    </div>
-
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-4">
-                        <p className="text-amber-800 dark:text-amber-200 text-xs sm:text-sm text-center">
-                            <strong>¿Por Qué Solo Escritorio?</strong><br />
-                            La Gestión Avanzada Requiere una Pantalla Grande para Visualizar Tablas, Mapas y Estadísticas Correctamente.
+                            Por favor, accede desde un ordenador para gestionar el sistema.
                         </p>
                     </div>
                 </CardContent>

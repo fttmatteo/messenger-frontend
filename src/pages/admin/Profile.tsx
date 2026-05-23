@@ -11,7 +11,7 @@ import { capitalizeWords } from "@/utils/stringUtils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter} from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
@@ -209,17 +209,17 @@ export default function Profile() {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
-                                                <Button type="submit" size="sm" disabled={saving || !isDirty}>
-                                                    {saving ? (
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <Save className="mr-2 h-4 w-4" />
-                                                    )}
-                                                    Guardar cambios
-                                                </Button>
-                                            </div>
                                         </CardContent>
+                                        <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
+                                            <Button type="submit" size="sm" disabled={saving || !isDirty}>
+                                                {saving ? (
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Save className="mr-2 h-4 w-4" />
+                                                )}
+                                                Guardar cambios
+                                            </Button>
+                                        </CardFooter>
                                     </Card>
                             </TabsContent>
 
@@ -265,17 +265,17 @@ export default function Profile() {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
-                                                <Button type="submit" size="sm" disabled={saving || !isDirty}>
-                                                    {saving ? (
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <Save className="mr-2 h-4 w-4" />
-                                                    )}
-                                                    Guardar cambios
-                                                </Button>
-                                            </div>
                                         </CardContent>
+                                        <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
+                                            <Button type="submit" size="sm" disabled={saving || !isDirty}>
+                                                {saving ? (
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Save className="mr-2 h-4 w-4" />
+                                                )}
+                                                Guardar cambios
+                                            </Button>
+                                        </CardFooter>
                                     </Card>
                             </TabsContent>
 
@@ -344,10 +344,10 @@ function ProfileSkeleton() {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
-                                    <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
-                                </div>
                             </CardContent>
+                            <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
+                                <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
+                            </CardFooter>
                         </Card>
                     </div>
                 </div>

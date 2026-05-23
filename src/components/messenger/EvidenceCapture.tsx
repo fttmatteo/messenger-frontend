@@ -22,15 +22,13 @@ interface PhotoPreviewProps {
 }
 
 function PhotoPreview({ photo, index, photos, onRemove }: PhotoPreviewProps) {
-    // Generamos la URL síncronamente para evitar el renderizado en cascada (cascading renders)
     const url = useMemo(() => URL.createObjectURL(photo), [photo]);
 
-    // Nos encargamos EXCLUSIVAMENTE de la limpieza cuando el componente se desmonta o la foto cambia
     useEffect(() => {
         return () => URL.revokeObjectURL(url);
     }, [url]);
 
-    if (!url) return <div className="w-full h-full bg-muted animate-pulse" />;
+    if (!url) return <div className="w-full h-full bg-muted/20 rounded-lg" />;
 
     return (
         <div className="relative aspect-square rounded-lg overflow-hidden border border-border/50 bg-muted/50">

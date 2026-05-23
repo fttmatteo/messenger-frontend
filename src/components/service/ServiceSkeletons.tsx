@@ -100,44 +100,57 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="relative flex flex-col bg-card/60 border border-border/40 rounded-xl overflow-hidden shadow-sm p-3.5 pl-4.5 gap-2.5"
+                    className="relative flex flex-col bg-card/60 border border-border/40 rounded-xl overflow-hidden shadow-sm"
                 >
                     {/* Banda lateral del estado */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-muted/20" />
 
-                    {/* Cabecera (Chasis + Estado) */}
-                    <div className="flex items-center justify-between">
-                        <Skeleton static className="h-7 w-28 rounded bg-muted/20" />
-                        <Skeleton static className="h-5 w-16 rounded-full bg-muted/20" />
-                    </div>
+                    <div className="flex flex-col p-3.5 pl-4.5 gap-2.5">
+                        {/* Cabecera (Chasis + Estado) */}
+                        <div className="flex items-center justify-between">
+                            <Skeleton static className="h-7 w-28 rounded bg-muted/20" />
+                            <Skeleton static className="h-6 w-24 rounded-full bg-muted/20" />
+                        </div>
 
-                    {/* Cuerpo de Detalles */}
-                    <div className="space-y-2">
-                        {/* Concesionario */}
-                        <div className="flex items-center gap-2">
-                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
-                            <div className="space-y-1 flex-1">
-                                <Skeleton static className="h-4 w-44 rounded bg-muted/15" />
-                                <Skeleton static className="h-2.5 w-16 rounded bg-muted/10" />
+                        {/* Cuerpo de Detalles */}
+                        <div className="space-y-3.5">
+                            {/* Ruta de Concesionarios */}
+                            <div className="flex flex-col pl-1">
+                                {/* Origen Row */}
+                                <div className="flex gap-3 items-stretch">
+                                    <div className="flex flex-col items-center shrink-0 w-[18px] relative z-10">
+                                        <Skeleton static className="h-[18px] w-[18px] rounded-full bg-muted/20 shrink-0 mt-0.5" />
+                                        <div className="flex-1 w-0.5 border-l border-dashed border-muted-foreground/30 my-1" />
+                                    </div>
+                                    <div className="flex-1 min-w-0 pb-4">
+                                        <Skeleton static className="h-3 w-12 rounded bg-muted/10 mb-1" />
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Skeleton static className="h-5 w-48 rounded bg-muted/20" />
+                                            <Skeleton static className="h-6 w-6 rounded-full bg-muted/10 shrink-0" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Destino Row */}
+                                <div className="flex gap-3 items-stretch">
+                                    <div className="flex flex-col items-center shrink-0 w-[18px] z-10">
+                                        <Skeleton static className="h-[18px] w-[18px] rounded-full bg-muted/20 shrink-0 mt-0.5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <Skeleton static className="h-3 w-12 rounded bg-muted/10 mb-1" />
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Skeleton static className="h-5 w-40 rounded bg-muted/20" />
+                                            <Skeleton static className="h-6 w-6 rounded-full bg-muted/10 shrink-0" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Dirección */}
-                        <div className="flex items-center gap-2">
-                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
-                            <Skeleton static className="h-3 w-56 rounded bg-muted/10" />
-                        </div>
-
-                        {/* Teléfono */}
-                        <div className="flex items-center gap-2">
-                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
-                            <Skeleton static className="h-3 w-32 rounded bg-muted/10" />
-                        </div>
-
-                        {/* Reloj de Fecha */}
-                        <div className="flex items-center gap-2">
-                            <Skeleton static className="h-4 w-4 rounded-full bg-muted/10 shrink-0" />
-                            <Skeleton static className="h-3 w-28 rounded bg-muted/10" />
+                            {/* Fecha de Asignación */}
+                            <div className="flex items-center gap-2.5 pl-1">
+                                <Skeleton static className="h-[18px] w-[18px] rounded-full bg-muted/20 shrink-0" />
+                                <Skeleton static className="h-4 w-32 rounded bg-muted/10" />
+                            </div>
                         </div>
                     </div>
                 </div>

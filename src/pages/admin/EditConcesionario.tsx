@@ -6,7 +6,7 @@ import { dealershipService } from "@/services/dealership.service"
 import { useAdminUI } from "@/context/AdminUIContext"
 import { Button } from "@/components/ui/button"
 import { AdminBreadcrumb } from "@/components/ui/admin-breadcrumb"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Map } from "@/components/Map"
@@ -212,12 +212,12 @@ export default function EditConcesionario() {
                     <CardHeader className="p-2 pb-0">
                         <CardTitle className="text-base text-foreground font-semibold">Información del concesionario</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1">
-                        <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
-
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
+                        <CardContent className="flex-1 overflow-y-auto">
                             <ConcesionarioForm form={form} />
+                        </CardContent>
 
-                            <div className="flex flex-wrap gap-3 pt-6 mt-auto border-t">
+                        <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -272,9 +272,8 @@ export default function EditConcesionario() {
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>
-                            </div>
+                        </CardFooter>
                         </form>
-                    </CardContent>
                 </Card>
 
                 <Card className="flex flex-col gap-1 py-1">

@@ -57,13 +57,13 @@ const SETTINGS_SECTIONS = [
     },
     {
         id: 'cookies',
-        title: 'Política de Cookies',
+        title: 'Política de cookies',
         icon: Cookie,
         path: '/politica-cookies'
     },
     {
         id: 'privacy',
-        title: 'Política de Privacidad',
+        title: 'Política de privacidad',
         icon: Shield,
         path: '/politica-privacidad'
     },

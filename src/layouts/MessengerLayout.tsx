@@ -72,7 +72,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('configuracion/apariencia')) return 'Apariencia'
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('perfil')) return 'Perfil'
-        if (location.pathname.includes('actualizar')) return 'Actualizar Servicio'
+        if (location.pathname.includes('actualizar')) return 'Actualizar servicio'
         return null
     }
 

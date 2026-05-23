@@ -20,7 +20,7 @@ export function MobileOnlyGuard() {
                             <img src={logo} alt="PLAK" className="h-20 w-20 object-contain drop-shadow-md" />
                         </div>
                         <h2 className="text-2xl font-bold tracking-tight mb-2">
-                            Dispositivo No Compatible
+                            Dispositivo no compatible
                         </h2>
 
                         <div className="flex items-center justify-center gap-4 my-8">
@@ -34,7 +34,7 @@ export function MobileOnlyGuard() {
                         </div>
 
                         <p className="text-muted-foreground max-w-sm">
-                            Esta Aplicación Está Optimizada para el Uso Exclusivo en Smartphones y Tablets.
+                            Esta aplicación está optimizada para el uso exclusivo en smartphones y tablets.
                         </p>
                     </div>
 
@@ -43,22 +43,12 @@ export function MobileOnlyGuard() {
                         <CardContent className="space-y-6 p-0">
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold">
-                                    Experiencia Móvil Requerida
+                                    Experiencia móvil requerida
                                 </h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
-                                    Para Garantizar el Correcto Funcionamiento de las Características de Geolocalización, Cámara y Notificaciones en Tiempo Real, Es Necesario Acceder Desde un Dispositivo Móvil.
+                                    Para garantizar el correcto funcionamiento de las características de geolocalización, cámara y notificaciones en tiempo real, es necesario acceder desde un dispositivo móvil.
                                 </p>
                             </div>
-
-                            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/50 rounded-lg p-4">
-                                <h4 className="text-amber-800 dark:text-amber-200 text-sm font-semibold mb-1">
-                                    ¿Por Qué Esta Restricción?
-                                </h4>
-                                <p className="text-amber-700 dark:text-amber-300/80 text-xs">
-                                    El Flujo de Trabajo de los Mensajeros Depende de Sensores y Hardware Específicos de Dispositivos Móviles que No Están Disponibles o No Funcionan Igual en Navegadores de Escritorio.
-                                </p>
-                            </div>
-
                             <div className="pt-4 mt-auto">
                                 <Button
                                     variant="outline"
@@ -66,7 +56,7 @@ export function MobileOnlyGuard() {
                                     className="w-full gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                                 >
                                     <LogOut className="h-4 w-4" />
-                                    Cerrar sesión y volver más tarde
+                                    Cerrar sesión
                                 </Button>
                             </div>
                         </CardContent>
