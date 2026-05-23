@@ -1,9 +1,8 @@
 import { useMessengerServices } from "@/hooks/use-messenger-services"
 import { useNetwork } from "@/hooks/use-network"
 import { ServiceList } from "@/components/messenger/ServiceList"
-import { RefreshCw, Database, Building2 } from "lucide-react"
+import { ChevronDown, RefreshCw, Database, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel, SelectSeparator } from "@/components/ui/select"
 import { useState, useMemo, useCallback } from "react"
 
 /**
@@ -56,77 +55,51 @@ export default function MessengerDashboard() {
         <div className="flex flex-col p-3 gap-3 relative min-h-full pb-16">
             <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
-                    <Select value={selectedDealership} onValueChange={setSelectedDealership} name="dealership-filter">
-                        <SelectTrigger
-                            id="dealership-filter"
-                            className="w-full h-11 px-3 bg-card border-border/60 rounded-2xl shadow-sm hover:bg-accent/10 transition-all duration-200 outline-none ring-0 focus:ring-1 focus:ring-primary/20"
-                        >
-                            <div className="flex items-center gap-2.5 w-full min-w-0">
-                                <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-                                    <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                    <SelectValue placeholder="Filtrar por concesionario" />
-                                </div>
+                    <div className="relative w-full">
+                        <div className="absolute inset-y-0 left-0 pl-1.5 flex items-center pointer-events-none">
+                            <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                                <Building2 className="h-4 w-4 text-primary" strokeWidth={2.5} />
                             </div>
-                        </SelectTrigger>
-                        <SelectContent align="start" className="w-[280px] rounded-2xl border-border/60 bg-card shadow-2xl p-1 custom-scrollbar">
-                            <SelectItem value="all" className="rounded-xl font-semibold my-0.5">
-                                <div className="flex items-center justify-between w-full gap-4">
-                                    <span className="truncate">Todos los concesionarios</span>
-                                    <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
-                                        {pendingServices.length}
-                                    </span>
-                                </div>
-                            </SelectItem>
+                        </div>
+                        <select
+                            id="dealership-filter"
+                            name="dealership-filter"
+                            value={selectedDealership}
+                            onChange={(e) => setSelectedDealership(e.target.value)}
+                            className="block w-full h-11 pl-12 pr-10 text-base text-foreground bg-card border-border/60 border rounded-2xl shadow-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+                        >
+                            <option value="all">
+                                Todos los concesionarios ({pendingServices.length})
+                            </option>
                             {originDealerships.length > 0 && (
-                                <>
-                                    <SelectSeparator className="my-1 bg-border/50" />
-                                    <SelectGroup>
-                                        <SelectLabel className="px-3 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                                            Origen
-                                        </SelectLabel>
-                                        {originDealerships.map((d) => {
-                                            const count = pendingServices.filter(s => s.originDealership.idDealership === Number(d.id)).length;
-                                            return (
-                                                <SelectItem key={`orig-${d.id}`} value={`orig-${d.id}`} className="rounded-xl my-0.5">
-                                                    <div className="flex items-center justify-between w-full gap-4">
-                                                        <span className="truncate pl-1">{d.name}</span>
-                                                        <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
-                                                            {count}
-                                                        </span>
-                                                    </div>
-                                                </SelectItem>
-                                            );
-                                        })}
-                                    </SelectGroup>
-                                </>
+                                <optgroup label="Origen">
+                                    {originDealerships.map((d) => {
+                                        const count = pendingServices.filter(s => s.originDealership.idDealership === Number(d.id)).length;
+                                        return (
+                                            <option key={`orig-${d.id}`} value={`orig-${d.id}`}>
+                                                {d.name} ({count})
+                                            </option>
+                                        );
+                                    })}
+                                </optgroup>
                             )}
                             {destinationDealerships.length > 0 && (
-                                <>
-                                    <SelectSeparator className="my-1 bg-border/50" />
-                                    <SelectGroup>
-                                        <SelectLabel className="px-3 py-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                                            Destino
-                                        </SelectLabel>
-                                        {destinationDealerships.map((d) => {
-                                            const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
-                                            return (
-                                                <SelectItem key={`dest-${d.id}`} value={`dest-${d.id}`} className="rounded-xl my-0.5">
-                                                    <div className="flex items-center justify-between w-full gap-4">
-                                                        <span className="truncate pl-1">{d.name}</span>
-                                                        <span className="shrink-0 text-[10px] font-bold text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-md min-w-[1.5rem] text-center">
-                                                            {count}
-                                                        </span>
-                                                    </div>
-                                                </SelectItem>
-                                            );
-                                        })}
-                                    </SelectGroup>
-                                </>
+                                <optgroup label="Destino">
+                                    {destinationDealerships.map((d) => {
+                                        const count = pendingServices.filter(s => s.dealership.idDealership === Number(d.id)).length;
+                                        return (
+                                            <option key={`dest-${d.id}`} value={`dest-${d.id}`}>
+                                                {d.name} ({count})
+                                            </option>
+                                        );
+                                    })}
+                                </optgroup>
                             )}
-                        </SelectContent>
-                    </Select>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-muted-foreground">
+                            <ChevronDown className="h-4 w-4 opacity-50" />
+                        </div>
+                    </div>
                 </div>
 
                 <Button

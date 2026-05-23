@@ -399,7 +399,7 @@ export default function UpdateStatus() {
                                             e.target.style.height = `${e.target.scrollHeight}px`
                                         }}
                                         rows={4}
-                                        className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-sm sm:text-base leading-relaxed p-3 pr-12"
+                                        className="w-full resize-none bg-muted/30 border-border/50 min-h-[100px] max-h-[200px] overflow-y-auto text-base leading-relaxed p-3 pr-12"
                                     />
                                 </div>
                             </Card>

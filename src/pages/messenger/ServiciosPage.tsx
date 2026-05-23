@@ -2,17 +2,12 @@ import { useMessengerServices } from "@/hooks/use-messenger-services"
 import { ServiceList } from "@/components/messenger/ServiceList"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Search, CalendarIcon, Filter, Check } from "lucide-react"
+import { Search, CalendarIcon, Filter } from "lucide-react"
 import { useState, useMemo, useCallback } from "react"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusLabel } from "@/lib/status-colors"
-import { getStatusIconConfig } from "@/lib/status-utils"
 import { cn } from "@/lib/utils"
-import { useStatusColors } from "@/hooks/use-status-colors"
-
 /**
  * Página principal de listado de servicios para el perfil Mensajero.
  * Proporciona funcionalidades de búsqueda, filtrado por fecha y estado,
@@ -20,11 +15,8 @@ import { useStatusColors } from "@/hooks/use-status-colors"
  */
 export default function ServiciosPage() {
     const { loading, completedServices, error } = useMessengerServices()
-    const { colors } = useStatusColors()
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-    const [calendarOpen, setCalendarOpen] = useState(false)
-    const [statusFilterOpen, setStatusFilterOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState<string>("all")
 
     const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
@@ -82,79 +74,54 @@ export default function ServiciosPage() {
                     />
                 </div>
 
-                <Popover open={statusFilterOpen} onOpenChange={setStatusFilterOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className={cn(
-                                "h-10 w-10 shrink-0 border-input/60",
-                                statusFilter !== 'all' && "text-primary border-primary bg-primary/5 shadow-sm"
-                            )}
-                        >
-                            <Filter className="h-4 w-4" strokeWidth={2.5} />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-2" align="end">
-                        <div className="space-y-1">
-                            <button
-                                onClick={() => { setStatusFilter("all"); setStatusFilterOpen(false); }}
-                                className={cn(
-                                    "w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors",
-                                    statusFilter === "all" ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
-                                )}
-                            >
-                                <span>Ver todos</span>
-                                {statusFilter === "all" && <Check className="h-4 w-4" />}
-                            </button>
-                            <div className="h-px bg-border my-1" />
-                            {['PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED'].map((status) => {
-                                const config = getStatusIconConfig(status, colors);
-                                const isSelected = statusFilter === status;
-                                return (
-                                    <button
-                                        key={status}
-                                        onClick={() => { setStatusFilter(status); setStatusFilterOpen(false); }}
-                                        className={cn(
-                                            "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors",
-                                            isSelected ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
-                                        )}
-                                    >
-                                        <div className="w-2.5 h-2.5 rounded-full" style={config.dotStyle} />
-                                        <span className="flex-1 text-left">{config.label}</span>
-                                        {isSelected && <Check className="h-4 w-4" />}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                <div className="relative">
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer text-base bg-background text-foreground"
+                    >
+                        <option value="all">Ver todos los estados</option>
+                        {['PENDING', 'DELIVERED', 'RETURNED', 'CANCELED', 'RESOLVED'].map((status) => (
+                            <option key={status} value={status}>
+                                {getStatusLabel(status)}
+                            </option>
+                        ))}
+                    </select>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        type="button"
+                        className={cn(
+                            "h-10 w-10 shrink-0 border-input/60 relative z-0 pointer-events-none",
+                            statusFilter !== 'all' && "text-primary border-primary bg-primary/5 shadow-sm"
+                        )}
+                    >
+                        <Filter className="h-4 w-4" strokeWidth={2.5} />
+                    </Button>
+                </div>
 
-                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-10 w-10 shrink-0 border-input/60"
-                        >
-                            <CalendarIcon className="h-4 w-4" strokeWidth={2.5} />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                        <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => {
-                                if (date) {
-                                    setSelectedDate(date)
-                                    setCalendarOpen(false)
-                                }
-                            }}
-                            locale={es}
-                            disabled={(date) => date > new Date()}
-                        />
-                    </PopoverContent>
-                </Popover>
+                <div className="relative">
+                    <input
+                        type="date"
+                        value={format(selectedDate, "yyyy-MM-dd")}
+                        max={format(new Date(), "yyyy-MM-dd")}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                const [y, m, d] = e.target.value.split('-');
+                                setSelectedDate(new Date(Number(y), Number(m) - 1, Number(d)));
+                            }
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer text-base bg-background text-foreground"
+                    />
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        type="button"
+                        className="h-10 w-10 shrink-0 border-input/60 relative z-0 pointer-events-none"
+                    >
+                        <CalendarIcon className="h-4 w-4" strokeWidth={2.5} />
+                    </Button>
+                </div>
             </div>
 
             <div className="flex items-center justify-between">
