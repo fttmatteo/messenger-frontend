@@ -382,7 +382,7 @@ export default function MessengerLayout() {
     }
 
     return (
-        <div className="flex flex-col h-[100dvh] w-full bg-background relative overflow-hidden transform-gpu">
+        <div className="flex flex-col h-app-screen w-full bg-background relative overflow-hidden transform-gpu">
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
@@ -599,7 +599,7 @@ export default function MessengerLayout() {
             <main
                 id="main-content"
                 ref={mainRef}
-                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden overscroll-none custom-scrollbar"
+                className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden overscroll-none custom-scrollbar pb-safe"
                 style={{ scrollPaddingTop: 'calc(3rem + var(--safe-area-top))' }}
                 role="main"
             >

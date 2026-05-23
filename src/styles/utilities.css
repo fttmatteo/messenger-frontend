@@ -85,4 +85,15 @@
     .min-h-screen-safe {
         min-height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom));
     }
+
+    /* Manejo global de altura para PWA vs Navegador */
+    .h-app-screen {
+        height: 100dvh;
+    }
+    
+    @media (display-mode: standalone) {
+        .h-app-screen {
+            height: 100vh;
+        }
+    }
 }
