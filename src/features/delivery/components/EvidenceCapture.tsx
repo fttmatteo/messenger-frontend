@@ -63,6 +63,19 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
+    const buttonsRef = useRef<HTMLDivElement>(null)
+    const prevPhotosLengthRef = useRef(photos.length)
+
+    useEffect(() => {
+        if (photos.length > prevPhotosLengthRef.current || cameraActive) {
+            const timer = setTimeout(() => {
+                buttonsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+            }, 100)
+            prevPhotosLengthRef.current = photos.length
+            return () => clearTimeout(timer)
+        }
+        prevPhotosLengthRef.current = photos.length
+    }, [photos.length, cameraActive])
 
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
@@ -242,7 +255,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
                         </div>
                     )}
                 </div>
-                <div className="flex gap-2">
+                <div ref={buttonsRef} className="flex gap-2">
                     <Button
                         type="button"
                         onClick={capturePhoto}
@@ -288,7 +301,7 @@ export function EvidenceCapture({ maxPhotos = 3, photos, onPhotosChange }: Evide
 
 
             {photos.length < maxPhotos && (
-                <div className="flex gap-2">
+                <div ref={buttonsRef} className="flex gap-2">
                     <Button
                         type="button"
                         variant="outline"

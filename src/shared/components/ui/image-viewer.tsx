@@ -28,15 +28,17 @@ export function ImageViewer({
             : []
 
     const [currentIndex, setCurrentIndex] = useState(initialIndex)
+    const [prevOpen, setPrevOpen] = useState(open)
+    const [prevInitialIndex, setPrevInitialIndex] = useState(initialIndex)
 
-    // Sincronizar el índice de la imagen activa cuando se abre o cambia el index inicial
-    useEffect(() => {
+    if (open !== prevOpen || initialIndex !== prevInitialIndex) {
+        setPrevOpen(open)
+        setPrevInitialIndex(initialIndex)
         if (open) {
             setCurrentIndex(initialIndex)
         }
-    }, [open, initialIndex])
+    }
 
-    // Manejo de navegación por teclado
     useEffect(() => {
         if (!open || imageList.length === 0) return
 
@@ -56,7 +58,6 @@ export function ImageViewer({
 
     if (imageList.length === 0) return null
 
-    // Asegurar que el índice esté dentro del rango válido
     const activeIndex = Math.min(Math.max(0, currentIndex), imageList.length - 1)
 
     return createPortal(
