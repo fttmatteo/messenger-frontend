@@ -22,7 +22,7 @@ import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, X, ExternalLink } from "lucide-react"
 import { createLogger } from "@/shared/utils/logger"
 
-const logger = createLogger('Concesionarios')
+const logger = createLogger('Dealerships')
 
 
 /**
@@ -128,7 +128,7 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
  * buscar por nombre o dirección, y acceder a la creación/edición.
  * También permite previsualizar la ubicación geográfica en un mapa emergente.
  */
-export default function Concesionarios() {
+export default function Dealerships() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const { setSuccess } = useAdminUI()
@@ -158,11 +158,11 @@ export default function Concesionarios() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Dealerships" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Concesionarios</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Dealerships</h1>
                     <ToggleGroup
                         type="single"
                         value={zoneFilter}

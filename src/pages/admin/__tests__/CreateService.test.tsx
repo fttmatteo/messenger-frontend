@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
-import AdminCreateServicio from '../CreateServicio';
+import AdminCreateServicio from '../CreateService';
 import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
 import { serviceDeliveryService } from '@/features/delivery/services/service.service';

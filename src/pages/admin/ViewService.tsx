@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/shared/components/ui/card"
 import { Button } from "@/shared/components/ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
-import { ViewServicioSkeleton } from "@/features/delivery/components/ViewServicioSkeleton"
+import { ViewServiceSkeleton } from "@/features/delivery/components/ViewServiceSkeleton"
 import { ServiceTrackingMap } from "@/features/tracking/components/ServiceTrackingMap"
 import { ImageViewer } from "@/shared/components/ui/image-viewer"
 import { ArrowLeft, Trash2, Loader2 } from "lucide-react"
@@ -27,7 +27,7 @@ import { UpdateStatusModal } from "@/features/delivery/components/UpdateStatusMo
  * y un mapa de rastreo del servicio.
  * Permite actualizar el estado del servicio o eliminarlo (si es administrador).
  */
-export default function ViewServicio() {
+export default function ViewService() {
     // Router y Auth
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -61,7 +61,7 @@ export default function ViewServicio() {
             setService(data)
             setError(null)
         } catch (error) {
-            logger.apiError("Error al obtener el servicio en ViewServicio", error)
+            logger.apiError("Error al obtener el servicio en ViewService", error)
             const message = getErrorMessage(error)
             setError(message)
             setGlobalError(message)
@@ -95,7 +95,7 @@ export default function ViewServicio() {
     }
 
     if (loading) {
-        return <ViewServicioSkeleton />
+        return <ViewServiceSkeleton />
     }
 
     if (error) {

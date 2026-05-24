@@ -13,7 +13,7 @@ import { cn } from "@/shared/lib/utils"
  * Proporciona funcionalidades de búsqueda, filtrado por fecha y estado,
  * y visualización del historial completo de entregas y asignaciones.
  */
-export default function ServiciosPage() {
+export default function ServicesPage() {
     const { loading, completedServices, error } = useMessengerServices()
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())

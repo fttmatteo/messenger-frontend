@@ -20,7 +20,7 @@ import { formatDisplayName } from "@/shared/lib/format-utils"
  * Permite buscar por nombre o documento y navegar hacia las vistas de creación y edición.
  * Los administradores solo ven empleados con rol MESSENGER (filtrado server-side).
  */
-export default function Empleados() {
+export default function Employees() {
     const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
 

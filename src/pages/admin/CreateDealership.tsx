@@ -14,11 +14,11 @@ import { Map } from "@/features/location/components/Map"
 import { MAP_LIBRARIES } from "@/shared/lib/maps.constants"
 import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
 import { Badge } from "@/shared/components/ui/badge"
-import { ConcesionarioForm } from "@/features/dealership/components/ConcesionarioForm"
+import { DealershipForm } from "@/features/dealership/components/DealershipForm"
 import { dealershipSchema, type DealershipFormValues } from "@/shared/schemas/dealership.schema"
 import { createLogger } from "@/shared/utils/logger"
 
-const logger = createLogger('CreateConcesionario')
+const logger = createLogger('CreateDealership')
 
 
 /**
@@ -62,7 +62,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
  * Incluye un formulario validado y una funcionalidad de previsualización 
  * en el mapa mediante la geocodificación de la dirección ingresada.
  */
-export default function CreateConcesionario() {
+export default function CreateDealership() {
     const navigate = useNavigate()
     const { setSuccess, setError } = useAdminUI()
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
@@ -160,7 +160,7 @@ export default function CreateConcesionario() {
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Concesionarios", href: "/admin/concesionarios" },
+                        { label: "Dealerships", href: "/admin/concesionarios" },
                         { label: "Nuevo" }
                     ]} />
                 </div>
@@ -180,7 +180,7 @@ export default function CreateConcesionario() {
                     </CardHeader>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
                         <CardContent className="flex-1 overflow-y-auto">
-                            <ConcesionarioForm form={form} />
+                            <DealershipForm form={form} />
                         </CardContent>
 
                         <CardFooter className="flex gap-4 p-4 pt-4 mt-auto border-t bg-muted/5">

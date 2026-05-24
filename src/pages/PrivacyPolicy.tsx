@@ -10,7 +10,7 @@ import { APP_CONFIG } from '@/shared/lib/app-config';
  * Cumple con los requerimientos de la Ley 1581 de 2012 (Habeas Data) en Colombia
  * y establece las bases legales del procesamiento de datos en el backend de PLAK.
  */
-export default function PoliticaPrivacidad() {
+export default function PrivacyPolicy() {
     const navigate = useNavigate();
 
     useEffect(() => {

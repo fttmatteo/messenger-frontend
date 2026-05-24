@@ -98,7 +98,7 @@ const STORAGE_ITEMS: StorageItem[] = [
  * Cumple con los requerimientos de transparencia de la Ley 1581 de 2012
  * y las directrices de la Superintendencia de Industria y Comercio (SIC) de Colombia.
  */
-export default function PoliticaCookies() {
+export default function CookiePolicy() {
     const navigate = useNavigate();
 
     useEffect(() => {

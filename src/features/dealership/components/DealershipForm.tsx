@@ -14,7 +14,7 @@ interface ConcesionarioFormProps {
  * Formulario para la creación y edición de concesionarios.
  * Gestiona campos básicos como nombre, teléfono, dirección y zona.
  */
-export function ConcesionarioForm({ form, disabled }: ConcesionarioFormProps) {
+export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
     const { register, formState: { errors }, setValue, watch } = form
     const selectedZone = watch("zone")
 

@@ -128,7 +128,7 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                 </div>
 
                 <div className="space-y-3.5">
-                    {/* Ruta de Concesionarios */}
+                    {/* Ruta de Dealerships */}
                     <div className="flex flex-col pl-1">
                         {/* Origen Row */}
                         {service.originDealership && (

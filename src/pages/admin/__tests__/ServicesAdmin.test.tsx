@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import Servicios from '../Servicios'
+import Services from '../Services'
 import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 
 import { AuthProvider } from '@/features/auth/context/AuthContext'
@@ -29,7 +29,7 @@ vi.mock('react-router-dom', async () => {
  * Verifica la correcta carga de datos, manejo de estados vacíos y visualización de la lista
  * simulando respuestas del servidor con MSW.
  */
-describe('Servicios Admin Page Integration', () => {
+describe('Services Admin Page Integration', () => {
     beforeEach(() => {
         server.use(
             http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
@@ -84,7 +84,7 @@ describe('Servicios Admin Page Integration', () => {
             <MemoryRouter>
                 <AuthProvider>
                     <StatusColorProvider>
-                        <Servicios />
+                        <Services />
                     </StatusColorProvider>
                 </AuthProvider>
             </MemoryRouter>

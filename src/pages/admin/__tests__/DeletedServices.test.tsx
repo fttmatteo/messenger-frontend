@@ -1,14 +1,14 @@
 import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import Eliminados from '../Eliminados'
+import DeletedServices from '../DeletedServices'
 import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 import { AdminUIProvider } from '@/shared/context/AdminUIContext'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 
-describe('Eliminados Page Integration', () => {
+describe('DeletedServices Page Integration', () => {
     const renderPage = () => {
         localStorage.setItem('role', 'ADMIN')
         return render(
@@ -16,7 +16,7 @@ describe('Eliminados Page Integration', () => {
                 <AuthProvider>
                     <AdminUIProvider>
                         <StatusColorProvider>
-                            <Eliminados />
+                            <DeletedServices />
                         </StatusColorProvider>
                     </AdminUIProvider>
                 </AuthProvider>
@@ -74,7 +74,7 @@ describe('Eliminados Page Integration', () => {
 
         renderPage()
 
-        expect(screen.getByText(/Servicios eliminados/i)).toBeInTheDocument()
+        expect(screen.getByText(/Services eliminados/i)).toBeInTheDocument()
 
         expect(await screen.findByText(/Old Dealership/i)).toBeInTheDocument()
         

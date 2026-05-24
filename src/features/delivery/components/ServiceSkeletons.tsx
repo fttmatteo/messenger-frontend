@@ -114,7 +114,7 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
 
                         {/* Cuerpo de Detalles */}
                         <div className="space-y-3.5">
-                            {/* Ruta de Concesionarios */}
+                            {/* Ruta de Dealerships */}
                             <div className="flex flex-col pl-1">
                                 {/* Origen Row */}
                                 <div className="flex gap-3 items-stretch">

@@ -8,7 +8,7 @@ import { APP_CONFIG } from "@/shared/lib/app-config"
  * Sirve como menú central para acceder a diferentes secciones de ajustes
  * como la apariencia, y muestra información sobre la versión de la aplicación.
  */
-export default function ConfiguracionPage() {
+export default function SettingsPage() {
     const navigate = useNavigate()
 
     return (

@@ -39,7 +39,7 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
  * Permite filtrar por estado, buscar por chasis, concesionario o transportista,
  * y realizar actualizaciones rápidas de estado mediante un modal.
  */
-export default function Servicios() {
+export default function Services() {
     const navigate = useNavigate()
     const outletContext = useOutletContext<{ searchQuery?: string }>()
     const searchQuery = outletContext?.searchQuery || ""
@@ -84,11 +84,11 @@ export default function Servicios() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Services" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Services</h1>
                     <Select
                         value={(statusFilter?.length ?? 0) === 1 ? statusFilter[0] : "all"}
                         onValueChange={(value) => {

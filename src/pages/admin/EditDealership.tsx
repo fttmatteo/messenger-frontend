@@ -15,7 +15,7 @@ import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
 import { Loader2, MapPin, Trash2, Save } from "lucide-react"
 import { DealershipFormSkeleton } from "@/features/dealership/components/DealershipSkeletons"
 import { getErrorMessage } from "@/shared/lib/error-utils"
-import { ConcesionarioForm } from "@/features/dealership/components/ConcesionarioForm"
+import { DealershipForm } from "@/features/dealership/components/DealershipForm"
 import { dealershipSchema, type DealershipFormValues } from "@/shared/schemas/dealership.schema"
 import { capitalizeWords } from "@/shared/utils/stringUtils"
 
@@ -61,7 +61,7 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
  * Permite actualizar datos básicos, gestionar la ubicación geográfica
  * (geocodificación) y eliminar el registro.
  */
-export default function EditConcesionario() {
+export default function EditDealership() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { setSuccess, setError } = useAdminUI()
@@ -194,7 +194,7 @@ export default function EditConcesionario() {
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Concesionarios", href: "/admin/concesionarios" },
+                        { label: "Dealerships", href: "/admin/concesionarios" },
                         { label: "Editar" }
                     ]} />
                 </div>
@@ -214,7 +214,7 @@ export default function EditConcesionario() {
                     </CardHeader>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
                         <CardContent className="flex-1 overflow-y-auto">
-                            <ConcesionarioForm form={form} />
+                            <DealershipForm form={form} />
                         </CardContent>
 
                         <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">

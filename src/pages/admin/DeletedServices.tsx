@@ -30,7 +30,7 @@ import { getDaysRemaining } from "@/shared/lib/date-utils"
  * restaurarlos a su estado original, eliminarlos permanentemente uno a uno
  * o vaciar la papelera por completo.
  */
-export default function Eliminados() {
+export default function DeletedServices() {
     const { setSuccess, setError } = useAdminUI()
     const [services, setServices] = useState<ServiceDelivery[]>([])
     const [loading, setLoading] = useState(true)
@@ -111,10 +111,10 @@ export default function Eliminados() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Eliminados" }]} />
+                    <AdminBreadcrumb segments={[{ label: "DeletedServices" }]} />
                 </div>
 
-                <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Servicios eliminados</h1>
+                <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Services eliminados</h1>
 
                 <div className="flex-1 flex justify-end">
                     <Button

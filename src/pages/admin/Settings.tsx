@@ -75,7 +75,7 @@ const SETTINGS_SECTIONS = [
  * de colores para los estados de los servicios.
  * Utiliza parámetros de búsqueda en la URL para navegar entre secciones.
  */
-export default function Configuracion() {
+export default function Settings() {
     const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const activeSection = searchParams.get('section')

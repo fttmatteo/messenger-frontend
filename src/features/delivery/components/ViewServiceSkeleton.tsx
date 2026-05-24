@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/shared/components/ui/card"
  * Esqueleto de carga exhaustivo para la vista de detalles de un servicio.
  * Cubre la información general, línea de tiempo e indicadores de ubicación.
  */
-export function ViewServicioSkeleton() {
+export function ViewServiceSkeleton() {
     return (
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
