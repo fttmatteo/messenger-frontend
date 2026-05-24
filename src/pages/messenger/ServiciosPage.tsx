@@ -1,13 +1,13 @@
-import { useMessengerServices } from "@/hooks/use-messenger-services"
-import { ServiceList } from "@/components/messenger/ServiceList"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
+import { ServiceList } from "@/features/delivery/components/ServiceList"
+import { Input } from "@/shared/components/ui/input"
+import { Button } from "@/shared/components/ui/button"
 import { Search, CalendarIcon, Filter } from "lucide-react"
 import { useState, useMemo, useCallback } from "react"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
-import { getStatusLabel } from "@/lib/status-colors"
-import { cn } from "@/lib/utils"
+import { getStatusLabel } from "@/shared/lib/status-colors"
+import { cn } from "@/shared/lib/utils"
 /**
  * Página principal de listado de servicios para el perfil Mensajero.
  * Proporciona funcionalidades de búsqueda, filtrado por fecha y estado,

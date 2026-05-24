@@ -3,13 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import UpdateStatus from '../UpdateStatus'
-import { StatusColorProvider } from '@/context/StatusColorContext'
-import { AuthProvider } from '@/context/AuthContext'
+import { StatusColorProvider } from '@/shared/context/StatusColorContext'
+import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
-import { serviceDeliveryService } from '@/services/service.service'
-import { useNetwork } from '@/hooks/use-network'
-import { offlineSyncService } from '@/services/offline-sync.service'
+import { serviceDeliveryService } from '@/features/delivery/services/service.service'
+import { useNetwork } from '@/shared/hooks/use-network'
+import { offlineSyncService } from '@/shared/services/offline-sync.service'
 
 
 vi.mock('@/hooks/use-smart-location', () => ({
@@ -134,7 +134,7 @@ describe('UpdateStatus Page Integration', () => {
     }
 
     it('should submit successfully when online', async () => {
-        const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as unknown as import('@/types/service.types').ServiceDelivery)
+        const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as unknown as import('@/features/delivery/types/service.types').ServiceDelivery)
 
         renderWithRouter('123')
         await screen.findByTitle(/ABC-123/i)

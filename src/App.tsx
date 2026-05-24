@@ -1,13 +1,13 @@
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from './components/theme-provider';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { StatusColorProvider } from './context/StatusColorContext';
-import { NetworkProvider } from './context/NetworkContext';
+import { ThemeProvider } from '@/shared/components/ui/theme-provider';
+import { AuthProvider, useAuth } from '@/features/auth/context/AuthContext';
+import { StatusColorProvider } from '@/shared/context/StatusColorContext';
+import { NetworkProvider } from '@/shared/context/NetworkContext';
 import { AppRoutes } from './routes/AppRoutes';
-import { Toaster } from '@/components/ui/sonner';
-import { SessionExpiredDialog } from './components/dialogs';
+import { Toaster } from '@/shared/components/ui/sonner';
+import { SessionExpiredDialog } from '@/features/auth/components/SessionExpiredDialog';
 import { LazyMotion, domMax } from 'framer-motion';
-import CookieBanner from './components/CookieBanner';
+import CookieBanner from '@/shared/components/ui/CookieBanner';
 
 /**
  * Componente envoltorio que proporciona StatusColorProvider con el ID del usuario actual.

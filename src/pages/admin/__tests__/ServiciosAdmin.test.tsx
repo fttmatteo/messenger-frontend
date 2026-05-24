@@ -2,12 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Servicios from '../Servicios'
-import { StatusColorProvider } from '@/context/StatusColorContext'
+import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 
-import { AuthProvider } from '@/context/AuthContext'
+import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
-import { showToast } from '@/config/toast-config'
+import { showToast } from '@/shared/config/toast-config'
 
 vi.mock('@/config/toast-config', () => ({
     showToast: {

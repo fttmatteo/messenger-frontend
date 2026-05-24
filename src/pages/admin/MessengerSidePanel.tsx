@@ -5,25 +5,25 @@ import {
     Navigation,
     MessageSquare
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { formatDisplayName } from "@/lib/format-utils"
-import { isMessengerOnline } from "@/lib/messenger-utils"
+import { Badge } from "@/shared/components/ui/badge"
+import { Button } from "@/shared/components/ui/button"
+import { cn } from "@/shared/lib/utils"
+import { formatDisplayName } from "@/shared/lib/format-utils"
+import { isMessengerOnline } from "@/shared/lib/messenger-utils"
 import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
-import { employeeService } from "@/services/employee.service"
-import { useStatusColors } from "@/hooks/use-status-colors"
-import { getStatusIconConfig } from "@/lib/status-utils"
-import type { DailyStats, ServiceStatus } from "@/types/service.types"
-import type { LiveTrackingUpdate } from "@/services/tracking.service"
-import type { Employee } from "@/types/employee.types"
-import { logger } from "@/utils/logger"
+import { employeeService } from "@/features/employee/services/employee.service"
+import { useStatusColors } from "@/shared/hooks/use-status-colors"
+import { getStatusIconConfig } from "@/shared/lib/status-utils"
+import type { DailyStats, ServiceStatus } from "@/features/delivery/types/service.types"
+import type { LiveTrackingUpdate } from "@/features/tracking/services/tracking.service"
+import type { Employee } from "@/features/employee/types/employee.types"
+import { logger } from "@/shared/utils/logger"
 import {
     MessengerProductivity,
     MessengerActivityTimeline,
     type TimelineEvent
-} from "@/components/admin/MessengerActivity"
+} from "@/features/tracking/components/MessengerActivity"
 
 interface MessengerSidePanelProps {
     messenger: LiveTrackingUpdate | null
@@ -80,7 +80,7 @@ export function MessengerSidePanel({
             setLoadingHistory(true)
             setHistoryError(null)
 
-            const { monitoringService } = await import('@/services/monitoring.service')
+            const { monitoringService } = await import('@/features/system/services/monitoring.service')
             const response = await monitoringService.getMessengerActivity(messengerUuid, selectedDate)
 
             setDailyStats({

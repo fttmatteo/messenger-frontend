@@ -1,8 +1,8 @@
-import { useMessengerServices } from "@/hooks/use-messenger-services"
-import { useNetwork } from "@/hooks/use-network"
-import { ServiceList } from "@/components/messenger/ServiceList"
+import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
+import { useNetwork } from "@/shared/hooks/use-network"
+import { ServiceList } from "@/features/delivery/components/ServiceList"
 import { ChevronDown, RefreshCw, Database, Building2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/components/ui/button"
 import { useState, useMemo, useCallback } from "react"
 
 /**

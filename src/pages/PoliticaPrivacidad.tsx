@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { ChevronLeft, Shield, Eye, Scale, HelpCircle, Mail, MapPin, Edit3 } from 'lucide-react';
-import { APP_CONFIG } from '@/lib/app-config';
+import { APP_CONFIG } from '@/shared/lib/app-config';
 
 /**
  * Página pública de Política de Privacidad y Protección de Datos Personales.

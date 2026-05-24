@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import LoginMobile from '../LoginMobile'
-import { useAuth } from '@/context/AuthContext'
-import { showToast } from '@/config/toast-config'
-import { openSupportEmail } from '@/lib/app-config'
+import { useAuth } from '@/features/auth/context/AuthContext'
+import { showToast } from '@/shared/config/toast-config'
+import { openSupportEmail } from '@/shared/lib/app-config'
 
 // Mock dependencies
 vi.mock('@/context/AuthContext', () => ({

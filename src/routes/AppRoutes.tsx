@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/features/auth/context/AuthContext';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 function PageLoader() {
     return (
@@ -38,8 +38,8 @@ const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateS
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
-const MobileOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
-const DesktopOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
+const MobileOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
+const DesktopOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();

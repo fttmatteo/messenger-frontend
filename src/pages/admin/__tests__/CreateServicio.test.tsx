@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/test/test-utils';
 import AdminCreateServicio from '../CreateServicio';
 import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
-import { serviceDeliveryService } from '@/services/service.service';
+import { serviceDeliveryService } from '@/features/delivery/services/service.service';
 
 vi.mock('@/services/service.service', () => ({
     serviceDeliveryService: {

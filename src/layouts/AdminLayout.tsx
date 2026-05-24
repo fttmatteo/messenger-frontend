@@ -1,15 +1,15 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
-import { useAuth } from "@/context/AuthContext"
-import { ModeToggle } from "@/components/mode-toggle"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/components/ui/sidebar"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { useAuth } from "@/features/auth/context/AuthContext"
+import { ModeToggle } from "@/shared/components/ui/mode-toggle"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@/shared/components/ui/sidebar"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog"
 import { Users, Store, Bike, LogOut, Settings, Trash2, Map, HelpCircle, User } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/lib/utils"
 import logoHorizontal from "@/assets/logo-horizontal.png"
 import { useState, useRef } from "react"
-import { AdminUIProvider } from "@/context/AdminUIContext"
-import { openSupportEmail } from "@/lib/app-config"
-import { SidebarToggleTab } from "@/components/SidebarToggleTab"
+import { AdminUIProvider } from "@/shared/context/AdminUIContext"
+import { openSupportEmail } from "@/shared/lib/app-config"
+import { SidebarToggleTab } from "@/shared/components/ui/SidebarToggleTab"
 
 const menuItems = [
     { title: "Transportistas", icon: Users, url: "/admin/empleados" },

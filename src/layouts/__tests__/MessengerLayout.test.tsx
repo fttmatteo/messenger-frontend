@@ -3,9 +3,9 @@ import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import MessengerLayout from '../MessengerLayout'
-import { trackingService } from '@/services/tracking.service'
-import * as capacitorLib from '@/lib/capacitor'
-import * as authContext from '@/context/AuthContext'
+import { trackingService } from '@/features/tracking/services/tracking.service'
+import * as capacitorLib from '@/shared/lib/capacitor'
+import * as authContext from '@/features/auth/context/AuthContext'
 
 vi.mock('@/context/AuthContext', () => ({
     useAuth: vi.fn(),

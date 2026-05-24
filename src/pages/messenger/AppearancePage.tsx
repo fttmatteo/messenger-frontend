@@ -1,7 +1,7 @@
 import { useTheme } from "next-themes"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/shared/components/ui/card"
 import { Sun, Moon, Monitor, Check } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/lib/utils"
 
 type ThemeOption = 'light' | 'dark' | 'system'
 

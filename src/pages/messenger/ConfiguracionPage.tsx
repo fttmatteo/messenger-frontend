@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/shared/components/ui/card"
 import { Palette, ChevronRight, Cookie, Shield } from "lucide-react"
-import { APP_CONFIG } from "@/lib/app-config"
+import { APP_CONFIG } from "@/shared/lib/app-config"
 
 /**
  * Página de configuración principal para la aplicación del mensajero.

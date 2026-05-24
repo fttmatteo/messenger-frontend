@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
 import Login from './Login';
-import * as authService from '@/services/auth.service';
+import * as authService from '@/features/auth/services/auth.service';
 
 // Mock del servicio de autenticación
 vi.mock('@/services/auth.service', () => ({
