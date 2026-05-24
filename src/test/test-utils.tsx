@@ -1,8 +1,8 @@
 import React, { type ReactNode } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
-import { AdminUIProvider } from '@/context/AdminUIContext';
+import { AuthProvider } from '@/features/auth/context/AuthContext';
+import { AdminUIProvider } from '@/shared/context/AdminUIContext';
 
 /**
  * Configuración extendida para el renderizado de componentes en pruebas.

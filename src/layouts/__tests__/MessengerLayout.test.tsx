@@ -3,16 +3,16 @@ import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import MessengerLayout from '../MessengerLayout'
-import { trackingService } from '@/services/tracking.service'
-import * as capacitorLib from '@/lib/capacitor'
-import * as authContext from '@/context/AuthContext'
+import { trackingService } from '@/features/tracking/services/tracking.service'
+import * as capacitorLib from '@/shared/lib/capacitor'
+import * as authContext from '@/features/auth/context/AuthContext'
 
-vi.mock('@/context/AuthContext', () => ({
+vi.mock('@/features/auth/context/AuthContext', () => ({
     useAuth: vi.fn(),
     AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }))
 
-vi.mock('@/services/tracking.service', () => ({
+vi.mock('@/features/tracking/services/tracking.service', () => ({
     trackingService: {
         isCurrentlyConnected: vi.fn(),
         connect: vi.fn(),
@@ -23,7 +23,7 @@ vi.mock('@/services/tracking.service', () => ({
     }
 }))
 
-vi.mock('@/services/auth.service', () => ({
+vi.mock('@/features/auth/services/auth.service', () => ({
     authService: {
         getWsToken: vi.fn().mockResolvedValue('test-token'),
     }
@@ -43,15 +43,15 @@ vi.mock('@capacitor/core', () => ({
     })
 }))
 
-vi.mock('@/hooks/use-network', () => ({
+vi.mock('@/shared/hooks/use-network', () => ({
     useNetwork: vi.fn().mockReturnValue({ isOnline: true, pendingActionsCount: 0 })
 }))
 
-vi.mock('@/lib/capacitor', () => ({
+vi.mock('@/shared/lib/capacitor', () => ({
     isNative: vi.fn(),
 }))
 
-vi.mock('@/utils/logger', () => ({
+vi.mock('@/shared/utils/logger', () => ({
     createLogger: () => ({
         error: vi.fn(),
         debug: vi.fn(),
@@ -60,7 +60,7 @@ vi.mock('@/utils/logger', () => ({
     })
 }))
 
-vi.mock('@/config/toast-config', () => ({
+vi.mock('@/shared/config/toast-config', () => ({
     showToast: {
         warning: vi.fn(),
         error: vi.fn(),

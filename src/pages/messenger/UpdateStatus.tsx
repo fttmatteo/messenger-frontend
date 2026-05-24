@@ -1,30 +1,30 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 
-import { serviceDeliveryService } from "@/services/service.service"
-import type { ServiceDelivery, ServiceStatus } from "@/types/service.types"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Card } from "@/components/ui/card"
-import { SignatureCanvas, type SignatureCanvasRef } from "@/components/messenger/SignatureCanvas"
-import { EvidenceCapture } from "@/components/messenger/EvidenceCapture"
-import { PlacaBadge } from "@/components/PlacaBadge"
-import { getErrorMessage } from "@/lib/error-utils"
-import { getStatusIconConfig } from "@/lib/status-utils"
+import { serviceDeliveryService } from "@/features/delivery/services/service.service"
+import type { ServiceDelivery, ServiceStatus } from "@/features/delivery/types/service.types"
+import { Button } from "@/shared/components/ui/button"
+import { Textarea } from "@/shared/components/ui/textarea"
+import { Card } from "@/shared/components/ui/card"
+import { SignatureCanvas, type SignatureCanvasRef } from "@/features/delivery/components/SignatureCanvas"
+import { EvidenceCapture } from "@/features/delivery/components/EvidenceCapture"
+import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
+import { getErrorMessage } from "@/shared/lib/error-utils"
+import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
-import { showToast } from "@/config/toast-config"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { showToast } from "@/shared/config/toast-config"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
-import { useStatusColors } from "@/hooks/use-status-colors"
+import { useStatusColors } from "@/shared/hooks/use-status-colors"
 
-import { useSmartLocation } from "@/hooks/use-smart-location"
-import { STATUS_OPTIONS } from "@/config/status-options"
-import { UpdateServiceStatusSkeleton } from "@/components/service/ServiceSkeletons"
-import { useNetwork } from "@/hooks/use-network"
-import { offlineSyncService, type UpdateStatusWithFilesPayload } from "@/services/offline-sync.service"
-import { offlineCacheService } from "@/services/offline-cache.service"
-import { fileToBase64 } from "@/lib/file-utils"
-import { createLogger } from "@/utils/logger"
+import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
+import { STATUS_OPTIONS } from "@/shared/config/status-options"
+import { UpdateServiceStatusSkeleton } from "@/features/delivery/components/ServiceSkeletons"
+import { useNetwork } from "@/shared/hooks/use-network"
+import { offlineSyncService, type UpdateStatusWithFilesPayload } from "@/shared/services/offline-sync.service"
+import { offlineCacheService } from "@/shared/services/offline-cache.service"
+import { fileToBase64 } from "@/shared/lib/file-utils"
+import { createLogger } from "@/shared/utils/logger"
 
 const logger = createLogger('UpdateStatus')
 
@@ -347,24 +347,22 @@ export default function UpdateStatus() {
                                 </Card>
                             )}
 
-                            {selectedOption.requiresPhotos && (
-                                <Card className="p-4 border-border/50">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="p-1.5 rounded-lg bg-primary/10">
-                                            <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
-                                        </div>
-                                        <h3 className="text-sm font-bold tracking-tight">
-                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
-                                        </h3>
-                                        <span className="text-xs text-red-500 font-bold">*</span>
+                            <Card className="p-4 border-border/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-1.5 rounded-lg bg-primary/10">
+                                        <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <EvidenceCapture
-                                        maxPhotos={selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 5 : 1}
-                                        photos={photos}
-                                        onPhotosChange={setPhotos}
-                                    />
-                                </Card>
-                            )}
+                                    <h3 className="text-sm font-bold tracking-tight">
+                                        Fotos de evidencia
+                                    </h3>
+                                    <span className="text-xs text-muted-foreground">(opcional)</span>
+                                </div>
+                                <EvidenceCapture
+                                    maxPhotos={10}
+                                    photos={photos}
+                                    onPhotosChange={setPhotos}
+                                />
+                            </Card>
 
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center justify-between mb-3">

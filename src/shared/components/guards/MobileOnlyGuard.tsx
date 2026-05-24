@@ -1,0 +1,68 @@
+import { Smartphone, Monitor, LogOut } from "lucide-react"
+import { Card, CardContent } from "@/shared/components/ui/card"
+import logo from "@/assets/logo.png"
+import { useAuth } from "@/features/auth/context/AuthContext"
+import { Button } from "@/shared/components/ui/button"
+
+/**
+ * Protector de pantalla que restringe el acceso solo a dispositivos móviles.
+ * Requerido para el flujo de trabajo de los mensajeros que depende de hardware específico (GPS, Cámara).
+ */
+export function MobileOnlyGuard() {
+    const { logout } = useAuth()
+
+    return (
+        <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-4">
+            <Card className="max-w-5xl w-full shadow-2xl border-2 overflow-hidden">
+                <div className="grid md:grid-cols-2">
+                    <div className="bg-muted/30 p-6 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border">
+                        <div className="mb-6">
+                            <img src={logo} alt="PLAK" className="h-20 w-20 object-contain drop-shadow-md" />
+                        </div>
+                        <h2 className="text-2xl font-bold tracking-tight mb-2">
+                            Dispositivo no compatible
+                        </h2>
+
+                        <div className="flex items-center justify-center gap-4 my-8">
+                            <div className="p-4 rounded-full bg-red-100 dark:bg-red-900/30">
+                                <Monitor className="h-10 w-10 text-red-500" />
+                            </div>
+                            <span className="text-3xl text-muted-foreground">→</span>
+                            <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/30">
+                                <Smartphone className="h-10 w-10 text-green-500" />
+                            </div>
+                        </div>
+
+                        <p className="text-muted-foreground max-w-sm">
+                            Esta aplicación está optimizada para el uso exclusivo en smartphones y tablets.
+                        </p>
+                    </div>
+
+
+                    <div className="p-6 flex flex-col justify-center h-full">
+                        <CardContent className="space-y-6 p-0">
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-semibold">
+                                    Experiencia móvil requerida
+                                </h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Para garantizar el correcto funcionamiento de las características de geolocalización, cámara y notificaciones en tiempo real, es necesario acceder desde un dispositivo móvil.
+                                </p>
+                            </div>
+                            <div className="pt-4 mt-auto">
+                                <Button
+                                    variant="outline"
+                                    onClick={logout}
+                                    className="w-full gap-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    Cerrar sesión
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </div>
+                </div>
+            </Card>
+        </div>
+    )
+}

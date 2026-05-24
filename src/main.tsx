@@ -1,7 +1,7 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { registerSW } from "virtual:pwa-register"
-import { createLogger } from "@/utils/logger"
+import { createLogger } from "@/shared/utils/logger"
 
 import "./index.css"
 import "./styles/toast.css"
@@ -11,7 +11,7 @@ import App from "./App.tsx"
  * Punto de entrada principal de la aplicación React.
  * Configura el Service Worker para capacidades PWA y renderiza el componente raíz.
  */
-import { isNative } from "@/lib/capacitor"
+import { isNative } from "@/shared/lib/capacitor"
 
 const logger = createLogger('PWA')
 

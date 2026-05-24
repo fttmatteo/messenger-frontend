@@ -59,7 +59,7 @@ describe('Safe Area Integrity Audit', () => {
 
     it('No debe haber paddings duplicados en páginas estándar', () => {
         const messengerPagesDir = path.resolve(__dirname, '../pages/messenger')
-        const pages = ['ServiciosPage.tsx', 'ConfiguracionPage.tsx', 'AppearancePage.tsx']
+        const pages = ['ServicesPage.tsx', 'SettingsPage.tsx', 'AppearancePage.tsx']
         
         pages.forEach(page => {
             const content = fs.readFileSync(path.join(messengerPagesDir, page), 'utf-8')
@@ -81,7 +81,7 @@ describe('Safe Area Integrity Audit', () => {
     })
 
     it('Sonner toaster debe usar el offset dinámico con safe-area-top', () => {
-        const sonnerPath = path.resolve(__dirname, '../components/ui/sonner.tsx')
+        const sonnerPath = path.resolve(__dirname, '../shared/components/ui/sonner.tsx')
         const content = fs.readFileSync(sonnerPath, 'utf-8')
         expect(content).toContain('calc(var(--safe-area-top) + 16px)')
     })

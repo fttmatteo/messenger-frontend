@@ -2,17 +2,17 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import LoginMobile from '../LoginMobile'
-import { useAuth } from '@/context/AuthContext'
-import { showToast } from '@/config/toast-config'
-import { openSupportEmail } from '@/lib/app-config'
+import { useAuth } from '@/features/auth/context/AuthContext'
+import { showToast } from '@/shared/config/toast-config'
+import { openSupportEmail } from '@/shared/lib/app-config'
 
 // Mock dependencies
-vi.mock('@/context/AuthContext', () => ({
+vi.mock('@/features/auth/context/AuthContext', () => ({
     useAuth: vi.fn(),
     AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
-vi.mock('@/config/toast-config', () => ({
+vi.mock('@/shared/config/toast-config', () => ({
     showToast: {
         error: vi.fn(),
         success: vi.fn(),
@@ -20,12 +20,12 @@ vi.mock('@/config/toast-config', () => ({
     }
 }))
 
-vi.mock('@/lib/app-config', () => ({
+vi.mock('@/shared/lib/app-config', () => ({
     APP_CONFIG: { version: '1.7.3' },
     openSupportEmail: vi.fn()
 }))
 
-vi.mock('@/hooks/useNavigationGuard', () => ({
+vi.mock('@/shared/hooks/useNavigationGuard', () => ({
     navigateAfterLogin: vi.fn(),
     useNavigationGuard: () => ({
         handleBackNavigation: vi.fn(),
@@ -42,7 +42,7 @@ vi.mock('next-themes', () => ({
     })
 }))
 
-vi.mock('@/hooks/use-turnstile-reset', () => ({
+vi.mock('@/shared/hooks/use-turnstile-reset', () => ({
     useTurnstileReset: () => vi.fn()
 }))
 
@@ -55,14 +55,14 @@ vi.mock('react-router-dom', async () => {
 })
 
 // Mock Turnstile
-vi.mock('@/components/ui/turnstile-widget', () => ({
+vi.mock('@/shared/components/ui/turnstile-widget', () => ({
     TurnstileWidget: ({ onVerify }: { onVerify: (t: string) => void }) => {
         return <button onClick={() => onVerify('fake-token')}>Verify Turnstile</button>
     }
 }))
 
 // Mock AnimatedLogoBackground
-vi.mock('@/components/AnimatedLogoBackground', () => ({
+vi.mock('@/shared/components/ui/AnimatedLogoBackground', () => ({
     default: () => <div data-testid="animated-background" />
 }))
 

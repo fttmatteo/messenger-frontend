@@ -1,8 +1,8 @@
-import { useMessengerServices } from "@/hooks/use-messenger-services"
-import { useNetwork } from "@/hooks/use-network"
-import { ServiceList } from "@/components/messenger/ServiceList"
+import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
+import { useNetwork } from "@/shared/hooks/use-network"
+import { ServiceList } from "@/features/delivery/components/ServiceList"
 import { ChevronDown, RefreshCw, Database, Building2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/components/ui/button"
 import { useState, useMemo, useCallback } from "react"
 
 /**
@@ -115,7 +115,7 @@ export default function MessengerDashboard() {
 
             <div className="flex items-center justify-between px-1.5">
                 <p className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em]">
-                    {filteredServices.length} {filteredServices.length !== 1 ? 'Servicios' : 'Servicio'} {selectedDealership !== 'all' ? 'Filtrados' : 'Pendientes'}
+                    {filteredServices.length} {filteredServices.length !== 1 ? 'Services' : 'Servicio'} {selectedDealership !== 'all' ? 'Filtrados' : 'Pendientes'}
                 </p>
                 {isFromCache && !loading && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">

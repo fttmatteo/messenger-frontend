@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/features/auth/context/AuthContext';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 function PageLoader() {
     return (
@@ -15,31 +15,31 @@ function PageLoader() {
 }
 
 const Login = React.lazy(() => import('@/pages/Login'));
-const PoliticaCookies = React.lazy(() => import('@/pages/PoliticaCookies'));
-const PoliticaPrivacidad = React.lazy(() => import('@/pages/PoliticaPrivacidad'));
+const CookiePolicy = React.lazy(() => import('@/pages/CookiePolicy'));
+const PrivacyPolicy = React.lazy(() => import('@/pages/PrivacyPolicy'));
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
-const Empleados = React.lazy(() => import('@/pages/admin/Empleados'));
+const Employees = React.lazy(() => import('@/pages/admin/Employees'));
 const CreateEmployee = React.lazy(() => import('@/pages/admin/CreateEmployee'));
 const EditEmployee = React.lazy(() => import('@/pages/admin/EditEmployee'));
-const Concesionarios = React.lazy(() => import('@/pages/admin/Concesionarios'));
-const CreateConcesionario = React.lazy(() => import('@/pages/admin/CreateConcesionario'));
-const EditConcesionario = React.lazy(() => import('@/pages/admin/EditConcesionario'));
-const Servicios = React.lazy(() => import('@/pages/admin/Servicios'));
-const ViewServicio = React.lazy(() => import('@/pages/admin/ViewServicio'));
-const Eliminados = React.lazy(() => import('@/pages/admin/Eliminados'));
+const Dealerships = React.lazy(() => import('@/pages/admin/Dealerships'));
+const CreateDealership = React.lazy(() => import('@/pages/admin/CreateDealership'));
+const EditDealership = React.lazy(() => import('@/pages/admin/EditDealership'));
+const Services = React.lazy(() => import('@/pages/admin/Services'));
+const ViewService = React.lazy(() => import('@/pages/admin/ViewService'));
+const DeletedServices = React.lazy(() => import('@/pages/admin/DeletedServices'));
 const LiveTracking = React.lazy(() => import('@/pages/admin/LiveTracking'));
 const MessengerDetails = React.lazy(() => import('@/pages/admin/MessengerDetails'));
-const Configuracion = React.lazy(() => import('@/pages/admin/Configuracion'));
+const Settings = React.lazy(() => import('@/pages/admin/Settings'));
 const Profile = React.lazy(() => import('@/pages/admin/Profile'));
 const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
-const AdminCreateServicio = React.lazy(() => import('@/pages/admin/CreateServicio'));
+const AdminCreateServicio = React.lazy(() => import('@/pages/admin/CreateService'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
-const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServiciosPage'));
-const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/ConfiguracionPage'));
+const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServicesPage'));
+const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/SettingsPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
-const MobileOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
-const DesktopOnlyGuard = React.lazy(() => import('@/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
+const MobileOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
+const DesktopOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuth();
@@ -117,8 +117,8 @@ export function AppRoutes() {
         <Suspense fallback={<PageLoader />}>
             <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/politica-cookies" element={<PoliticaCookies />} />
-                <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+                <Route path="/politica-cookies" element={<CookiePolicy />} />
+                <Route path="/politica-privacidad" element={<PrivacyPolicy />} />
 
 
                 <Route
@@ -141,23 +141,23 @@ export function AppRoutes() {
                 >
                     <Route index element={<Navigate to="/admin/servicios" replace />} />
 
-                    <Route path="empleados" element={<Empleados />} />
+                    <Route path="empleados" element={<Employees />} />
                     <Route path="empleados/crear" element={<CreateEmployee />} />
                     <Route path="empleados/editar/:id" element={<EditEmployee />} />
 
 
-                    <Route path="concesionarios" element={<Concesionarios />} />
-                    <Route path="concesionarios/crear" element={<CreateConcesionario />} />
-                    <Route path="concesionarios/editar/:id" element={<EditConcesionario />} />
+                    <Route path="concesionarios" element={<Dealerships />} />
+                    <Route path="concesionarios/crear" element={<CreateDealership />} />
+                    <Route path="concesionarios/editar/:id" element={<EditDealership />} />
 
-                    <Route path="servicios" element={<Servicios />} />
+                    <Route path="servicios" element={<Services />} />
                     <Route path="servicios/crear" element={<AdminCreateServicio />} />
-                    <Route path="servicios/:id" element={<ViewServicio />} />
+                    <Route path="servicios/:id" element={<ViewService />} />
 
-                    <Route path="eliminados" element={<Eliminados />} />
+                    <Route path="eliminados" element={<DeletedServices />} />
                     <Route path="tracking" element={<LiveTracking />} />
                     <Route path="tracking/mensajero/:id" element={<MessengerDetails />} />
-                    <Route path="configuracion" element={<Configuracion />} />
+                    <Route path="configuracion" element={<Settings />} />
                     <Route path="perfil" element={<Profile />} />
                 </Route>
 

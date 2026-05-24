@@ -1,0 +1,134 @@
+import { Skeleton } from "@/shared/components/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/shared/components/ui/card"
+import { TableRow, TableCell } from "@/shared/components/ui/table"
+
+/**
+ * Esqueleto de carga para una fila de la tabla de empleados.
+ */
+export function TableRowSkeleton() {
+    return (
+        <TableRow className="hover:bg-transparent border-b border-border/50">
+            {/* Nombre - with icon */}
+            <TableCell className="py-4">
+                <Skeleton static className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
+            </TableCell>
+            {/* Rol - badge */}
+            <TableCell className="py-4">
+                <Skeleton static className="h-6 w-full max-w-[96px] rounded-full bg-muted/20" />
+            </TableCell>
+            {/* Documento - mono font */}
+            <TableCell className="py-4">
+                <Skeleton static className="h-4 w-full max-w-[128px] rounded bg-muted/10" />
+            </TableCell>
+            {/* Teléfono */}
+            <TableCell className="py-4">
+                <div className="flex items-center gap-2">
+                    <Skeleton static className="h-4 w-4 shrink-0 rounded-full bg-muted/20" />
+                    <Skeleton static className="h-4 w-full max-w-[112px] rounded bg-muted/20" />
+                </div>
+            </TableCell>
+        </TableRow>
+    )
+}
+
+/**
+ * Esqueleto de carga para una tarjeta de empleado (vista móvil).
+ */
+export function CardSkeleton() {
+    return (
+        <Card className="mb-3 border-border/50 bg-background/40">
+            <CardContent className="pt-4">
+                <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-3">
+                        <div className="space-y-2">
+                            <Skeleton static className="h-5 w-48 rounded bg-muted/20" />
+                            <Skeleton static className="h-5 w-24 rounded-full bg-muted/10" />
+                        </div>
+                        <div className="space-y-2.5 pt-1">
+                            <div className="flex items-center gap-2">
+                                <Skeleton static className="h-4 w-4 rounded-full bg-muted/10" />
+                                <Skeleton static className="h-4 w-32 rounded bg-muted/20" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Skeleton static className="h-4 w-4 rounded-full bg-muted/10" />
+                                <Skeleton static className="h-4 w-36 rounded bg-muted/20" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+/**
+ * Esqueleto de carga para el formulario de gestión de empleados.
+ */
+export function EmployeeFormSkeleton() {
+    return (
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+            {/* Header Skeleton */}
+            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+                <div className="flex-1">
+                    <Skeleton static className="h-4 w-48 rounded bg-muted/20" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                    <Skeleton static className="h-6 w-48 rounded-md bg-muted/20" />
+                </div>
+                <div className="hidden md:flex md:flex-1"></div>
+            </div>
+
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
+                <div className="h-full overflow-y-auto pb-2">
+                    <Card className="flex flex-col gap-1 py-1 min-h-0">
+                        <CardHeader className="p-2 pb-0">
+                            <Skeleton static className="h-5 w-48 rounded bg-muted/20" />
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="h-full flex flex-col">
+                                <div className="flex-1 grid gap-6 md:grid-cols-2 lg:grid-cols-3 content-start">
+                                    {/* Document Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-24 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Phone Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-20 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Name Field */}
+                                    <div className="space-y-2.5 md:col-span-2 lg:col-span-1">
+                                        <Skeleton static className="h-4 w-32 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Password Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-36 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+
+                                    {/* Role Field */}
+                                    <div className="space-y-2.5">
+                                        <Skeleton static className="h-4 w-16 rounded bg-muted/10" />
+                                        <Skeleton static className="h-10 w-full rounded-md bg-muted/20" />
+                                    </div>
+                                </div>
+
+                                {/* Buttons Footer */}
+                                <div className="flex flex-wrap gap-4 pt-6 mt-auto border-t border-border/50">
+                                    <Skeleton static className="h-9 w-24 rounded-md bg-muted/20" />
+                                    <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
+                                    <Skeleton static className="h-9 w-24 rounded-md bg-muted/20 ml-auto" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
