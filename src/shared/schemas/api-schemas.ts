@@ -65,7 +65,7 @@ export const SignatureInfoSchema = z.object({
 export const PhotoInfoSchema = z.object({
     idPhoto: z.number(),
     photoPath: z.string(),
-    photoType: z.enum(['PLATE_DETECTION', 'EVIDENCE']).optional()
+    photoType: z.enum(['EVIDENCE']).optional()
 })
 
 /**
