@@ -192,12 +192,12 @@ describe('UpdateStatus Page Integration', () => {
         await userEvent.click(screen.getByText('Devuelto'))
 
         const confirmBtn = screen.getByRole('button', { name: /confirmar devuelto/i })
-        expect(confirmBtn).toBeDisabled()
+        expect(confirmBtn).not.toBeDisabled()
 
         const textarea = screen.getByPlaceholderText(/Motivo de la devolución/i)
         await userEvent.type(textarea, 'Cliente no estaba')
 
-        expect(confirmBtn).toBeDisabled()
+        expect(confirmBtn).not.toBeDisabled()
 
     })
 

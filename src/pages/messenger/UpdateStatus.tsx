@@ -347,24 +347,22 @@ export default function UpdateStatus() {
                                 </Card>
                             )}
 
-                            {selectedOption.requiresPhotos && (
-                                <Card className="p-4 border-border/50">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="p-1.5 rounded-lg bg-primary/10">
-                                            <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
-                                        </div>
-                                        <h3 className="text-sm font-bold tracking-tight">
-                                            {selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 'Fotos de evidencia' : 'Foto de evidencia'}
-                                        </h3>
-                                        <span className="text-xs text-red-500 font-bold">*</span>
+                            <Card className="p-4 border-border/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-1.5 rounded-lg bg-primary/10">
+                                        <Camera className="h-4 w-4 text-primary" strokeWidth={2.5} />
                                     </div>
-                                    <EvidenceCapture
-                                        maxPhotos={selectedStatus === 'RETURNED' || selectedStatus === 'PENDING' ? 5 : 1}
-                                        photos={photos}
-                                        onPhotosChange={setPhotos}
-                                    />
-                                </Card>
-                            )}
+                                    <h3 className="text-sm font-bold tracking-tight">
+                                        Fotos de evidencia
+                                    </h3>
+                                    <span className="text-xs text-muted-foreground">(opcional)</span>
+                                </div>
+                                <EvidenceCapture
+                                    maxPhotos={10}
+                                    photos={photos}
+                                    onPhotosChange={setPhotos}
+                                />
+                            </Card>
 
                             <Card className="p-4 border-border/50">
                                 <div className="flex items-center justify-between mb-3">

@@ -26,9 +26,9 @@ export const STATUS_OPTIONS: StatusConfig[] = [
         label: "Pendiente",
         description: "El chasis está pendiente de entrega",
         icon: Clock,
-        requiresSignature: true,
-        requiresPhotos: true,
-        requiresObservation: true
+        requiresSignature: false,
+        requiresPhotos: false,
+        requiresObservation: false
     },
     {
         id: "DELIVERED",
@@ -45,7 +45,7 @@ export const STATUS_OPTIONS: StatusConfig[] = [
         description: "El chasis no pudo ser entregado",
         icon: CornerDownLeft,
         requiresSignature: false,
-        requiresPhotos: true,
-        requiresObservation: true
+        requiresPhotos: false,
+        requiresObservation: false
     }
 ]
