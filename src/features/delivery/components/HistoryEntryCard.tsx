@@ -1,15 +1,13 @@
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { Clock, User, Expand } from "lucide-react"
-import type { StatusHistoryInfo, PhotoInfo } from "@/features/delivery/types/service.types"
+import type { StatusHistoryInfo } from "@/features/delivery/types/service.types"
 
 interface HistoryEntryCardProps {
     entry: StatusHistoryInfo
-    platePhotos: PhotoInfo[]
-    signaturePath?: string
     getImageUrl: (url: string) => string
     className?: string
-    onImageClick?: (url: string) => void
+    onImageClick?: (urls: string[], index: number) => void
 }
 
 /**
@@ -18,18 +16,16 @@ interface HistoryEntryCardProps {
  */
 export function HistoryEntryCard({
     entry,
-    platePhotos,
-    signaturePath,
     getImageUrl,
     className = "",
     onImageClick,
 }: HistoryEntryCardProps) {
-    const handleImageClick = (path: string) => {
-        const url = getImageUrl(path)
+    const handleImageClick = (paths: string[], startIndex: number = 0) => {
+        const urls = paths.map(path => getImageUrl(path))
         if (onImageClick) {
-            onImageClick(url)
+            onImageClick(urls, startIndex)
         } else {
-            window.open(url, '_blank')
+            window.open(urls[startIndex], '_blank')
         }
     }
 
@@ -53,44 +49,18 @@ export function HistoryEntryCard({
                 </div>
             )}
 
-            {entry.newStatus === 'ASSIGNED' && platePhotos.length > 0 && (
-                <div className="pt-1.5 border-t border-border/50">
-                    <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Lectura de placa</p>
-                    <div className="flex flex-wrap gap-1 justify-center">
-                        {platePhotos.map((photo) => (
-                            <div
-                                key={photo.idPhoto}
-                                className="relative group cursor-pointer"
-                                onClick={() => handleImageClick(photo.photoPath)}
-                            >
-                                <img
-                                    src={getImageUrl(photo.photoPath)}
-                                    alt="Lectura de placa"
-                                    className="w-16 h-16 object-cover rounded border border-border/50"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="bg-black/60 rounded-full p-1">
-                                        <Expand className="h-3 w-3 text-white" />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {(((entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath)) || (entry.photos && entry.photos.length > 0)) && (
+            {(((entry.newStatus === 'DELIVERED') && entry.signature?.signaturePath) || (entry.photos && entry.photos.length > 0)) && (
                 <div className="pt-1.5 border-t border-border/50 flex flex-row gap-2 justify-center">
-                    {(entry.newStatus === 'DELIVERED' || entry.newStatus === 'PENDING') && (entry.signature?.signaturePath || signaturePath) && (
+                    {(entry.newStatus === 'DELIVERED') && entry.signature?.signaturePath && (
                         <div className="flex flex-col items-center">
                             <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Firma</p>
                             <div className="flex rounded border border-border/50 overflow-hidden bg-white">
                                 <div
                                     className="relative group cursor-pointer h-16 w-32 flex items-center justify-center"
-                                    onClick={() => handleImageClick(entry.signature?.signaturePath || signaturePath!)}
+                                    onClick={() => handleImageClick([entry.signature!.signaturePath], 0)}
                                 >
                                     <img
-                                        src={getImageUrl(entry.signature?.signaturePath || signaturePath!)}
+                                        src={getImageUrl(entry.signature!.signaturePath)}
                                         alt="Firma"
                                         className="max-w-full max-h-full object-contain p-0.5"
                                     />
@@ -104,20 +74,17 @@ export function HistoryEntryCard({
                         </div>
                     )}
 
-
-
                     {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-col items-center">
                             <p className="text-[10px] font-medium text-muted-foreground mb-1 text-center uppercase tracking-wider">Evidencia</p>
                             <div className="flex flex-wrap gap-1 justify-center">
-                                {entry.photos.map((photo) => (
+                                {entry.photos.length === 1 ? (
                                     <div
-                                        key={photo.idPhoto}
                                         className="relative group cursor-pointer"
-                                        onClick={() => handleImageClick(photo.photoPath)}
+                                        onClick={() => handleImageClick([entry.photos![0].photoPath], 0)}
                                     >
                                         <img
-                                            src={getImageUrl(photo.photoPath)}
+                                            src={getImageUrl(entry.photos![0].photoPath)}
                                             alt="Evidencia"
                                             className="w-16 h-16 object-cover rounded border border-border/50"
                                         />
@@ -127,7 +94,21 @@ export function HistoryEntryCard({
                                             </div>
                                         </div>
                                     </div>
-                                ))}
+                                ) : (
+                                    <div
+                                        className="relative group cursor-pointer"
+                                        onClick={() => handleImageClick(entry.photos!.map(p => p.photoPath), 0)}
+                                    >
+                                        <img
+                                            src={getImageUrl(entry.photos![0].photoPath)}
+                                            alt="Evidencia"
+                                            className="w-16 h-16 object-cover rounded border border-border/50"
+                                        />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/70 transition-colors rounded">
+                                            <span className="text-white font-bold text-xs">+{entry.photos.length - 1}</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

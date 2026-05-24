@@ -13,10 +13,10 @@ import { SidebarToggleTab } from "@/shared/components/ui/SidebarToggleTab"
 
 const menuItems = [
     { title: "Transportistas", icon: Users, url: "/admin/empleados" },
-    { title: "Dealerships", icon: Store, url: "/admin/concesionarios" },
-    { title: "Services", icon: Bike, url: "/admin/servicios" },
+    { title: "Concesionarios", icon: Store, url: "/admin/concesionarios" },
+    { title: "Servicios", icon: Bike, url: "/admin/servicios" },
     { title: "Monitoreo", icon: Map, url: "/admin/tracking" },
-    { title: "DeletedServices", icon: Trash2, url: "/admin/eliminados" },
+    { title: "Eliminados", icon: Trash2, url: "/admin/eliminados" },
     { title: "Configuración", icon: Settings, url: "/admin/configuracion" },
 ]
 

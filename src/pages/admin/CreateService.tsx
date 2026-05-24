@@ -123,7 +123,7 @@ export default function AdminCreateServicio() {
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Services", href: "/admin/servicios" },
+                        { label: "Servicios", href: "/admin/servicios" },
                         { label: "Nuevo" }
                     ]} />
                 </div>

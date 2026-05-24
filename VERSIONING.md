@@ -14,12 +14,12 @@ Para actualizar la versión del proyecto tienes varias opciones según tu sistem
 
 Desde una terminal de PowerShell en la raíz del proyecto:
 ```powershell
-.\sync-version.ps1 1.8.5
+.\sync-version.ps1 3.0.0
 ```
 
 Si recibes un error de Execution Policy:
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\sync-version.ps1 1.8.5
+powershell -ExecutionPolicy Bypass -File .\sync-version.ps1 3.0.0
 ```
 
 ### 2) Linux / macOS — Bash
@@ -27,7 +27,7 @@ powershell -ExecutionPolicy Bypass -File .\sync-version.ps1 1.8.5
 Hemos añadido un script `sync-version.sh` que replica el comportamiento del `.ps1` y es ejecutable en sistemas Unix:
 ```bash
 chmod +x ./sync-version.sh
-./sync-version.sh 1.8.5
+./sync-version.sh 3.0.0
 ```
 
 Este script ejecuta `npm version --no-git-tag-version <versión>` y actualiza los badges `Version-...` en `README.md` y `README.en.md`.
@@ -35,14 +35,14 @@ Este script ejecuta `npm version --no-git-tag-version <versión>` y actualiza lo
 ### 3) Opción con Docker (si no quieres instalar PowerShell localmente)
 
 ```bash
-docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/powershell:latest pwsh -NoProfile -File ./sync-version.ps1 1.8.5
+docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/powershell:latest pwsh -NoProfile -File ./sync-version.ps1 3.0.0
 ```
 
 ## ¿Qué archivos se actualizan?
 
 El script realiza automáticamente las siguientes acciones:
 1. **package.json**: Actualiza el campo `"version"`.
-2. **README.md**: Actualiza el badge visual de versión (ej. `Version-1.8.5-blue.svg`).
+2. **README.md**: Actualiza el badge visual de versión (ej. `Version-3.0.0-blue.svg`).
 3. **README.en.md**: Actualiza el badge visual en la documentación en inglés.
 
 ## Buenas Prácticas (SemVer)
@@ -56,4 +56,4 @@ Se recomienda seguir el esquema de **Semantic Versioning**:
 
 > **Nota**: Después de ejecutar el script, no olvides realizar un commit con los cambios generados:
 > `git add .`
-> `git commit -m "chore: bump version to 1.8.5"`
+> `git commit -m "chore: bump version to 3.0.0"`
