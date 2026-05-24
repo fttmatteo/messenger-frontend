@@ -81,7 +81,7 @@ describe('Safe Area Integrity Audit', () => {
     })
 
     it('Sonner toaster debe usar el offset dinámico con safe-area-top', () => {
-        const sonnerPath = path.resolve(__dirname, '../components/ui/sonner.tsx')
+        const sonnerPath = path.resolve(__dirname, '../shared/components/ui/sonner.tsx')
         const content = fs.readFileSync(sonnerPath, 'utf-8')
         expect(content).toContain('calc(var(--safe-area-top) + 16px)')
     })

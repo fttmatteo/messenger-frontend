@@ -9,7 +9,7 @@ import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 import { showToast } from '@/shared/config/toast-config'
 
-vi.mock('@/config/toast-config', () => ({
+vi.mock('@/shared/config/toast-config', () => ({
     showToast: {
         error: vi.fn(),
         success: vi.fn()

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { employeeService } from '../employee.service';
 import apiClient from '@/shared/services/api-client';
 
-vi.mock('@/services/api-client', () => ({
+vi.mock('@/shared/services/api-client', () => ({
     default: {
         get: vi.fn(),
         post: vi.fn(),

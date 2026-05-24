@@ -7,7 +7,7 @@ import { server } from '@/test/mocks/server';
 import { http, HttpResponse } from 'msw';
 import { serviceDeliveryService } from '@/features/delivery/services/service.service';
 
-vi.mock('@/services/service.service', () => ({
+vi.mock('@/features/delivery/services/service.service', () => ({
     serviceDeliveryService: {
         create: vi.fn(),
     }

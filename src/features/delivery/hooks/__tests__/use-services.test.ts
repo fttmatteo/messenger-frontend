@@ -4,13 +4,13 @@ import { useServices } from "../use-services"
 import { serviceDeliveryService } from "@/features/delivery/services/service.service"
 import { showToast } from "@/shared/config/toast-config"
 
-vi.mock("@/services/service.service", () => ({
+vi.mock("@/features/delivery/services/service.service", () => ({
     serviceDeliveryService: {
         getAllPaginated: vi.fn()
     }
 }))
 
-vi.mock("@/config/toast-config", () => ({
+vi.mock("@/shared/config/toast-config", () => ({
     showToast: {
         error: vi.fn()
     }

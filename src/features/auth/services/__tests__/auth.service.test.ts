@@ -12,7 +12,7 @@ vi.mock('@capacitor/preferences', () => ({
     }
 }))
 
-vi.mock('@/lib/capacitor', () => ({
+vi.mock('@/shared/lib/capacitor', () => ({
     isNative: vi.fn(() => false)
 }))
 

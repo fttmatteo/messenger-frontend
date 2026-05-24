@@ -12,13 +12,13 @@ import { useNetwork } from '@/shared/hooks/use-network'
 import { offlineSyncService } from '@/shared/services/offline-sync.service'
 
 
-vi.mock('@/hooks/use-smart-location', () => ({
+vi.mock('@/features/tracking/hooks/use-smart-location', () => ({
     useSmartLocation: () => ({
         getCurrentLocation: vi.fn().mockResolvedValue({ latitude: 10, longitude: 20 })
     })
 }))
 
-vi.mock('@/hooks/use-network', () => ({
+vi.mock('@/shared/hooks/use-network', () => ({
     useNetwork: vi.fn().mockReturnValue({
         isOnline: true,
         wasOffline: false,
@@ -30,7 +30,7 @@ vi.mock('@/hooks/use-network', () => ({
     })
 }))
 
-vi.mock('@/services/offline-sync.service', () => ({
+vi.mock('@/shared/services/offline-sync.service', () => ({
     offlineSyncService: {
         registerHandler: vi.fn(),
         queueAction: vi.fn(),
@@ -39,7 +39,7 @@ vi.mock('@/services/offline-sync.service', () => ({
     }
 }))
 
-vi.mock('@/components/messenger/SignatureCanvas', async () => {
+vi.mock('@/features/delivery/components/SignatureCanvas', async () => {
     const { forwardRef, useImperativeHandle } = await import('react')
 
     const MockSignatureCanvas = forwardRef((props: { onSignatureChange: (v: boolean) => void }, ref: React.ForwardedRef<unknown>) => {
@@ -68,7 +68,7 @@ vi.mock('@/components/messenger/SignatureCanvas', async () => {
     return { SignatureCanvas: MockSignatureCanvas }
 })
 
-vi.mock('@/components/messenger/EvidenceCapture', () => ({
+vi.mock('@/features/delivery/components/EvidenceCapture', () => ({
     EvidenceCapture: (props: { onPhotosChange: (files: File[]) => void }) => (
         <div data-testid="mock-evidence-capture">
             <button type="button" onClick={() => props.onPhotosChange([new File([], 'photo.jpg')])}>

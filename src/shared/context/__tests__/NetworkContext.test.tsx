@@ -7,7 +7,7 @@ import type { OfflineAction } from '@/shared/services/offline-sync.service'
 import { toast } from 'sonner'
 import type { ReactNode } from 'react'
 
-vi.mock('@/services/offline-sync.service', () => ({
+vi.mock('@/shared/services/offline-sync.service', () => ({
     offlineSyncService: {
         getPendingActions: vi.fn().mockResolvedValue([]),
         syncAll: vi.fn().mockResolvedValue(0),

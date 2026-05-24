@@ -10,7 +10,7 @@ vi.mock('idb-keyval', () => ({
     del: vi.fn(),
 }))
 
-vi.mock('@/lib/capacitor', () => ({
+vi.mock('@/shared/lib/capacitor', () => ({
     isNative: vi.fn(),
 }))
 

@@ -5,7 +5,7 @@ import { trackingService } from '@/features/tracking/services/tracking.service'
 import { Geolocation } from '@capacitor/geolocation'
 import * as capacitorLib from '@/shared/lib/capacitor'
 
-vi.mock('@/services/tracking.service', () => ({
+vi.mock('@/features/tracking/services/tracking.service', () => ({
     trackingService: {
         getLastKnownLocation: vi.fn(),
         setLastLocation: vi.fn(),
@@ -20,11 +20,11 @@ vi.mock('@capacitor/geolocation', () => ({
     }
 }))
 
-vi.mock('@/lib/capacitor', () => ({
+vi.mock('@/shared/lib/capacitor', () => ({
     isNative: vi.fn(),
 }))
 
-vi.mock('@/utils/logger', () => ({
+vi.mock('@/shared/utils/logger', () => ({
     createLogger: () => ({
         error: vi.fn(),
         debug: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock('@/utils/logger', () => ({
     })
 }))
 
-vi.mock('@/config/toast-config', () => ({
+vi.mock('@/shared/config/toast-config', () => ({
     showToast: {
         warning: vi.fn(),
         error: vi.fn(),

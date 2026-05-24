@@ -26,11 +26,11 @@ vi.mock('@capacitor/preferences', () => ({
     },
 }));
 
-vi.mock('@/lib/capacitor', () => ({
+vi.mock('@/shared/lib/capacitor', () => ({
     isNative: vi.fn(() => false),
 }));
 
-vi.mock('@/utils/logger', () => ({
+vi.mock('@/shared/utils/logger', () => ({
     logger: {
         error: vi.fn(),
         warn: vi.fn(),

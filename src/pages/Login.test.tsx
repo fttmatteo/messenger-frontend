@@ -6,7 +6,7 @@ import Login from './Login';
 import * as authService from '@/features/auth/services/auth.service';
 
 // Mock del servicio de autenticación
-vi.mock('@/services/auth.service', () => ({
+vi.mock('@/features/auth/services/auth.service', () => ({
     authService: {
         login: vi.fn(),
         logout: vi.fn(),
@@ -41,7 +41,7 @@ vi.mock('@/assets/logo.png', () => ({
 import { useEffect } from 'react';
 
 // Mock de TurnstileWidget
-vi.mock('@/components/ui/turnstile-widget', () => ({
+vi.mock('@/shared/components/ui/turnstile-widget', () => ({
     TurnstileWidget: ({ onVerify }: { onVerify: (token: string) => void }) => {
         // Ejecutar onVerify inmediatamente para simular verificación exitosa en tests
         // Usamos useEffect para evitar warnings de actualización durante el renderizado

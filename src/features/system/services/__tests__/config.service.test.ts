@@ -10,7 +10,7 @@ vi.mock('@/shared/services/api-client', () => ({
     },
 }));
 
-vi.mock('@/utils/logger', () => ({
+vi.mock('@/shared/utils/logger', () => ({
     logger: {
         error: vi.fn(),
     },
