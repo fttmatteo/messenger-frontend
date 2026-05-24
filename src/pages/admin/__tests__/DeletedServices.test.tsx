@@ -74,7 +74,7 @@ describe('DeletedServices Page Integration', () => {
 
         renderPage()
 
-        expect(screen.getByText(/Services eliminados/i)).toBeInTheDocument()
+        expect(screen.getByText(/Servicios eliminados/i)).toBeInTheDocument()
 
         expect(await screen.findByText(/Old Dealership/i)).toBeInTheDocument()
         

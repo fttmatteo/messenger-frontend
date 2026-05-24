@@ -194,7 +194,7 @@ export default function EditDealership() {
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
                     <AdminBreadcrumb segments={[
-                        { label: "Dealerships", href: "/admin/concesionarios" },
+                        { label: "Concesionarios", href: "/admin/concesionarios" },
                         { label: "Editar" }
                     ]} />
                 </div>

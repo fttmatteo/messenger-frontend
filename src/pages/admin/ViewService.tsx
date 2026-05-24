@@ -43,7 +43,8 @@ export default function ViewService() {
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [selectedImages, setSelectedImages] = useState<string[]>([])
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
 
     // Estado derivado
     const isAdmin = user?.role === 'ADMIN'
@@ -142,7 +143,10 @@ export default function ViewService() {
 
                 <ServiceHistoryTimeline
                     service={service}
-                    onImageClick={setSelectedImage}
+                    onImageClick={(urls, index) => {
+                        setSelectedImages(urls)
+                        setSelectedImageIndex(index)
+                    }}
                 />
 
                 <ServiceTrackingMap
@@ -193,9 +197,10 @@ export default function ViewService() {
             </AlertDialog>
 
             <ImageViewer
-                open={!!selectedImage}
-                src={selectedImage}
-                onClose={() => setSelectedImage(null)}
+                open={selectedImages.length > 0}
+                images={selectedImages}
+                initialIndex={selectedImageIndex}
+                onClose={() => setSelectedImages([])}
             />
         </>
     )

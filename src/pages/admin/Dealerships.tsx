@@ -158,11 +158,11 @@ export default function Dealerships() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Dealerships" }]} />
+                    <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Dealerships</h1>
+                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Concesionarios</h1>
                     <ToggleGroup
                         type="single"
                         value={zoneFilter}

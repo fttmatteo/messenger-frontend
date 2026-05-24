@@ -8,7 +8,7 @@ import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 
 interface ServiceHistoryTimelineProps {
     service: ServiceDelivery
-    onImageClick: (url: string) => void
+    onImageClick: (urls: string[], index: number) => void
     className?: string
 }
 
@@ -29,8 +29,6 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                     <div className="py-2 pl-2">
                         <Timeline className="w-full">
                             {[...(service.history || [])].reverse().map((entry, index) => {
-                                const platePhotos = service.photos?.filter(p => p.photoType === 'PLATE_DETECTION') || []
-
                                 return (
                                     <TimelineItem
                                         key={entry.idStatusHistory}
@@ -49,8 +47,6 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                                         <TimelineContent>
                                             <HistoryEntryCard
                                                 entry={entry}
-                                                platePhotos={platePhotos}
-                                                signaturePath={service.signature?.signaturePath}
                                                 getImageUrl={getImageUrl}
                                                 onImageClick={onImageClick}
                                             />

@@ -33,7 +33,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
 
             <div className="flex-1">
                 <AdminBreadcrumb segments={[
-                    { label: "Services", href: "/admin/servicios" },
+                    { label: "Servicios", href: "/admin/servicios" },
                     { label: service.plate.plateNumber }
                 ]} />
             </div>
