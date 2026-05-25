@@ -5,10 +5,8 @@ import { Map } from "@/features/location/components/Map"
 import { locationService } from "@/features/location/services/location.service"
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
 import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
-import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
-import type { DeliveryRouteStep } from "@/features/location/types/location.types"
+import { DEFAULT_STATUS_COLORS, hexToRgba } from "@/shared/lib/status-colors"
 import { Button } from "@/shared/components/ui/button"
-import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import {
     MapPin,
     Flag,
@@ -67,6 +65,16 @@ function RoutePolyline({ encodedPath, color = "#4f46e5" }: RoutePolylineProps) {
     return null
 }
 
+interface AggregatedRouteStep {
+    dealershipId: number
+    dealershipName: string
+    latitude: number
+    longitude: number
+    action: 'PICKUP' | 'DELIVERY'
+    order: number
+    serviceUuids: string[]
+}
+
 /**
  * Vista para mostrar la ruta de entregas optimizada del mensajero.
  * Integrada nativamente en el layout de mensajero para usar el header global.
@@ -74,11 +82,11 @@ function RoutePolyline({ encodedPath, color = "#4f46e5" }: RoutePolylineProps) {
 export default function OptimizedRoutePage() {
     const navigate = useNavigate()
     const { getCurrentLocation, loading: loadingLocation } = useSmartLocation()
-    const { services, pendingServices, loading: loadingServices } = useMessengerServices()
+    const { pendingServices, loading: loadingServices } = useMessengerServices()
 
     const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null)
-    const [steps, setSteps] = useState<DeliveryRouteStep[]>([])
+    const [steps, setSteps] = useState<AggregatedRouteStep[]>([])
     const [polyline, setPolyline] = useState<string | null>(null)
     const [distanceText, setDistanceText] = useState<string>("")
     const [durationText, setDurationText] = useState<string>("")
@@ -112,20 +120,26 @@ export default function OptimizedRoutePage() {
                     serviceUuids
                 })
 
-                let currentOrder = 0;
-                let lastDealershipId: number | null = null;
-                let lastAction: string | null = null;
+                const aggregatedSteps: AggregatedRouteStep[] = [];
 
-                const processedSteps = (result.steps || []).map(step => {
-                    if (step.dealershipId !== lastDealershipId || step.action !== lastAction) {
-                        currentOrder++;
-                        lastDealershipId = step.dealershipId;
-                        lastAction = step.action;
+                (result.steps || []).forEach(step => {
+                    const last = aggregatedSteps[aggregatedSteps.length - 1];
+                    if (last && last.dealershipId === step.dealershipId && last.action === step.action) {
+                        last.serviceUuids.push(step.serviceUuid);
+                    } else {
+                        aggregatedSteps.push({
+                            dealershipId: step.dealershipId,
+                            dealershipName: step.dealershipName,
+                            latitude: step.latitude,
+                            longitude: step.longitude,
+                            action: step.action as 'PICKUP' | 'DELIVERY',
+                            order: step.order,
+                            serviceUuids: [step.serviceUuid]
+                        });
                     }
-                    return { ...step, order: currentOrder };
                 });
 
-                setSteps(processedSteps)
+                setSteps(aggregatedSteps)
                 setPolyline(result.polyline || null)
                 setDistanceText(
                     result.distanceKilometers
@@ -193,11 +207,6 @@ export default function OptimizedRoutePage() {
         window.location.href = url;
     }
 
-    const getServicePlate = (serviceUuid: string) => {
-        const service = services.find(s => s.uuid === serviceUuid)
-        return service?.plate?.plateNumber || "---"
-    }
-
     const isLoading = loadingServices || loadingLocation || loadingRoute
 
     return (
@@ -228,30 +237,25 @@ export default function OptimizedRoutePage() {
                 <>
                     <div className="shrink-0 z-30 bg-background pt-3 pb-3 px-3 flex flex-col gap-3 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b border-border/20">
                         {/* Resumen de Ruta y Botón de Navegación */}
-                        <div className="flex items-center justify-between mt-1 mb-1 px-1">
-                            <div className="flex items-center gap-5">
-                                <div className="flex flex-col">
-                                    <span className="text-[22px] font-black leading-none text-foreground tracking-tight">{new Set(steps.map(s => s.order)).size}</span>
-                                    <span className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em] mt-1">Paradas</span>
+                        <div className="flex items-center justify-between gap-3 mt-1 mb-1 px-1 w-full">
+                            <div className="flex flex-col gap-1 min-w-0">
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-[24px] font-black leading-none text-foreground tracking-tight">{new Set(steps.map(s => s.order)).size}</span>
+                                    <span className="text-[13px] font-black text-muted-foreground/80 uppercase tracking-wider">Paradas</span>
                                 </div>
-                                <div className="w-px h-6 bg-border/60"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[22px] font-black leading-none text-foreground tracking-tight">{distanceText.replace(/[^\d.,]/g, '') || "0"}</span>
-                                    <span className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em] mt-1">KM</span>
-                                </div>
-                                <div className="w-px h-6 bg-border/60"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[22px] font-black leading-none text-foreground tracking-tight">{durationText.replace(/[^\d.,]/g, '') || "0"}</span>
-                                    <span className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em] mt-1">MIN</span>
+                                <div className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground/90 truncate">
+                                    <span>{distanceText}</span>
+                                    <span className="w-1 h-1 rounded-full bg-border shrink-0"></span>
+                                    <span>{durationText}</span>
                                 </div>
                             </div>
-
+                            
                             {steps.length > 0 && currentLocation && (
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={openGoogleMapsNavigation}
-                                    className="h-10 px-4 border-border/50 text-[12px] text-foreground font-black uppercase tracking-wider hover:bg-muted active:scale-[0.98] flex items-center gap-2 rounded-xl shadow-sm bg-card transition-all"
+                                    className="shrink-0 h-11 px-5 border-border/50 text-[13px] text-foreground font-black uppercase tracking-wider hover:bg-muted active:scale-[0.98] flex items-center justify-center gap-2 rounded-xl shadow-sm bg-card transition-all"
                                 >
                                     <Navigation className="h-4 w-4" />
                                     Navegar
@@ -290,10 +294,9 @@ export default function OptimizedRoutePage() {
                                 {/* Marcadores de la Secuencia Optimizada */}
                                 {steps.map((step) => (
                                     <Marker
-                                        key={`${step.serviceUuid}-${step.action}`}
+                                        key={`${step.order}-${step.action}`}
                                         position={{ lat: step.latitude, lng: step.longitude }}
-                                        title={`${step.order}. ${step.action === 'PICKUP' ? 'Recogida' : 'Entrega'} en ${step.dealershipName}`}
-                                        label={String(step.order)}
+                                        title={`${step.action === 'PICKUP' ? 'Recogida' : 'Entrega'} en ${step.dealershipName}`}
                                     />
                                 ))}
 
@@ -313,39 +316,47 @@ export default function OptimizedRoutePage() {
                             {steps.filter(s => s.action === "PICKUP").length > 0 && (
                                 <div className="flex flex-col gap-3 mb-2">
                                     <div className="flex items-center gap-3 px-1">
-                                        <div className="relative flex items-center justify-center w-6 h-6 rounded-full overflow-hidden">
-                                            <div className="absolute inset-0 opacity-20" style={{ backgroundColor: pickupColor }} />
-                                            <MapPin className="relative z-10 w-3.5 h-3.5" style={{ color: pickupColor }} />
+                                        <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
+                                        <div
+                                            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full"
+                                            style={{ backgroundColor: hexToRgba(pickupColor, 0.15) }}
+                                        >
+                                            <span className="text-sm font-bold">
+                                                Recogidas
+                                            </span>
                                         </div>
-                                        <span className="text-[12px] font-black uppercase tracking-[0.15em]" style={{ color: pickupColor }}>
-                                            Recogidas
-                                        </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
                                     </div>
-                                    <div className="relative pl-6 border-l-2 border-dashed border-muted-foreground/30 ml-3 space-y-4">
+                                    <div className="space-y-4 mt-2 px-2">
                                         {steps.filter(s => s.action === "PICKUP").map((step) => {
-                                            const plateNum = getServicePlate(step.serviceUuid)
                                             return (
                                                 <div
-                                                    key={`${step.serviceUuid}-${step.action}`}
+                                                    key={`${step.order}-${step.action}`}
                                                     onClick={() => handlePanTo(step.latitude, step.longitude)}
                                                     className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3.5 bg-card border border-border/40 rounded-xl shadow-sm hover:bg-muted/15"
                                                 >
-                                                    <span
-                                                        className="absolute -left-[35px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] font-black shadow-sm transition-transform duration-200 group-hover:scale-110 z-10"
-                                                        style={{ backgroundColor: pickupColor }}
-                                                    >
-                                                        {step.order}
-                                                    </span>
                                                     <div className="min-w-0 flex-1 pr-3 flex flex-col gap-1.5">
                                                         <span className="text-[15px] text-muted-foreground group-hover:text-foreground transition-colors truncate font-extrabold tracking-tight">
                                                             {step.dealershipName}
                                                         </span>
-                                                        {plateNum !== "---" && (
-                                                            <div className="flex">
-                                                                <PlacaBadge plateNumber={plateNum} size="md" className="origin-left shadow-none scale-90 -my-1" />
+                                                        <div className="mt-1">
+                                                            <div
+                                                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold text-foreground/90 shadow-sm"
+                                                                style={{
+                                                                    backgroundColor: hexToRgba(pickupColor, 0.1),
+                                                                    borderColor: hexToRgba(pickupColor, 0.22)
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    className="h-2 w-2 rounded-full shrink-0"
+                                                                    aria-hidden="true"
+                                                                    style={{ backgroundColor: pickupColor }}
+                                                                />
+                                                                <span>
+                                                                    {step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}
+                                                                </span>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                     <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-muted/40 group-hover:bg-primary/10 transition-all duration-200">
                                                         <MapPin className="h-4 w-4 group-hover:text-primary transition-colors" style={{ color: pickupColor }} />
@@ -360,39 +371,47 @@ export default function OptimizedRoutePage() {
                             {steps.filter(s => s.action !== "PICKUP").length > 0 && (
                                 <div className="flex flex-col gap-3 mt-2">
                                     <div className="flex items-center gap-3 px-1">
-                                        <div className="relative flex items-center justify-center w-6 h-6 rounded-full overflow-hidden">
-                                            <div className="absolute inset-0 opacity-20" style={{ backgroundColor: deliveryColor }} />
-                                            <Flag className="relative z-10 w-3.5 h-3.5" style={{ color: deliveryColor }} />
+                                        <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
+                                        <div
+                                            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full"
+                                            style={{ backgroundColor: hexToRgba(deliveryColor, 0.15) }}
+                                        >
+                                            <span className="text-sm font-bold">
+                                                Entregas
+                                            </span>
                                         </div>
-                                        <span className="text-[12px] font-black uppercase tracking-[0.15em]" style={{ color: deliveryColor }}>
-                                            Entregas
-                                        </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
                                     </div>
-                                    <div className="relative pl-6 border-l-2 border-dashed border-muted-foreground/30 ml-3 space-y-4">
+                                    <div className="space-y-4 mt-2 px-2">
                                         {steps.filter(s => s.action !== "PICKUP").map((step) => {
-                                            const plateNum = getServicePlate(step.serviceUuid)
                                             return (
                                                 <div
-                                                    key={`${step.serviceUuid}-${step.action}`}
+                                                    key={`${step.order}-${step.action}`}
                                                     onClick={() => handlePanTo(step.latitude, step.longitude)}
                                                     className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3.5 bg-card border border-border/40 rounded-xl shadow-sm hover:bg-muted/15"
                                                 >
-                                                    <span
-                                                        className="absolute -left-[35px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] font-black shadow-sm transition-transform duration-200 group-hover:scale-110 z-10"
-                                                        style={{ backgroundColor: deliveryColor }}
-                                                    >
-                                                        {step.order}
-                                                    </span>
                                                     <div className="min-w-0 flex-1 pr-3 flex flex-col gap-1.5">
                                                         <span className="text-[15px] text-muted-foreground group-hover:text-foreground transition-colors truncate font-extrabold tracking-tight">
                                                             {step.dealershipName}
                                                         </span>
-                                                        {plateNum !== "---" && (
-                                                            <div className="flex">
-                                                                <PlacaBadge plateNumber={plateNum} size="md" className="origin-left shadow-none scale-90 -my-1" />
+                                                        <div className="mt-1">
+                                                            <div
+                                                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold text-foreground/90 shadow-sm"
+                                                                style={{
+                                                                    backgroundColor: hexToRgba(deliveryColor, 0.1),
+                                                                    borderColor: hexToRgba(deliveryColor, 0.22)
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    className="h-2 w-2 rounded-full shrink-0"
+                                                                    aria-hidden="true"
+                                                                    style={{ backgroundColor: deliveryColor }}
+                                                                />
+                                                                <span>
+                                                                    {step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}
+                                                                </span>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                     <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-muted/40 group-hover:bg-primary/10 transition-all duration-200">
                                                         <Flag className="h-4 w-4 group-hover:text-primary transition-colors" style={{ color: deliveryColor }} />
