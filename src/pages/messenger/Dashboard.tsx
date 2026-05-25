@@ -15,7 +15,7 @@ export default function MessengerDashboard() {
     const [searchParams, setSearchParams] = useSearchParams()
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
-    const [isRefreshing, setIsRefreshing] = useState(false) 
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const selectedDealership = searchParams.get("dealership") || "all"
 
     const handleRefresh = useCallback(async () => {
@@ -46,7 +46,7 @@ export default function MessengerDashboard() {
         if (selectedDealership === "all") return pendingServices;
         const [type, idStr] = selectedDealership.split('-');
         if (!type || !idStr) return pendingServices;
-        
+
         return pendingServices.filter(s => {
             if (type === 'orig') return String(s.originDealership.idDealership) === idStr;
             if (type === 'dest') return String(s.dealership.idDealership) === idStr;
@@ -128,9 +128,9 @@ export default function MessengerDashboard() {
                     {filteredServices.length} {filteredServices.length !== 1 ? 'servicios' : 'servicio'} {selectedDealership !== 'all' ? 'filtrados' : 'asignados'}
                 </p>
                 {pendingServices.length > 1 ? (
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
+                    <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => navigate("/messenger/ruta-optimizada")}
                         className="h-6 text-[10px] px-2 text-primary font-bold uppercase tracking-wider hover:bg-primary/5 active:scale-95 flex items-center gap-1 rounded-lg"
                     >
@@ -161,6 +161,8 @@ export default function MessengerDashboard() {
                     </p>
                 </div>
             )}
+            {/* Spacer for bottom scroll area */}
+            <div className="h-4 w-full shrink-0" aria-hidden="true" />
         </div>
     )
 }
