@@ -239,14 +239,14 @@ export default function OptimizedRoutePage() {
                         {/* Resumen de Ruta y Botón de Navegación */}
                         <div className="flex items-center justify-between gap-3 mt-1 mb-1 px-1 w-full">
                             <div className="flex flex-col gap-1 min-w-0">
-                                <div className="flex items-baseline gap-1.5">
-                                    <span className="text-[24px] font-black leading-none text-foreground tracking-tight">{new Set(steps.map(s => s.order)).size}</span>
-                                    <span className="text-[13px] font-black text-muted-foreground/80 uppercase tracking-wider">Paradas</span>
+                                <div className="flex items-baseline gap-1.5 text-[13px] font-black uppercase tracking-wider leading-none text-black">
+                                    <span>{new Set(steps.map(s => s.order)).size}</span>
+                                    <span>Paradas</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground/90 truncate">
-                                    <span>{distanceText}</span>
+                                <div className="flex items-center gap-2 text-[13px] font-bold text-black truncate leading-none">
+                                    <span className="text-[13px]">{distanceText}</span>
                                     <span className="w-1 h-1 rounded-full bg-border shrink-0"></span>
-                                    <span>{durationText}</span>
+                                    <span className="text-[13px]">{durationText}</span>
                                 </div>
                             </div>
                             
@@ -317,14 +317,9 @@ export default function OptimizedRoutePage() {
                                 <div className="flex flex-col gap-3 mb-2">
                                     <div className="flex items-center gap-3 px-1">
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
-                                        <div
-                                            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full"
-                                            style={{ backgroundColor: hexToRgba(pickupColor, 0.15) }}
-                                        >
-                                            <span className="text-sm font-bold">
-                                                Recogidas
-                                            </span>
-                                        </div>
+                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-black leading-none">
+                                            Recogidas
+                                        </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
                                     </div>
                                     <div className="space-y-4 mt-2 px-2">
@@ -372,14 +367,9 @@ export default function OptimizedRoutePage() {
                                 <div className="flex flex-col gap-3 mt-2">
                                     <div className="flex items-center gap-3 px-1">
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
-                                        <div
-                                            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full"
-                                            style={{ backgroundColor: hexToRgba(deliveryColor, 0.15) }}
-                                        >
-                                            <span className="text-sm font-bold">
-                                                Entregas
-                                            </span>
-                                        </div>
+                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-black leading-none">
+                                            Entregas
+                                        </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
                                     </div>
                                     <div className="space-y-4 mt-2 px-2">
