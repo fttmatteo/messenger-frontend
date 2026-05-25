@@ -151,7 +151,7 @@ src/
 │   ├── ui/              # Componentes base (Shadcn/UI)
 │   └── ...              # Componentes específicos por feature
 ├── config/              # Configuración de la Aplicación
-├── context/             # Proveedores de Estado Global (Auth, Network, StatusColor)
+├── context/             # Proveedores de Estado Global (Auth, Network)
 ├── hooks/               # Custom React Hooks (16 hooks)
 ├── layouts/             # Componentes de Layout de Página
 ├── lib/                 # Librerías de Utilidades
