@@ -161,9 +161,6 @@ export default function MessengerDashboard() {
                     </p>
                 </div>
             )}
-            
-            {/* Spacer for bottom scroll area */}
-            <div className="h-4 w-full shrink-0" aria-hidden="true" />
         </div>
     )
 }

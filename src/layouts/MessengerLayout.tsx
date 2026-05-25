@@ -87,7 +87,7 @@ export default function MessengerLayout() {
             const userId = user?.id || user?.document
 
             if (!userId) {
-                logger.error('❌ No se puede iniciar tracking: ni user.id ni user.document están disponibles', user)
+                logger.error('No se puede iniciar tracking: ni user.id ni user.document están disponibles', user)
                 showToast.error('Error: ID de usuario no disponible', { id: 'user-id-missing' })
                 return
             }
