@@ -5,7 +5,7 @@ import { Map } from "@/features/location/components/Map"
 import { locationService } from "@/features/location/services/location.service"
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
 import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
-import { DEFAULT_STATUS_COLORS, hexToRgba } from "@/shared/lib/status-colors"
+import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
 import { Button } from "@/shared/components/ui/button"
 import {
     MapPin,
@@ -238,15 +238,14 @@ export default function OptimizedRoutePage() {
                     <div className="shrink-0 z-30 bg-background pt-3 pb-3 px-3 flex flex-col gap-3 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b border-border/20">
                         {/* Resumen de Ruta y Botón de Navegación */}
                         <div className="flex items-center justify-between gap-3 mt-1 mb-1 px-1 w-full">
-                            <div className="flex flex-col gap-1 min-w-0">
-                                <div className="flex items-baseline gap-1.5 text-[13px] font-black uppercase tracking-wider leading-none text-black">
-                                    <span>{new Set(steps.map(s => s.order)).size}</span>
-                                    <span>Paradas</span>
+                            <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 text-[13px] font-black uppercase tracking-wider leading-none text-foreground flex-wrap">
+                                    <span>{new Set(steps.map(s => s.order)).size} Paradas</span>
+                                    <span className="text-muted-foreground/60 shrink-0">•</span>
+                                    <span className="normal-case">{distanceText}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[13px] font-bold text-black truncate leading-none">
-                                    <span className="text-[13px]">{distanceText}</span>
-                                    <span className="w-1 h-1 rounded-full bg-border shrink-0"></span>
-                                    <span className="text-[13px]">{durationText}</span>
+                                <div className="text-[12px] font-bold text-muted-foreground truncate leading-none">
+                                    {durationText}
                                 </div>
                             </div>
                             
@@ -307,8 +306,8 @@ export default function OptimizedRoutePage() {
                     </div>
 
                     {/* Secuencia del recorrido (Timeline Minimalista) - Contenedor con scroll propio */}
-                    <div className="flex-1 overflow-y-auto overscroll-none pb-6">
-                        <div className="flex flex-col gap-3 pb-4 px-3 pt-2">
+                    <div className="flex-1 overflow-y-auto overscroll-none">
+                        <div className="flex flex-col gap-3 px-3 pt-2">
                             <p className="text-[11px] font-black uppercase text-muted-foreground/80 tracking-[0.18em] px-1 mt-1">
                                 Secuencia del recorrido
                             </p>
@@ -317,7 +316,7 @@ export default function OptimizedRoutePage() {
                                 <div className="flex flex-col gap-3 mb-2">
                                     <div className="flex items-center gap-3 px-1">
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
-                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-black leading-none">
+                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-foreground leading-none">
                                             Recogidas
                                         </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
@@ -328,33 +327,24 @@ export default function OptimizedRoutePage() {
                                                 <div
                                                     key={`${step.order}-${step.action}`}
                                                     onClick={() => handlePanTo(step.latitude, step.longitude)}
-                                                    className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3.5 bg-card border border-border/40 rounded-xl shadow-sm hover:bg-muted/15"
+                                                    className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3 bg-card border border-border/30 rounded-xl hover:bg-muted/10"
                                                 >
-                                                    <div className="min-w-0 flex-1 pr-3 flex flex-col gap-1.5">
-                                                        <span className="text-[15px] text-muted-foreground group-hover:text-foreground transition-colors truncate font-extrabold tracking-tight">
-                                                            {step.dealershipName}
-                                                        </span>
-                                                        <div className="mt-1">
-                                                            <div
-                                                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold text-foreground/90 shadow-sm"
-                                                                style={{
-                                                                    backgroundColor: hexToRgba(pickupColor, 0.1),
-                                                                    borderColor: hexToRgba(pickupColor, 0.22)
-                                                                }}
-                                                            >
-                                                                <span
-                                                                    className="h-2 w-2 rounded-full shrink-0"
-                                                                    aria-hidden="true"
-                                                                    style={{ backgroundColor: pickupColor }}
-                                                                />
-                                                                <span>
-                                                                    {step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}
-                                                                </span>
+                                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                        <div
+                                                            className="w-1 h-8 rounded-full shrink-0"
+                                                            style={{ backgroundColor: pickupColor }}
+                                                        />
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-[14px] font-bold text-foreground truncate">
+                                                                {step.dealershipName}
+                                                            </div>
+                                                            <div className="text-[13px] text-muted-foreground mt-0.5">
+                                                                Recoger: <span className="font-extrabold text-foreground">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-muted/40 group-hover:bg-primary/10 transition-all duration-200">
-                                                        <MapPin className="h-4 w-4 group-hover:text-primary transition-colors" style={{ color: pickupColor }} />
+                                                    <div className="shrink-0 pr-1">
+                                                        <MapPin className="h-4 w-4" style={{ color: pickupColor }} />
                                                     </div>
                                                 </div>
                                             )
@@ -367,7 +357,7 @@ export default function OptimizedRoutePage() {
                                 <div className="flex flex-col gap-3 mt-2">
                                     <div className="flex items-center gap-3 px-1">
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
-                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-black leading-none">
+                                        <span className="inline-flex items-center justify-center text-[11px] font-black uppercase tracking-[0.18em] text-foreground leading-none">
                                             Entregas
                                         </span>
                                         <div className="flex-1 h-px border-t border-dashed border-muted-foreground/20"></div>
@@ -378,33 +368,24 @@ export default function OptimizedRoutePage() {
                                                 <div
                                                     key={`${step.order}-${step.action}`}
                                                     onClick={() => handlePanTo(step.latitude, step.longitude)}
-                                                    className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3.5 bg-card border border-border/40 rounded-xl shadow-sm hover:bg-muted/15"
+                                                    className="relative cursor-pointer group active:scale-[0.98] transition-all duration-200 flex items-center justify-between p-3 bg-card border border-border/30 rounded-xl hover:bg-muted/10"
                                                 >
-                                                    <div className="min-w-0 flex-1 pr-3 flex flex-col gap-1.5">
-                                                        <span className="text-[15px] text-muted-foreground group-hover:text-foreground transition-colors truncate font-extrabold tracking-tight">
-                                                            {step.dealershipName}
-                                                        </span>
-                                                        <div className="mt-1">
-                                                            <div
-                                                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold text-foreground/90 shadow-sm"
-                                                                style={{
-                                                                    backgroundColor: hexToRgba(deliveryColor, 0.1),
-                                                                    borderColor: hexToRgba(deliveryColor, 0.22)
-                                                                }}
-                                                            >
-                                                                <span
-                                                                    className="h-2 w-2 rounded-full shrink-0"
-                                                                    aria-hidden="true"
-                                                                    style={{ backgroundColor: deliveryColor }}
-                                                                />
-                                                                <span>
-                                                                    {step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}
-                                                                </span>
+                                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                        <div
+                                                            className="w-1 h-8 rounded-full shrink-0"
+                                                            style={{ backgroundColor: deliveryColor }}
+                                                        />
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-[14px] font-bold text-foreground truncate">
+                                                                {step.dealershipName}
+                                                            </div>
+                                                            <div className="text-[13px] text-muted-foreground mt-0.5">
+                                                                Entregar: <span className="font-extrabold text-foreground">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-muted/40 group-hover:bg-primary/10 transition-all duration-200">
-                                                        <Flag className="h-4 w-4 group-hover:text-primary transition-colors" style={{ color: deliveryColor }} />
+                                                    <div className="shrink-0 pr-1">
+                                                        <Flag className="h-4 w-4" style={{ color: deliveryColor }} />
                                                     </div>
                                                 </div>
                                             )
