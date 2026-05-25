@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import UpdateStatus from '../UpdateStatus'
-import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
@@ -122,12 +121,10 @@ describe('UpdateStatus Page Integration', () => {
         return render(
             <MemoryRouter initialEntries={[`/messenger/update-status/${id}`]}>
                 <AuthProvider>
-                    <StatusColorProvider>
-                        <Routes>
-                            <Route path="/messenger/update-status/:id" element={<UpdateStatus />} />
-                            <Route path="/messenger" element={<div>Messenger Home</div>} />
-                        </Routes>
-                    </StatusColorProvider>
+                    <Routes>
+                        <Route path="/messenger/update-status/:id" element={<UpdateStatus />} />
+                        <Route path="/messenger" element={<div>Messenger Home</div>} />
+                    </Routes>
                 </AuthProvider>
             </MemoryRouter>
         )

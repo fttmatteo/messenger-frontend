@@ -9,7 +9,7 @@ import type { TrackingHistoryItem } from "@/features/location/types/location.typ
 import { MapPin, Navigation2, Flag, Home } from "lucide-react"
 import type { ServiceStatus } from "@/features/delivery/types/service.types"
 import { getStatusBadge } from "@/shared/lib/status-utils"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
+import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
 import { logger } from "@/shared/utils/logger"
 
 interface ServiceTrackingMapProps {
@@ -87,9 +87,8 @@ export function ServiceTrackingMap({
     serviceStatus,
     className = ""
 }: ServiceTrackingMapProps) {
-    const { colors } = useStatusColors()
     const getStatusHexColor = (status?: ServiceStatus | string): string => {
-        return colors[status || ''] || '#6b7280'
+        return DEFAULT_STATUS_COLORS[status || ''] || '#6b7280'
     }
 
     const [trackingData, setTrackingData] = useState<TrackingHistoryItem[]>([])
@@ -163,7 +162,7 @@ export function ServiceTrackingMap({
     const firstPosition = trackingPath.length > 0 ? trackingPath[0] : null
     const startColor = getStatusHexColor('ASSIGNED')
     const endColor = serviceStatus ? getStatusHexColor(serviceStatus) : getStatusHexColor('PENDING')
-    const endLabel = serviceStatus ? getStatusBadge(serviceStatus, colors).label : 'Última ubicación'
+    const endLabel = serviceStatus ? getStatusBadge(serviceStatus).label : 'Última ubicación'
 
 
 

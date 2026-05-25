@@ -93,9 +93,6 @@ export const handlers: RequestHandler[] = [
             createdAt: new Date().toISOString()
         });
     }),
-    http.get(new RegExp('.*/settings/status-colors.*'), () => {
-        return HttpResponse.json({});
-    }),
     http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
         return HttpResponse.json({
             content: [

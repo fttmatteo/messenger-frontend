@@ -5,7 +5,7 @@ import { Map } from "@/features/location/components/Map"
 import { locationService } from "@/features/location/services/location.service"
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
 import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
+import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
 import type { DeliveryRouteStep } from "@/features/location/types/location.types"
 import { Button } from "@/shared/components/ui/button"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
@@ -125,7 +125,6 @@ export default function OptimizedRoutePage() {
     const navigate = useNavigate()
     const { getCurrentLocation, loading: loadingLocation } = useSmartLocation()
     const { services, pendingServices, loading: loadingServices } = useMessengerServices()
-    const { colors } = useStatusColors()
     const { resolvedTheme } = useTheme()
     
     const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
@@ -138,8 +137,8 @@ export default function OptimizedRoutePage() {
     const [loadingRoute, setLoadingRoute] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const pickupColor = colors.ASSIGNED || '#00eeffe1'
-    const deliveryColor = '#9ca3af' 
+    const pickupColor = DEFAULT_STATUS_COLORS.ASSIGNED || '#00eeffe1'
+    const deliveryColor = DEFAULT_STATUS_COLORS.DELIVERED || '#9ca3af' 
 
     useEffect(() => {
         const calculateRoute = async () => {

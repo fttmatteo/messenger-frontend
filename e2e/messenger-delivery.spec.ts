@@ -39,10 +39,6 @@ test.describe('Messenger Delivery Execution', () => {
         });
         /* eslint-enable @typescript-eslint/no-explicit-any */
 
-        await page.route('**/settings/status-colors', async route => {
-            await route.fulfill({ json: { PENDING: '#6b7280', DELIVERED: '#10b981' } });
-        });
-
         await page.route('**/services/allServicesPageable**', async route => {
             await route.fulfill({
                 json: {

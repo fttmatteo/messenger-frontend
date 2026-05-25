@@ -1,7 +1,6 @@
 import type { ServiceStatus } from "@/features/delivery/types/service.types"
 import { Bike } from "lucide-react"
-import { getStatusHexColor, getStatusLabel, getMergedColors, getStatusPillBackground } from "@/shared/lib/status-colors"
-
+import { getStatusHexColor, getStatusLabel, getStatusPillBackground } from "@/shared/lib/status-colors"
 interface StatusBadgeConfig {
     label: string
     className: string
@@ -12,12 +11,11 @@ interface StatusBadgeConfig {
  * Obtiene la configuración de insignia para un estado de servicio.
  * Usa colores dinámicos del sistema centralizado de colores.
  */
-export function getStatusBadge(status: ServiceStatus | string, customColors?: Record<string, string>): StatusBadgeConfig {
-    const colors = customColors || getMergedColors()
+export function getStatusBadge(status: ServiceStatus | string): StatusBadgeConfig {
     return {
         label: getStatusLabel(status),
         className: 'text-white',
-        style: { backgroundColor: colors[status] || getStatusHexColor(status, colors), color: 'white' }
+        style: { backgroundColor: getStatusHexColor(status), color: 'white' }
     }
 }
 
@@ -34,15 +32,15 @@ interface StatusIconConfig {
  * Obtiene la configuración de icono para un estado de servicio (punto circular + texto).
  * Usa colores dinámicos del sistema centralizado de colores.
  */
-export function getStatusIconConfig(status: ServiceStatus | string, customColors?: Record<string, string>): StatusIconConfig {
-    const hexColor = getStatusHexColor(status, customColors)
+export function getStatusIconConfig(status: ServiceStatus | string): StatusIconConfig {
+    const hexColor = getStatusHexColor(status)
     return {
         label: getStatusLabel(status),
         dotColor: '',
         textColor: '',
         dotStyle: { backgroundColor: hexColor },
         textStyle: { color: hexColor },
-        pillBackground: getStatusPillBackground(status, customColors, 0.15)
+        pillBackground: getStatusPillBackground(status, 0.15)
     }
 }
 

@@ -63,10 +63,6 @@ test.describe('Offline Resilience & Sync', () => {
             });
         });
 
-        await page.route('**/settings/status-colors', async route => {
-            await route.fulfill({ json: { PENDING: '#6b7280', DELIVERED: '#10b981' } });
-        });
-
         await page.route('**/services/updateStatus/**', async route => {
             await route.fulfill({ json: { message: 'Success' } });
         });

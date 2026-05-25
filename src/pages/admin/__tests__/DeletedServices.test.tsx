@@ -2,7 +2,6 @@ import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import DeletedServices from '../DeletedServices'
-import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 import { AdminUIProvider } from '@/shared/context/AdminUIContext'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
@@ -15,9 +14,7 @@ describe('DeletedServices Page Integration', () => {
             <MemoryRouter>
                 <AuthProvider>
                     <AdminUIProvider>
-                        <StatusColorProvider>
-                            <DeletedServices />
-                        </StatusColorProvider>
+                        <DeletedServices />
                     </AdminUIProvider>
                 </AuthProvider>
             </MemoryRouter>

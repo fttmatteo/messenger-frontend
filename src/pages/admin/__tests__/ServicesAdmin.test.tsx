@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Services from '../Services'
-import { StatusColorProvider } from '@/shared/context/StatusColorContext'
 
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import { server } from '@/test/mocks/server'
@@ -83,9 +82,7 @@ describe('Services Admin Page Integration', () => {
         return render(
             <MemoryRouter>
                 <AuthProvider>
-                    <StatusColorProvider>
-                        <Services />
-                    </StatusColorProvider>
+                    <Services />
                 </AuthProvider>
             </MemoryRouter>
         )

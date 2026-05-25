@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { trackingService } from "@/features/tracking/services/tracking.service"
 import { showToast } from "@/shared/config/toast-config"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
+import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { openMaps } from "@/shared/lib/navigation-utils"
 import { createLogger } from "@/shared/utils/logger"
-import { getStatusIconConfig } from "@/shared/lib/status-utils"
+
 import React, { memo } from "react"
 
 const logger = createLogger('ServiceCard')
@@ -24,10 +24,7 @@ interface ServiceCardProps {
  */
 export const ServiceCard = memo(({ service }: ServiceCardProps) => {
     const navigate = useNavigate()
-    const { colors } = useStatusColors()
-
-    const statusColor = colors[service.currentStatus] || '#6b7280'
-    const statusConfig = getStatusIconConfig(service.currentStatus, colors)
+    const statusConfig = getStatusIconConfig(service.currentStatus)
 
     const handleNavigate = (dealership: ServiceDelivery['dealership'], e: React.MouseEvent) => {
         e.stopPropagation()
@@ -104,7 +101,7 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
             {/* Banda lateral con color de estado */}
             <div
                 className="absolute left-0 top-0 bottom-0 w-1"
-                style={{ backgroundColor: statusColor }}
+                style={{ backgroundColor: getStatusIconConfig(service.currentStatus).dotStyle.backgroundColor }}
             />
 
             <div className="flex flex-col p-3.5 pl-4.5 gap-2.5">

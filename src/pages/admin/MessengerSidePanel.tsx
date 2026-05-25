@@ -13,7 +13,6 @@ import { isMessengerOnline } from "@/shared/lib/messenger-utils"
 import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
 import { employeeService } from "@/features/employee/services/employee.service"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import type { DailyStats, ServiceStatus } from "@/features/delivery/types/service.types"
 import type { LiveTrackingUpdate } from "@/features/tracking/services/tracking.service"
@@ -58,9 +57,6 @@ export function MessengerSidePanel({
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
-    const { colors } = useStatusColors()
-
-
 
     const fetchDetails = useCallback(async () => {
         if (!messengerUuid) return
@@ -95,7 +91,7 @@ export function MessengerSidePanel({
 
             const milestones: TimelineEvent[] = response.timeline.map(event => {
                 const eventDate = new Date(event.timestamp)
-                const config = getStatusIconConfig(event.status as ServiceStatus, colors)
+                const config = getStatusIconConfig(event.status as ServiceStatus)
 
                 return {
                     id: `history-${event.id}`,
@@ -128,7 +124,7 @@ export function MessengerSidePanel({
         } finally {
             setLoadingHistory(false)
         }
-    }, [messengerUuid, selectedDate, colors])
+    }, [messengerUuid, selectedDate])
 
     useEffect(() => {
         if (isOpen && messengerUuid) {

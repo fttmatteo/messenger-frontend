@@ -1,9 +1,7 @@
-
 import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Button } from "@/shared/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
 import { getStatusIconConfig, canUserEditService } from "@/shared/lib/status-utils"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 import { useAuth } from "@/features/auth/context/AuthContext"
 
@@ -19,14 +17,11 @@ interface ServiceHeaderProps {
  * Incluye migas de pan, indicador de estado prominente y acciones de gestión.
  */
 export function ServiceHeader({ service, onDelete, onUpdate, deleting }: ServiceHeaderProps) {
-    const { colors } = useStatusColors()
     const { user } = useAuth()
     const isAdmin = user?.role === 'ADMIN'
 
     const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
     const canEdit = role ? canUserEditService(role) : false
-
-    const statusConfig = getStatusIconConfig(service.currentStatus, colors)
 
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
@@ -42,11 +37,11 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
             <div className="flex-1 flex flex-row items-center justify-center gap-3">
                 <div
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: statusConfig.pillBackground }}
+                    style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
                 >
-                    <div className="w-3 h-3 rounded-full" style={statusConfig.dotStyle} />
-                    <span className="text-lg font-bold">
-                        {statusConfig.label}
+                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
+                    <span className="text-sm font-bold">
+                        {getStatusIconConfig(service.currentStatus).label}
                     </span>
                 </div>
             </div>
