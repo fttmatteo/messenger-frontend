@@ -1,5 +1,5 @@
 import React from "react"
-import { TrendingUp, Clock, AlertCircle, MapPin, Calendar as CalendarIcon, ChevronDown } from "lucide-react"
+import { Clock, AlertCircle, MapPin, Calendar as CalendarIcon, ChevronDown } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
 import { Calendar } from "@/shared/components/ui/calendar"
@@ -7,7 +7,6 @@ import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/share
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { AddressDisplay } from "@/features/tracking/components"
-import type { DailyStats } from "@/features/delivery/types/service.types"
 
 /**
  * Representa un evento individual en la línea de tiempo de actividad de un mensajero.
@@ -27,45 +26,6 @@ export interface TimelineEvent {
     icon: React.ReactNode
     rawTimestamp: number
     changedByName?: string
-}
-
-interface MessengerProductivityProps {
-    stats: DailyStats | null
-}
-
-/**
- * Muestra métricas de productividad diaria del mensajero (entregas, devoluciones, etc.).
- */
-export function MessengerProductivity({ stats }: MessengerProductivityProps) {
-    return (
-        <div className="space-y-3">
-            <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <TrendingUp className="h-3 w-3" />
-                    Resumen del día
-                </h4>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5">
-                <div className="bg-background/40 border p-2 rounded-lg text-center">
-                    <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Entregados</p>
-                    <p className="text-sm font-bold">{stats?.delivered || 0}</p>
-                </div>
-                <div className="bg-background/40 border p-2 rounded-lg text-center">
-                    <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Devueltos</p>
-                    <p className="text-sm font-bold">{stats?.returned || 0}</p>
-                </div>
-                <div className="bg-background/40 border p-2 rounded-lg text-center">
-                    <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Asignados</p>
-                    <p className="text-sm font-bold">{stats?.total || 0}</p>
-                </div>
-                <div className="bg-background/40 border p-2 rounded-lg text-center">
-                    <p className="text-[8px] text-muted-foreground uppercase font-semibold leading-none mb-1">Pendientes</p>
-                    <p className="text-sm font-bold">{stats?.pending || 0}</p>
-                </div>
-            </div>
-        </div>
-    )
 }
 
 interface MessengerActivityTimelineProps {
@@ -148,7 +108,7 @@ export function MessengerActivityTimeline({
                             <TimelineContent>
                                 <div className="flex flex-col gap-1">
                                     {event.description && (
-                                        <p className="text-[10px] text-muted-foreground/60 leading-relaxed italic">
+                                        <p className="text-[11px] text-foreground/90 font-medium leading-relaxed">
                                             {event.description}
                                         </p>
                                     )}

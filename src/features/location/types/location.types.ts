@@ -66,3 +66,38 @@ export interface TrackingHistoryItem {
     accuracy?: number
     serviceId?: number
 }
+
+/**
+ * Petición para optimizar la ruta de múltiples servicios de entrega.
+ */
+export interface OptimizeDeliveriesRequest {
+    currentLatitude: number
+    currentLongitude: number
+    serviceUuids: string[]
+}
+
+/**
+ * Paso individual en una ruta de entrega optimizada.
+ */
+export interface DeliveryRouteStep {
+    serviceUuid: string
+    action: 'PICKUP' | 'DELIVERY'
+    dealershipId: number
+    dealershipName: string
+    latitude: number
+    longitude: number
+    order: number
+}
+
+/**
+ * Respuesta con la ruta de entrega optimizada completa.
+ */
+export interface OptimizeDeliveriesResponse {
+    steps: DeliveryRouteStep[]
+    distanceMeters: number | null
+    distanceKilometers: number | null
+    durationSeconds: number | null
+    durationFormatted: string | null
+    polyline: string | null
+}
+

@@ -38,6 +38,7 @@ const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateS
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServicesPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/SettingsPage'));
 const MessengerAppearancePage = React.lazy(() => import('@/pages/messenger/AppearancePage'));
+const MessengerOptimizedRoutePage = React.lazy(() => import('@/pages/messenger/OptimizedRoutePage'));
 const MobileOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.MobileOnlyGuard })));
 const DesktopOnlyGuard = React.lazy(() => import('@/shared/components/guards').then(m => ({ default: m.DesktopOnlyGuard })));
 
@@ -172,7 +173,7 @@ export function AppRoutes() {
                 >
                     <Route index element={<MessengerDashboard />} />
                     <Route path="servicio/:id/actualizar" element={<MessengerUpdateStatus />} />
-
+                    <Route path="ruta-optimizada" element={<MessengerOptimizedRoutePage />} />
                     <Route path="servicios" element={<MessengerServiciosPage />} />
                     <Route path="configuracion" element={<MessengerConfiguracionPage />} />
                     <Route path="configuracion/apariencia" element={<MessengerAppearancePage />} />

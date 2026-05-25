@@ -20,7 +20,6 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { formatDisplayName } from "@/shared/lib/format-utils"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 import { UpdateStatusModal } from "@/features/delivery/components/UpdateStatusModal"
 
 // Estados disponibles para selección
@@ -43,7 +42,6 @@ export default function Services() {
     const navigate = useNavigate()
     const outletContext = useOutletContext<{ searchQuery?: string }>()
     const searchQuery = outletContext?.searchQuery || ""
-    const { colors } = useStatusColors()
 
     const {
         services,
@@ -233,11 +231,11 @@ export default function Services() {
                                                     <TableCell>
                                                         <div
                                                             className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full"
-                                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                                            style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
                                                         >
-                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
                                                             <span className="text-sm font-medium">
-                                                                {getStatusIconConfig(service.currentStatus, colors).label}
+                                                                {getStatusIconConfig(service.currentStatus).label}
                                                             </span>
                                                         </div>
                                                     </TableCell>

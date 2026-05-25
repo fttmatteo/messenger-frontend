@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { Loader2, Save, UserPlus } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 import { useAuth } from "@/features/auth/context/AuthContext"
 import { employeeService } from "@/features/employee/services/employee.service"
 import { serviceDeliveryService } from "@/features/delivery/services/service.service"
@@ -34,7 +33,6 @@ interface UpdateStatusModalProps {
 export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: UpdateStatusModalProps) {
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
-    const { colors } = useStatusColors()
     const { getCurrentLocation } = useSmartLocation()
     const [newStatus, setNewStatus] = useState<ServiceStatus>(service.currentStatus)
     const [observation, setObservation] = useState('')
@@ -198,11 +196,11 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                         {availableStatuses.length === 0 ? (
                             <div
                                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
                             >
-                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
                                 <span className="font-medium text-sm">
-                                    {getStatusIconConfig(service.currentStatus, colors).label}
+                                    {getStatusIconConfig(service.currentStatus).label}
                                 </span>
                             </div>
                         ) : (
@@ -210,8 +208,8 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Selecciona un nuevo estado">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus, colors).dotStyle} />
-                                            <span>{getStatusIconConfig(newStatus, colors).label}</span>
+                                            <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus).dotStyle} />
+                                            <span>{getStatusIconConfig(newStatus).label}</span>
                                         </div>
                                     </SelectValue>
                                 </SelectTrigger>
@@ -221,7 +219,7 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                                         {availableStatuses.map((status) => (
                                             <SelectItem key={status.value} value={status.value}>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(status.value, colors).dotStyle} />
+                                                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(status.value).dotStyle} />
                                                     <span>{status.label}</span>
                                                 </div>
                                             </SelectItem>

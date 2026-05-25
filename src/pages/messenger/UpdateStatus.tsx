@@ -11,11 +11,11 @@ import { EvidenceCapture } from "@/features/delivery/components/EvidenceCapture"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
-import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
+import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
+import { Loader2, AlertCircle, CheckCircle, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
 import { showToast } from "@/shared/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
 import { STATUS_OPTIONS } from "@/shared/config/status-options"
@@ -48,7 +48,7 @@ function hexToRgba(hex: string, alpha: number): string {
 export default function UpdateStatus() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { colors } = useStatusColors()
+
     const { getCurrentLocation } = useSmartLocation()
     const { isOnline } = useNetwork()
 
@@ -85,9 +85,9 @@ export default function UpdateStatus() {
                 requiresSignature: option.requiresSignature,
                 requiresPhotos: option.requiresPhotos,
                 requiresObservation: option.requiresObservation,
-                color: colors[option.id] || '#6b7280'
+                color: DEFAULT_STATUS_COLORS[option.id] || '#6b7280'
             }))
-    }, [colors, service])
+    }, [service])
 
     useEffect(() => {
         const fetchService = async () => {
@@ -247,17 +247,14 @@ export default function UpdateStatus() {
                                 
                                 size="xl"
                             />
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <Building2 className="h-4 w-4" strokeWidth={2.5} />
-                                <span className="text-sm font-bold">{service.dealership.name}</span>
-                            </div>
+
                             <div
                                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus, colors).pillBackground }}
+                                style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
                             >
-                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus, colors).dotStyle} />
+                                <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
                                 <span className="text-sm font-bold">
-                                    {getStatusIconConfig(service.currentStatus, colors).label}
+                                    {getStatusIconConfig(service.currentStatus).label}
                                 </span>
                             </div>
                         </div>

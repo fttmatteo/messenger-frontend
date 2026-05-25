@@ -3,7 +3,6 @@ import { Timeline, TimelineItem, TimelineHeader, TimelineContent } from "@/share
 import { HistoryEntryCard } from "@/features/delivery/components/HistoryEntryCard"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { getImageUrl } from "@/shared/lib/image-utils"
-import { useStatusColors } from "@/shared/hooks/use-status-colors"
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 
 interface ServiceHistoryTimelineProps {
@@ -17,8 +16,6 @@ interface ServiceHistoryTimelineProps {
  * Cada entrada muestra detalles del cambio, incluyendo fotos y firmas asociadas.
  */
 export function ServiceHistoryTimeline({ service, onImageClick, className }: ServiceHistoryTimelineProps) {
-    const { colors } = useStatusColors()
-
     return (
         <Card className={`h-full flex flex-col overflow-hidden ${className}`}>
             <CardHeader className="p-2 pb-0">
@@ -29,18 +26,19 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                     <div className="py-2 pl-2">
                         <Timeline className="w-full">
                             {[...(service.history || [])].reverse().map((entry, index) => {
+                                const config = getStatusIconConfig(entry.newStatus)
                                 return (
                                     <TimelineItem
                                         key={entry.idStatusHistory}
                                         isLast={index === (service.history?.length || 0) - 1}
                                     >
-                                        <TimelineHeader size="sm" statusStyle={getStatusIconConfig(entry.newStatus, colors).dotStyle}>
+                                        <TimelineHeader size="sm" statusStyle={config.dotStyle}>
                                             <div
                                                 className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ml-1"
-                                                style={{ backgroundColor: getStatusIconConfig(entry.newStatus, colors).pillBackground }}
+                                                style={{ backgroundColor: config.pillBackground }}
                                             >
                                                 <span className="text-xs font-bold">
-                                                    {getStatusIconConfig(entry.newStatus, colors).label}
+                                                    {config.label}
                                                 </span>
                                             </div>
                                         </TimelineHeader>

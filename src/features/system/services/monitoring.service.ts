@@ -2,18 +2,6 @@ import apiClient from '@/shared/services/api-client'
 import { format } from 'date-fns'
 
 /**
- * Estadísticas diarias detalladas de un mensajero.
- */
-export interface DailyStats {
-    assigned: number
-    delivered: number
-    returned: number
-    canceled: number
-    pending: number
-    total: number
-}
-
-/**
  * Representa un evento individual en la línea de tiempo de actividad.
  */
 export interface ActivityEvent {
@@ -29,7 +17,6 @@ export interface ActivityEvent {
 }
 
 export interface MessengerActivityResponse {
-    dailyStats: DailyStats
     timeline: ActivityEvent[]
 }
 

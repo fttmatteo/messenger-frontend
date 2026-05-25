@@ -12,86 +12,28 @@ export const DEFAULT_STATUS_COLORS: Record<string, string> = {
 
 const DEFAULT_FALLBACK_COLOR = '#6b7280'
 
-const STORAGE_KEY_PREFIX = 'status-colors-'
-
-/**
- * Obtiene la clave de almacenamiento para un usuario específico en localStorage.
- */
-function getStorageKey(userId?: number | string): string {
-    if (!userId) {
-        return 'status-colors-default'
-    }
-    return `${STORAGE_KEY_PREFIX}${userId}`
-}
-
-/**
- * Carga colores personalizados desde localStorage para un usuario específico
- */
-export function loadCustomColors(userId?: number | string): Record<string, string> {
-    try {
-        const stored = localStorage.getItem(getStorageKey(userId))
-        if (stored) {
-            return JSON.parse(stored)
-        }
-    } catch {
-        // Ignorar error al leer/parsear localStorage
-    }
-    return {}
-}
-
-/**
- * Guarda colores personalizados en localStorage para un usuario específico
- */
-export function saveCustomColors(colors: Record<string, string>, userId?: number | string): void {
-    try {
-        localStorage.setItem(getStorageKey(userId), JSON.stringify(colors))
-    } catch {
-        // Ignorar error al guardar en localStorage
-    }
-}
-
-/**
- * Elimina colores personalizados de localStorage para un usuario específico (restaura valores por defecto)
- */
-export function clearCustomColors(userId?: number | string): void {
-    try {
-        localStorage.removeItem(getStorageKey(userId))
-    } catch {
-        // Ignorar error al eliminar de localStorage
-    }
-}
-
-/**
- * Obtiene colores fusionados (por defecto + personalizaciones) para un usuario específico
- */
-export function getMergedColors(userId?: number | string): Record<string, string> {
-    const customColors = loadCustomColors(userId)
-    return { ...DEFAULT_STATUS_COLORS, ...customColors }
-}
-
 /**
  * Obtiene el color HEX para un estado
  */
-export function getStatusHexColor(status?: ServiceStatus | string, customColors?: Record<string, string>): string {
-    const colors = customColors || getMergedColors()
-    return colors[status || ''] || DEFAULT_FALLBACK_COLOR
+export function getStatusHexColor(status?: ServiceStatus | string): string {
+    return DEFAULT_STATUS_COLORS[status || ''] || DEFAULT_FALLBACK_COLOR
 }
 
 /**
  * Obtiene estilo inline para punto de estado (color de fondo)
  */
-export function getStatusDotStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
+export function getStatusDotStyle(status: ServiceStatus | string): React.CSSProperties {
     return {
-        backgroundColor: getStatusHexColor(status, customColors)
+        backgroundColor: getStatusHexColor(status)
     }
 }
 
 /**
  * Obtiene estilo inline para texto de estado
  */
-export function getStatusTextStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
+export function getStatusTextStyle(status: ServiceStatus | string): React.CSSProperties {
     return {
-        color: getStatusHexColor(status, customColors)
+        color: getStatusHexColor(status)
     }
 }
 
@@ -114,17 +56,17 @@ export function hexToRgba(hex: string, opacity: number): string {
 /**
  * Obtiene el color de fondo de la pastilla (color de estado con opacidad baja)
  */
-export function getStatusPillBackground(status: ServiceStatus | string, customColors?: Record<string, string>, opacity: number = 0.15): string {
-    const hexColor = getStatusHexColor(status, customColors)
+export function getStatusPillBackground(status: ServiceStatus | string, opacity: number = 0.15): string {
+    const hexColor = getStatusHexColor(status)
     return hexToRgba(hexColor, opacity)
 }
 
 /**
  * Obtiene estilo inline para insignia de estado (fondo + texto blanco)
  */
-export function getStatusBadgeStyle(status: ServiceStatus | string, customColors?: Record<string, string>): React.CSSProperties {
+export function getStatusBadgeStyle(status: ServiceStatus | string): React.CSSProperties {
     return {
-        backgroundColor: getStatusHexColor(status, customColors),
+        backgroundColor: getStatusHexColor(status),
         color: 'white'
     }
 }

@@ -53,6 +53,7 @@ export default function MessengerLayout() {
     const isSubPage = location.pathname.includes('/servicio/') ||
         location.pathname.includes('/historial') ||
         location.pathname.includes('/actualizar') ||
+        location.pathname.includes('/ruta-optimizada') ||
         location.pathname.includes('/configuracion/')
 
 
@@ -73,6 +74,7 @@ export default function MessengerLayout() {
         if (location.pathname.includes('configuracion')) return 'Configuración'
         if (location.pathname.includes('perfil')) return 'Perfil'
         if (location.pathname.includes('actualizar')) return 'Actualizar servicio'
+        if (location.pathname.includes('ruta-optimizada')) return 'Ruta optimizada'
         return null
     }
 

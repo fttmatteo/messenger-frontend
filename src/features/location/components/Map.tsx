@@ -23,13 +23,14 @@ interface MapProps {
     onLoad?: (map: google.maps.Map) => void
     onUnmount?: (map: google.maps.Map) => void
     className?: string
+    options?: google.maps.MapOptions
 }
 
 /**
  * Componente base para la integración con Google Maps.
  * Gestiona la carga de la API, el tema visual (claro/oscuro) y la configuración del contenedor.
  */
-function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onUnmount, className }: MapProps) {
+function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onUnmount, className, options }: MapProps) {
     const { resolvedTheme } = useTheme()
     const [, setMap] = useState<google.maps.Map | null>(null)
 
@@ -84,6 +85,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
                     clickableIcons: false,
                     keyboardShortcuts: true,
                     colorScheme: getColorScheme(),
+                    ...options,
                 }}
             >
                 {children}
