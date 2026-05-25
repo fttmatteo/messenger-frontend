@@ -4,6 +4,8 @@ import type {
     DistanceResponse,
     RouteRequest,
     RouteResponse,
+    OptimizeDeliveriesRequest,
+    OptimizeDeliveriesResponse,
 } from '@/features/location/types/location.types'
 
 /**
@@ -14,7 +16,6 @@ import type {
 class LocationService {
     /**
      * Convierte una dirección de texto en coordenadas geográficas (latitud/longitud).
-     * @param address - La dirección física a convertir.
      */
     async geocode(address: string): Promise<LocationResponse> {
         const response = await apiClient.post('/locations/geocode', { address })
@@ -23,8 +24,6 @@ class LocationService {
 
     /**
      * Convierte coordenadas geográficas en una dirección física legible.
-     * @param lat - Latitud del punto.
-     * @param lng - Longitud del punto.
      */
     async reverseGeocode(lat: number, lng: number): Promise<LocationResponse> {
         const response = await apiClient.get('/locations/reverse', {
@@ -35,10 +34,6 @@ class LocationService {
 
     /**
      * Calcula la distancia de viaje y el tiempo estimado entre dos puntos geográficos.
-     * @param fromLat - Latitud de origen.
-     * @param fromLng - Longitud de origen.
-     * @param toLat - Latitud de destino.
-     * @param toLng - Longitud de destino.
      */
     async calculateDistance(
         fromLat: number,
@@ -58,6 +53,14 @@ class LocationService {
      */
     async calculateRoute(request: RouteRequest): Promise<RouteResponse> {
         const response = await apiClient.post('/locations/route', request)
+        return response.data
+    }
+
+    /**
+     * Genera una ruta optimizada para múltiples entregas con orígenes y destinos independientes.
+     */
+    async optimizeDeliveriesRoute(request: OptimizeDeliveriesRequest): Promise<OptimizeDeliveriesResponse> {
+        const response = await apiClient.post('/locations/route/optimize-services', request)
         return response.data
     }
 }

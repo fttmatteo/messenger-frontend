@@ -3,11 +3,13 @@ import { ServiceList } from "@/features/delivery/components/ServiceList"
 import { Input } from "@/shared/components/ui/input"
 import { Button } from "@/shared/components/ui/button"
 import { Search, CalendarIcon, Filter } from "lucide-react"
-import { useState, useMemo, useCallback } from "react"
+import { useMemo, useCallback } from "react"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusLabel } from "@/shared/lib/status-colors"
 import { cn } from "@/shared/lib/utils"
+import { useSearchParams } from "react-router-dom"
+
 /**
  * Página principal de listado de servicios para el perfil Mensajero.
  * Proporciona funcionalidades de búsqueda, filtrado por fecha y estado,
@@ -15,9 +17,44 @@ import { cn } from "@/shared/lib/utils"
  */
 export default function ServicesPage() {
     const { loading, completedServices, error } = useMessengerServices()
-    const [searchTerm, setSearchTerm] = useState("")
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-    const [statusFilter, setStatusFilter] = useState<string>("all")
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const searchTerm = searchParams.get("q") || ""
+    const statusFilter = searchParams.get("status") || "all"
+    const dateParam = searchParams.get("date")
+    const selectedDate = useMemo(() => {
+        if (dateParam) {
+            const [y, m, d] = dateParam.split('-')
+            if (y && m && d) {
+                return new Date(Number(y), Number(m) - 1, Number(d))
+            }
+        }
+        return new Date()
+    }, [dateParam])
+
+    const setSearchTerm = (val: string) => {
+        setSearchParams(prev => {
+            if (!val) prev.delete("q")
+            else prev.set("q", val)
+            return prev
+        }, { replace: true })
+    }
+
+    const setStatusFilter = (val: string) => {
+        setSearchParams(prev => {
+            if (val === "all") prev.delete("status")
+            else prev.set("status", val)
+            return prev
+        }, { replace: true })
+    }
+
+    const setSelectedDate = (val: Date) => {
+        setSearchParams(prev => {
+            if (isSameDay(val, new Date())) prev.delete("date")
+            else prev.set("date", format(val, "yyyy-MM-dd"))
+            return prev
+        }, { replace: true })
+    }
 
     const getLastChangeDate = useCallback((service: typeof completedServices[0]) => {
         if (service.history && service.history.length > 0) {

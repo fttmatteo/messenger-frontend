@@ -1,19 +1,22 @@
 import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
 import { useNetwork } from "@/shared/hooks/use-network"
 import { ServiceList } from "@/features/delivery/components/ServiceList"
-import { ChevronDown, RefreshCw, Database, Building2 } from "lucide-react"
+import { ChevronDown, RefreshCw, Database, Building2, Navigation } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { useState, useMemo, useCallback } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 /**
  * Panel principal (Dashboard) para la aplicación del mensajero.
  * Muestra la lista de servicios pendientes asignados al mensajero actual.
  */
 export default function MessengerDashboard() {
+    const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
-    const [isRefreshing, setIsRefreshing] = useState(false)
-    const [selectedDealership, setSelectedDealership] = useState<string>("all")
+    const [isRefreshing, setIsRefreshing] = useState(false) 
+    const selectedDealership = searchParams.get("dealership") || "all"
 
     const handleRefresh = useCallback(async () => {
         if (!isOnline || isRefreshing) return
@@ -65,7 +68,14 @@ export default function MessengerDashboard() {
                             id="dealership-filter"
                             name="dealership-filter"
                             value={selectedDealership}
-                            onChange={(e) => setSelectedDealership(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchParams(prev => {
+                                    if (val === "all") prev.delete("dealership");
+                                    else prev.set("dealership", val);
+                                    return prev;
+                                }, { replace: true });
+                            }}
                             className="block w-full h-11 pl-12 pr-10 text-base text-foreground bg-card border-border/60 border rounded-2xl shadow-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                         >
                             <option value="all">
@@ -115,14 +125,24 @@ export default function MessengerDashboard() {
 
             <div className="flex items-center justify-between px-1.5">
                 <p className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em]">
-                    {filteredServices.length} {filteredServices.length !== 1 ? 'Services' : 'Servicio'} {selectedDealership !== 'all' ? 'Filtrados' : 'Pendientes'}
+                    {filteredServices.length} {filteredServices.length !== 1 ? 'servicios' : 'servicio'} {selectedDealership !== 'all' ? 'filtrados' : 'asignados'}
                 </p>
-                {isFromCache && !loading && (
+                {pendingServices.length > 1 ? (
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => navigate("/messenger/ruta-optimizada")}
+                        className="h-6 text-[10px] px-2 text-primary font-bold uppercase tracking-wider hover:bg-primary/5 active:scale-95 flex items-center gap-1 rounded-lg"
+                    >
+                        <Navigation className="h-3 w-3" />
+                        Optimizar Ruta
+                    </Button>
+                ) : isFromCache && !loading ? (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
                         <Database className="h-3 w-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest italic">Offline cache</span>
                     </div>
-                )}
+                ) : null}
             </div>
 
             <div className="">
@@ -141,6 +161,9 @@ export default function MessengerDashboard() {
                     </p>
                 </div>
             )}
+            
+            {/* Spacer for bottom scroll area */}
+            <div className="h-4 w-full shrink-0" aria-hidden="true" />
         </div>
     )
 }

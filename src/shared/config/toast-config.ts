@@ -15,7 +15,7 @@ export const showToast = {
       ...defaultOptions,
       ...options,
       id: options?.id ?? message,
-      duration: options?.duration ?? 3000
+      duration: options?.duration ?? defaultOptions.duration
     })
   },
 
@@ -24,7 +24,7 @@ export const showToast = {
       ...defaultOptions,
       ...options,
       id: options?.id ?? message,
-      duration: options?.duration ?? 5000
+      duration: options?.duration ?? defaultOptions.duration
     })
   },
 
@@ -33,7 +33,7 @@ export const showToast = {
       ...defaultOptions,
       ...options,
       id: options?.id ?? message,
-      duration: options?.duration ?? 4000
+      duration: options?.duration ?? defaultOptions.duration
     })
   },
 
@@ -42,7 +42,7 @@ export const showToast = {
       ...defaultOptions,
       ...options,
       id: options?.id ?? message,
-      duration: options?.duration ?? 4000
+      duration: options?.duration ?? defaultOptions.duration
     })
   },
 
@@ -59,7 +59,7 @@ export const showToast = {
       ...defaultOptions,
       ...options,
       id: options?.id ?? message,
-      duration: options?.duration ?? 4000
+      duration: options?.duration ?? defaultOptions.duration
     })
   },
 
