@@ -12,7 +12,7 @@ import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { DEFAULT_STATUS_COLORS } from "@/shared/lib/status-colors"
-import { Loader2, AlertCircle, CheckCircle, Building2, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, Camera, PenLine, MessageSquare, WifiOff } from "lucide-react"
 import { showToast } from "@/shared/config/toast-config"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog"
 import { motion, AnimatePresence } from "framer-motion"
@@ -247,10 +247,7 @@ export default function UpdateStatus() {
                                 
                                 size="xl"
                             />
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <Building2 className="h-4 w-4" strokeWidth={2.5} />
-                                <span className="text-sm font-bold">{service.dealership.name}</span>
-                            </div>
+
                             <div
                                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
                                 style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}

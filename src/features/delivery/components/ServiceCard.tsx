@@ -98,11 +98,7 @@ export const ServiceCard = memo(({ service }: ServiceCardProps) => {
                 canUpdate ? "cursor-pointer hover:bg-muted/15 active:scale-[0.99] select-none" : ""
             }`}
         >
-            {/* Banda lateral con color de estado */}
-            <div
-                className="absolute left-0 top-0 bottom-0 w-1"
-                style={{ backgroundColor: getStatusIconConfig(service.currentStatus).dotStyle.backgroundColor }}
-            />
+
 
             <div className="flex flex-col p-3.5 pl-4.5 gap-2.5">
                 {/* Cabecera: Chasis e Insignia de Estado */}

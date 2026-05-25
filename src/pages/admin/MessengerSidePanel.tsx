@@ -14,12 +14,11 @@ import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
 import { employeeService } from "@/features/employee/services/employee.service"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
-import type { DailyStats, ServiceStatus } from "@/features/delivery/types/service.types"
+import type { ServiceStatus } from "@/features/delivery/types/service.types"
 import type { LiveTrackingUpdate } from "@/features/tracking/services/tracking.service"
 import type { Employee } from "@/features/employee/types/employee.types"
 import { logger } from "@/shared/utils/logger"
 import {
-    MessengerProductivity,
     MessengerActivityTimeline,
     type TimelineEvent
 } from "@/features/tracking/components/MessengerActivity"
@@ -56,7 +55,7 @@ export function MessengerSidePanel({
     const [loadingHistory, setLoadingHistory] = useState(false)
     const [historyError, setHistoryError] = useState<string | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-    const [dailyStats, setDailyStats] = useState<DailyStats | null>(null)
+
 
     const fetchDetails = useCallback(async () => {
         if (!messengerUuid) return
@@ -79,15 +78,6 @@ export function MessengerSidePanel({
             const { monitoringService } = await import('@/features/system/services/monitoring.service')
             const response = await monitoringService.getMessengerActivity(messengerUuid, selectedDate)
 
-            setDailyStats({
-                date: format(selectedDate, 'yyyy-MM-dd'),
-                assigned: response.dailyStats.assigned,
-                delivered: response.dailyStats.delivered,
-                returned: response.dailyStats.returned,
-                canceled: response.dailyStats.canceled,
-                pending: response.dailyStats.pending,
-                total: response.dailyStats.total
-            })
 
             const milestones: TimelineEvent[] = response.timeline.map(event => {
                 const eventDate = new Date(event.timestamp)
@@ -219,12 +209,12 @@ export function MessengerSidePanel({
                             {messenger?.messengerName ? formatDisplayName(messenger.messengerName) : ''}
                         </h3>
                         <Badge variant="outline" className={cn(
-                            "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold",
+                            "text-[8px] h-3 px-1 leading-none uppercase tracking-tighter border-0 font-bold whitespace-nowrap",
                             isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now)
                                 ? "bg-emerald-500/10 text-emerald-500"
                                 : "bg-muted text-muted-foreground"
                         )}>
-                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? '• En línea' : 'Fuera de línea'}
+                            {isMessengerOnline(messenger?.status || '', messenger?.lastHeartbeat || messenger?.lastUpdate, 2, now) ? 'Online' : 'Offline'}
                         </Badge>
                     </div>
                 </div>
@@ -246,7 +236,6 @@ export function MessengerSidePanel({
                         </div>
                     </div>
 
-                    <MessengerProductivity stats={dailyStats} />
 
                     <MessengerActivityTimeline
                         history={history}
