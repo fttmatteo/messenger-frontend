@@ -20,6 +20,8 @@ test.describe('Offline Resilience & Sync', () => {
             window.localStorage.setItem('accessToken', 'offline-test-token');
             window.localStorage.setItem('plak_cookie_consent', 'accepted');
             window.localStorage.setItem('CapacitorStorage.plak_cookie_consent', 'accepted');
+            window.localStorage.setItem('plak_gps_consent', 'accepted');
+            window.localStorage.setItem('CapacitorStorage.plak_gps_consent', 'accepted');
 
             window.sessionStorage.setItem('role', 'MESSENGER');
             window.sessionStorage.setItem('user', userStr);

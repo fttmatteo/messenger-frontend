@@ -65,8 +65,8 @@ test.describe('Login E2E Flow', () => {
         await page.getByPlaceholder('Ingrese número de documento').fill('12345678');
         await page.getByPlaceholder('Ingrese contraseña').fill('password123');
 
-        await page.getByLabel('Recordar contraseña').click();
-        await page.getByLabel(/he leído y acepto/i).click();
+        await page.locator('#rememberMe').click();
+        await page.locator('#acceptTerms').click();
 
         await page.getByRole('button', { name: /iniciar sesión/i }).click();
         await expect(page).toHaveURL(/.*\/admin/);
