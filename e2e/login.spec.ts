@@ -31,6 +31,7 @@ test.describe('Login E2E Flow', () => {
 
         await expect(page.getByText('El documento es requerido')).toBeVisible();
         await expect(page.getByText('La contraseña es requerida')).toBeVisible();
+        await expect(page.getByText('Debes aceptar los Términos y Condiciones')).toBeVisible();
     });
 
     test('should validate document format', async ({ page }) => {
@@ -63,6 +64,9 @@ test.describe('Login E2E Flow', () => {
 
         await page.getByPlaceholder('Ingrese número de documento').fill('12345678');
         await page.getByPlaceholder('Ingrese contraseña').fill('password123');
+
+        await page.getByLabel('Recordar contraseña').click();
+        await page.getByLabel(/he leído y acepto/i).click();
 
         await page.getByRole('button', { name: /iniciar sesión/i }).click();
         await expect(page).toHaveURL(/.*\/admin/);
