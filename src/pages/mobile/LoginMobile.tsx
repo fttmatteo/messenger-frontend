@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -20,11 +20,14 @@ import { FullScreenLoader } from "@/shared/components/ui/full-screen-loader"
 import { TurnstileWidget } from "@/shared/components/ui/turnstile-widget"
 import { useTurnstileReset } from "@/shared/hooks/use-turnstile-reset"
 import AnimatedLogoBackground from "@/shared/components/ui/AnimatedLogoBackground"
+import { Preferences } from '@capacitor/preferences'
+import { setPreference, removePreference, getPreferenceSync } from "@/shared/utils/preferenceUtils"
 
 const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
     password: z.string().min(1, "La contraseña es requerida"),
     rememberMe: z.boolean().optional(),
+    acceptTerms: z.boolean().refine((val) => val === true, "Debes aceptar los Términos y Condiciones"),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -62,13 +65,28 @@ export default function LoginMobile() {
         register,
         handleSubmit,
         control,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            rememberMe: false
+            rememberMe: getPreferenceSync('plak_remember_me') === 'true',
+            acceptTerms: getPreferenceSync('plak_terms_accepted') === 'true'
         }
     })
+
+    useEffect(() => {
+        const loadAsyncPreferences = async () => {
+            try {
+                const { value: terms } = await Preferences.get({ key: 'plak_terms_accepted' });
+                if (terms === 'true') setValue('acceptTerms', true);
+                
+                const { value: remember } = await Preferences.get({ key: 'plak_remember_me' });
+                if (remember === 'true') setValue('rememberMe', true);
+            } catch { /* ignore */ }
+        };
+        loadAsyncPreferences();
+    }, [setValue]);
 
     const onSubmit = async (data: LoginFormValues) => {
         if (!turnstileToken) {
@@ -244,7 +262,14 @@ export default function LoginMobile() {
                                                 id="rememberMe"
                                                 name={field.name}
                                                 checked={field.value}
-                                                onCheckedChange={field.onChange}
+                                                onCheckedChange={(checked) => {
+                                                    field.onChange(checked);
+                                                    if (checked === true) {
+                                                        setPreference('plak_remember_me', 'true');
+                                                    } else {
+                                                        removePreference('plak_remember_me');
+                                                    }
+                                                }}
                                                 className="h-4 w-4 rounded-sm"
                                             />
                                         )}
@@ -253,6 +278,36 @@ export default function LoginMobile() {
                                         Recordar contraseña
                                     </Label>
                                 </div>
+                            </div>
+
+                            <div className="flex flex-col space-y-1 pt-0.5 pb-1">
+                                <div className="flex items-start space-x-2">
+                                    <Controller
+                                        name="acceptTerms"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Checkbox
+                                                id="acceptTerms"
+                                                checked={field.value}
+                                                onCheckedChange={(checked) => {
+                                                    field.onChange(checked);
+                                                    if (checked === true) {
+                                                        setPreference('plak_terms_accepted', 'true');
+                                                    } else {
+                                                        removePreference('plak_terms_accepted');
+                                                    }
+                                                }}
+                                                className="h-4 w-4 mt-0.5 shrink-0 rounded-sm"
+                                            />
+                                        )}
+                                    />
+                                    <label htmlFor="acceptTerms" className="text-xs text-muted-foreground font-normal leading-tight cursor-pointer">
+                                        He leído y acepto los <a href="/terminos-condiciones" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Política de Privacidad</a>.
+                                    </label>
+                                </div>
+                                {errors.acceptTerms && (
+                                    <p className="text-xs text-red-500 font-medium pl-6">{errors.acceptTerms.message}</p>
+                                )}
                             </div>
 
                             <div className="flex justify-center">
@@ -285,20 +340,13 @@ export default function LoginMobile() {
                         </a>
                     </p>
                     <p className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <span className="text-muted-foreground/60">•</span>
                         <button
                             type="button"
                             onClick={() => navigate('/politica-cookies')}
                             className="underline text-primary font-semibold cursor-pointer"
                         >
                             Política de cookies
-                        </button>
-                        <span className="text-muted-foreground/60">•</span>
-                        <button
-                            type="button"
-                            onClick={() => navigate('/politica-privacidad')}
-                            className="underline text-primary font-semibold cursor-pointer"
-                        >
-                            Política de privacidad
                         </button>
                     </p>
                 </div>

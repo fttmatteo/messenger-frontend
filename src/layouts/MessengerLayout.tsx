@@ -20,6 +20,7 @@ import { openSupportEmail, APP_CONFIG } from "@/shared/lib/app-config"
 import { cn } from "@/shared/lib/utils"
 import { isNative } from "@/shared/lib/capacitor"
 import { registerPlugin } from "@capacitor/core"
+import GpsConsentDialog from "@/shared/components/ui/GpsConsentDialog"
 
 interface LocationServicePlugin {
     startService(options: { messengerId: number; backendUrl: string; authCookie: string }): Promise<{ started: boolean }>;
@@ -607,6 +608,8 @@ export default function MessengerLayout() {
             >
                 <Outlet />
             </main>
+
+            <GpsConsentDialog onDecline={confirmLogout} />
 
             <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
                 <AlertDialogContent className="max-w-[90vw] rounded-xl bg-background">

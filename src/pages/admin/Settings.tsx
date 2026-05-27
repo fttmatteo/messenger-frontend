@@ -1,7 +1,7 @@
 import { useSearchParams, useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader } from "@/shared/components/ui/card"
 import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
-import { ChevronRight, Sun, Moon, Monitor, Check, Cookie, Shield } from "lucide-react"
+import { ChevronRight, Sun, Moon, Monitor, Check, Cookie, Shield, FileText } from "lucide-react"
 import { useTheme } from "next-themes"
 import { cn } from "@/shared/lib/utils"
 import { APP_CONFIG } from "@/shared/lib/app-config"
@@ -46,14 +46,20 @@ const SETTINGS_SECTIONS = [
     },
 
     {
+        id: 'terms',
+        title: 'Términos y Condiciones',
+        icon: FileText,
+        path: '/terminos-condiciones'
+    },
+    {
         id: 'cookies',
-        title: 'Política de cookies',
+        title: 'Política de Cookies',
         icon: Cookie,
         path: '/politica-cookies'
     },
     {
         id: 'privacy',
-        title: 'Política de privacidad',
+        title: 'Política de Privacidad',
         icon: Shield,
         path: '/politica-privacidad'
     },

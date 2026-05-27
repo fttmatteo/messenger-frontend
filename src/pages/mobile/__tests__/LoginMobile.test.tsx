@@ -82,6 +82,13 @@ describe('LoginMobile Page', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
+        localStorage.clear()
+        sessionStorage.clear()
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
         mockLogin.mockResolvedValue(undefined)
         vi.mocked(useAuth).mockReturnValue({
             login: mockLogin,
@@ -127,7 +134,9 @@ describe('LoginMobile Page', () => {
         fireEvent.change(await screen.findByLabelText(/documento/i), { target: { value: '12345678' } })
         fireEvent.change(screen.getByPlaceholderText(/ingrese contraseña/i), { target: { value: 'password123' } })
         fireEvent.click(screen.getByText(/verify turnstile/i))
+        fireEvent.click(screen.getByLabelText(/he leído y acepto/i))
         const submitBtn = await screen.findByRole('button', { name: /iniciar sesión/i })
+        await waitFor(() => expect(submitBtn).not.toBeDisabled())
         fireEvent.click(submitBtn)
         await waitFor(() => {
             expect(showToast.error).toHaveBeenCalledWith('Invalid credentials', expect.anything())
@@ -143,7 +152,9 @@ describe('LoginMobile Page', () => {
         fireEvent.change(await screen.findByLabelText(/documento/i), { target: { value: '12345678' } })
         fireEvent.change(screen.getByPlaceholderText(/ingrese contraseña/i), { target: { value: 'password' } })
         fireEvent.click(screen.getByText(/verify turnstile/i))
+        fireEvent.click(screen.getByLabelText(/he leído y acepto/i))
         const submitBtn = await screen.findByRole('button', { name: /iniciar sesión/i })
+        await waitFor(() => expect(submitBtn).not.toBeDisabled())
         fireEvent.click(submitBtn)
 
         await waitFor(() => {
@@ -178,6 +189,6 @@ describe('LoginMobile Page', () => {
         const passInput = await screen.findByPlaceholderText(/ingrese contraseña/i)
         fireEvent.click(screen.getByRole('button', { name: /toggle password visibility/i }))
         expect(passInput).toHaveAttribute('type', 'text')
-        fireEvent.click(screen.getByRole('checkbox'))
+        fireEvent.click(screen.getByLabelText(/recordar contraseña/i))
     })
 })

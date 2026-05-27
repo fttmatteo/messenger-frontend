@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Card } from "@/shared/components/ui/card"
-import { Palette, ChevronRight, Cookie, Shield } from "lucide-react"
+import { Palette, ChevronRight, Cookie, Shield, FileText } from "lucide-react"
 import { APP_CONFIG } from "@/shared/lib/app-config"
 
 /**
@@ -46,6 +46,23 @@ export default function SettingsPage() {
 
                 <Card className="border-border/40 bg-card overflow-hidden rounded-2xl shadow-sm divide-y divide-border/20">
                     <button
+                        onClick={() => navigate('/terminos-condiciones')}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-muted/40 active:scale-[0.98] transition-all text-left touch-manipulation group"
+                    >
+                        <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-primary/5 text-primary group-hover:bg-primary/10 transition-colors">
+                            <FileText className="h-5 w-5" strokeWidth={2.5} />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Términos y Condiciones</p>
+                        </div>
+
+                        <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                    </button>
+
+                    <button
                         onClick={() => navigate('/politica-cookies')}
                         className="w-full flex items-center gap-4 p-4 hover:bg-muted/40 active:scale-[0.98] transition-all text-left touch-manipulation group"
                     >
@@ -54,7 +71,7 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de cookies</p>
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de Cookies</p>
                         </div>
 
                         <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">
@@ -71,7 +88,7 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de privacidad</p>
+                            <p className="font-bold text-sm tracking-tight text-foreground/90">Política de Privacidad</p>
                         </div>
 
                         <div className="h-8 w-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-accent/20 transition-colors">

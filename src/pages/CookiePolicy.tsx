@@ -90,6 +90,13 @@ const STORAGE_ITEMS: StorageItem[] = [
         purpose: 'Evitar que vuelva a aparecer el aviso informativo de cookies.',
         data: 'Bandera de aceptación (accepted).',
         duration: 'Permanente'
+    },
+    {
+        key: 'plak_gps_consent',
+        type: 'Cookie / localStorage / Prefs',
+        purpose: 'Registro del consentimiento explícito del transportista para el rastreo GPS en tiempo real (Ley 1581/2012).',
+        data: 'Estado de consentimiento (accepted) y marca temporal ISO.',
+        duration: '1 año (Permanente)'
     }
 ];
 
@@ -154,7 +161,7 @@ export default function CookiePolicy() {
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
                         Política de Cookies
                     </h1>
-                    <p className="text-foreground/80 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                    <p className="text-foreground/90 font-medium max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
                         Transparencia y cumplimiento de la Ley 1581 de 2012 respecto al almacenamiento de datos en tu navegador o terminal.
                     </p>
                 </div>
@@ -167,15 +174,15 @@ export default function CookiePolicy() {
                         </div>
                         <CardTitle className="text-lg font-bold">1. Aclaración Técnica y Legal</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-foreground/80 leading-relaxed space-y-3">
+                    <CardContent className="text-sm text-foreground/90 font-medium leading-relaxed space-y-3">
                         <p>
-                            En el desarrollo web y móvil moderno, muchas de las funciones tradicionalmente atribuidas a las <strong>cookies</strong> (pequeños archivos de texto) se realizan mediante otras APIs del navegador que, <strong>desde el punto de vista legal, se consideran equivalentes</strong>.
+                            En el desarrollo web y móvil moderno, muchas de las funciones tradicionalmente atribuidas a las <strong className="font-extrabold text-foreground">cookies</strong> (pequeños archivos de texto) se realizan mediante otras APIs del navegador que, <strong className="font-extrabold text-foreground">desde el punto de vista legal, se consideran equivalentes</strong>.
                         </p>
                         <p>
-                            Estas tecnologías de almacenamiento local en el terminal incluyen <strong>`localStorage`</strong>, <strong>`sessionStorage`</strong> y las preferencias nativas del dispositivo <strong>`@capacitor/preferences`</strong>.
+                            Estas tecnologías de almacenamiento local en el terminal incluyen <strong className="font-extrabold text-foreground">`localStorage`</strong>, <strong className="font-extrabold text-foreground">`sessionStorage`</strong> y las preferencias nativas del dispositivo <strong className="font-extrabold text-foreground">`@capacitor/preferences`</strong>.
                         </p>
                         <div className="bg-muted/40 border-l-4 border-primary p-3.5 rounded-r-xl my-2 text-foreground/90 font-medium">
-                            <strong>Nota importante:</strong> El 100% de las tecnologías utilizadas en <strong>{APP_CONFIG.name}</strong> son de carácter técnico y funcional (estrictamente necesarias). No utilizamos cookies publicitarias, comerciales, ni de seguimiento de terceros.
+                            <strong className="font-extrabold text-foreground">Nota importante:</strong> El 100% de las tecnologías utilizadas en <strong className="font-extrabold text-foreground">{APP_CONFIG.name}</strong> son de carácter técnico y funcional (estrictamente necesarias). No utilizamos cookies publicitarias, comerciales, ni de seguimiento de terceros.
                         </div>
                     </CardContent>
                 </Card>
@@ -189,12 +196,12 @@ export default function CookiePolicy() {
                         <CardTitle className="text-lg font-bold">2. Declaración Técnica de Almacenamiento</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="text-sm text-foreground/80 leading-relaxed">
-                            A continuación, se detallan los elementos específicos que la plataforma almacena de forma local en tu terminal de acuerdo con la circular de la <strong>Superintendencia de Industria y Comercio (SIC)</strong>:
+                        <p className="text-sm text-foreground/90 font-medium leading-relaxed">
+                            A continuación, se detallan los elementos específicos que la plataforma almacena de forma local en tu terminal de acuerdo con la circular de la <strong className="font-extrabold text-foreground">Superintendencia de Industria y Comercio (SIC)</strong>:
                         </p>
                         
                         {/* VISTA ESCRITORIO (Table Layout) */}
-                        <div className="hidden md:block overflow-x-auto rounded-xl border border-border/40 shadow-inner">
+                        <div className="hidden md:block rounded-xl border border-border/40 shadow-inner">
                             <table className="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr className="bg-muted/70 text-foreground font-semibold border-b border-border/40">
@@ -205,7 +212,7 @@ export default function CookiePolicy() {
                                         <th className="p-3">Duración</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-border/20 text-foreground/80">
+                                <tbody className="divide-y divide-border/20 text-foreground/90 font-medium">
                                     {STORAGE_ITEMS.map((item) => (
                                         <tr key={item.key} className="hover:bg-muted/10 transition-colors">
                                             <td className="p-3 font-semibold text-foreground font-mono">{item.key}</td>
@@ -236,7 +243,7 @@ export default function CookiePolicy() {
                                         </span>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <p className="text-sm text-foreground/80 leading-relaxed">
+                                        <p className="text-sm text-foreground/90 font-medium leading-relaxed">
                                             <strong className="text-foreground/90 font-medium">Propósito:</strong> {item.purpose}
                                         </p>
                                         <p className="text-sm text-foreground/85 leading-relaxed">
@@ -262,7 +269,7 @@ export default function CookiePolicy() {
                         </div>
                         <CardTitle className="text-lg font-bold">3. Gestión y Desactivación</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-foreground/80 leading-relaxed space-y-4">
+                    <CardContent className="text-sm text-foreground/90 font-medium leading-relaxed space-y-4">
                         <p>
                             Al ser tecnologías de carácter estrictamente técnico, la desactivación o borrado de estos registros a través de los ajustes de tu navegador o celular (limpieza de caché) provocará el cierre inmediato de tu sesión y podría impedir el funcionamiento correcto de las herramientas de sincronización offline.
                         </p>

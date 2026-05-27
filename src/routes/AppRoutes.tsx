@@ -17,6 +17,8 @@ function PageLoader() {
 const Login = React.lazy(() => import('@/pages/Login'));
 const CookiePolicy = React.lazy(() => import('@/pages/CookiePolicy'));
 const PrivacyPolicy = React.lazy(() => import('@/pages/PrivacyPolicy'));
+const TermsAndConditions = React.lazy(() => import('@/pages/TermsAndConditions'));
+const LaborAgreement = React.lazy(() => import('@/pages/LaborAgreement'));
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
 const Employees = React.lazy(() => import('@/pages/admin/Employees'));
@@ -120,6 +122,8 @@ export function AppRoutes() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/politica-cookies" element={<CookiePolicy />} />
                 <Route path="/politica-privacidad" element={<PrivacyPolicy />} />
+                <Route path="/terminos-condiciones" element={<TermsAndConditions />} />
+                <Route path="/acuerdo-laboral" element={<LaborAgreement />} />
 
 
                 <Route

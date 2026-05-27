@@ -3,7 +3,8 @@ import { test, expect } from '@playwright/test';
 
 
 test.describe('Service Creation Flow', () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, isMobile }) => {
+        test.skip(isMobile, 'Admin services are only available on desktop');
         // Aggressive auth injection
         /* eslint-disable @typescript-eslint/no-explicit-any */
         await page.addInitScript(() => {

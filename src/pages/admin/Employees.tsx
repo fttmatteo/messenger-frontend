@@ -49,7 +49,11 @@ export default function Employees() {
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Transportistas</h1>
                 </div>
 
-                <div className="flex-1 flex justify-end">
+                <div className="flex-1 flex justify-end gap-2">
+                    <Button onClick={() => window.open("/acuerdo-laboral", "_blank")} variant="outline" size="sm" className="hidden">
+                        <FileText className="h-3 w-3 mr-1" />
+                        Acuerdo GPS
+                    </Button>
                     <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo transportista
