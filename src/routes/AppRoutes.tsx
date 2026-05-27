@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
@@ -89,6 +89,14 @@ function RoleBasedRedirect() {
 export function AppRoutes() {
     const { user } = useAuth();
     const isMobile = useIsMobile()
+    const location = useLocation()
+
+    useEffect(() => {
+        const checkSW = (window as any).__checkSWUpdate
+        if (checkSW) {
+            checkSW()
+        }
+    }, [location.pathname])
 
     const renderAdminRoute = () => {
         if (isMobile === undefined) {
