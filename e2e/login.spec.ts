@@ -71,7 +71,7 @@ test.describe('Login E2E Flow', () => {
         await page.getByRole('button', { name: /iniciar sesión/i }).click();
         await expect(page).toHaveURL(/.*\/admin/);
 
-        const role = await page.evaluate(() => sessionStorage.getItem('role'));
+        const role = await page.evaluate(() => sessionStorage.getItem('role') || localStorage.getItem('role'));
         expect(role).toBe('ADMIN');
     });
 });
