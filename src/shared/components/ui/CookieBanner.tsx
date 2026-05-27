@@ -1,36 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Preferences } from '@capacitor/preferences';
+
 import { Button } from '@/shared/components/ui/button';
 import { Cookie, Info } from 'lucide-react';
 import { logger } from '@/shared/utils/logger';
 
 const CONSENT_KEY = 'plak_cookie_consent';
 
-const getCookie = (name: string): string | null => {
-    try {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-    } catch (e) {
-        logger.warn('Error reading cookie:', e);
-    }
-    return null;
-};
-
-const setCookie = (name: string, value: string, days: number) => {
-    try {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = `expires=${date.toUTCString()}`;
-        const maxAge = `max-age=${days * 24 * 60 * 60}`;
-        const isSecure = window.location.protocol === 'https:' ? '; Secure' : '';
-        document.cookie = `${name}=${value || ""}; ${expires}; ${maxAge}; path=/; SameSite=Lax${isSecure}`;
-    } catch (e) {
-        logger.warn('Error setting cookie:', e);
-    }
-};
+import { setPreference, getPreferenceAsync } from '@/shared/utils/preferenceUtils';
 
 /**
  * Componente de Banner de Cookies y Almacenamiento Local.
@@ -47,31 +25,10 @@ export default function CookieBanner() {
 
         const checkConsent = async () => {
             try {
-                const cookieConsent = getCookie(CONSENT_KEY);
-                if (cookieConsent === 'accepted') {
+                const val = await getPreferenceAsync(CONSENT_KEY);
+                if (val === 'accepted') {
                     return;
                 }
-
-                try {
-                    const { value } = await Preferences.get({ key: CONSENT_KEY });
-                    if (value === 'accepted') {
-                        setCookie(CONSENT_KEY, 'accepted', 365);
-                        return;
-                    }
-                } catch (e) {
-                    logger.warn('Preferences API not available or failed', e);
-                }
-
-                try {
-                    const localValue = localStorage.getItem(CONSENT_KEY);
-                    if (localValue === 'accepted') {
-                        setCookie(CONSENT_KEY, 'accepted', 365);
-                        return;
-                    }
-                } catch (e) {
-                    logger.warn('LocalStorage not available', e);
-                }
-
                 timer = setTimeout(() => setShow(true), 1500);
             } catch (e) {
                 logger.warn('Error in checkConsent:', e);
@@ -90,25 +47,13 @@ export default function CookieBanner() {
         setShow(false);
 
         try {
-            setCookie(CONSENT_KEY, 'accepted', 365);
-            
-            try {
-                localStorage.setItem(CONSENT_KEY, 'accepted');
-            } catch (e) {
-                logger.warn('No se pudo guardar en localStorage', e);
-            }
-
-            try {
-                await Preferences.set({ key: CONSENT_KEY, value: 'accepted' });
-            } catch (e) {
-                logger.warn('No se pudo guardar en Preferences', e);
-            }
+            await setPreference(CONSENT_KEY, 'accepted');
         } catch (error) {
             logger.error('Error general guardando el consentimiento:', error);
         }
     };
 
-    if (location.pathname === '/politica-cookies' || location.pathname === '/politica-privacidad') {
+    if (location.pathname === '/politica-cookies' || location.pathname === '/politica-privacidad' || location.pathname === '/terminos-condiciones') {
         return null;
     }
 
