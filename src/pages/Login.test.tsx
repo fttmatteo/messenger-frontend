@@ -61,6 +61,11 @@ describe('Login Page', () => {
         vi.clearAllMocks();
         localStorage.clear();
         sessionStorage.clear();
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
     });
 
     /**
@@ -148,10 +153,12 @@ describe('Login Page', () => {
 
         const documentInput = screen.getByPlaceholderText('Ingrese número de documento');
         const passwordInput = screen.getByPlaceholderText('Ingrese contraseña');
+        const acceptTermsCheckbox = screen.getByLabelText(/he leído y acepto/i);
         const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
 
         await user.type(documentInput, '12345678');
         await user.type(passwordInput, 'password123');
+        await user.click(acceptTermsCheckbox);
         await user.click(submitButton);
 
         // Verificar si el cargador es visible - usar texto único de FullScreenLoader
@@ -194,11 +201,13 @@ describe('Login Page', () => {
         // Buscar checkbox por texto de etiqueta en lugar de rol para evitar ambigüedad
         // La etiqueta "Recordar contraseña" está asociada con el checkbox
         const rememberMeCheckbox = screen.getByLabelText('Recordar contraseña');
+        const acceptTermsCheckbox = screen.getByLabelText(/he leído y acepto/i);
         const submitButton = screen.getByRole('button', { name: /iniciar sesión/i });
 
         await user.type(documentInput, '12345678');
         await user.type(passwordInput, 'password123');
         await user.click(rememberMeCheckbox);
+        await user.click(acceptTermsCheckbox);
         await user.click(submitButton);
 
         await waitFor(() => {
