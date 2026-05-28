@@ -91,7 +91,7 @@ export default function OptimizedRoutePage() {
     const [distanceText, setDistanceText] = useState<string>("")
     const [durationText, setDurationText] = useState<string>("")
 
-    const [loadingRoute, setLoadingRoute] = useState(false)
+    const [loadingRoute, setLoadingRoute] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     const pickupColor = DEFAULT_STATUS_COLORS.ASSIGNED || '#00eeffe1'
@@ -103,6 +103,7 @@ export default function OptimizedRoutePage() {
             if (pendingServices.length === 0) {
                 setSteps([])
                 setPolyline(null)
+                setLoadingRoute(false)
                 return
             }
 
@@ -179,30 +180,13 @@ export default function OptimizedRoutePage() {
 
     const openGoogleMapsNavigation = () => {
         if (!currentLocation || steps.length === 0) return
+        
         const origin = `${currentLocation.latitude},${currentLocation.longitude}`
+        
+        const nextStop = steps[0];
+        const destination = `${nextStop.latitude},${nextStop.longitude}`
 
-        const uniqueLocations: { latitude: number, longitude: number }[] = [];
-        steps.forEach(step => {
-            if (uniqueLocations.length === 0) {
-                uniqueLocations.push({ latitude: step.latitude, longitude: step.longitude });
-            } else {
-                const lastLoc = uniqueLocations[uniqueLocations.length - 1];
-                if (lastLoc.latitude !== step.latitude || lastLoc.longitude !== step.longitude) {
-                    uniqueLocations.push({ latitude: step.latitude, longitude: step.longitude });
-                }
-            }
-        });
-
-        const destStep = uniqueLocations[uniqueLocations.length - 1]
-        const destination = `${destStep.latitude},${destStep.longitude}`
-
-        const waypointSteps = uniqueLocations.slice(0, uniqueLocations.length - 1)
-        const waypoints = waypointSteps.map(s => `${s.latitude},${s.longitude}`).join('%7C')
-
-        let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving&dir_action=navigate`
-        if (waypoints) {
-            url += `&waypoints=${waypoints}`
-        }
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving&dir_action=navigate`
 
         window.location.href = url;
     }
@@ -338,8 +322,14 @@ export default function OptimizedRoutePage() {
                                                             <div className="text-[14px] font-bold text-foreground truncate">
                                                                 {step.dealershipName}
                                                             </div>
-                                                            <div className="text-[13px] text-muted-foreground mt-0.5">
-                                                                Recoger: <span className="font-extrabold text-foreground">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
+                                                            <div 
+                                                                className="text-[13px] text-muted-foreground mt-0.5 inline-block cursor-pointer hover:text-primary transition-colors active:opacity-70"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigate(`/messenger?dealership=orig-${step.dealershipId}`);
+                                                                }}
+                                                            >
+                                                                Recoger: <span className="font-extrabold text-foreground underline decoration-primary/30 underline-offset-2">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -379,8 +369,14 @@ export default function OptimizedRoutePage() {
                                                             <div className="text-[14px] font-bold text-foreground truncate">
                                                                 {step.dealershipName}
                                                             </div>
-                                                            <div className="text-[13px] text-muted-foreground mt-0.5">
-                                                                Entregar: <span className="font-extrabold text-foreground">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
+                                                            <div 
+                                                                className="text-[13px] text-muted-foreground mt-0.5 inline-block cursor-pointer hover:text-primary transition-colors active:opacity-70"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigate(`/messenger?dealership=dest-${step.dealershipId}`);
+                                                                }}
+                                                            >
+                                                                Entregar: <span className="font-extrabold text-foreground underline decoration-primary/30 underline-offset-2">{step.serviceUuids.length} moto{step.serviceUuids.length !== 1 ? 's' : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>
