@@ -5,6 +5,7 @@ interface SkeletonProps extends React.ComponentProps<"div"> {
   static?: boolean
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Skeleton({ className, static: _static, ...props }: SkeletonProps) {
   return (
     <div
