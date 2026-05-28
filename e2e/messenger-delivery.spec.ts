@@ -47,7 +47,7 @@ test.describe('Messenger Delivery Execution', () => {
                     content: [{
                         idServiceDelivery: 101,
                         uuid: 's101',
-                        plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
+                        plate: { idPlate: 10, plateNumber: 'CHASIS00004', plateType: 'MOTORCYCLE' },
                         dealership: {
                             idDealership: 1,
                             uuid: 'd1',
@@ -93,7 +93,7 @@ test.describe('Messenger Delivery Execution', () => {
                 json: {
                     idServiceDelivery: 101,
                     uuid: 's101',
-                    plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
+                    plate: { idPlate: 10, plateNumber: 'CHASIS00004', plateType: 'MOTORCYCLE' },
                     dealership: {
                         idDealership: 1,
                         uuid: 'd1',
@@ -128,7 +128,7 @@ test.describe('Messenger Delivery Execution', () => {
     test('should update service status to DELIVERED with signature', async ({ page }) => {
         await expect(page).not.toHaveURL(/.*login/, { timeout: 15000 });
 
-        const serviceItem = page.getByText(/E2E.*123/i).first();
+        const serviceItem = page.getByText(/CHASIS00004/i).first();
         await expect(serviceItem).toBeVisible({ timeout: 20000 });
         await serviceItem.click();
 

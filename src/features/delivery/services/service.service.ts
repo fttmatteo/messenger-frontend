@@ -77,6 +77,10 @@ class ServiceDeliveryService {
             formData.append('longitude', request.longitude.toString())
         }
 
+        if (request.scheduledAt) {
+            formData.append('scheduledAt', request.scheduledAt)
+        }
+
         const response = await apiClient.post('/services/createService', formData)
         return ServiceDeliverySchema.parse(response.data)
     }

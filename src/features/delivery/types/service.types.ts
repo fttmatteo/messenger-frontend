@@ -9,14 +9,13 @@ export type ServiceStatus =
     | 'CANCELED'
     | 'RESOLVED'
     | 'DELETED'
+    | 'SCHEDULED'
 
 /**
  * Categorías de vehículos admitidas.
  */
 export type PlateType =
-    | 'CAR'
     | 'MOTORCYCLE'
-    | 'MOTORCAR'
 
 /**
  * Información resumida de la placa identificada.
@@ -69,7 +68,7 @@ export interface StatusHistoryInfo {
     previousStatus: ServiceStatus | null
     newStatus: ServiceStatus
     changeDate: string
-    changedBy: EmployeeInfo
+    changedBy?: EmployeeInfo | null
     photos?: PhotoInfo[]
     deliveryLatitude?: number
     deliveryLongitude?: number
@@ -95,6 +94,7 @@ export interface ServiceDelivery {
     history: StatusHistoryInfo[]
     createdAt: string
     deletedAt?: string
+    scheduledAt?: string
 }
 
 /**
@@ -107,6 +107,7 @@ export interface CreateServiceRequest {
     manualPlateNumber: string
     latitude?: number
     longitude?: number
+    scheduledAt?: string
 }
 
 /**

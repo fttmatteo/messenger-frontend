@@ -29,7 +29,7 @@ describe('DeletedServices Page Integration', () => {
                         {
                             idServiceDelivery: 99,
                             uuid: 'deleted-service-uuid',
-                            plate: { idPlate: 102, plateNumber: 'DEL-001', plateType: 'CAR' },
+                            plate: { idPlate: 102, plateNumber: 'CHASIS00003', plateType: 'MOTORCYCLE' },
                             dealership: {
                                 idDealership: 201,
                                 uuid: 'dealership-uuid',
@@ -75,8 +75,7 @@ describe('DeletedServices Page Integration', () => {
 
         expect(await screen.findByText(/Old Dealership/i)).toBeInTheDocument()
         
-        // Use findByTitle because PlacaBadge splits the text in child elements
-        expect(await screen.findByTitle(/DEL-001/i)).toBeInTheDocument()
+        expect(await screen.findByTitle(/CHASIS00003/i)).toBeInTheDocument()
     })
 
     it('should show empty state when trash is empty', async () => {

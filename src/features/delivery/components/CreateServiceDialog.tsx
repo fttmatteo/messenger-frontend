@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react"
-import { useNavigate } from "react-router-dom"
+
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -10,31 +10,52 @@ import { employeeService } from "@/features/employee/services/employee.service"
 import type { Dealership } from "@/features/dealership/types/dealership.types"
 import type { Employee } from "@/features/employee/types/employee.types"
 import { Button } from "@/shared/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/shared/components/ui/form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
+import { Switch } from "@/shared/components/ui/switch"
 import { Loader2 } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 
-const formSchema = z.object({
+
+const baseSchema = z.object({
     dealershipId: z.string().min(1, "El concesionario destino es obligatorio"),
     originDealershipId: z.string().min(1, "El concesionario origen es obligatorio"),
     messengerId: z.string().min(1, "El mensajero es obligatorio"),
     manualPlateNumber: z.string().min(10, "El chasis debe tener mínimo 10 caracteres").max(20, "El chasis no puede tener más de 20 caracteres"),
-}).refine((data) => data.originDealershipId !== data.dealershipId, {
-    message: "El concesionario origen y destino no pueden ser el mismo",
-    path: ["originDealershipId"],
+    isScheduled: z.boolean().default(false),
+    scheduledAt: z.string().optional(),
 })
 
-type FormValues = z.infer<typeof formSchema>
+const formSchema = baseSchema.refine((data) => data.originDealershipId !== data.dealershipId, {
+    message: "El concesionario origen y destino no pueden ser el mismo",
+    path: ["originDealershipId"],
+}).refine((data) => {
+    if (data.isScheduled) {
+        if (!data.scheduledAt) return false;
+        const scheduledTime = new Date(data.scheduledAt).getTime();
+        const now = new Date().getTime();
+        return scheduledTime > now + 60000;
+    }
+    return true;
+}, {
+    message: "La fecha y hora de programación debe ser en el futuro",
+    path: ["scheduledAt"],
+})
 
-export default function AdminCreateServicio() {
-    const navigate = useNavigate()
+type FormValues = z.infer<typeof baseSchema>
+
+export interface CreateServiceDialogProps {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    onSuccess: () => void
+}
+
+export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateServiceDialogProps) {
     const { setSuccess, setError } = useAdminUI()
     const chasisInputRef = useRef<HTMLInputElement>(null)
     const { getCurrentLocation } = useSmartLocation()
@@ -45,14 +66,30 @@ export default function AdminCreateServicio() {
     const [loadingData, setLoadingData] = useState(true)
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             dealershipId: "",
             originDealershipId: "",
             messengerId: "",
             manualPlateNumber: "",
+            isScheduled: false,
+            scheduledAt: "",
         },
     })
+
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                dealershipId: "",
+                originDealershipId: "",
+                messengerId: "",
+                manualPlateNumber: "",
+                isScheduled: false,
+                scheduledAt: "",
+            })
+        }
+    }, [open, form])
 
     const groupedDealerships = useMemo(() => {
         const groups: Record<string, Dealership[]> = {}
@@ -99,17 +136,24 @@ export default function AdminCreateServicio() {
                 // La ubicación es opcional: si falla, se continúa sin ella
             }
 
+            let formattedScheduledAt: string | undefined
+            if (values.isScheduled && values.scheduledAt) {
+                formattedScheduledAt = new Date(values.scheduledAt).toISOString()
+            }
+
             await serviceDeliveryService.create({
                 dealershipId: values.dealershipId,
                 originDealershipId: values.originDealershipId,
                 messengerDocument: values.messengerId,
                 manualPlateNumber: values.manualPlateNumber,
                 latitude,
-                longitude
+                longitude,
+                scheduledAt: formattedScheduledAt
             })
 
-            setSuccess("Servicio creado exitosamente")
-            navigate("/admin/servicios")
+            setSuccess(values.isScheduled ? "Servicio programado exitosamente" : "Servicio creado exitosamente")
+            onSuccess()
+            onOpenChange(false)
         } catch (error) {
             setError(getErrorMessage(error))
         } finally {
@@ -118,30 +162,18 @@ export default function AdminCreateServicio() {
     }
 
     return (
-        <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
-                <div className="flex-1">
-                    <AdminBreadcrumb segments={[
-                        { label: "Servicios", href: "/admin/servicios" },
-                        { label: "Nuevo" }
-                    ]} />
-                </div>
-                <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo servicio</h1>
-                </div>
-                <div className="hidden md:flex md:flex-1"></div>
-            </div>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[700px] flex flex-col max-h-[90vh] overflow-hidden p-0 gap-0">
+                <DialogHeader className="p-4 md:p-6 pb-2 border-b shrink-0">
+                    <DialogTitle className="text-xl md:text-2xl font-bold">Nuevo servicio</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-sm">
+                        Ingresa los detalles para crear un nuevo servicio de entrega
+                    </DialogDescription>
+                </DialogHeader>
 
-            <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
-                <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold flex items-center gap-2">
-                        Información del servicio
-                    </CardTitle>
-                </CardHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
-                        <CardContent className="flex-1 overflow-y-auto">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                                 <FormField
                                     control={form.control}
@@ -196,7 +228,7 @@ export default function AdminCreateServicio() {
                                                 name="messengerId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="messengerId" className="h-11 touch-manipulation">
+                                                    <SelectTrigger id="messengerId" className="w-full h-11 touch-manipulation">
                                                         <SelectValue placeholder="Selecciona el transportista" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -231,7 +263,7 @@ export default function AdminCreateServicio() {
                                                 name="originDealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="originDealershipId" className="h-11 touch-manipulation">
+                                                    <SelectTrigger id="originDealershipId" className="w-full h-11 touch-manipulation">
                                                         <SelectValue placeholder="Selecciona origen" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -274,7 +306,7 @@ export default function AdminCreateServicio() {
                                                 name="dealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="dealershipId" className="h-11 touch-manipulation">
+                                                    <SelectTrigger id="dealershipId" className="w-full h-11 touch-manipulation">
                                                         <SelectValue placeholder="Selecciona destino" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -301,15 +333,65 @@ export default function AdminCreateServicio() {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
-                        </CardContent>
 
-                        <CardFooter className="flex gap-4 p-4 pt-4 mt-auto border-t bg-muted/5">
+                                <FormField
+                                    control={form.control}
+                                    name="isScheduled"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                                            <div className="space-y-0.5 pr-4">
+                                                <Label htmlFor="isScheduled" className="text-sm font-semibold">¿Programar servicio?</Label>
+                                                <p className="text-xs text-muted-foreground">
+                                                    El servicio se creará en estado programado y se activará automáticamente a la fecha y hora seleccionada.
+                                                </p>
+                                            </div>
+                                            <FormControl>
+                                                <Switch
+                                                    id="isScheduled"
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {form.watch("isScheduled") && (
+                                    <FormField
+                                        control={form.control}
+                                        name="scheduledAt"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <Label htmlFor="scheduledAt">
+                                                    Fecha y hora de activación <span className="text-red-500 ml-0.5">*</span>
+                                                </Label>
+                                                <FormControl>
+                                                    <Input
+                                                        id="scheduledAt"
+                                                        type="datetime-local"
+                                                        className="h-11"
+                                                        {...field}
+                                                        min={(() => {
+                                                            const d = new Date(Date.now() + 60000);
+                                                            const tzOffset = d.getTimezoneOffset() * 60000;
+                                                            return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+                                                        })()}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        <DialogFooter className="p-4 md:p-6 border-t shrink-0 flex items-center justify-end gap-3 sm:justify-end bg-muted/5">
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => navigate("/admin/servicios")}
+                                onClick={() => onOpenChange(false)}
                                 disabled={loading}
                             >
                                 Cancelar
@@ -328,11 +410,10 @@ export default function AdminCreateServicio() {
                                     "Crear servicio"
                                 )}
                             </Button>
-                        </CardFooter>
+                        </DialogFooter>
                     </form>
                 </Form>
-            </div>
-        </Card>
-        </>
+            </DialogContent>
+        </Dialog>
     )
 }

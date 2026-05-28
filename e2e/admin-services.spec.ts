@@ -102,9 +102,10 @@ test.describe('Service Creation Flow', () => {
         await expect(newServiceBtn).toBeVisible({ timeout: 20000 });
         await newServiceBtn.click();
 
-        await expect(page).toHaveURL(/.*crear/, { timeout: 20000 });
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible({ timeout: 20000 });
 
-        const plateInput = page.locator('input[name="manualPlateNumber"]').first();
+        const plateInput = page.locator('#manualPlateNumber').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
         await plateInput.fill('ABC1234567890');
 
@@ -134,6 +135,62 @@ test.describe('Service Creation Flow', () => {
 
         await page.getByRole('button', { name: /crear servicio/i }).click();
 
-        await expect(page).toHaveURL(/.*\/admin\/servicios/, { timeout: 20000 });
+        await expect(dialog).toBeHidden({ timeout: 20000 });
+    });
+
+    test('should create a scheduled service delivery successfully', async ({ page }) => {
+        await expect(page).not.toHaveURL(/.*login/, { timeout: 15000 });
+
+        const newServiceBtn = page.getByRole('button', { name: /nuevo/i }).first();
+        await expect(newServiceBtn).toBeVisible({ timeout: 20000 });
+        await newServiceBtn.click();
+
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible({ timeout: 20000 });
+
+        const plateInput = page.locator('#manualPlateNumber').first();
+        await expect(plateInput).toBeVisible({ timeout: 15000 });
+        await plateInput.fill('ABC1234567890');
+
+        const originTrigger = page.locator('button[id="originDealershipId"]').first();
+        await expect(originTrigger).toBeVisible({ timeout: 10000 });
+        await originTrigger.click();
+
+        const originOption = page.getByRole('option', { name: 'Origin Dealership' }).first();
+        await expect(originOption).toBeVisible();
+        await originOption.click();
+
+        const dealershipTrigger = page.locator('button[id="dealershipId"]').first();
+        await expect(dealershipTrigger).toBeVisible({ timeout: 10000 });
+        await dealershipTrigger.click();
+
+        const dealershipOption = page.getByRole('option', { name: 'Test Dealership' }).first();
+        await expect(dealershipOption).toBeVisible();
+        await dealershipOption.click();
+
+        const messengerTrigger = page.locator('button[id="messengerId"]').first();
+        await expect(messengerTrigger).toBeVisible({ timeout: 10000 });
+        await messengerTrigger.click();
+
+        const messengerOption = page.getByRole('option', { name: 'Test Messenger' }).first();
+        await expect(messengerOption).toBeVisible();
+        await messengerOption.click();
+
+        // Activar el switch de "Programar servicio"
+        const scheduleSwitch = page.locator('button#isScheduled').first();
+        await expect(scheduleSwitch).toBeVisible();
+        await scheduleSwitch.click();
+
+        // Rellenar fecha programada (mañana)
+        const dateInput = page.locator('input[type="datetime-local"]').first();
+        await expect(dateInput).toBeVisible();
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 1);
+        const dateString = futureDate.toISOString().slice(0, 16); // Formato YYYY-MM-DDThh:mm
+        await dateInput.fill(dateString);
+
+        await page.getByRole('button', { name: /crear servicio/i }).click();
+
+        await expect(dialog).toBeHidden({ timeout: 20000 });
     });
 });

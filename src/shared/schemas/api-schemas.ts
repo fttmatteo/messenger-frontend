@@ -34,13 +34,14 @@ export const ServiceStatusSchema = z.enum([
     'RETURNED',
     'CANCELED',
     'RESOLVED',
-    'DELETED'
+    'DELETED',
+    'SCHEDULED'
 ])
 
 /**
  * Tipos de vehículos soportados por el sistema.
  */
-export const PlateTypeSchema = z.enum(['CAR', 'MOTORCYCLE', 'MOTORCAR'])
+export const PlateTypeSchema = z.enum(['MOTORCYCLE'])
 
 /**
  * Información básica de la placa de un vehículo.
@@ -102,7 +103,7 @@ export const StatusHistoryInfoSchema = z.object({
     previousStatus: z.union([ServiceStatusSchema, z.null()]).catch(null),
     newStatus: ServiceStatusSchema,
     changeDate: z.string(),
-    changedBy: EmployeeInfoSchema,
+    changedBy: EmployeeInfoSchema.nullable().optional(),
     photos: z.array(PhotoInfoSchema).optional(),
     deliveryLatitude: z.number().optional(),
     deliveryLongitude: z.number().optional(),
@@ -126,7 +127,8 @@ export const ServiceDeliverySchema = z.object({
     photos: z.array(PhotoInfoSchema).default([]),
     history: z.array(StatusHistoryInfoSchema).default([]),
     createdAt: z.string(),
-    deletedAt: z.string().optional()
+    deletedAt: z.string().optional(),
+    scheduledAt: z.string().optional()
 })
 
 /**

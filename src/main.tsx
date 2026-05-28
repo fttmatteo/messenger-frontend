@@ -50,8 +50,23 @@ if (isNative()) {
       logger.info('Service Worker registrado:', swUrl)
       if (registration) {
         setInterval(() => {
-          registration.update()
-        }, 60 * 60 * 1000)
+          if (document.visibilityState === 'visible') {
+            logger.info('Verificando actualización de Service Worker por intervalo de 5 min...');
+            registration.update().catch(err => logger.error('Error en actualización por intervalo:', err));
+          }
+        }, 5 * 60 * 1000);
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            logger.info('Verificando actualización de Service Worker por cambio de visibilidad...');
+            registration.update().catch(err => logger.error('Error en actualización por visibilidad:', err));
+          }
+        });
+
+        (window as Window & typeof globalThis & { __checkSWUpdate?: () => void }).__checkSWUpdate = () => {
+          logger.info('Verificando actualización de Service Worker manualmente...');
+          registration.update().catch(err => logger.error('Error en actualización manual:', err));
+        }
       }
     },
     onRegisterError(error) {
@@ -60,7 +75,10 @@ if (isNative()) {
   })
 }
 
-(window as Window & typeof globalThis & { __updateSW?: typeof updateSW }).__updateSW = updateSW;
+(window as Window & typeof globalThis & { 
+  __updateSW?: typeof updateSW;
+  __checkSWUpdate?: () => void;
+}).__updateSW = updateSW;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -198,5 +198,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 declare global {
     interface Window {
         __updateSW?: (reloadPage?: boolean) => void
+        __checkSWUpdate?: () => void
     }
 }

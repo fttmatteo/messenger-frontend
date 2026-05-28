@@ -17,9 +17,9 @@ import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { useSmartLocation } from "@/features/tracking/hooks/use-smart-location"
 import { createLogger } from "@/shared/utils/logger"
 
-const logger = createLogger('UpdateStatusModal')
+const logger = createLogger('UpdateStatusDialog')
 
-interface UpdateStatusModalProps {
+interface UpdateStatusDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     service: ServiceDelivery
@@ -30,7 +30,7 @@ interface UpdateStatusModalProps {
  * Modal que permite a los administradores y mensajeros actualizar el estado de un servicio.
  * Incluye lógica de reasignación para roles administrativos cuando un servicio es cancelado.
  */
-export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: UpdateStatusModalProps) {
+export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: UpdateStatusDialogProps) {
     const { user } = useAuth()
     const { setSuccess, setError } = useAdminUI()
     const { getCurrentLocation } = useSmartLocation()
@@ -121,8 +121,8 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-[500px] flex flex-col max-h-[90vh] overflow-hidden p-0 gap-0">
+                <DialogHeader className="p-4 md:p-6 pb-2 border-b shrink-0">
                     <DialogTitle className="flex items-center gap-3">
                         <span>Actualizar estado</span>
                         <PlacaBadge
@@ -136,7 +136,8 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4 py-4">
+                <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
 
                     {showReassign && messengers.length > 0 && (
                         <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-3">
@@ -244,11 +245,11 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                                 rows={3}
                                 className="resize-none pr-10"
                             />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <DialogFooter>
+                    <DialogFooter className="p-4 md:p-6 border-t shrink-0 flex items-center justify-end gap-3 sm:justify-end bg-muted/5">
                     <Button
                         variant="outline"
                         size="sm"
@@ -275,7 +276,8 @@ export function UpdateStatusModal({ open, onOpenChange, service, onSuccess }: Up
                         )}
                     </Button>
                 </DialogFooter>
-            </DialogContent>
+            </div>
+        </DialogContent>
         </Dialog>
     )
 }

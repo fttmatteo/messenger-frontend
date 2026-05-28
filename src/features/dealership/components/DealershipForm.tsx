@@ -22,11 +22,11 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
         <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
             <div className="space-y-2">
                 <Label htmlFor="name">
-                    Nombre del concesionario <span className="text-red-500 ml-0.5">*</span>
+                    Nombre <span className="text-red-500 ml-0.5">*</span>
                 </Label>
                 <Input
                     id="name"
-                    placeholder="Nombre concesionario"
+                    placeholder="Concesionario"
                     autoComplete="organization"
                     disabled={disabled}
                     {...register("name")}

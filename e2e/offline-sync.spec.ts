@@ -42,7 +42,7 @@ test.describe('Offline Resilience & Sync', () => {
                 json: {
                     idServiceDelivery: 202,
                     uuid: 's202',
-                    plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
+                    plate: { idPlate: 20, plateNumber: 'CHASISOFFLINE', plateType: 'MOTORCYCLE' },
                     dealership: {
                         idDealership: 2,
                         uuid: 'd2',
@@ -121,7 +121,7 @@ test.describe('Offline Resilience & Sync', () => {
                 body: JSON.stringify({ 
                     idServiceDelivery: 202,
                     uuid: 's202',
-                    plate: { idPlate: 20, plateNumber: 'OFF-LINE', plateType: 'CAR' },
+                    plate: { idPlate: 20, plateNumber: 'CHASISOFFLINE', plateType: 'MOTORCYCLE' },
                     dealership: { idDealership: 2, uuid: 'd2', name: 'Concesionario Norte' },
                     originDealership: { idDealership: 1, uuid: 'd1', name: 'Concesionario Sur' },
                     currentStatus: 'DELIVERED',

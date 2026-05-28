@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
@@ -22,11 +22,7 @@ const LaborAgreement = React.lazy(() => import('@/pages/LaborAgreement'));
 const AdminLayout = React.lazy(() => import('@/layouts/AdminLayout'));
 const MessengerLayout = React.lazy(() => import('@/layouts/MessengerLayout'));
 const Employees = React.lazy(() => import('@/pages/admin/Employees'));
-const CreateEmployee = React.lazy(() => import('@/pages/admin/CreateEmployee'));
-const EditEmployee = React.lazy(() => import('@/pages/admin/EditEmployee'));
 const Dealerships = React.lazy(() => import('@/pages/admin/Dealerships'));
-const CreateDealership = React.lazy(() => import('@/pages/admin/CreateDealership'));
-const EditDealership = React.lazy(() => import('@/pages/admin/EditDealership'));
 const Services = React.lazy(() => import('@/pages/admin/Services'));
 const ViewService = React.lazy(() => import('@/pages/admin/ViewService'));
 const DeletedServices = React.lazy(() => import('@/pages/admin/DeletedServices'));
@@ -35,7 +31,6 @@ const MessengerDetails = React.lazy(() => import('@/pages/admin/MessengerDetails
 const Settings = React.lazy(() => import('@/pages/admin/Settings'));
 const Profile = React.lazy(() => import('@/pages/admin/Profile'));
 const MessengerDashboard = React.lazy(() => import('@/pages/messenger/Dashboard'));
-const AdminCreateServicio = React.lazy(() => import('@/pages/admin/CreateService'));
 const MessengerUpdateStatus = React.lazy(() => import('@/pages/messenger/UpdateStatus'));
 const MessengerServiciosPage = React.lazy(() => import('@/pages/messenger/ServicesPage'));
 const MessengerConfiguracionPage = React.lazy(() => import('@/pages/messenger/SettingsPage'));
@@ -89,6 +84,14 @@ function RoleBasedRedirect() {
 export function AppRoutes() {
     const { user } = useAuth();
     const isMobile = useIsMobile()
+    const location = useLocation()
+
+    useEffect(() => {
+        const checkSW = (window as Window & typeof globalThis & { __checkSWUpdate?: () => void }).__checkSWUpdate
+        if (checkSW) {
+            checkSW()
+        }
+    }, [location.pathname])
 
     const renderAdminRoute = () => {
         if (isMobile === undefined) {
@@ -147,16 +150,10 @@ export function AppRoutes() {
                     <Route index element={<Navigate to="/admin/servicios" replace />} />
 
                     <Route path="empleados" element={<Employees />} />
-                    <Route path="empleados/crear" element={<CreateEmployee />} />
-                    <Route path="empleados/editar/:id" element={<EditEmployee />} />
-
 
                     <Route path="concesionarios" element={<Dealerships />} />
-                    <Route path="concesionarios/crear" element={<CreateDealership />} />
-                    <Route path="concesionarios/editar/:id" element={<EditDealership />} />
 
                     <Route path="servicios" element={<Services />} />
-                    <Route path="servicios/crear" element={<AdminCreateServicio />} />
                     <Route path="servicios/:id" element={<ViewService />} />
 
                     <Route path="eliminados" element={<DeletedServices />} />

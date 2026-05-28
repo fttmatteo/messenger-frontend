@@ -15,11 +15,10 @@ import { ArrowLeft, Trash2, Loader2 } from "lucide-react"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { logger } from "@/shared/utils/logger"
 
-// Componentes extraídos
 import { ServiceHeader } from "@/features/delivery/components/ServiceHeader"
 import { ServiceGeneralInfoCard } from "@/features/delivery/components/ServiceGeneralInfoCard"
 import { ServiceHistoryTimeline } from "@/features/delivery/components/ServiceHistoryTimeline"
-import { UpdateStatusModal } from "@/features/delivery/components/UpdateStatusModal"
+import { UpdateStatusDialog } from "@/features/delivery/components/UpdateStatusDialog"
 
 /**
  * Vista detallada de un servicio de entrega específico para administradores.
@@ -28,25 +27,21 @@ import { UpdateStatusModal } from "@/features/delivery/components/UpdateStatusMo
  * Permite actualizar el estado del servicio o eliminarlo (si es administrador).
  */
 export default function ViewService() {
-    // Router y Auth
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { user } = useAuth()
     const { setSuccess, setError: setGlobalError } = useAdminUI()
 
-    // Estado de datos del servicio
     const [service, setService] = useState<ServiceDelivery | null>(null)
     const [loading, setLoading] = useState(true)
 
-    // Estado de UI
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-    const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [selectedImages, setSelectedImages] = useState<string[]>([])
     const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
 
-    // Estado derivado
     const isAdmin = user?.role === 'ADMIN'
 
     const fetchService = useCallback(async () => {
@@ -91,10 +86,6 @@ export default function ViewService() {
         }
     }
 
-    const handleUpdateSuccess = () => {
-        fetchService() // refresca el servicio
-    }
-
     if (loading) {
         return <ViewServiceSkeleton />
     }
@@ -133,7 +124,7 @@ export default function ViewService() {
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
-                onUpdate={() => setUpdateDialogOpen(true)}
+                onUpdate={() => setIsUpdateModalOpen(true)}
                 deleting={deleting}
             />
 
@@ -163,11 +154,11 @@ export default function ViewService() {
             </CardContent>
         </Card>
 
-            <UpdateStatusModal
-                open={updateDialogOpen}
-                onOpenChange={setUpdateDialogOpen}
+            <UpdateStatusDialog
+                open={isUpdateModalOpen}
+                onOpenChange={setIsUpdateModalOpen}
                 service={service}
-                onSuccess={handleUpdateSuccess}
+                onSuccess={fetchService}
             />
 
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
