@@ -100,7 +100,7 @@ describe('Services Admin Page Integration', () => {
 
         expect(await screen.findByText(/Dealership-Alpha/i)).toBeInTheDocument()
 
-        expect(await screen.findByTitle(/ADM-001/i)).toBeInTheDocument()
+        expect(await screen.findByTitle(/CHASIS00002/i)).toBeInTheDocument()
         expect(await screen.findByText(/Messenger-Beta/i)).toBeInTheDocument()
         expect(await screen.findByText(/Asignado/i)).toBeInTheDocument()
     })

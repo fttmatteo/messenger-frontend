@@ -134,7 +134,7 @@ describe('UpdateStatus Page Integration', () => {
         const updateSpy = vi.spyOn(serviceDeliveryService, 'updateStatus').mockResolvedValue({} as unknown as import('@/features/delivery/types/service.types').ServiceDelivery)
 
         renderWithRouter('123')
-        await screen.findByTitle(/ABC-123/i)
+        await screen.findByTitle(/CHASIS00001/i)
 
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
@@ -165,7 +165,7 @@ describe('UpdateStatus Page Integration', () => {
         const queueSpy = vi.mocked(offlineSyncService.queueAction)
 
         renderWithRouter('123')
-        await screen.findByTitle(/ABC-123/i)
+        await screen.findByTitle(/CHASIS00001/i)
 
         await userEvent.click(screen.getByText('Entregado'))
         await userEvent.click(screen.getByText('Simular Firma'))
@@ -184,7 +184,7 @@ describe('UpdateStatus Page Integration', () => {
 
     it('should validate photo requirements for RETURNED status', async () => {
         renderWithRouter('123')
-        await screen.findByTitle(/ABC-123/i)
+        await screen.findByTitle(/CHASIS00001/i)
 
         await userEvent.click(screen.getByText('Devuelto'))
 
