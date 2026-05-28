@@ -5,7 +5,7 @@ interface SkeletonProps extends React.ComponentProps<"div"> {
   static?: boolean
 }
 
-function Skeleton({ className, ...props }: SkeletonProps) {
+function Skeleton({ className, static: _static, ...props }: SkeletonProps) {
   return (
     <div
       data-slot="skeleton"
