@@ -105,7 +105,7 @@ test.describe('Service Creation Flow', () => {
         const dialog = page.getByRole('dialog');
         await expect(dialog).toBeVisible({ timeout: 20000 });
 
-        const plateInput = page.locator('input[name="manualPlateNumber"]').first();
+        const plateInput = page.locator('#manualPlateNumber').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
         await plateInput.fill('ABC1234567890');
 
@@ -148,7 +148,7 @@ test.describe('Service Creation Flow', () => {
         const dialog = page.getByRole('dialog');
         await expect(dialog).toBeVisible({ timeout: 20000 });
 
-        const plateInput = page.locator('input[name="manualPlateNumber"]').first();
+        const plateInput = page.locator('#manualPlateNumber').first();
         await expect(plateInput).toBeVisible({ timeout: 15000 });
         await plateInput.fill('ABC1234567890');
 

@@ -128,7 +128,7 @@ test.describe('Messenger Delivery Execution', () => {
     test('should update service status to DELIVERED with signature', async ({ page }) => {
         await expect(page).not.toHaveURL(/.*login/, { timeout: 15000 });
 
-        const serviceItem = page.getByText(/E2E.*123/i).first();
+        const serviceItem = page.getByText(/CHASIS00004/i).first();
         await expect(serviceItem).toBeVisible({ timeout: 20000 });
         await serviceItem.click();
 
