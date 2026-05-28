@@ -1,4 +1,5 @@
-import { useNavigate, useOutletContext } from "react-router-dom"
+import { useState } from "react"
+import { useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useEmployees } from "@/features/employee/hooks/use-employees"
 import { listItemVariants } from "@/shared/lib/animation-variants"
@@ -13,6 +14,8 @@ import { TableRowSkeleton } from "@/features/employee/components/EmployeeSkeleto
 import { TablePagination } from "@/shared/components/ui/table-pagination"
 import { Plus, PhoneCall, User, FileText, Users, Smartphone } from "lucide-react"
 import { formatDisplayName } from "@/shared/lib/format-utils"
+import { CreateEmployeeDialog } from "@/features/employee/components/CreateEmployeeDialog"
+import { EditEmployeeDialog } from "@/features/employee/components/EditEmployeeDialog"
 
 /**
  * Página principal de administración de empleados.
@@ -21,8 +24,9 @@ import { formatDisplayName } from "@/shared/lib/format-utils"
  * Los administradores solo ven empleados con rol MESSENGER (filtrado server-side).
  */
 export default function Employees() {
-    const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
 
     const {
         loading,
@@ -36,6 +40,7 @@ export default function Employees() {
         sortField,
         sortDirection,
         handleSort,
+        fetchEmployees,
     } = useEmployees({ searchQuery })
 
     return (
@@ -54,7 +59,7 @@ export default function Employees() {
                         <FileText className="h-3 w-3 mr-1" />
                         Acuerdo GPS
                     </Button>
-                    <Button onClick={() => navigate("/admin/empleados/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo transportista
                     </Button>
@@ -123,7 +128,7 @@ export default function Employees() {
                                                     layout
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                                                    onClick={() => navigate(`/admin/empleados/editar/${employee.uuid}`)}
+                                                    onClick={() => setSelectedEmployeeId(employee.uuid)}
                                                 >
                                                     <TableCell className="font-medium text-sm">
                                                         <Tooltip>
@@ -154,6 +159,19 @@ export default function Employees() {
                         </>
                     )}
                 </CardContent>
+
+            <CreateEmployeeDialog
+                open={isCreateModalOpen}
+                onOpenChange={setIsCreateModalOpen}
+                onSuccess={fetchEmployees}
+            />
+
+            <EditEmployeeDialog
+                open={!!selectedEmployeeId}
+                onOpenChange={(open) => !open && setSelectedEmployeeId(null)}
+                employeeId={selectedEmployeeId}
+                onSuccess={fetchEmployees}
+            />
         </Card>
     )
 }

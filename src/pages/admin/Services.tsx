@@ -20,7 +20,8 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
 import { formatDisplayName } from "@/shared/lib/format-utils"
-import { UpdateStatusModal } from "@/features/delivery/components/UpdateStatusModal"
+import { UpdateStatusDialog } from "@/features/delivery/components/UpdateStatusDialog"
+import { CreateServiceDialog } from "@/features/delivery/components/CreateServiceDialog"
 
 // Estados disponibles para selección
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
@@ -60,9 +61,9 @@ export default function Services() {
         fetchServices,
     } = useServices({ searchQuery })
 
-    // Estado del modal
     const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     const handleUpdateStatus = (service: ServiceDelivery) => {
         setSelectedService(service)
@@ -70,7 +71,7 @@ export default function Services() {
     }
 
     const handleUpdateSuccess = () => {
-        fetchServices() // refresca la lista
+        fetchServices()
     }
 
     const filterLabel = (statusFilter?.length ?? 0) > 0
@@ -112,7 +113,7 @@ export default function Services() {
                 </div>
 
                 <div className="hidden md:flex md:flex-1 justify-end">
-                    <Button onClick={() => navigate("/admin/servicios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo servicio
                     </Button>
@@ -269,13 +270,19 @@ export default function Services() {
         </Card>
 
             {selectedService && (
-                <UpdateStatusModal
+                <UpdateStatusDialog
                     open={isUpdateModalOpen}
                     onOpenChange={setIsUpdateModalOpen}
                     service={selectedService}
                     onSuccess={handleUpdateSuccess}
                 />
             )}
+
+            <CreateServiceDialog
+                open={isCreateModalOpen}
+                onOpenChange={setIsCreateModalOpen}
+                onSuccess={handleUpdateSuccess}
+            />
         </>
     )
 }

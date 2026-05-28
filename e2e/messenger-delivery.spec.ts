@@ -47,7 +47,7 @@ test.describe('Messenger Delivery Execution', () => {
                     content: [{
                         idServiceDelivery: 101,
                         uuid: 's101',
-                        plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
+                        plate: { idPlate: 10, plateNumber: 'CHASIS00004', plateType: 'MOTORCYCLE' },
                         dealership: {
                             idDealership: 1,
                             uuid: 'd1',
@@ -93,7 +93,7 @@ test.describe('Messenger Delivery Execution', () => {
                 json: {
                     idServiceDelivery: 101,
                     uuid: 's101',
-                    plate: { idPlate: 10, plateNumber: 'E2E-123', plateType: 'MOTORCYCLE' },
+                    plate: { idPlate: 10, plateNumber: 'CHASIS00004', plateType: 'MOTORCYCLE' },
                     dealership: {
                         idDealership: 1,
                         uuid: 'd1',

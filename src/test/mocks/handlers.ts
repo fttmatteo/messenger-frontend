@@ -43,8 +43,8 @@ export const handlers: RequestHandler[] = [
             createdAt: new Date().toISOString(),
             plate: {
                 idPlate: 1,
-                plateNumber: 'ABC-123',
-                plateType: 'CAR'
+                plateNumber: 'CHASIS00001',
+                plateType: 'MOTORCYCLE'
             },
             dealership: {
                 idDealership: 1,
@@ -73,7 +73,7 @@ export const handlers: RequestHandler[] = [
             uuid: typeof id === 'string' && id.length > 10 ? id : '550e8400-e29b-41d4-a716-446655440000',
             currentStatus: formData.get('status'),
             message: 'Status updated successfully',
-            plate: { idPlate: 1, plateNumber: 'ABC-123', plateType: 'CAR' },
+            plate: { idPlate: 1, plateNumber: 'CHASIS00001', plateType: 'MOTORCYCLE' },
             dealership: {
                 idDealership: 1,
                 uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',
@@ -99,7 +99,7 @@ export const handlers: RequestHandler[] = [
                 {
                     idServiceDelivery: 1,
                     uuid: '550e8400-e29b-41d4-a716-446655440000',
-                    plate: { idPlate: 1, plateNumber: 'ADM-001', plateType: 'CAR' },
+                    plate: { idPlate: 1, plateNumber: 'CHASIS00002', plateType: 'MOTORCYCLE' },
                     dealership: { idDealership: 1, uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9', name: 'Admin Dealer', address: '123 St', phone: '555-5555', zone: 'NORTH' },
                     originDealership: { idDealership: 2, uuid: 'a29cfc1b-08fb-44b4-af04-cc9172be53f9', name: 'Origin Dealer', address: '456 St', phone: '555-6666', zone: 'SOUTH' },
                     messenger: { idEmployee: 1, uuid: 'm1', document: 12345, fullName: 'Test Messenger', phone: '123', role: 'MESSENGER' },

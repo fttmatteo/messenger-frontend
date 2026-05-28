@@ -29,7 +29,7 @@ describe('DeletedServices Page Integration', () => {
                         {
                             idServiceDelivery: 99,
                             uuid: 'deleted-service-uuid',
-                            plate: { idPlate: 102, plateNumber: 'DEL-001', plateType: 'CAR' },
+                            plate: { idPlate: 102, plateNumber: 'CHASIS00003', plateType: 'MOTORCYCLE' },
                             dealership: {
                                 idDealership: 201,
                                 uuid: 'dealership-uuid',

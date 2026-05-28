@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from "react-router-dom"
+import { useOutletContext } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
 import { useDealerships } from "@/features/dealership/hooks/use-dealerships"
@@ -21,6 +21,8 @@ import { Map } from "@/features/location/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, X, ExternalLink } from "lucide-react"
 import { createLogger } from "@/shared/utils/logger"
+import { CreateDealershipDialog } from "@/features/dealership/components/CreateDealershipDialog"
+import { EditDealershipDialog } from "@/features/dealership/components/EditDealershipDialog"
 
 const logger = createLogger('Dealerships')
 
@@ -129,10 +131,11 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
  * También permite previsualizar la ubicación geográfica en un mapa emergente.
  */
 export default function Dealerships() {
-    const navigate = useNavigate()
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const { setSuccess } = useAdminUI()
     const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null)
 
     const {
         loading,
@@ -149,6 +152,7 @@ export default function Dealerships() {
         handleSort,
         zoneFilter,
         setZoneFilter,
+        fetchDealerships,
     } = useDealerships({ searchQuery })
 
     const filterLabel = zoneFilter !== "all" ? `zona: ${zoneFilter}` : undefined
@@ -182,7 +186,7 @@ export default function Dealerships() {
                 </div>
 
                 <div className="flex-1 flex justify-end">
-                    <Button onClick={() => navigate("/admin/concesionarios/crear")} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo concesionario
                     </Button>
@@ -261,7 +265,7 @@ export default function Dealerships() {
                                                     layout
                                                     custom={index}
                                                     className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                                                    onClick={() => navigate(`/admin/concesionarios/editar/${dealership.uuid}`)}
+                                                    onClick={() => setSelectedDealershipId(dealership.uuid)}
                                                 >
                                                     <TableCell className="font-medium text-sm">{dealership.name}</TableCell>
                                                     <TableCell className="max-w-xs text-sm">
@@ -383,6 +387,19 @@ export default function Dealerships() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <CreateDealershipDialog
+                open={isCreateModalOpen}
+                onOpenChange={setIsCreateModalOpen}
+                onSuccess={fetchDealerships}
+            />
+
+            <EditDealershipDialog
+                open={!!selectedDealershipId}
+                onOpenChange={(open) => !open && setSelectedDealershipId(null)}
+                dealershipId={selectedDealershipId}
+                onSuccess={fetchDealerships}
+            />
         </>
     )
 }

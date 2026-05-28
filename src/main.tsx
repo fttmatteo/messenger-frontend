@@ -49,7 +49,6 @@ if (isNative()) {
     onRegisteredSW(swUrl, registration) {
       logger.info('Service Worker registrado:', swUrl)
       if (registration) {
-        // 1. Verificar cada 5 minutos si la pestaña está activa
         setInterval(() => {
           if (document.visibilityState === 'visible') {
             logger.info('Verificando actualización de Service Worker por intervalo de 5 min...');
@@ -57,7 +56,6 @@ if (isNative()) {
           }
         }, 5 * 60 * 1000);
 
-        // 2. Verificar cuando la pestaña vuelve a estar visible (enfoque de pestaña o desbloqueo del dispositivo)
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'visible') {
             logger.info('Verificando actualización de Service Worker por cambio de visibilidad...');
@@ -65,7 +63,6 @@ if (isNative()) {
           }
         });
 
-        // 3. Exponer función global para verificar manualmente ante cambios de ruta u otros eventos de React
         (window as any).__checkSWUpdate = () => {
           logger.info('Verificando actualización de Service Worker manualmente...');
           registration.update().catch(err => logger.error('Error en actualización manual:', err));

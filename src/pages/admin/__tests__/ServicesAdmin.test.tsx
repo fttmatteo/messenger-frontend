@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import Services from '../Services'
 
 import { AuthProvider } from '@/features/auth/context/AuthContext'
+import { AdminUIProvider } from '@/shared/context/AdminUIContext'
 import { server } from '@/test/mocks/server'
 import { http, HttpResponse } from 'msw'
 import { showToast } from '@/shared/config/toast-config'
@@ -37,7 +38,7 @@ describe('Services Admin Page Integration', () => {
                         {
                             idServiceDelivery: 1,
                             uuid: '550e8400-e29b-41d4-a716-446655440000',
-                            plate: { idPlate: 101, plateNumber: 'ADM-001', plateType: 'CAR' },
+                            plate: { idPlate: 101, plateNumber: 'CHASIS00002', plateType: 'MOTORCYCLE' },
                             dealership: {
                                 idDealership: 201,
                                 uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',
@@ -82,7 +83,9 @@ describe('Services Admin Page Integration', () => {
         return render(
             <MemoryRouter>
                 <AuthProvider>
-                    <Services />
+                    <AdminUIProvider>
+                        <Services />
+                    </AdminUIProvider>
                 </AuthProvider>
             </MemoryRouter>
         )

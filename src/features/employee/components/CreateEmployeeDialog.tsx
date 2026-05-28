@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -7,8 +6,7 @@ import { employeeService } from "@/features/employee/services/employee.service"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/components/ui/card"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
 import { getErrorMessage } from "@/shared/lib/error-utils"
@@ -24,20 +22,23 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
 
-/**
- * Página para la creación de un nuevo empleado.
- * Proporciona un formulario para ingresar el documento, nombre, teléfono
- * y contraseña. El rol se asigna automáticamente como MESSENGER.
- */
-export default function CreateEmployee() {
-    const navigate = useNavigate()
-    const [showPassword, setShowPassword] = useState(false)
+interface CreateEmployeeDialogProps {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    onSuccess: () => void
+}
 
+/**
+ * Modal para la creación de un nuevo empleado (Transportista).
+ */
+export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEmployeeDialogProps) {
+    const [showPassword, setShowPassword] = useState(false)
     const { setSuccess, setError } = useAdminUI()
 
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors, isSubmitting, isDirty },
     } = useForm<EmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
@@ -50,6 +51,19 @@ export default function CreateEmployee() {
         },
     })
 
+    useEffect(() => {
+        if (open) {
+            reset({
+                document: "",
+                fullName: "",
+                phone: "",
+                password: "",
+                role: "MESSENGER",
+            })
+            setShowPassword(false)
+        }
+    }, [open, reset])
+
     const onSubmit = async (data: EmployeeFormValues) => {
         try {
             await employeeService.create({
@@ -60,36 +74,25 @@ export default function CreateEmployee() {
                 role: "MESSENGER",
             })
             setSuccess("El nuevo transportista ha sido registrado correctamente")
-            navigate("/admin/empleados")
+            onSuccess()
+            onOpenChange(false)
         } catch (error) {
             setError(getErrorMessage(error))
         }
     }
 
     return (
-        <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
-                <div className="flex-1">
-                    <AdminBreadcrumb segments={[
-                        { label: "Transportistas", href: "/admin/empleados" },
-                        { label: "Nuevo" }
-                    ]} />
-                </div>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[700px] flex flex-col max-h-[90vh] overflow-hidden p-0 gap-0">
+                <DialogHeader className="p-4 md:p-6 pb-2 border-b shrink-0">
+                    <DialogTitle className="text-xl md:text-2xl font-bold">Nuevo transportista</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-sm">
+                        Ingresa los detalles para registrar un nuevo transportista
+                    </DialogDescription>
+                </DialogHeader>
 
-                <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Nuevo transportista</h1>
-                </div>
-
-                <div className="hidden md:flex md:flex-1"></div>
-            </div>
-
-            <div className="flex-1 flex flex-col pt-2 pb-0 px-2 sm:px-4 min-h-0">
-                <CardHeader className="p-2 pb-0">
-                    <CardTitle className="text-base text-foreground font-semibold">Información del transportista</CardTitle>
-                </CardHeader>
-                <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
-                    <CardContent className="flex-1 overflow-y-auto">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
                             <div className="space-y-2">
                                 <Label htmlFor="document">
@@ -168,14 +171,15 @@ export default function CreateEmployee() {
                                 )}
                             </div>
                         </div>
-                    </CardContent>
+                    </div>
 
-                    <CardFooter className="flex gap-4 p-4 pt-4 mt-auto border-t bg-muted/5">
+                    <DialogFooter className="p-4 md:p-6 border-t shrink-0 flex items-center justify-end gap-3 sm:justify-end bg-muted/5">
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate("/admin/empleados")}
+                            onClick={() => onOpenChange(false)}
+                            disabled={isSubmitting}
                         >
                             Cancelar
                         </Button>
@@ -183,10 +187,9 @@ export default function CreateEmployee() {
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Crear transportista
                         </Button>
-                    </CardFooter>
+                    </DialogFooter>
                 </form>
-            </div>
-        </Card>
-        </>
+            </DialogContent>
+        </Dialog>
     )
 }

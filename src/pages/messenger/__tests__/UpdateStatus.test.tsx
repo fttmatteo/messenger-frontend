@@ -92,7 +92,7 @@ describe('UpdateStatus Page Integration', () => {
                     idServiceDelivery: 123,
                     uuid: '550e8400-e29b-41d4-a716-446655440000',
                     currentStatus: 'PENDING',
-                    plate: { idPlate: 1, plateNumber: 'ABC-123', plateType: 'CAR' },
+                    plate: { idPlate: 1, plateNumber: 'CHASIS00001', plateType: 'MOTORCYCLE' },
                     dealership: {
                         idDealership: 10,
                         uuid: 'd39cfc1b-08fb-44b4-af04-cc9172be53f9',

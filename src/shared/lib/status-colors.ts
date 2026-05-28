@@ -8,6 +8,7 @@ export const DEFAULT_STATUS_COLORS: Record<string, string> = {
     CANCELED: '#ff00b7d6',   // red-500
     RESOLVED: '#1900ffdb',   // purple-500
     DELETED: '#ff0000dd',    // slate-500
+    SCHEDULED: '#64748b',    // slate-500 (gray/scheduled)
 }
 
 const DEFAULT_FALLBACK_COLOR = '#6b7280'
@@ -82,6 +83,7 @@ export const STATUS_LABELS: Record<string, string> = {
     CANCELED: 'Cancelado',
     RESOLVED: 'Revisado',
     DELETED: 'Eliminado',
+    SCHEDULED: 'Programado',
 }
 
 /**

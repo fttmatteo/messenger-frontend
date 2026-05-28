@@ -27,7 +27,7 @@ const loginSchema = z.object({
     document: z.string().min(1, "El documento es requerido").regex(/^\d+$/, "Solo se permiten números"),
     password: z.string().min(1, "La contraseña es requerida"),
     rememberMe: z.boolean().optional(),
-    acceptTerms: z.boolean().refine((val) => val === true, "Debes aceptar los Términos y Condiciones"),
+    acceptTerms: z.boolean().refine((val) => val === true, "Debes aceptar los términos y condiciones"),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -302,7 +302,7 @@ export default function LoginMobile() {
                                         )}
                                     />
                                     <label htmlFor="acceptTerms" className="text-xs text-muted-foreground font-normal leading-tight cursor-pointer">
-                                        He leído y acepto los <a href="/terminos-condiciones" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Política de Privacidad</a>.
+                                        He leído y acepto los <a href="/terminos-condiciones" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">términos y condiciones</a> y la <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">política de privacidad</a>.
                                     </label>
                                 </div>
                                 {errors.acceptTerms && (

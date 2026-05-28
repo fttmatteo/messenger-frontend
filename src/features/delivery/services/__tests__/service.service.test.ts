@@ -27,8 +27,8 @@ describe('ServiceDeliveryService', () => {
         uuid: mockUuid,
         plate: {
             idPlate: 1,
-            plateNumber: 'ABC123',
-            plateType: 'CAR'
+            plateNumber: 'CHASIS00001',
+            plateType: 'MOTORCYCLE'
         },
         dealership: {
             idDealership: 1,
