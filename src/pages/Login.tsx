@@ -332,7 +332,31 @@ export default function Login() {
                                         )}
                                     />
                                     <label htmlFor="acceptTerms" className="text-xs text-muted-foreground font-normal leading-tight cursor-pointer">
-                                        He leído y acepto los <a href="/terminos-condiciones" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">términos y condiciones</a> y la <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">política de privacidad</a>.
+                                        He leído y acepto los{' '}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                navigate('/terminos-condiciones');
+                                            }}
+                                            className="text-primary font-semibold hover:underline cursor-pointer"
+                                        >
+                                            términos y condiciones
+                                        </button>{' '}
+                                        y la{' '}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                navigate('/politica-privacidad');
+                                            }}
+                                            className="text-primary font-semibold hover:underline cursor-pointer"
+                                        >
+                                            política de privacidad
+                                        </button>
+                                        .
                                     </label>
                                 </div>
                                 {errors.acceptTerms && (

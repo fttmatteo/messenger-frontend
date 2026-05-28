@@ -1,5 +1,5 @@
 import { Skeleton } from "@/shared/components/ui/skeleton"
-import { Card, CardContent } from "@/shared/components/ui/card"
+import { Card } from "@/shared/components/ui/card"
 import { TableRow, TableCell } from "@/shared/components/ui/table"
 
 /**
@@ -48,48 +48,7 @@ export function TableRowSkeleton() {
     )
 }
 
-/**
- * Esqueleto de carga para una tarjeta de servicio (vista móvil/lista).
- */
-export function CardSkeleton() {
-    return (
-        <Card className="mb-3 border-border/50 bg-background/40">
-            <CardContent className="pt-4">
-                <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-3 min-w-0">
-                        <div className="flex flex-col items-start gap-2">
-                            <div className="flex flex-col items-center gap-2 w-fit">
-                                <Skeleton static className="h-7 w-28 rounded-full bg-muted/20" />
-                                <div className="flex flex-col items-center">
-                                    <Skeleton static className="h-8 w-28 rounded bg-muted/20" />
-                                    <Skeleton static className="h-3 w-16 mt-0.5 rounded bg-muted/10" />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <Skeleton static className="h-4 w-4 rounded-full bg-muted/10" />
-                                <Skeleton static className="h-4 w-48 rounded bg-muted/10" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Skeleton static className="h-4 w-4 rounded-full bg-muted/10" />
-                                <Skeleton static className="h-4 w-40 rounded bg-muted/10" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Skeleton static className="h-4 w-4 rounded-full bg-muted/10" />
-                                <Skeleton static className="h-4 w-44 rounded bg-muted/10" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-2 shrink-0">
-                        <Skeleton static className="h-9 w-24 rounded-lg bg-muted/20" />
-                        <Skeleton static className="h-9 w-24 rounded-lg bg-muted/20" />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
+
 
 /**
  * Lista de esqueletos de carga para múltiples servicios.
@@ -159,62 +118,7 @@ export function ServiceListSkeleton({ count = 3 }: { count?: number }) {
     )
 }
 
-/**
- * Esqueleto detallado para la vista de información de un servicio.
- */
-export function ServiceDetailsSkeleton() {
-    return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-auto">
-                {/* Hero Card Skeleton */}
-                <div className="p-4 pb-2">
-                    <Card className="p-5 bg-gradient-to-br from-card to-muted/20 border-border/50 rounded-2xl shadow-lg">
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="flex flex-col items-center gap-1.5">
-                                <Skeleton static className="h-14 w-full max-w-[144px] rounded-lg bg-muted/20" />
-                                <Skeleton static className="h-3 w-full max-w-[80px] rounded bg-muted/10 mx-auto" />
-                            </div>
-                            <Skeleton static className="h-7 w-28 rounded-full bg-muted/20" />
-                            <div className="flex items-center gap-3 w-full mt-2">
-                                <Skeleton static className="flex-1 h-12 rounded-xl bg-muted/20" />
-                                <Skeleton static className="flex-1 h-12 rounded-xl bg-muted/20" />
-                            </div>
-                        </div>
-                    </Card>
-                </div>
 
-                {/* Dealership Card Skeleton */}
-                <div className="px-4 pb-2">
-                    <Card className="p-4 border-border/50 rounded-2xl">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <Skeleton static className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
-                            <Skeleton static className="h-5 w-full max-w-[192px] rounded bg-muted/20" />
-                        </div>
-                        <div className="space-y-3 bg-muted/5 p-3 rounded-xl border border-border/40">
-                            <Skeleton static className="h-5 w-full max-w-[224px] rounded bg-muted/10" />
-                            <Skeleton static className="h-4 w-full max-w-[160px] rounded bg-muted/10" />
-                            <Skeleton static className="h-4 w-full rounded bg-muted/10" />
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Service Info Card Skeleton */}
-                <div className="px-4 pb-2">
-                    <Card className="p-4 border-border/50 rounded-2xl">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <Skeleton static className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
-                            <Skeleton static className="h-5 w-full max-w-[224px] rounded bg-muted/20" />
-                        </div>
-                        <div className="space-y-3 bg-muted/5 p-3 rounded-xl border border-border/40">
-                            <Skeleton static className="h-4 w-full max-w-[256px] rounded bg-muted/10" />
-                            <Skeleton static className="h-4 w-full max-w-[192px] rounded bg-muted/10" />
-                        </div>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 /**
  * Esqueleto de carga para el flujo de actualización de estado del servicio.
@@ -263,41 +167,4 @@ export function UpdateServiceStatusSkeleton() {
     )
 }
 
-/**
- * Esqueleto de carga para el flujo de creación de un nuevo servicio.
- */
-export function CreateServiceSkeleton() {
-    return (
-        <div className="pb-24">
-            {/* Photo Section Skeleton */}
-            <div className="p-4 pb-2">
-                <Card className="p-5 border-border/50 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Skeleton static className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
-                        <Skeleton static className="h-5 w-full max-w-[128px] rounded bg-muted/20" />
-                    </div>
-                    <Skeleton static className="w-full aspect-[4/3] rounded-2xl bg-muted/10 border border-border/40 shadow-inner" />
-                </Card>
-            </div>
 
-            {/* Dealership Card Skeleton */}
-            <div className="px-4 pb-2">
-                <Card className="p-5 border-border/50 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Skeleton static className="h-8 w-8 shrink-0 rounded-xl bg-muted/20" />
-                        <Skeleton static className="h-5 w-full max-w-[176px] rounded bg-muted/20" />
-                    </div>
-                    <Skeleton static className="h-12 w-full rounded-xl bg-muted/10 border border-border/40" />
-                </Card>
-            </div>
-
-            {/* Fixed Bottom Action Skeleton */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border/50 bg-background/95 backdrop-blur-md" style={{ paddingBottom: 'calc(var(--safe-area-bottom) + 1rem)' }}>
-                <div className="flex gap-4">
-                    <Skeleton static className="h-12 w-28 rounded-2xl bg-muted/20" />
-                    <Skeleton static className="flex-1 h-12 rounded-2xl bg-muted/30" />
-                </div>
-            </div>
-        </div>
-    )
-}

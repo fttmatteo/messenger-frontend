@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
 import { CreateServiceDialog } from '@/features/delivery/components/CreateServiceDialog';
@@ -9,7 +9,7 @@ import { serviceDeliveryService } from '@/features/delivery/services/service.ser
 
 vi.mock('@/features/delivery/services/service.service', () => ({
     serviceDeliveryService: {
-        create: vi.fn(),
+        create: vi.fn().mockResolvedValue({}),
     }
 }));
 
@@ -181,6 +181,11 @@ describe('CreateServiceDialog', () => {
             expect(mockOnSuccess).toHaveBeenCalled();
             expect(mockOnOpenChange).toHaveBeenCalledWith(false);
         });
+        
+        // Flush lingering React Hook Form state updates (isSubmitting = false)
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
     });
 
     it('should successfully create a service normally without scheduling', async () => {
@@ -218,6 +223,12 @@ describe('CreateServiceDialog', () => {
                 scheduledAt: undefined
             }));
             expect(mockOnSuccess).toHaveBeenCalled();
+            expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+        });
+
+        // Flush lingering React Hook Form state updates (isSubmitting = false)
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
         });
     });
 });

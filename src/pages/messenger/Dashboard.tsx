@@ -1,9 +1,9 @@
 import { useMessengerServices } from "@/features/delivery/hooks/use-messenger-services"
 import { useNetwork } from "@/shared/hooks/use-network"
 import { ServiceList } from "@/features/delivery/components/ServiceList"
-import { ChevronDown, RefreshCw, Database, Building2, Navigation } from "lucide-react"
+import { ChevronDown, RefreshCw, Database, Building2, Navigation, X } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 /**
@@ -16,7 +16,28 @@ export default function MessengerDashboard() {
     const { loading, pendingServices, refetch, error, isFromCache } = useMessengerServices()
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
+
+    // Restaurar filtro desde sessionStorage al montar si no hay parámetro en la URL
+    useEffect(() => {
+        const savedFilter = sessionStorage.getItem("messenger_dealership_filter")
+        if (savedFilter && !searchParams.has("dealership")) {
+            setSearchParams(prev => {
+                prev.set("dealership", savedFilter)
+                return prev
+            }, { replace: true })
+        }
+    }, [searchParams, setSearchParams])
+
     const selectedDealership = searchParams.get("dealership") || "all"
+
+    // Guardar en sessionStorage cada vez que cambie
+    useEffect(() => {
+        if (selectedDealership === "all") {
+            sessionStorage.removeItem("messenger_dealership_filter")
+        } else {
+            sessionStorage.setItem("messenger_dealership_filter", selectedDealership)
+        }
+    }, [selectedDealership])
 
     const handleRefresh = useCallback(async () => {
         if (!isOnline || isRefreshing) return
@@ -47,12 +68,25 @@ export default function MessengerDashboard() {
         const [type, idStr] = selectedDealership.split('-');
         if (!type || !idStr) return pendingServices;
 
-        return pendingServices.filter(s => {
+        const filtered = pendingServices.filter(s => {
             if (type === 'orig') return String(s.originDealership.idDealership) === idStr;
             if (type === 'dest') return String(s.dealership.idDealership) === idStr;
             return false;
         });
+        return filtered;
     }, [pendingServices, selectedDealership]);
+
+    // Auto-restablecer si el filtro actual ya no coincide con ningún servicio pendiente
+    // (Por ejemplo, si actualizó todos los servicios de ese concesionario y volvió)
+    useEffect(() => {
+        if (selectedDealership !== "all" && pendingServices.length > 0 && filteredServices.length === 0) {
+            sessionStorage.removeItem("messenger_dealership_filter")
+            setSearchParams(prev => {
+                prev.delete("dealership")
+                return prev
+            }, { replace: true })
+        }
+    }, [filteredServices.length, pendingServices.length, selectedDealership, setSearchParams])
 
     return (
         <div className="flex flex-col p-3 gap-3 relative min-h-full pb-4">
@@ -123,26 +157,46 @@ export default function MessengerDashboard() {
                 </Button>
             </div>
 
-            <div className="flex items-center justify-between px-1.5">
+            <div className="flex items-center justify-between px-1.5 flex-wrap gap-2">
                 <p className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em]">
                     {filteredServices.length} {filteredServices.length !== 1 ? 'servicios' : 'servicio'} {selectedDealership !== 'all' ? 'filtrados' : 'asignados'}
                 </p>
-                {pendingServices.length > 1 ? (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate("/messenger/ruta-optimizada")}
-                        className="h-6 text-[10px] px-2 text-primary font-bold uppercase tracking-wider hover:bg-primary/5 active:scale-95 flex items-center gap-1 rounded-lg"
-                    >
-                        <Navigation className="h-3 w-3" />
-                        Optimizar Ruta
-                    </Button>
-                ) : isFromCache && !loading ? (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
-                        <Database className="h-3 w-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest italic">Offline cache</span>
-                    </div>
-                ) : null}
+                <div className="flex items-center gap-1.5 ml-auto">
+                    {selectedDealership !== 'all' && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                sessionStorage.removeItem("messenger_dealership_filter");
+                                setSearchParams(prev => {
+                                    prev.delete("dealership");
+                                    return prev;
+                                }, { replace: true });
+                            }}
+                            className="h-6 text-[10px] px-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold uppercase tracking-wider active:scale-95 flex items-center gap-1 rounded-lg transition-all"
+                        >
+                            <X className="h-3 w-3" />
+                            Limpiar
+                        </Button>
+                    )}
+                    {pendingServices.length > 1 && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate("/messenger/ruta-optimizada")}
+                            className="h-6 text-[10px] px-2 text-primary font-bold uppercase tracking-wider hover:bg-primary/5 active:scale-95 flex items-center gap-1 rounded-lg"
+                        >
+                            <Navigation className="h-3 w-3" />
+                            Optimizar
+                        </Button>
+                    )}
+                    {pendingServices.length <= 1 && isFromCache && !loading && (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                            <Database className="h-3 w-3" />
+                            <span className="text-[10px] font-black uppercase tracking-widest italic">Offline cache</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="">

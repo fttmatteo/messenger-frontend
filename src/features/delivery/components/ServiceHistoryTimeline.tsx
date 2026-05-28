@@ -47,6 +47,7 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                                                 entry={entry}
                                                 getImageUrl={getImageUrl}
                                                 onImageClick={onImageClick}
+                                                scheduledAt={service.scheduledAt}
                                             />
                                         </TimelineContent>
                                     </TimelineItem>

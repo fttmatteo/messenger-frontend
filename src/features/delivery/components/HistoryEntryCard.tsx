@@ -8,6 +8,7 @@ interface HistoryEntryCardProps {
     getImageUrl: (url: string) => string
     className?: string
     onImageClick?: (urls: string[], index: number) => void
+    scheduledAt?: string
 }
 
 /**
@@ -19,6 +20,7 @@ export function HistoryEntryCard({
     getImageUrl,
     className = "",
     onImageClick,
+    scheduledAt,
 }: HistoryEntryCardProps) {
     const handleImageClick = (paths: string[], startIndex: number = 0) => {
         const urls = paths.map(path => getImageUrl(path))
@@ -46,6 +48,13 @@ export function HistoryEntryCard({
                 <div className="pt-1.5 text-xs">
                     <span className="font-medium text-foreground">Observación: </span>
                     <span className="text-muted-foreground">{entry.observation}</span>
+                </div>
+            )}
+
+            {entry.newStatus === 'SCHEDULED' && scheduledAt && (
+                <div className="pt-1.5 text-xs">
+                    <span className="font-medium text-foreground">Programado para: </span>
+                    <span className="text-muted-foreground">{format(new Date(scheduledAt), "PPp", { locale: es })}</span>
                 </div>
             )}
 
