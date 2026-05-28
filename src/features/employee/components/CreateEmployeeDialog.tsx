@@ -60,7 +60,6 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                 password: "",
                 role: "MESSENGER",
             })
-            setShowPassword(false)
         }
     }, [open, reset])
 
@@ -81,8 +80,15 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
         }
     }
 
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            setShowPassword(false)
+        }
+        onOpenChange(isOpen)
+    }
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-[700px] flex flex-col max-h-[90vh] overflow-hidden p-0 gap-0">
                 <DialogHeader className="p-4 md:p-6 pb-2 border-b shrink-0">
                     <DialogTitle className="text-xl md:text-2xl font-bold">Nuevo transportista</DialogTitle>
@@ -178,7 +184,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => onOpenChange(false)}
+                            onClick={() => handleOpenChange(false)}
                             disabled={isSubmitting}
                         >
                             Cancelar

@@ -87,7 +87,7 @@ export function AppRoutes() {
     const location = useLocation()
 
     useEffect(() => {
-        const checkSW = (window as any).__checkSWUpdate
+        const checkSW = (window as Window & typeof globalThis & { __checkSWUpdate?: () => void }).__checkSWUpdate
         if (checkSW) {
             checkSW()
         }

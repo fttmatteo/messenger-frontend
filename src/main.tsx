@@ -63,7 +63,7 @@ if (isNative()) {
           }
         });
 
-        (window as any).__checkSWUpdate = () => {
+        (window as Window & typeof globalThis & { __checkSWUpdate?: () => void }).__checkSWUpdate = () => {
           logger.info('Verificando actualización de Service Worker manualmente...');
           registration.update().catch(err => logger.error('Error en actualización manual:', err));
         }
