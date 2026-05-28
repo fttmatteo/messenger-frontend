@@ -217,7 +217,7 @@ Create a `.env` file in the project root:
 
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8080
 
 # Google Maps
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
