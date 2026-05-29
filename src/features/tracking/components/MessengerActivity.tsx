@@ -59,7 +59,7 @@ export function MessengerActivityTimeline({
 
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-7 text-[10px] px-2 gap-1 bg-transparent hover:bg-background/20 border-border/50">
+                        <Button variant="outline" size="sm" className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-[10px] px-2 gap-1 bg-transparent hover:bg-background/20 border-border/50 m-0">
                             <CalendarIcon className="h-3 w-3" />
                             {format(selectedDate, "dd MMM", { locale: es })}
                             <ChevronDown className="h-3 w-3 opacity-50" />
@@ -82,7 +82,7 @@ export function MessengerActivityTimeline({
                 <div className="flex flex-col items-center justify-center py-6 text-center">
                     <AlertCircle className="h-8 w-8 text-red-500/50 mb-2" />
                     <p className="text-xs text-muted-foreground">{error}</p>
-                    <button onClick={onRetry} className="text-[10px] h-auto p-0 mt-1 text-primary hover:underline">
+                    <button onClick={onRetry} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-[10px] p-0 mt-1 text-primary hover:underline m-0">
                         Reintentar
                     </button>
                 </div>

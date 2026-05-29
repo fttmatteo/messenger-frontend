@@ -109,7 +109,7 @@ export default function Profile() {
 
     return (
         <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
             {/* Header Section - Hidden on Mobile */}
             <div className="hidden md:flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
@@ -294,7 +294,7 @@ export default function Profile() {
  */
 function ProfileSkeleton() {
     return (
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
             {/* Header Skeleton - Hidden on Mobile */}
             <div className="hidden md:flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
@@ -344,7 +344,7 @@ function ProfileSkeleton() {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
-                                <Skeleton static className="h-9 w-36 rounded-md bg-muted/20" />
+                                <Skeleton static className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-36 rounded-md bg-muted/20 m-0" />
                             </CardFooter>
                         </Card>
                     </div>

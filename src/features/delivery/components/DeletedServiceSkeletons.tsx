@@ -38,8 +38,8 @@ export function DeletedServiceRowSkeleton() {
             {/* Acción (Buttons) */}
             <TableCell className="w-[120px] text-center py-4">
                 <div className="flex items-center justify-center gap-2">
-                    <Skeleton static className="h-8 w-8 rounded-md bg-transparent" />
-                    <Skeleton static className="h-8 w-8 rounded-md bg-transparent" />
+                    <Skeleton static className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 rounded-md bg-transparent" />
+                    <Skeleton static className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 rounded-md bg-transparent" />
                 </div>
             </TableCell>
         </TableRow>

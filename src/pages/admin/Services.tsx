@@ -83,7 +83,7 @@ export default function Services() {
 
     return (
         <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
             <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-3 shrink-0 overflow-hidden">
                 <div className="flex-1 flex items-center">
                     <SearchBar 

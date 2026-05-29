@@ -30,15 +30,6 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
 
 
             <div className="flex-1 flex flex-row items-center justify-center gap-3">
-                <div
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
-                >
-                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
-                    <span className="text-sm font-bold">
-                        {getStatusIconConfig(service.currentStatus).label}
-                    </span>
-                </div>
             </div>
 
 

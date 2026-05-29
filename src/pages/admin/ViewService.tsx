@@ -98,7 +98,7 @@ export default function ViewService() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar servicio</h3>
                 <p className="text-muted-foreground mb-6 max-w-sm">{error}</p>
-                <Button onClick={() => navigate("/admin/servicios")}>
+                <Button onClick={() => navigate("/admin/servicios")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al listado
                 </Button>
@@ -110,7 +110,7 @@ export default function ViewService() {
         return (
             <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-muted-foreground mb-4">Servicio no encontrado</p>
-                <Button onClick={() => navigate("/admin/servicios")}>
+                <Button onClick={() => navigate("/admin/servicios")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al listado
                 </Button>
@@ -120,7 +120,7 @@ export default function ViewService() {
 
     return (
         <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}

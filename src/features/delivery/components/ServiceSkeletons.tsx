@@ -41,7 +41,7 @@ export function TableRowSkeleton() {
             {/* Acción - w-[120px] */}
             <TableCell className="w-[120px] py-4 text-center">
                 <div className="flex justify-center">
-                    <Skeleton static className="h-8 w-8 rounded-lg bg-muted/20" />
+                    <Skeleton static className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border rounded-lg bg-muted/20 m-0" />
                 </div>
             </TableCell>
         </TableRow>
