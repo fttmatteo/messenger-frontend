@@ -20,7 +20,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
 
     return (
         <div className="flex-1 grid gap-4 md:grid-cols-2 content-start">
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-0 gap-2">
                 <Label htmlFor="name">
                     Nombre <span className="text-red-500 ml-0.5">*</span>
                 </Label>
@@ -29,6 +29,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                     placeholder="Concesionario"
                     autoComplete="organization"
                     disabled={disabled}
+                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                     {...register("name")}
                 />
                 {errors.name && (
@@ -36,7 +37,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-0 gap-2">
                 <Label htmlFor="phone">
                     Teléfono <span className="text-red-500 ml-0.5">*</span>
                 </Label>
@@ -45,6 +46,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                     placeholder="3001234567"
                     autoComplete="tel"
                     disabled={disabled}
+                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                     {...register("phone")}
                 />
                 {errors.phone && (
@@ -52,7 +54,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            <div className="space-y-2 md:col-span-2">
+            <div className="flex flex-col space-y-0 gap-2 md:col-span-2">
                 <Label htmlFor="address">
                     Dirección completa <span className="text-red-500 ml-0.5">*</span>
                 </Label>
@@ -69,7 +71,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-0 gap-2">
                 <Label htmlFor="zone">
                     Zona <span className="text-red-500 ml-0.5">*</span>
                 </Label>
@@ -79,7 +81,7 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                     value={selectedZone}
                     onValueChange={(value) => setValue("zone", value)}
                 >
-                    <SelectTrigger id="zone">
+                    <SelectTrigger id="zone" className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border">
                         <SelectValue placeholder="Selecciona una zona" />
                     </SelectTrigger>
                     <SelectContent>
@@ -98,13 +100,14 @@ export function DealershipForm({ form, disabled }: ConcesionarioFormProps) {
                 )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-0 gap-2">
                 <Label htmlFor="whatsappPin">PIN de WhatsApp (4 dígitos)</Label>
                 <Input
                     id="whatsappPin"
                     placeholder="1234"
                     maxLength={4}
                     disabled={disabled}
+                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                     {...register("whatsappPin")}
                 />
                 {errors.whatsappPin && (

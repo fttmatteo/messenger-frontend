@@ -58,6 +58,7 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
+        "!h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0",
         className
       )}
       {...props}
@@ -108,7 +109,7 @@ function PaginationEllipsis({
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn("flex size-9 items-center justify-center", className)}
+      className={cn("flex !h-[32px] w-9 !min-h-[32px] !max-h-[32px] box-border m-0 items-center justify-center", className)}
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />

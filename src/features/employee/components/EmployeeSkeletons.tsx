@@ -11,10 +11,6 @@ export function TableRowSkeleton() {
             <TableCell className="py-4">
                 <Skeleton static className="h-4 w-full max-w-[160px] rounded bg-muted/20" />
             </TableCell>
-            {/* Rol - badge */}
-            <TableCell className="py-4">
-                <Skeleton static className="h-6 w-full max-w-[96px] rounded-full bg-muted/20" />
-            </TableCell>
             {/* Documento - mono font */}
             <TableCell className="py-4">
                 <Skeleton static className="h-4 w-full max-w-[128px] rounded bg-muted/10" />

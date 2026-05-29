@@ -174,7 +174,7 @@ export default function MessengerDetails() {
                     <h2 className="text-xl font-semibold">Transportista no encontrado</h2>
                     <p className="text-muted-foreground">No pudimos cargar la información del transportista.</p>
                 </div>
-                <Button onClick={() => navigate("/admin/tracking")}>
+                <Button onClick={() => navigate("/admin/tracking")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Volver al monitoreo
                 </Button>
@@ -184,7 +184,7 @@ export default function MessengerDetails() {
 
     return (
         <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 animate-in fade-in duration-500 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 animate-in fade-in duration-500 !p-0 !gap-0">
             <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3 py-2 px-4 border-b shrink-0">
                 <div className="justify-self-start">
                 </div>

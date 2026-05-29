@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader } from "@/shared/components/ui/card"
  */
 export function ViewServiceSkeleton() {
     return (
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[58px] md:h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
+            <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
                     <Skeleton static className="h-4 w-48 rounded bg-muted/20" />
                 </div>
@@ -16,8 +16,8 @@ export function ViewServiceSkeleton() {
                     <Skeleton static className="h-6 w-32 rounded-full bg-muted/20" />
                 </div>
                 <div className="hidden md:flex md:flex-1 justify-end gap-2">
-                    <Skeleton static className="h-8 w-24 rounded-lg bg-muted/20" />
-                    <Skeleton static className="h-8 w-8 shrink-0 rounded-lg bg-muted/20" />
+                    <Skeleton static className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-24 rounded-lg bg-muted/20 m-0" />
+                    <Skeleton static className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-8 shrink-0 rounded-lg bg-muted/20 m-0" />
                 </div>
             </div>
 

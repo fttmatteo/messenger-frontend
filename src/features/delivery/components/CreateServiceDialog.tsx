@@ -179,7 +179,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                     control={form.control}
                                     name="manualPlateNumber"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
+                                        <FormItem className="flex flex-col space-y-0 gap-2">
                                             <Label htmlFor="manualPlateNumber">
                                                 Chasis <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
@@ -196,7 +196,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                                         const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20)
                                                         field.onChange(raw)
                                                     }}
-                                                    className="h-11 font-mono font-black uppercase touch-manipulation text-base tracking-wider text-center
+                                                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block font-mono font-black uppercase touch-manipulation text-base tracking-wider text-center
                                                         bg-black text-white border border-black
                                                         dark:bg-white dark:text-black dark:border-white
                                                         rounded-lg shadow-sm
@@ -217,7 +217,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                     control={form.control}
                                     name="messengerId"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
+                                        <FormItem className="flex flex-col space-y-0 gap-2">
                                             <Label htmlFor="messengerId">
                                                 Transportista <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
@@ -228,7 +228,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                                 name="messengerId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="messengerId" className="w-full h-11 touch-manipulation">
+                                                    <SelectTrigger id="messengerId" className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border touch-manipulation">
                                                         <SelectValue placeholder="Selecciona el transportista" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -252,7 +252,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                     control={form.control}
                                     name="originDealershipId"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
+                                        <FormItem className="flex flex-col space-y-0 gap-2">
                                             <Label htmlFor="originDealershipId">
                                                 Concesionario origen <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
@@ -263,7 +263,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                                 name="originDealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="originDealershipId" className="w-full h-11 touch-manipulation">
+                                                    <SelectTrigger id="originDealershipId" className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border touch-manipulation">
                                                         <SelectValue placeholder="Selecciona origen" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -295,7 +295,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                     control={form.control}
                                     name="dealershipId"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
+                                        <FormItem className="flex flex-col space-y-0 gap-2">
                                             <Label htmlFor="dealershipId">
                                                 Concesionario destino <span className="text-red-500 ml-0.5">*</span>
                                             </Label>
@@ -306,7 +306,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                                 name="dealershipId"
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger id="dealershipId" className="w-full h-11 touch-manipulation">
+                                                    <SelectTrigger id="dealershipId" className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border touch-manipulation">
                                                         <SelectValue placeholder="Selecciona destino" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -361,7 +361,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                         control={form.control}
                                         name="scheduledAt"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
+                                            <FormItem className="flex flex-col space-y-0 gap-2">
                                                 <Label htmlFor="scheduledAt">
                                                     Fecha y hora de activación <span className="text-red-500 ml-0.5">*</span>
                                                 </Label>
@@ -369,7 +369,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                                     <Input
                                                         id="scheduledAt"
                                                         type="datetime-local"
-                                                        className="h-11"
+                                                        className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border"
                                                         {...field}
                                                         min={(() => {
                                                             const d = new Date(Date.now() + 60000);

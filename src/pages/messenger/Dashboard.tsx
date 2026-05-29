@@ -17,7 +17,6 @@ export default function MessengerDashboard() {
     const { isOnline } = useNetwork()
     const [isRefreshing, setIsRefreshing] = useState(false)
 
-    // Restaurar filtro desde sessionStorage al montar si no hay parámetro en la URL
     useEffect(() => {
         const savedFilter = sessionStorage.getItem("messenger_dealership_filter")
         if (savedFilter && !searchParams.has("dealership")) {
@@ -30,7 +29,6 @@ export default function MessengerDashboard() {
 
     const selectedDealership = searchParams.get("dealership") || "all"
 
-    // Guardar en sessionStorage cada vez que cambie
     useEffect(() => {
         if (selectedDealership === "all") {
             sessionStorage.removeItem("messenger_dealership_filter")
@@ -76,8 +74,6 @@ export default function MessengerDashboard() {
         return filtered;
     }, [pendingServices, selectedDealership]);
 
-    // Auto-restablecer si el filtro actual ya no coincide con ningún servicio pendiente
-    // (Por ejemplo, si actualizó todos los servicios de ese concesionario y volvió)
     useEffect(() => {
         if (selectedDealership !== "all" && pendingServices.length > 0 && filteredServices.length === 0) {
             sessionStorage.removeItem("messenger_dealership_filter")

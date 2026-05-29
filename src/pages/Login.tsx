@@ -197,16 +197,16 @@ export default function Login() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="rounded-lg"
+                            className="rounded-lg !h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0"
                             type="button"
                             aria-label="Ayuda"
                             onClick={() => openSupportEmail()}
                         >
-                            <HelpCircle className="h-5 w-5" />
+                            <HelpCircle className="h-4 w-4" />
                         </Button>
                     </div>
                     <div className="absolute top-3 right-3 z-10">
-                        <ModeToggle showLabel={false} />
+                        <ModeToggle showLabel={false} className="rounded-lg !h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0" />
                     </div>
                     <CardHeader className="space-y-0 pb-1.5 pt-3">
                         <div className="flex flex-col items-center justify-center mb-2.5">

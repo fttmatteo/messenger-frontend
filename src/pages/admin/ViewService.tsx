@@ -98,7 +98,7 @@ export default function ViewService() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar servicio</h3>
                 <p className="text-muted-foreground mb-6 max-w-sm">{error}</p>
-                <Button onClick={() => navigate("/admin/servicios")}>
+                <Button onClick={() => navigate("/admin/servicios")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al listado
                 </Button>
@@ -110,7 +110,7 @@ export default function ViewService() {
         return (
             <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-muted-foreground mb-4">Servicio no encontrado</p>
-                <Button onClick={() => navigate("/admin/servicios")}>
+                <Button onClick={() => navigate("/admin/servicios")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al listado
                 </Button>
@@ -120,7 +120,7 @@ export default function ViewService() {
 
     return (
         <>
-        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
+        <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0 !gap-0">
             <ServiceHeader
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
@@ -128,8 +128,8 @@ export default function ViewService() {
                 deleting={deleting}
             />
 
-            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 !overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 h-full overflow-y-auto lg:overflow-hidden pb-2">
+            <CardContent className="flex-1 pt-2 pb-0 px-2 sm:px-4 min-h-0 overflow-y-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 h-full pb-2 min-h-[600px] lg:min-h-0">
                 <ServiceGeneralInfoCard service={service} />
 
                 <ServiceHistoryTimeline
@@ -170,11 +170,16 @@ export default function ViewService() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel 
+                            disabled={deleting}
+                            className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
+                        >
+                            Cancelar
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDelete}
                             disabled={deleting}
-                            className="bg-red-500 text-white hover:bg-red-600"
+                            className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 bg-red-500 text-white hover:bg-red-600"
                         >
                             {deleting ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

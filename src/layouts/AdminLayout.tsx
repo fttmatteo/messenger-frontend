@@ -52,9 +52,9 @@ function AdminLayoutContent() {
                 Saltar al contenido principal
             </a>
             <Sidebar collapsible="offcanvas" className="h-screen">
-                <SidebarHeader className="border-b border-sidebar-border pt-safe h-[58px] justify-center px-4 shrink-0 overflow-hidden">
+                <SidebarHeader className="border-b border-sidebar-border pt-safe h-[72px] justify-center px-4 shrink-0 overflow-hidden">
                     <div className="flex items-center justify-between w-full">
-                        <img src={logoHorizontal} alt="PLAK" className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-auto object-contain m-0" />
+                        <img src={logoHorizontal} alt="PLAK" className="!h-[28px] !min-h-[28px] !max-h-[28px] box-border w-auto object-contain m-0" />
                         <ModeToggle showLabel={false} className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0" />
                     </div>
                 </SidebarHeader>
@@ -120,7 +120,7 @@ function AdminLayoutContent() {
             </Sidebar>
             <SidebarToggleTab />
             <SidebarInset className="overflow-hidden flex flex-col h-screen pt-safe">
-                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col pb-safe overscroll-none custom-scrollbar", isTrackingPage ? "p-0 overflow-hidden" : "px-2 pb-0 pt-0 overflow-y-auto")} role="main">
+                <div id="main-content" ref={mainRef} className={cn("flex-1 flex flex-col pb-safe overscroll-none custom-scrollbar", isTrackingPage ? "p-0 overflow-hidden" : "px-0 pb-0 pt-0 overflow-y-auto")} role="main">
                     <Outlet context={{ searchQuery: "", handleBack }} />
                 </div>
             </SidebarInset>
@@ -134,8 +134,8 @@ function AdminLayoutContent() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmLogout} className="bg-red-500 text-white hover:bg-red-600">
+                        <AlertDialogCancel className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmLogout} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 bg-red-500 text-white hover:bg-red-600">
                             Salir
                         </AlertDialogAction>
                     </AlertDialogFooter>

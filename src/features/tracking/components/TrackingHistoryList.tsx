@@ -91,7 +91,7 @@ export function TrackingHistoryList({
 
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal h-10 border-dashed">
+                        <Button variant="outline" className="w-full justify-start text-left font-normal !h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 border-dashed">
                             <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                             {format(date, "PPP", { locale: es })}
                         </Button>

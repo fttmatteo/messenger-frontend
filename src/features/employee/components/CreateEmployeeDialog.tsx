@@ -100,7 +100,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl w-full">
-                            <div className="space-y-2">
+                            <div className="flex flex-col space-y-0 gap-2">
                                 <Label htmlFor="document">
                                     Documento <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
@@ -108,6 +108,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                     id="document"
                                     placeholder="1234567890"
                                     autoComplete="off"
+                                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                                     {...register("document")}
                                 />
                                 {errors.document && (
@@ -115,7 +116,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col space-y-0 gap-2">
                                 <Label htmlFor="fullName">
                                     Nombre completo <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
@@ -123,6 +124,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                     id="fullName"
                                     placeholder="Juan Pérez García"
                                     autoComplete="name"
+                                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                                     {...register("fullName")}
                                 />
                                 {errors.fullName && (
@@ -130,7 +132,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col space-y-0 gap-2">
                                 <Label htmlFor="phone">
                                     Teléfono <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
@@ -138,6 +140,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                     id="phone"
                                     placeholder="3001234567"
                                     autoComplete="tel"
+                                    className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                                     {...register("phone")}
                                 />
                                 {errors.phone && (
@@ -145,7 +148,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col space-y-0 gap-2">
                                 <Label htmlFor="password">
                                     Contraseña <span className="text-red-500 ml-0.5">*</span>
                                 </Label>
@@ -154,7 +157,7 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
-                                        className="pr-10"
+                                        className="pr-10 !h-[44px] !min-h-[44px] !max-h-[44px] box-border block"
                                         autoComplete="new-password"
                                         {...register("password")}
                                     />

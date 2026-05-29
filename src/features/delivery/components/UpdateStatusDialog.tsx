@@ -146,13 +146,13 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                                 <div className="flex-1">
                                     <p className="font-semibold text-sm text-red-900 dark:text-red-100">Servicio cancelado</p>
                                     <p className="text-xs text-red-800 dark:text-red-200 mt-0.5">
-                                        Puedes reasignarlo a otro mensajero para reintentar la entrega.
+                                        Puedes reasignarlo a otro mensajero para reintentar la entrega
                                     </p>
                                 </div>
                             </div>
                             <div className="flex flex-col sm:flex-row gap-2">
                                 <Select value={selectedMessenger} onValueChange={setSelectedMessenger} disabled={loadingMessengers}>
-                                    <SelectTrigger className="flex-1 bg-white dark:bg-gray-800">
+                                    <SelectTrigger className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border flex-1 bg-white dark:bg-gray-800">
                                         <SelectValue placeholder={loadingMessengers ? "Cargando..." : "Selecciona un mensajero"} />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -173,7 +173,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                                     onClick={handleReassign}
                                     disabled={!selectedMessenger || reassigning}
                                     size="sm"
-                                    className="bg-red-600 hover:bg-red-700"
+                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 bg-red-600 hover:bg-red-700"
                                 >
                                     {reassigning ? (
                                         <>
@@ -192,7 +192,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                     )}
 
 
-                    <div className="space-y-2">
+                    <div className="flex flex-col space-y-0 gap-2">
                         <Label>Nuevo estado</Label>
                         {availableStatuses.length === 0 ? (
                             <div
@@ -206,7 +206,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                             </div>
                         ) : (
                             <Select value={newStatus} onValueChange={(value) => setNewStatus(value as ServiceStatus)}>
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border">
                                     <SelectValue placeholder="Selecciona un nuevo estado">
                                         <div className="flex items-center gap-2">
                                             <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(newStatus).dotStyle} />
@@ -232,7 +232,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                     </div>
 
 
-                    <div className="space-y-2">
+                    <div className="flex flex-col space-y-0 gap-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="observation">Observaciones</Label>
                         </div>

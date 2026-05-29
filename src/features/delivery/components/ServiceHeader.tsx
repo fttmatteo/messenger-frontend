@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
-import { getStatusIconConfig, canUserEditService } from "@/shared/lib/status-utils"
+import { canUserEditService } from "@/shared/lib/status-utils"
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 import { useAuth } from "@/features/auth/context/AuthContext"
 
@@ -15,7 +15,7 @@ interface ServiceHeaderProps {
  * Cabecera detallada para la vista individual de un servicio.
  * Incluye migas de pan, indicador de estado prominente y acciones de gestión.
  */
-export function ServiceHeader({ service, onDelete, onUpdate, deleting }: ServiceHeaderProps) {
+export function ServiceHeader({ onDelete, onUpdate, deleting }: ServiceHeaderProps) {
     const { user } = useAuth()
     const isAdmin = user?.role === 'ADMIN'
 
@@ -30,15 +30,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
 
 
             <div className="flex-1 flex flex-row items-center justify-center gap-3">
-                <div
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: getStatusIconConfig(service.currentStatus).pillBackground }}
-                >
-                    <div className="w-3 h-3 rounded-full" style={getStatusIconConfig(service.currentStatus).dotStyle} />
-                    <span className="text-sm font-bold">
-                        {getStatusIconConfig(service.currentStatus).label}
-                    </span>
-                </div>
+                <h1 className="text-lg md:text-2xl font-bold whitespace-nowrap">Detalles del servicio</h1>
             </div>
 
 

@@ -24,11 +24,11 @@ export function TableRowSkeleton() {
             </TableCell>
             {/* Zona - badge */}
             <TableCell className="py-4">
-                <Skeleton static className="h-6 w-full max-w-[80px] rounded-full bg-muted/20" />
+                <Skeleton static className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-full max-w-[80px] rounded-full bg-muted/20 m-0" />
             </TableCell>
             {/* Ubicación - badge */}
             <TableCell className="py-4">
-                <Skeleton static className="h-6 w-full max-w-[112px] rounded-full bg-muted/20" />
+                <Skeleton static className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-full max-w-[112px] rounded-full bg-muted/20 m-0" />
             </TableCell>
         </TableRow>
     )
