@@ -5,7 +5,6 @@ import { useEmployees } from "@/features/employee/hooks/use-employees"
 import { listItemVariants } from "@/shared/lib/animation-variants"
 import { SortIndicator } from "@/shared/components/ui/sort-indicator"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Button } from "@/shared/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table"
 import { Card, CardContent } from "@/shared/components/ui/card"
@@ -47,7 +46,6 @@ export default function Employees() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Transportistas" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">

@@ -6,7 +6,6 @@ import { useServices } from "@/features/delivery/hooks/use-services"
 import { listItemVariants } from "@/shared/lib/animation-variants"
 import { SortIndicator } from "@/shared/components/ui/sort-indicator"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { TableRowSkeleton } from "@/features/delivery/components/ServiceSkeletons"
 import { Button } from "@/shared/components/ui/button"
@@ -15,7 +14,7 @@ import { Card, CardContent } from "@/shared/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
 import { TablePagination } from "@/shared/components/ui/table-pagination"
-import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X, Plus } from "lucide-react"
+import { Bike, Calendar, User, PackageCheck, Settings, Edit, X, Plus, MapPin, Flag, Activity } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
@@ -23,7 +22,6 @@ import { formatDisplayName } from "@/shared/lib/format-utils"
 import { UpdateStatusDialog } from "@/features/delivery/components/UpdateStatusDialog"
 import { CreateServiceDialog } from "@/features/delivery/components/CreateServiceDialog"
 
-// Estados disponibles para selección
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'ASSIGNED', label: 'Asignado' },
     { value: 'PENDING', label: 'Pendiente' },
@@ -83,7 +81,6 @@ export default function Services() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
@@ -159,19 +156,19 @@ export default function Services() {
                                         <TableRow>
                                             <TableHead className="w-[100px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
                                                 <div className="flex items-center">
-                                                    <Car className="h-4 w-4 mr-1" />Chasis
+                                                    <Bike className="h-4 w-4 mr-1" />Chasis
                                                     <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("originDealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Origen
+                                                    <MapPin className="h-4 w-4 mr-1 shrink-0" />Origen
                                                     <SortIndicator field="originDealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Destino
+                                                    <Flag className="h-4 w-4 mr-1 shrink-0" />Destino
                                                     <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -183,7 +180,7 @@ export default function Services() {
                                             </TableHead>
                                             <TableHead className="w-[140px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
                                                 <div className="flex items-center">
-                                                    <Bike className="h-4 w-4 mr-1" />Estado
+                                                    <Activity className="h-4 w-4 mr-1" />Estado
                                                     <SortIndicator field="currentStatus" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>

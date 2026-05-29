@@ -8,8 +8,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/components/ui/alert-dialog"
 import { Badge } from "@/shared/components/ui/badge"
 import { Map } from "@/features/location/components/Map"
-import { MAP_LIBRARIES } from "@/shared/lib/maps.constants"
-import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
+import { useGoogleMap } from "@react-google-maps/api"
+import { useMaps } from "@/shared/context/MapsContext"
 import { Loader2, MapPin, Trash2, Save } from "lucide-react"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { DealershipForm } from "@/features/dealership/components/DealershipForm"
@@ -65,12 +65,7 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
     const [initialAddress, setInitialAddress] = useState("")
 
-    const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: MAP_LIBRARIES,
-        version: 'weekly'
-    })
+    const { isLoaded: isMapsApiLoaded } = useMaps()
 
     const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),

@@ -1,6 +1,6 @@
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap } from '@react-google-maps/api'
 import { memo, useCallback, useState } from 'react'
-import { MAP_LIBRARIES } from '@/shared/lib/maps.constants'
+import { useMaps } from '@/shared/context/MapsContext'
 import { useTheme } from "next-themes"
 
 const containerStyle = {
@@ -34,12 +34,7 @@ function MapComponent({ center = defaultCenter, zoom = 13, children, onLoad, onU
     const { resolvedTheme } = useTheme()
     const [, setMap] = useState<google.maps.Map | null>(null)
 
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: MAP_LIBRARIES,
-        version: 'weekly'
-    })
+    const { isLoaded } = useMaps()
 
     const handleLoad = useCallback((mapInstance: google.maps.Map) => {
         setMap(mapInstance)

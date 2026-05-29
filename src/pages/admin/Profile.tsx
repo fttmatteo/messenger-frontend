@@ -14,7 +14,6 @@ import { Label } from "@/shared/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter} from "@/shared/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Skeleton } from "@/shared/components/ui/skeleton"
 
 const profileSchema = z.object({
@@ -114,7 +113,6 @@ export default function Profile() {
             {/* Header Section - Hidden on Mobile */}
             <div className="hidden md:flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Perfil" }]} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Perfil</h1>

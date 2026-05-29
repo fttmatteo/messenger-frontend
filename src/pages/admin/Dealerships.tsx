@@ -6,7 +6,6 @@ import { useAdminUI } from "@/shared/context/AdminUIContext"
 import { listItemVariants } from "@/shared/lib/animation-variants"
 import { SortIndicator } from "@/shared/components/ui/sort-indicator"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Button } from "@/shared/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table"
 import { Card, CardContent } from "@/shared/components/ui/card"
@@ -14,17 +13,14 @@ import { Badge } from "@/shared/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog"
 import { TableRowSkeleton } from "@/features/dealership/components/DealershipSkeletons"
-import { Skeleton } from "@/shared/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ui/toggle-group"
 import { TablePagination } from "@/shared/components/ui/table-pagination"
 import { Map } from "@/features/location/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Plus, MapPin, Smartphone, PhoneCall, Copy, MapPinned, Store, Globe, Navigation, X, ExternalLink } from "lucide-react"
-import { createLogger } from "@/shared/utils/logger"
 import { CreateDealershipDialog } from "@/features/dealership/components/CreateDealershipDialog"
 import { EditDealershipDialog } from "@/features/dealership/components/EditDealershipDialog"
 
-const logger = createLogger('Dealerships')
 
 
 /**
@@ -64,65 +60,6 @@ function DealershipMarker({ position }: { position: google.maps.LatLngLiteral })
     return null
 }
 
-/**
- * Componente que muestra la dirección física a partir de coordenadas GPS
- * utilizando el servicio de geocodificación inversa de Google Maps.
- * 
- * @param {Object} props - Propiedades del componente.
- * @param {number} props.lat - Latitud.
- * @param {number} props.lng - Longitud.
- */
-function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
-    const [address, setAddress] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        let isMounted = true
-        const fetchAddress = async () => {
-            setLoading(true)
-            try {
-                if (!window.google?.maps?.Geocoder) {
-                    if (isMounted) {
-                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`) // Fallback
-                        setLoading(false)
-                    }
-                    return
-                }
-
-                const geocoder = new google.maps.Geocoder()
-                const response = await geocoder.geocode({ location: { lat, lng } })
-
-                if (isMounted) {
-                    if (response.results?.[0]) {
-                        setAddress(response.results[0].formatted_address)
-                    } else {
-                        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
-                    }
-                    setLoading(false)
-                }
-            } catch (err) {
-                logger.error('Error de geocodificación inversa', err)
-                if (isMounted) {
-                    setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
-                    setLoading(false)
-                }
-            }
-        }
-
-        fetchAddress()
-
-        return () => { isMounted = false }
-    }, [lat, lng])
-
-    if (loading) return <Skeleton static className="h-4 w-48" />
-
-    return (
-        <span className="text-sm text-muted-foreground font-medium flex items-center gap-1">
-            <MapPinned className="h-3 w-3" />
-            {address}
-        </span>
-    )
-}
 
 /**
  * Página principal de administración de concesionarios.
@@ -133,7 +70,7 @@ function AddressDisplay({ lat, lng }: { lat: number, lng: number }) {
 export default function Dealerships() {
     const { searchQuery } = useOutletContext<{ searchQuery: string }>()
     const { setSuccess } = useAdminUI()
-    const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number } | null>(null)
+    const [locationPopup, setLocationPopup] = useState<{ name: string; lat: number; lng: number; address: string } | null>(null)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null)
 
@@ -162,7 +99,6 @@ export default function Dealerships() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Concesionarios" }]} />
                 </div>
 
                 <div className="flex-1 flex items-center justify-center gap-3">
@@ -309,7 +245,8 @@ export default function Dealerships() {
                                                                     setLocationPopup({
                                                                         name: dealership.name,
                                                                         lat: dealership.latitude!,
-                                                                        lng: dealership.longitude!
+                                                                        lng: dealership.longitude!,
+                                                                        address: dealership.address
                                                                     })
                                                                 }}
                                                             >
@@ -351,7 +288,10 @@ export default function Dealerships() {
                         </div>
                         <div className="flex items-center justify-between">
                             {locationPopup && (
-                                <AddressDisplay lat={locationPopup.lat} lng={locationPopup.lng} />
+                                <span className="text-sm text-muted-foreground font-medium flex items-center gap-1">
+                                    <MapPinned className="h-4 w-4" />
+                                    {locationPopup.address}
+                                </span>
                             )}
                             <div className="flex gap-2">
                                 <Button

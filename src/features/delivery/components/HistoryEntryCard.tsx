@@ -53,7 +53,7 @@ export function HistoryEntryCard({
 
             {entry.newStatus === 'SCHEDULED' && scheduledAt && (
                 <div className="mt-2 p-2.5 bg-primary/10 border border-primary/20 rounded-md flex items-center gap-2.5 shadow-sm">
-                    <div className="bg-primary/20 p-1.5 rounded-full flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                         <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
                     </div>
                     <div className="flex flex-col">

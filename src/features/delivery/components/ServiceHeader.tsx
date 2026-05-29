@@ -1,4 +1,3 @@
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Button } from "@/shared/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
 import { getStatusIconConfig, canUserEditService } from "@/shared/lib/status-utils"
@@ -27,10 +26,6 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
         <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
 
             <div className="flex-1">
-                <AdminBreadcrumb segments={[
-                    { label: "Servicios", href: "/admin/servicios" },
-                    { label: service.plate.plateNumber }
-                ]} />
             </div>
 
 

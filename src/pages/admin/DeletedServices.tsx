@@ -3,7 +3,6 @@ import { serviceDeliveryService } from "@/features/delivery/services/service.ser
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 import { Button } from "@/shared/components/ui/button"
 import { Card, CardContent } from "@/shared/components/ui/card"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
 import { Trash2, Loader2 } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
@@ -111,7 +110,6 @@ export default function DeletedServices() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Papelera" }]} />
                 </div>
 
                 <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Servicios eliminados</h1>

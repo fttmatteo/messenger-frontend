@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { Map } from "@/features/location/components/Map"
 import { useGoogleMap } from "@react-google-maps/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card"
-import { Flag, Home } from "lucide-react"
+import { Flag, MapPin } from "lucide-react"
 import type { ServiceStatus } from "@/features/delivery/types/service.types"
 
 interface ServiceTrackingMapProps {
@@ -124,7 +124,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title={`Ir a origen: ${originDealershipName ?? 'Concesionario origen'}`}
                             >
-                                <Home className="h-4 w-4 text-blue-500" />
+                                <MapPin className="h-5 w-5 text-blue-500" />
                                 <span className="text-muted-foreground">Origen</span>
                             </button>
                         )}
@@ -135,7 +135,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title="Ir a destino"
                             >
-                                <Flag className="h-4 w-4 text-orange-500" />
+                                <Flag className="h-5 w-5 text-orange-500" />
                                 <span className="text-muted-foreground">Destino</span>
                             </button>
                         )}
