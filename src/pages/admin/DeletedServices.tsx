@@ -3,7 +3,6 @@ import { serviceDeliveryService } from "@/features/delivery/services/service.ser
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 import { Button } from "@/shared/components/ui/button"
 import { Card, CardContent } from "@/shared/components/ui/card"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
 import { Trash2, Loader2 } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
@@ -109,9 +108,8 @@ export default function DeletedServices() {
     return (
         <>
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+            <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Papelera" }]} />
                 </div>
 
                 <h1 className="flex-1 text-center text-xl md:text-2xl font-bold whitespace-nowrap">Servicios eliminados</h1>
@@ -122,7 +120,7 @@ export default function DeletedServices() {
                         size="sm"
                         disabled={emptying || services.length === 0 || loading}
                         onClick={() => setIsEmptyTrashDialogOpen(true)}
-                        className="shrink-0 h-8 text-xs text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                        className="shrink-0 !h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                     >
                         {emptying ? (
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -237,7 +235,7 @@ export default function DeletedServices() {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="h-8 w-8 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                                                                        className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
                                                                         disabled={isRestoring || isDeleting}
                                                                         onClick={(e) => {
                                                                             e.stopPropagation()
@@ -259,7 +257,7 @@ export default function DeletedServices() {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                                                        className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                                                         disabled={isRestoring || isDeleting}
                                                                         onClick={(e) => {
                                                                             e.stopPropagation()

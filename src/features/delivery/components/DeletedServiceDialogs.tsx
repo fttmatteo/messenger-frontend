@@ -23,10 +23,10 @@ export function EmptyTrashDialog({ isOpen, onOpenChange, onConfirm, count }: Emp
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogCancel className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">Cancelar</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
-                        className="bg-red-500 text-white hover:bg-red-600"
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 bg-red-500 text-white hover:bg-red-600"
                     >
                         Vaciar papelera
                     </AlertDialogAction>
@@ -81,10 +81,10 @@ export function ConfirmTrashActionDialog({ isOpen, onOpenChange, onConfirm, plat
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogCancel className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">Cancelar</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
-                        className={isRestore ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-red-500 text-white hover:bg-red-600"}
+                        className={`!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 ${isRestore ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-red-500 text-white hover:bg-red-600"}`}
                     >
                         {isRestore ? 'Restaurar' : (
                             <><Trash2 className="h-4 w-4 mr-2" /> Eliminar</>

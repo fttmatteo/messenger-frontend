@@ -4,7 +4,7 @@
 
 # PLAK - Messenger Frontend
 
-<img src="https://img.shields.io/badge/Version-3.1.1-blue.svg" alt="Version">
+<img src="https://img.shields.io/badge/Version-3.2.0-blue.svg" alt="Version">
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -217,7 +217,7 @@ Create a `.env` file in the project root:
 
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8080
 
 # Google Maps
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key

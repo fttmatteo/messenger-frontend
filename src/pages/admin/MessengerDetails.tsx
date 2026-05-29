@@ -4,7 +4,6 @@ import { Map as MapComponent } from "@/features/location/components/Map"
 import { Card, CardContent } from "@/shared/components/ui/card"
 import { Button } from "@/shared/components/ui/button"
 import { Badge } from "@/shared/components/ui/badge"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { MessengerMarker } from "@/features/tracking/components"
 import { ArrowLeft, MapPin, User } from "lucide-react"
 import { cn } from "@/shared/lib/utils"
@@ -188,12 +187,6 @@ export default function MessengerDetails() {
         <Card className="flex flex-col h-full overflow-hidden min-h-0 animate-in fade-in duration-500 !p-0">
             <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3 py-2 px-4 border-b shrink-0">
                 <div className="justify-self-start">
-                    <AdminBreadcrumb
-                        segments={[
-                            { label: "Monitoreo", href: "/admin/tracking" },
-                            { label: employee?.fullName || `Mensajero` }
-                        ]}
-                    />
                 </div>
 
                 <h1 className="text-xl md:text-2xl font-bold text-center">

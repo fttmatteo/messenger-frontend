@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Clock, User, Expand } from "lucide-react"
+import { Clock, User, Expand, Calendar } from "lucide-react"
 import type { StatusHistoryInfo } from "@/features/delivery/types/service.types"
 
 interface HistoryEntryCardProps {
@@ -52,9 +52,14 @@ export function HistoryEntryCard({
             )}
 
             {entry.newStatus === 'SCHEDULED' && scheduledAt && (
-                <div className="pt-1.5 text-xs">
-                    <span className="font-medium text-foreground">Programado para: </span>
-                    <span className="text-muted-foreground">{format(new Date(scheduledAt), "PPp", { locale: es })}</span>
+                <div className="mt-2 p-2.5 bg-primary/10 border border-primary/20 rounded-md flex items-center gap-2.5 shadow-sm">
+                    <div className="flex items-center justify-center">
+                        <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-wider">Programado para</span>
+                        <span className="text-xs font-semibold text-primary/90">{format(new Date(scheduledAt), "PPp", { locale: es })}</span>
+                    </div>
                 </div>
             )}
 

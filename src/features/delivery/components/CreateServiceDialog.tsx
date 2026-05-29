@@ -393,6 +393,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                 size="sm"
                                 onClick={() => onOpenChange(false)}
                                 disabled={loading}
+                                className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                             >
                                 Cancelar
                             </Button>
@@ -400,6 +401,7 @@ export function CreateServiceDialog({ open, onOpenChange, onSuccess }: CreateSer
                                 type="submit"
                                 disabled={loading || loadingData || !form.formState.isDirty}
                                 size="sm"
+                                className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                             >
                                 {loading ? (
                                     <>

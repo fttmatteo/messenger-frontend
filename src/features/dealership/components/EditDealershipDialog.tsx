@@ -8,8 +8,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/components/ui/alert-dialog"
 import { Badge } from "@/shared/components/ui/badge"
 import { Map } from "@/features/location/components/Map"
-import { MAP_LIBRARIES } from "@/shared/lib/maps.constants"
-import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
+import { useGoogleMap } from "@react-google-maps/api"
+import { useMaps } from "@/shared/context/MapsContext"
 import { Loader2, MapPin, Trash2, Save } from "lucide-react"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { DealershipForm } from "@/features/dealership/components/DealershipForm"
@@ -65,12 +65,7 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
     const [coordinates, setCoordinates] = useState<{ lat?: number; lng?: number }>({})
     const [initialAddress, setInitialAddress] = useState("")
 
-    const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: MAP_LIBRARIES,
-        version: 'weekly'
-    })
+    const { isLoaded: isMapsApiLoaded } = useMaps()
 
     const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
@@ -270,7 +265,7 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
                                         type="button"
                                         variant="ghost"
                                         size="sm"
-                                        className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                     >
                                         <Trash2 className="h-4 w-4 md:mr-2" />
                                         <span className="hidden md:inline">Eliminar</span>
@@ -308,10 +303,11 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
                                     size="sm"
                                     onClick={() => onOpenChange(false)}
                                     disabled={isSubmitting}
+                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                                 >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     ) : (

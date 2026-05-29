@@ -26,7 +26,7 @@ export function SidebarToggleTab() {
                 size="icon"
                 onClick={toggleSidebar}
                 className={cn(
-                    "h-7 w-7 rounded-full !bg-sidebar text-sidebar-foreground border border-sidebar-border shadow-md",
+                    "!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border rounded-full !bg-sidebar text-sidebar-foreground border border-sidebar-border shadow-md m-0",
                     "hover:!bg-sidebar hover:text-primary hover:!border-sidebar-border",
                     "transition-all duration-200 opacity-100 flex items-center justify-center",
                     "focus-visible:ring-0 focus-visible:ring-offset-0 outline-none",

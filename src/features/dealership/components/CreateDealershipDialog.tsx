@@ -10,8 +10,8 @@ import { useAdminUI } from "@/shared/context/AdminUIContext"
 import { capitalizeWords } from "@/shared/utils/stringUtils"
 import { getErrorMessage } from "@/shared/lib/error-utils"
 import { Map } from "@/features/location/components/Map"
-import { MAP_LIBRARIES } from "@/shared/lib/maps.constants"
-import { useGoogleMap, useJsApiLoader } from "@react-google-maps/api"
+import { useGoogleMap } from "@react-google-maps/api"
+import { useMaps } from "@/shared/context/MapsContext"
 import { DealershipForm } from "@/features/dealership/components/DealershipForm"
 import { dealershipSchema, type DealershipFormValues } from "@/shared/schemas/dealership.schema"
 import { createLogger } from "@/shared/utils/logger"
@@ -63,12 +63,7 @@ export function CreateDealershipDialog({ open, onOpenChange, onSuccess }: Create
     const [geocoding, setGeocoding] = useState(false)
     const [previewDone, setPreviewDone] = useState(false)
 
-    const { isLoaded: isMapsApiLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries: MAP_LIBRARIES,
-        version: 'weekly'
-    })
+    const { isLoaded: isMapsApiLoaded } = useMaps()
 
     const form = useForm<DealershipFormValues>({
         resolver: zodResolver(dealershipSchema),
@@ -246,10 +241,11 @@ export function CreateDealershipDialog({ open, onOpenChange, onSuccess }: Create
                             size="sm"
                             onClick={() => onOpenChange(false)}
                             disabled={isSubmitting}
+                            className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                         >
                             Cancelar
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Crear concesionario
                         </Button>

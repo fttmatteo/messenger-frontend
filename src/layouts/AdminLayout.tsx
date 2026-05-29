@@ -52,10 +52,10 @@ function AdminLayoutContent() {
                 Saltar al contenido principal
             </a>
             <Sidebar collapsible="offcanvas" className="h-screen">
-                <SidebarHeader className="border-b border-sidebar-border pt-safe">
-                    <div className="flex items-center justify-between px-2 py-2">
-                        <img src={logoHorizontal} alt="PLAK" className="h-6 w-auto object-contain" />
-                        <ModeToggle showLabel={false} />
+                <SidebarHeader className="border-b border-sidebar-border pt-safe h-[58px] justify-center px-4 shrink-0 overflow-hidden">
+                    <div className="flex items-center justify-between w-full">
+                        <img src={logoHorizontal} alt="PLAK" className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-auto object-contain m-0" />
+                        <ModeToggle showLabel={false} className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0" />
                     </div>
                 </SidebarHeader>
                 <SidebarContent>

@@ -255,6 +255,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                         size="sm"
                         onClick={() => onOpenChange(false)}
                         disabled={updating}
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                     >
                         Cancelar
                     </Button>
@@ -262,6 +263,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
                         size="sm"
                         onClick={handleUpdateStatus}
                         disabled={updating || availableStatuses.length === 0 || (newStatus === service.currentStatus && !observation.trim())}
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                     >
                         {updating ? (
                             <>

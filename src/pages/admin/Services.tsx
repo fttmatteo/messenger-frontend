@@ -6,7 +6,6 @@ import { useServices } from "@/features/delivery/hooks/use-services"
 import { listItemVariants } from "@/shared/lib/animation-variants"
 import { SortIndicator } from "@/shared/components/ui/sort-indicator"
 import { ListEmptyState } from "@/shared/components/ui/list-empty-state"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
 import { TableRowSkeleton } from "@/features/delivery/components/ServiceSkeletons"
 import { Button } from "@/shared/components/ui/button"
@@ -14,8 +13,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent } from "@/shared/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
+import { SearchBar } from "@/shared/components/ui/search-bar"
+import { useDebounce } from "@/shared/hooks/use-debounce"
 import { TablePagination } from "@/shared/components/ui/table-pagination"
-import { Bike, Car, Calendar, Building2, User, PackageCheck, Settings, Edit, X, Plus } from "lucide-react"
+import { Bike, Calendar, User, PackageCheck, Settings, Edit, X, Plus, MapPin, Flag, Activity } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusIconConfig } from "@/shared/lib/status-utils"
@@ -23,7 +24,6 @@ import { formatDisplayName } from "@/shared/lib/format-utils"
 import { UpdateStatusDialog } from "@/features/delivery/components/UpdateStatusDialog"
 import { CreateServiceDialog } from "@/features/delivery/components/CreateServiceDialog"
 
-// Estados disponibles para selección
 const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
     { value: 'ASSIGNED', label: 'Asignado' },
     { value: 'PENDING', label: 'Pendiente' },
@@ -42,7 +42,10 @@ const AVAILABLE_STATUSES: { value: ServiceStatus; label: string }[] = [
 export default function Services() {
     const navigate = useNavigate()
     const outletContext = useOutletContext<{ searchQuery?: string }>()
-    const searchQuery = outletContext?.searchQuery || ""
+    const [localSearch, setLocalSearch] = useState("")
+    const debouncedLocalSearch = useDebounce(localSearch, 400)
+    
+    const effectiveSearchQuery = debouncedLocalSearch || outletContext?.searchQuery || ""
 
     const {
         services,
@@ -59,7 +62,7 @@ export default function Services() {
         statusFilter,
         setStatusFilter,
         fetchServices,
-    } = useServices({ searchQuery })
+    } = useServices({ searchQuery: effectiveSearchQuery })
 
     const [selectedService, setSelectedService] = useState<ServiceDelivery | null>(null)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
@@ -81,13 +84,20 @@ export default function Services() {
     return (
         <>
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
-                <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Servicios" }]} />
+            <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-3 shrink-0 overflow-hidden">
+                <div className="flex-1 flex items-center">
+                    <SearchBar 
+                        placeholder="Buscar..."
+                        value={localSearch}
+                        onChange={(e) => setLocalSearch(e.target.value)}
+                        onClear={() => setLocalSearch("")}
+                        isLoading={loading && localSearch !== debouncedLocalSearch}
+                        className="w-[130px] sm:w-[200px] md:w-[260px] transition-all"
+                    />
                 </div>
 
-                <div className="flex-1 flex items-center justify-center gap-3">
-                    <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
+                <div className="flex-1 flex items-center justify-center gap-2 md:gap-3">
+                    <h1 className="text-lg md:text-2xl font-bold whitespace-nowrap">Servicios</h1>
                     <Select
                         value={(statusFilter?.length ?? 0) === 1 ? statusFilter[0] : "all"}
                         onValueChange={(value) => {
@@ -95,7 +105,7 @@ export default function Services() {
                             else setStatusFilter([value as ServiceStatus])
                         }}
                     >
-                        <SelectTrigger className="h-8 w-[160px] text-xs">
+                        <SelectTrigger className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border w-[160px] text-xs m-0">
                             <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
@@ -106,14 +116,14 @@ export default function Services() {
                         </SelectContent>
                     </Select>
                     {(statusFilter?.length ?? 0) > 0 && (
-                        <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="h-8 text-xs">
+                        <Button variant="ghost" size="sm" onClick={() => setStatusFilter([])} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                             <X className="h-3 w-3 mr-1" />Limpiar
                         </Button>
                     )}
                 </div>
 
                 <div className="hidden md:flex md:flex-1 justify-end">
-                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 !h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo servicio
                     </Button>
@@ -143,8 +153,8 @@ export default function Services() {
                     ) : (services?.length ?? 0) === 0 ? (
                         <div className="flex-1 flex items-center justify-center h-full">
                             <ListEmptyState
-                                isSearchResult={!!searchQuery}
-                                searchQuery={searchQuery}
+                                isSearchResult={!!effectiveSearchQuery}
+                                searchQuery={effectiveSearchQuery}
                                 emptyIcon={<PackageCheck />}
                                 emptyTitle="Sin servicios"
                                 emptyDescription="Aún no hay servicios de entrega registrados en el sistema"
@@ -159,19 +169,19 @@ export default function Services() {
                                         <TableRow>
                                             <TableHead className="w-[100px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("plateNumber")}>
                                                 <div className="flex items-center">
-                                                    <Car className="h-4 w-4 mr-1" />Chasis
+                                                    <Bike className="h-4 w-4 mr-1" />Chasis
                                                     <SortIndicator field="plateNumber" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("originDealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Origen
+                                                    <MapPin className="h-4 w-4 mr-1 shrink-0" />Origen
                                                     <SortIndicator field="originDealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
                                             <TableHead className="max-w-[150px] md:max-w-[200px] cursor-pointer hover:bg-muted/50 transition-colors select-none truncate" onClick={() => handleSort("dealershipName")}>
                                                 <div className="flex items-center">
-                                                    <Building2 className="h-4 w-4 mr-1 shrink-0" />Destino
+                                                    <Flag className="h-4 w-4 mr-1 shrink-0" />Destino
                                                     <SortIndicator field="dealershipName" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -183,7 +193,7 @@ export default function Services() {
                                             </TableHead>
                                             <TableHead className="w-[140px] cursor-pointer hover:bg-muted/50 transition-colors select-none" onClick={() => handleSort("currentStatus")}>
                                                 <div className="flex items-center">
-                                                    <Bike className="h-4 w-4 mr-1" />Estado
+                                                    <Activity className="h-4 w-4 mr-1" />Estado
                                                     <SortIndicator field="currentStatus" currentSortField={sortField} sortDirection={sortDirection} />
                                                 </div>
                                             </TableHead>
@@ -249,7 +259,7 @@ export default function Services() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => handleUpdateStatus(service)}
-                                                                className="h-8 w-8 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors"
+                                                                className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors"
                                                                 title="Actualizar estado"
                                                             >
                                                                 <Edit className="h-4 w-4" />

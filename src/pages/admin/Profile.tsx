@@ -14,7 +14,6 @@ import { Label } from "@/shared/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter} from "@/shared/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar"
-import { AdminBreadcrumb } from "@/shared/components/ui/admin-breadcrumb"
 import { Skeleton } from "@/shared/components/ui/skeleton"
 
 const profileSchema = z.object({
@@ -112,9 +111,8 @@ export default function Profile() {
         <>
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             {/* Header Section - Hidden on Mobile */}
-            <div className="hidden md:flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+            <div className="hidden md:flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
-                    <AdminBreadcrumb segments={[{ label: "Perfil" }]} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap">Perfil</h1>
@@ -211,7 +209,7 @@ export default function Profile() {
                                             </div>
                                         </CardContent>
                                         <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
-                                            <Button type="submit" size="sm" disabled={saving || !isDirty}>
+                                            <Button type="submit" size="sm" disabled={saving || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                                                 {saving ? (
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 ) : (
@@ -267,7 +265,7 @@ export default function Profile() {
                                             </div>
                                         </CardContent>
                                         <CardFooter className="flex flex-wrap gap-3 p-4 pt-4 mt-auto border-t bg-muted/5">
-                                            <Button type="submit" size="sm" disabled={saving || !isDirty}>
+                                            <Button type="submit" size="sm" disabled={saving || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                                                 {saving ? (
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 ) : (
@@ -298,7 +296,7 @@ function ProfileSkeleton() {
     return (
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
             {/* Header Skeleton - Hidden on Mobile */}
-            <div className="hidden md:flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+            <div className="hidden md:flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
                     <Skeleton static className="h-4 w-32 rounded bg-muted/20" />
                 </div>

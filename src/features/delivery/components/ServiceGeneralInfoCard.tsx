@@ -1,7 +1,7 @@
 import { createElement } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
-import { Building2, User, Calendar, PhoneCall } from "lucide-react"
+import { User, Calendar, PhoneCall, MapPin, Flag } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { PlacaBadge } from "@/shared/components/ui/PlacaBadge"
@@ -41,7 +41,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
 
 
                 <div className="flex items-start gap-3">
-                    <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Concesionario origen</p>
                         <p className="text-sm text-muted-foreground">{service.originDealership.name}</p>
@@ -67,7 +67,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 </div>
 
                 <div className="flex items-start gap-3">
-                    <Building2 className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <Flag className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Concesionario destino</p>
                         <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
