@@ -254,13 +254,13 @@ export default function LiveTracking() {
             </div>
 
             <div className="absolute top-4 left-4 z-10 pointer-events-auto">
-                <div className="flex items-center gap-3 bg-background/60 backdrop-blur-xl rounded-lg px-3 shadow-lg border h-10">
+                <div className="flex items-center gap-3 bg-background/60 backdrop-blur-xl rounded-lg px-3 shadow-lg border !h-[32px] !min-h-[32px] !max-h-[32px] box-border">
                     <h1 className="text-sm font-medium">Monitoreo</h1>
                     <div className="h-4 w-px bg-border" />
                     <Badge
                         variant="outline"
                         className={cn(
-                            "gap-1 h-6 justify-center text-xs font-normal",
+                            "gap-1 !h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 justify-center text-xs font-normal px-2",
                             connected
                                 ? "bg-green-500/10 text-green-600 border-green-500/30"
                                 : "bg-red-500/10 text-red-600 border-red-500/30"
@@ -274,7 +274,7 @@ export default function LiveTracking() {
                         size="sm"
                         onClick={() => fetchMessengers(true)}
                         disabled={loading}
-                        className="h-6 w-6 p-0 hover:bg-muted"
+                        className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border p-0 m-0 hover:bg-muted"
                         title="Actualizar datos"
                     >
                         <RefreshCw className="h-3 w-3" />

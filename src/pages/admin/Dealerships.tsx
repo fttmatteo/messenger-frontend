@@ -97,7 +97,7 @@ export default function Dealerships() {
     return (
         <>
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+            <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
                 </div>
 
@@ -109,20 +109,20 @@ export default function Dealerships() {
                         onValueChange={(value) => setZoneFilter(value || "all")}
                         className="justify-start shrink-0"
                     >
-                        <ToggleGroupItem value="all" aria-label="Todos" className="h-8 px-2 text-xs">Todos</ToggleGroupItem>
+                        <ToggleGroupItem value="all" aria-label="Todos" className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border px-2 text-xs m-0">Todos</ToggleGroupItem>
                         {uniqueZones.map((zone) => (
-                            <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="h-8 px-2 text-xs">{zone}</ToggleGroupItem>
+                            <ToggleGroupItem key={zone} value={zone} aria-label={zone} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border px-2 text-xs m-0">{zone}</ToggleGroupItem>
                         ))}
                     </ToggleGroup>
                     {zoneFilter !== "all" && (
-                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="h-8 text-xs shrink-0">
+                        <Button variant="ghost" size="sm" onClick={() => setZoneFilter("all")} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs shrink-0 m-0">
                             <X className="h-3 w-3 mr-1" />Limpiar
                         </Button>
                     )}
                 </div>
 
                 <div className="flex-1 flex justify-end">
-                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 !h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo concesionario
                     </Button>
@@ -239,7 +239,7 @@ export default function Dealerships() {
                                                         {dealership.isGeolocated && dealership.latitude && dealership.longitude ? (
                                                             <Badge
                                                                 variant="default"
-                                                                className="bg-green-500 cursor-pointer hover:bg-green-600 transition-colors"
+                                                                className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 bg-green-500 cursor-pointer hover:bg-green-600 transition-colors px-2"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
                                                                     setLocationPopup({
@@ -297,6 +297,7 @@ export default function Dealerships() {
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                                     onClick={() => {
                                         if (locationPopup) {
                                             const coords = `${locationPopup.lat}, ${locationPopup.lng}`
@@ -310,6 +311,7 @@ export default function Dealerships() {
                                 </Button>
                                 <Button
                                     size="sm"
+                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                                     onClick={() => {
                                         if (locationPopup) {
                                             window.open(

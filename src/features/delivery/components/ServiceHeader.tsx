@@ -23,7 +23,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
     const canEdit = role ? canUserEditService(role) : false
 
     return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between min-h-[58px] md:h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
 
             <div className="flex-1">
             </div>
@@ -48,7 +48,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
                         variant="outline"
                         onClick={onUpdate}
                         size="sm"
-                        className="h-9 px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium"
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium text-xs m-0"
                     >
                         <Edit className="mr-2 h-4 w-4" />
                         Actualizar
@@ -61,7 +61,7 @@ export function ServiceHeader({ service, onDelete, onUpdate, deleting }: Service
                         size="sm"
                         onClick={onDelete}
                         disabled={deleting}
-                        className="h-9 w-9 p-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-1 md:flex-none"
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] !w-[32px] box-border p-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-1 md:flex-none m-0"
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>

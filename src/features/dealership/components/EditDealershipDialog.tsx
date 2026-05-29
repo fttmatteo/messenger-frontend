@@ -265,7 +265,7 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
                                         type="button"
                                         variant="ghost"
                                         size="sm"
-                                        className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                                     >
                                         <Trash2 className="h-4 w-4 md:mr-2" />
                                         <span className="hidden md:inline">Eliminar</span>
@@ -303,10 +303,11 @@ export function EditDealershipDialog({ open, onOpenChange, dealershipId, onSucce
                                     size="sm"
                                     onClick={() => onOpenChange(false)}
                                     disabled={isSubmitting}
+                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                                 >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                                <Button type="submit" size="sm" disabled={isSubmitting || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     ) : (

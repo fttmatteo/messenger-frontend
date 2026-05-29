@@ -44,7 +44,7 @@ export default function Employees() {
 
     return (
         <Card className="flex flex-col h-full overflow-hidden min-h-0 !p-0">
-            <div className="flex flex-row items-center justify-between min-h-[48px] py-2 px-4 border-b gap-4 shrink-0">
+            <div className="flex flex-row items-center justify-between h-[58px] px-4 border-b gap-4 shrink-0 overflow-hidden">
                 <div className="flex-1">
                 </div>
 
@@ -53,11 +53,11 @@ export default function Employees() {
                 </div>
 
                 <div className="flex-1 flex justify-end gap-2">
-                    <Button onClick={() => window.open("/acuerdo-laboral", "_blank")} variant="outline" size="sm" className="hidden">
+                    <Button onClick={() => window.open("/acuerdo-laboral", "_blank")} variant="outline" size="sm" className="hidden !h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                         <FileText className="h-3 w-3 mr-1" />
                         Acuerdo GPS
                     </Button>
-                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 h-8 text-xs">
+                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="shrink-0 !h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                         <Plus className="h-3 w-3 mr-1" />
                         Nuevo transportista
                     </Button>

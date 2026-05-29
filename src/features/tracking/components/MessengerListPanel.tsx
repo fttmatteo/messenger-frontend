@@ -39,14 +39,14 @@ export const MessengerListPanel = memo(function MessengerListPanel({
         <div className="h-full bg-background/60 backdrop-blur-xl rounded-lg shadow-lg border flex flex-col overflow-hidden">
 
             <div className={cn(
-                "flex items-center border-b shrink-0 h-10",
+                "flex items-center border-b shrink-0 !h-[32px] !min-h-[32px] !max-h-[32px] box-border",
                 isCollapsed ? "justify-center p-0" : "justify-between px-3"
             )}>
                 <Button
                     variant="ghost"
                     size="sm"
                     onClick={onToggleCollapse}
-                    className="h-6 w-6 p-0"
+                    className="!h-[32px] !w-[32px] !min-h-[32px] !max-h-[32px] box-border p-0 m-0"
                     title={isCollapsed ? "Expandir" : "Colapsar"}
                 >
                     {isCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}

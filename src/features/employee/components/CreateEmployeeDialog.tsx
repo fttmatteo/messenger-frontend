@@ -186,10 +186,11 @@ export function CreateEmployeeDialog({ open, onOpenChange, onSuccess }: CreateEm
                             size="sm"
                             onClick={() => handleOpenChange(false)}
                             disabled={isSubmitting}
+                            className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0"
                         >
                             Cancelar
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+                        <Button type="submit" size="sm" disabled={isSubmitting || !isDirty} className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border text-xs m-0">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Crear transportista
                         </Button>
