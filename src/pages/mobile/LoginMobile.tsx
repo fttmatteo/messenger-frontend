@@ -275,7 +275,7 @@ export default function LoginMobile() {
                                             />
                                         )}
                                     />
-                                        <Label htmlFor="rememberMe" className="text-sm text-muted-foreground font-normal cursor-pointer">
+                                        <Label htmlFor="rememberMe" className="text-xs text-muted-foreground font-normal cursor-pointer">
                                         Recordar contraseña
                                     </Label>
                                 </div>

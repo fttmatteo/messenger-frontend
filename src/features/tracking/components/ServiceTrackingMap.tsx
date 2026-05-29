@@ -111,12 +111,13 @@ export function ServiceTrackingMap({
 
     return (
         <Card className={className || "h-full flex flex-col"}>
-            <CardHeader className="p-2 pb-0 space-y-1">
+            <CardHeader className="p-2 pb-0">
                 <CardTitle className="text-base text-foreground font-semibold">
                     Ubicaciones
                 </CardTitle>
-
-                <div className="flex flex-col gap-1.5">
+            </CardHeader>
+            <CardContent className="p-2 pt-0 flex-1 flex flex-col min-h-0 gap-2">
+                <div className="flex flex-col gap-1.5 px-2">
                     <div className="flex items-center gap-4 text-sm font-normal flex-wrap">
                         {originDealershipLat && originDealershipLng && (
                             <button
@@ -141,8 +142,6 @@ export function ServiceTrackingMap({
                         )}
                     </div>
                 </div>
-            </CardHeader>
-            <CardContent className="p-2 pt-1 flex-1 flex flex-col min-h-0">
 
                 <div className="w-full flex-1 min-h-[200px] rounded-md overflow-hidden border">
                     <Map
