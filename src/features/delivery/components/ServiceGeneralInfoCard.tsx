@@ -29,7 +29,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
 
                 <div className="flex items-start gap-3">
                     {createElement(getPlateTypeIcon(), {
-                        className: "h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0"
+                        className: "h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0"
                     })}
                     <div className="flex-1">
                         <p className="text-sm font-medium">Chasis</p>
@@ -41,15 +41,15 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
 
 
                 <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Concesionario origen</p>
                         <p className="text-sm text-muted-foreground">{service.originDealership.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                             {service.originDealership.address} • {service.originDealership.zone}
                         </p>
                         {service.originDealership.phone && (
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <a href={`tel:${service.originDealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
@@ -67,15 +67,15 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
                 </div>
 
                 <div className="flex items-start gap-3">
-                    <Flag className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <Flag className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Concesionario destino</p>
                         <p className="text-sm text-muted-foreground">{service.dealership.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                             {service.dealership.address} • {service.dealership.zone}
                         </p>
                         {service.dealership.phone && (
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <a href={`tel:${service.dealership.phone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
@@ -94,12 +94,12 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
 
 
                 <div className="flex items-start gap-3">
-                    <User className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <User className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Transportista</p>
                         <p className="text-sm text-muted-foreground">{messengerName}</p>
                         {messengerPhone && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <a href={`tel:${messengerPhone}`} className="hover:underline hover:text-primary transition-colors inline-flex items-center gap-1">
@@ -118,7 +118,7 @@ export function ServiceGeneralInfoCard({ service, className }: ServiceGeneralInf
 
 
                 <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
                         <p className="text-sm font-medium">Fecha de creación</p>
                         <p className="text-sm text-muted-foreground">

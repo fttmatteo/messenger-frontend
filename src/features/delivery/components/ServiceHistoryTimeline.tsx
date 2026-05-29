@@ -34,10 +34,10 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                                     >
                                         <TimelineHeader size="sm" statusStyle={config.dotStyle}>
                                             <div
-                                                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ml-1"
+                                                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full ml-1"
                                                 style={{ backgroundColor: config.pillBackground }}
                                             >
-                                                <span className="text-xs font-bold">
+                                                <span className="text-sm font-medium">
                                                     {config.label}
                                                 </span>
                                             </div>

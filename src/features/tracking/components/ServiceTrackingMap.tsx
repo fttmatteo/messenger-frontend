@@ -124,7 +124,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title={`Ir a origen: ${originDealershipName ?? 'Concesionario origen'}`}
                             >
-                                <MapPin className="h-5 w-5 text-blue-500" />
+                                <MapPin className="h-4 w-4 text-blue-500" />
                                 <span className="text-muted-foreground">Origen</span>
                             </button>
                         )}
@@ -135,7 +135,7 @@ export function ServiceTrackingMap({
                                 className="flex items-center gap-1.5 hover:opacity-70 transition-opacity cursor-pointer"
                                 title="Ir a destino"
                             >
-                                <Flag className="h-5 w-5 text-orange-500" />
+                                <Flag className="h-4 w-4 text-orange-500" />
                                 <span className="text-muted-foreground">Destino</span>
                             </button>
                         )}

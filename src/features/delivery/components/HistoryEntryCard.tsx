@@ -2,6 +2,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { Clock, User, Expand, Calendar } from "lucide-react"
 import type { StatusHistoryInfo } from "@/features/delivery/types/service.types"
+import { formatDisplayName } from "@/shared/lib/format-utils"
 
 interface HistoryEntryCardProps {
     entry: StatusHistoryInfo
@@ -33,19 +34,19 @@ export function HistoryEntryCard({
 
     return (
         <div className={`bg-muted/30 rounded-lg p-2.5 space-y-2 border border-border/50 ${className}`}>
-            <div className="flex flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <div className="flex flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span>{format(new Date(entry.changeDate), "PPp", { locale: es })}</span>
+                    <Clock className="h-4 w-4 flex-shrink-0" />
+                    <span>{format(new Date(entry.changeDate), "dd/MM/yy - HH:mm", { locale: es })}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <User className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span>{entry.changedBy?.fullName || 'Sistema'}</span>
+                    <User className="h-4 w-4 flex-shrink-0" />
+                    <span>{entry.changedBy?.fullName ? formatDisplayName(entry.changedBy.fullName) : 'Sistema'}</span>
                 </div>
             </div>
 
             {entry.observation && (
-                <div className="pt-1.5 text-xs">
+                <div className="pt-1.5 text-sm">
                     <span className="font-medium text-foreground">Observación: </span>
                     <span className="text-muted-foreground">{entry.observation}</span>
                 </div>
