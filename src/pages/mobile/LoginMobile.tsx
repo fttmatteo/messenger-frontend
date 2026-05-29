@@ -161,8 +161,9 @@ export default function LoginMobile() {
         <>
             {isSubmitting && <FullScreenLoader />}
             <AnimatedLogoBackground />
-            <div className="flex flex-col items-center justify-center h-[100vh] @supports(height:100lvh):h-[100lvh] bg-transparent p-3 overflow-hidden">
-                <Card className="w-full max-w-[380px] relative shadow-lg border-border/50">
+            <div className="flex flex-col items-center justify-center min-h-[100vh] @supports(min-height:100dvh):min-h-[100dvh] bg-transparent p-3 overflow-y-auto">
+                <div className="w-full max-w-[380px] my-auto flex flex-col items-center">
+                    <Card className="w-full relative shadow-lg border-border/50">
                     <div className="absolute top-2 left-2 z-10">
                         <Button
                             variant="ghost"
@@ -303,8 +304,7 @@ export default function LoginMobile() {
                                     />
                                     <label htmlFor="acceptTerms" className="text-xs text-muted-foreground font-normal leading-tight cursor-pointer">
                                         He leído y acepto los{' '}
-                                        <button
-                                            type="button"
+                                        <span
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -313,10 +313,9 @@ export default function LoginMobile() {
                                             className="text-primary font-semibold hover:underline cursor-pointer"
                                         >
                                             términos y condiciones
-                                        </button>{' '}
+                                        </span>{' '}
                                         y la{' '}
-                                        <button
-                                            type="button"
+                                        <span
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -325,7 +324,7 @@ export default function LoginMobile() {
                                             className="text-primary font-semibold hover:underline cursor-pointer"
                                         >
                                             política de privacidad
-                                        </button>
+                                        </span>
                                         .
                                     </label>
                                 </div>
@@ -375,7 +374,7 @@ export default function LoginMobile() {
                     </p>
                 </div>
 
-
+                </div>
             </div>
         </>
     )

@@ -333,8 +333,7 @@ export default function Login() {
                                     />
                                     <label htmlFor="acceptTerms" className="text-xs text-muted-foreground font-normal leading-tight cursor-pointer">
                                         He leído y acepto los{' '}
-                                        <button
-                                            type="button"
+                                        <span
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -343,10 +342,9 @@ export default function Login() {
                                             className="text-primary font-semibold hover:underline cursor-pointer"
                                         >
                                             términos y condiciones
-                                        </button>{' '}
+                                        </span>{' '}
                                         y la{' '}
-                                        <button
-                                            type="button"
+                                        <span
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -355,7 +353,7 @@ export default function Login() {
                                             className="text-primary font-semibold hover:underline cursor-pointer"
                                         >
                                             política de privacidad
-                                        </button>
+                                        </span>
                                         .
                                     </label>
                                 </div>
