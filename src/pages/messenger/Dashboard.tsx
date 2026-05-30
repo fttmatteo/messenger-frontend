@@ -155,7 +155,7 @@ export default function MessengerDashboard() {
 
             <div className="flex items-center justify-between px-1.5 flex-wrap gap-2">
                 <p className="text-[11px] font-black text-muted-foreground/80 uppercase tracking-[0.18em]">
-                    {filteredServices.length} {filteredServices.length !== 1 ? 'servicios' : 'servicio'} {selectedDealership !== 'all' ? 'filtrados' : 'asignados'}
+                    {filteredServices.length} {selectedDealership !== 'all' ? 'filtrados' : 'asignados'}
                 </p>
                 <div className="flex items-center gap-1.5 ml-auto">
                     {selectedDealership !== 'all' && (
