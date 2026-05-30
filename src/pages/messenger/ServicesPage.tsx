@@ -3,7 +3,8 @@ import { ServiceList } from "@/features/delivery/components/ServiceList"
 import { Input } from "@/shared/components/ui/input"
 import { Button } from "@/shared/components/ui/button"
 import { Search, CalendarIcon, Filter } from "lucide-react"
-import { useMemo, useCallback } from "react"
+import { useMemo, useCallback, useState, useEffect } from "react"
+import { useDebounce } from "@/shared/hooks/use-debounce"
 import { format, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { getStatusLabel } from "@/shared/lib/status-colors"
@@ -19,7 +20,10 @@ export default function ServicesPage() {
     const { loading, completedServices, error } = useMessengerServices()
     const [searchParams, setSearchParams] = useSearchParams()
 
-    const searchTerm = searchParams.get("q") || ""
+    const urlSearchTerm = searchParams.get("q") || ""
+    const [localSearch, setLocalSearch] = useState(urlSearchTerm)
+    const debouncedSearch = useDebounce(localSearch, 400)
+
     const statusFilter = searchParams.get("status") || "all"
     const dateParam = searchParams.get("date")
     const selectedDate = useMemo(() => {
@@ -32,13 +36,20 @@ export default function ServicesPage() {
         return new Date()
     }, [dateParam])
 
-    const setSearchTerm = (val: string) => {
+    useEffect(() => {
         setSearchParams(prev => {
-            if (!val) prev.delete("q")
-            else prev.set("q", val)
+            if (!debouncedSearch) prev.delete("q")
+            else prev.set("q", debouncedSearch)
             return prev
         }, { replace: true })
-    }
+    }, [debouncedSearch, setSearchParams])
+
+    useEffect(() => {
+        if (urlSearchTerm !== debouncedSearch) {
+            setLocalSearch(urlSearchTerm)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [urlSearchTerm])
 
     const setStatusFilter = (val: string) => {
         setSearchParams(prev => {
@@ -65,7 +76,7 @@ export default function ServicesPage() {
     }, [])
 
     const filteredServices = useMemo(() => {
-        const isGlobalSearch = searchTerm.trim() !== "" || statusFilter !== "all"
+        const isGlobalSearch = debouncedSearch.trim() !== "" || statusFilter !== "all"
 
         let services = isGlobalSearch
             ? completedServices
@@ -77,21 +88,21 @@ export default function ServicesPage() {
             services = services.filter(s => s.currentStatus === statusFilter)
         }
 
-        if (searchTerm.trim()) {
-            const term = searchTerm.toLowerCase()
+        if (debouncedSearch.trim()) {
+            const term = debouncedSearch.toLowerCase().trim()
             services = services.filter(service =>
                 service.plate.plateNumber.toLowerCase().includes(term) ||
                 service.dealership.name.toLowerCase().includes(term) ||
-                service.dealership.zone?.toLowerCase().includes(term) ||
-                service.originDealership?.name.toLowerCase().includes(term) ||
-                service.originDealership?.zone?.toLowerCase().includes(term)
+                (service.dealership.zone?.toLowerCase().includes(term) ?? false) ||
+                (service.originDealership?.name?.toLowerCase().includes(term) ?? false) ||
+                (service.originDealership?.zone?.toLowerCase().includes(term) ?? false)
             )
         }
 
         return [...services].sort((a, b) =>
             getLastChangeDate(b).getTime() - getLastChangeDate(a).getTime()
         )
-    }, [completedServices, selectedDate, searchTerm, statusFilter, getLastChangeDate])
+    }, [completedServices, selectedDate, debouncedSearch, statusFilter, getLastChangeDate])
 
     const isToday = isSameDay(selectedDate, new Date())
 
@@ -105,8 +116,8 @@ export default function ServicesPage() {
                         name="search"
                         autoComplete="off"
                         placeholder="Buscar por chasis..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={localSearch}
+                        onChange={(e) => setLocalSearch(e.target.value)}
                         className="pl-9 h-10 border-input/60"
                     />
                 </div>
@@ -161,7 +172,7 @@ export default function ServicesPage() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="h-6 flex items-center justify-between">
                 <p className="text-[11px] font-black text-muted-foreground/80 flex items-center gap-1.5 overflow-hidden uppercase tracking-[0.18em]">
                     {statusFilter !== 'all' && (
                         <span className="text-primary shrink-0">
@@ -170,7 +181,7 @@ export default function ServicesPage() {
                     )}
                     {statusFilter !== 'all' && <span className="shrink-0 opacity-40">·</span>}
                     <span className="truncate">
-                        {searchTerm.trim() || statusFilter !== "all"
+                        {debouncedSearch.trim() || statusFilter !== "all"
                             ? "Historial global"
                             : (isToday ? "Hoy" : format(selectedDate, "d MMM yyyy", { locale: es }))
                         }
@@ -178,7 +189,7 @@ export default function ServicesPage() {
                     <span className="shrink-0 opacity-40">·</span>
                     <span className="shrink-0">{filteredServices.length} servicio{filteredServices.length !== 1 ? 's' : ''}</span>
                 </p>
-                {!isToday && !searchTerm.trim() && (
+                {!isToday && !debouncedSearch.trim() && (
                     <Button
                         variant="ghost"
                         size="sm"
@@ -197,7 +208,7 @@ export default function ServicesPage() {
                     emptyMessage={
                         statusFilter !== 'all'
                             ? `No hay servicios "${getStatusLabel(statusFilter)}"`
-                            : searchTerm ? "No se encontraron resultados"
+                            : debouncedSearch ? "No se encontraron resultados"
                                 : `No hay servicios para esta fecha`
                     }
                 />
