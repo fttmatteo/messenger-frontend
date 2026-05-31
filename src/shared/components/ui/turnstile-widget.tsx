@@ -112,7 +112,7 @@ export function TurnstileWidget({
                     'expired-callback': handleExpire,
                     theme,
                     size,
-                    appearance: 'execute',
+                    appearance: 'always',
                 });
                 widgetIdRef.current = id;
                 if (onWidgetId) {

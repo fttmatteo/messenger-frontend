@@ -347,7 +347,7 @@ export default function LoginMobile() {
                             <Button
                                 type="submit"
                                 className="w-full h-10 text-base font-bold shadow-sm transition-all active:scale-[0.98]"
-                                disabled={isSubmitting || !turnstileToken}
+                                disabled={isSubmitting}
                             >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
@@ -363,7 +363,6 @@ export default function LoginMobile() {
                         </a>
                     </p>
                     <p className="flex items-center justify-center gap-1.5 flex-wrap">
-                        <span className="text-muted-foreground/60">•</span>
                         <button
                             type="button"
                             onClick={() => navigate('/politica-cookies')}
