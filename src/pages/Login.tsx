@@ -372,7 +372,7 @@ export default function Login() {
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full h-10 text-sm font-bold shadow-sm transition-all active:scale-[0.98]" disabled={isSubmitting || !turnstileToken}>
+                            <Button type="submit" className="w-full h-10 text-sm font-bold shadow-sm transition-all active:scale-[0.98]" disabled={isSubmitting}>
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </form>
