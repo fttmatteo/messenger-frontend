@@ -95,7 +95,7 @@ export const handlers: RequestHandler[] = [
     }),
     http.put(new RegExp('.*/services/editRoute/.*'), async ({ request }) => {
         const id = request.url.split('/').pop()?.split('?')[0];
-        const body = await request.json() as any;
+        const body = (await request.json()) as { dealershipId?: number; originDealershipId?: number };
         return HttpResponse.json({
             idServiceDelivery: Number(id) || 1,
             uuid: typeof id === 'string' && id.length > 10 ? id : '550e8400-e29b-41d4-a716-446655440000',
