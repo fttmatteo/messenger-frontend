@@ -347,7 +347,7 @@ export default function LoginMobile() {
                             <Button
                                 type="submit"
                                 className="w-full h-10 text-base font-bold shadow-sm transition-all active:scale-[0.98]"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || !turnstileToken}
                             >
                                 {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>

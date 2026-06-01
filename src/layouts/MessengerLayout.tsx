@@ -59,8 +59,12 @@ export default function MessengerLayout() {
 
 
     useEffect(() => {
-        document.documentElement.style.height = '100%'
-        document.body.style.height = '100%'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in navigator && (navigator as any).standalone)
+        const heightValue = isStandalone ? '100vh' : '100dvh'
+
+        document.documentElement.style.height = heightValue
+        document.body.style.height = heightValue
         document.body.style.overflow = 'hidden'
 
         return () => {
