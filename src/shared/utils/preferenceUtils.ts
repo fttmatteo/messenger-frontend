@@ -11,7 +11,7 @@ export const setPreference = async (key: string, value: string) => {
         const expires = `expires=${date.toUTCString()}`;
         const maxAge = `max-age=${365 * 24 * 60 * 60}`;
         const isSecure = window.location.protocol === 'https:' ? '; Secure' : '';
-        document.cookie = `${key}=${value}; ${expires}; ${maxAge}; path=/; SameSite=Lax${isSecure}`;
+        document.cookie = `${key}=${encodeURIComponent(value)}; ${expires}; ${maxAge}; path=/; SameSite=Lax${isSecure}`;
     } catch { /* ignore */ }
     
     try {
@@ -45,7 +45,7 @@ export const getPreferenceSync = (key: string): string | null => {
         const parts = value.split(`; ${key}=`);
         if (parts.length === 2) {
             const cookieVal = parts.pop()?.split(';').shift();
-            if (cookieVal) return cookieVal;
+            if (cookieVal) return decodeURIComponent(cookieVal);
         }
     } catch { /* ignore */ }
     
