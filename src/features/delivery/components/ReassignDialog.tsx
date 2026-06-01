@@ -68,24 +68,24 @@ export function ReassignDialog({ open, onOpenChange, service, onSuccess }: Reass
                         <PlacaBadge plateNumber={service.plate.plateNumber} size="sm" />
                     </DialogTitle>
                     <DialogDescription>
-                        Selecciona un nuevo mensajero para reintentar la entrega del servicio cancelado
+                        Selecciona un nuevo transportista para reintentar la entrega del servicio cancelado
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
                         <div className="flex flex-col space-y-0 gap-2">
-                            <Label>Nuevo mensajero</Label>
+                            <Label>Nuevo transportista</Label>
                             <p className="text-xs text-muted-foreground mb-2">
                                 Se cambiará el estado nuevamente a ASIGNADO
                             </p>
                             <Select value={selectedMessenger} onValueChange={setSelectedMessenger} disabled={loadingMessengers}>
                                 <SelectTrigger className="w-full !h-[44px] !min-h-[44px] !max-h-[44px] box-border">
-                                    <SelectValue placeholder={loadingMessengers ? "Cargando..." : "Selecciona un mensajero"} />
+                                    <SelectValue placeholder={loadingMessengers ? "Cargando..." : "Selecciona un transportista"} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel className="text-muted-foreground">Mensajeros disponibles</SelectLabel>
+                                        <SelectLabel className="text-muted-foreground">Transportistas disponibles</SelectLabel>
                                         {messengers.map((messenger) => (
                                             <SelectItem
                                                 key={messenger.idEmployee}
