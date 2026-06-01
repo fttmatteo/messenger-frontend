@@ -108,7 +108,11 @@ export const StatusHistoryInfoSchema = z.object({
     deliveryLatitude: z.number().optional(),
     deliveryLongitude: z.number().optional(),
     signature: SignatureInfoSchema.optional(),
-    observation: z.string().optional()
+    observation: z.string().optional(),
+    snapshotOriginDealershipId: z.number().optional(),
+    snapshotOriginDealershipName: z.string().optional(),
+    snapshotDestinationDealershipId: z.number().optional(),
+    snapshotDestinationDealershipName: z.string().optional()
 })
 
 /**

@@ -19,6 +19,8 @@ import { ServiceHeader } from "@/features/delivery/components/ServiceHeader"
 import { ServiceGeneralInfoCard } from "@/features/delivery/components/ServiceGeneralInfoCard"
 import { ServiceHistoryTimeline } from "@/features/delivery/components/ServiceHistoryTimeline"
 import { UpdateStatusDialog } from "@/features/delivery/components/UpdateStatusDialog"
+import { EditRouteDialog } from "@/features/delivery/components/EditRouteDialog"
+import { ReassignDialog } from "@/features/delivery/components/ReassignDialog"
 
 /**
  * Vista detallada de un servicio de entrega específico para administradores.
@@ -37,6 +39,8 @@ export default function ViewService() {
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [isEditRouteModalOpen, setIsEditRouteModalOpen] = useState(false)
+    const [isReassignModalOpen, setIsReassignModalOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [selectedImages, setSelectedImages] = useState<string[]>([])
@@ -125,6 +129,8 @@ export default function ViewService() {
                 service={service}
                 onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
                 onUpdate={() => setIsUpdateModalOpen(true)}
+                onEditRoute={() => setIsEditRouteModalOpen(true)}
+                onReassign={() => setIsReassignModalOpen(true)}
                 deleting={deleting}
             />
 
@@ -160,6 +166,22 @@ export default function ViewService() {
                 service={service}
                 onSuccess={fetchService}
             />
+
+            <ReassignDialog
+                open={isReassignModalOpen}
+                onOpenChange={setIsReassignModalOpen}
+                service={service}
+                onSuccess={fetchService}
+            />
+
+            {service.currentStatus === 'CANCELED' && (
+                <EditRouteDialog
+                    open={isEditRouteModalOpen}
+                    onOpenChange={setIsEditRouteModalOpen}
+                    service={service}
+                    onSuccess={fetchService}
+                />
+            )}
 
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>

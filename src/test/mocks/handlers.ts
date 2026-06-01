@@ -93,6 +93,35 @@ export const handlers: RequestHandler[] = [
             createdAt: new Date().toISOString()
         });
     }),
+    http.put(new RegExp('.*/services/editRoute/.*'), async ({ request }) => {
+        const id = request.url.split('/').pop()?.split('?')[0];
+        const body = await request.json() as any;
+        return HttpResponse.json({
+            idServiceDelivery: Number(id) || 1,
+            uuid: typeof id === 'string' && id.length > 10 ? id : '550e8400-e29b-41d4-a716-446655440000',
+            currentStatus: 'CANCELED',
+            message: 'Route updated successfully',
+            plate: { idPlate: 1, plateNumber: 'CHASIS00001', plateType: 'MOTORCYCLE' },
+            dealership: {
+                idDealership: body?.dealershipId || 1,
+                uuid: 'new-dest-uuid',
+                name: 'New Destination',
+                address: '123 New St',
+                phone: '555-1111',
+                zone: 'NORTH'
+            },
+            originDealership: {
+                idDealership: body?.originDealershipId || 2,
+                uuid: 'new-orig-uuid',
+                name: 'New Origin',
+                address: '456 New St',
+                phone: '555-2222',
+                zone: 'SOUTH'
+            },
+            history: [],
+            createdAt: new Date().toISOString()
+        });
+    }),
     http.get(new RegExp('.*/services/allServicesPageable.*'), () => {
         return HttpResponse.json({
             content: [

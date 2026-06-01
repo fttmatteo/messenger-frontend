@@ -74,6 +74,10 @@ export interface StatusHistoryInfo {
     deliveryLongitude?: number
     signature?: SignatureInfo
     observation?: string
+    snapshotOriginDealershipId?: number
+    snapshotOriginDealershipName?: string
+    snapshotDestinationDealershipId?: number
+    snapshotDestinationDealershipName?: string
 }
 
 /**
