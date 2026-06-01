@@ -28,9 +28,25 @@ function forceStatusBarUpdate(isDark: boolean) {
     })
 }
 
+import { setPreference, getPreferenceAsync } from "@/shared/utils/preferenceUtils"
+
 function ThemeColorSync() {
-    const { resolvedTheme, theme } = useTheme()
+    const { resolvedTheme, theme, setTheme } = useTheme()
     const [, forceUpdate] = useState(0)
+
+    useEffect(() => {
+        getPreferenceAsync('theme').then((savedTheme) => {
+            if (savedTheme && savedTheme !== theme) {
+                setTheme(savedTheme)
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        if (theme) {
+            setPreference('theme', theme)
+        }
+    }, [theme])
 
     useEffect(() => {
         if (theme !== 'system') return

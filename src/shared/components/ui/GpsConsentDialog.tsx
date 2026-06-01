@@ -73,13 +73,13 @@ export default function GpsConsentDialog({ onDecline }: { onDecline: () => void 
 
     return (
         <AlertDialog open={show} onOpenChange={() => { /* No permitir cerrar sin acción */ }}>
-            <AlertDialogContent className="max-w-[92vw] sm:max-w-lg rounded-2xl bg-background border-border/50 shadow-2xl p-0 overflow-hidden">
+            <AlertDialogContent className="max-w-[92vw] sm:max-w-lg max-h-[90dvh] flex flex-col rounded-2xl bg-background border-border/50 shadow-2xl p-0 overflow-hidden">
 
                 {/* Cabecera con icono */}
-                <div className="bg-primary/5 border-b border-border/30 px-6 pt-6 pb-4">
+                <div className="bg-primary/5 border-b border-border/30 px-6 pt-6 pb-4 shrink-0">
                     <AlertDialogHeader className="space-y-3">
                         <div className="flex items-center gap-3">
-                            <div className="h-11 w-11 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                            <div className="h-11 w-11 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                                 <MapPin className="h-5.5 w-5.5" />
                             </div>
                             <div>
@@ -95,7 +95,7 @@ export default function GpsConsentDialog({ onDecline }: { onDecline: () => void 
                 </div>
 
                 {/* Cuerpo */}
-                <div className="px-6 py-5 space-y-4">
+                <div className="px-6 py-5 space-y-4 overflow-y-auto custom-scrollbar">
                     <AlertDialogDescription className="text-sm text-foreground/90 font-medium leading-relaxed" asChild>
                         <div className="space-y-3">
                             <p>
@@ -139,7 +139,7 @@ export default function GpsConsentDialog({ onDecline }: { onDecline: () => void 
                 </div>
 
                 {/* Footer con acciones */}
-                <AlertDialogFooter className="px-6 pb-5 pt-0 flex-col sm:flex-row gap-2">
+                <AlertDialogFooter className="px-6 pb-5 pt-4 sm:pt-0 flex-col sm:flex-row gap-2 shrink-0 border-t sm:border-t-0 border-border/10">
                     <Button
                         variant="ghost"
                         size="sm"
