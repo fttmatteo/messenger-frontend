@@ -80,10 +80,10 @@ describe('Safe Area Integrity Audit', () => {
         expect(content).toContain('-webkit-fill-available')
     })
 
-    it('Sonner toaster debe usar mobileOffset con safe-area-top', () => {
+    it('Sonner toaster debe usar mobileOffset con safe-area-bottom', () => {
         const sonnerPath = path.resolve(__dirname, '../shared/components/ui/sonner.tsx')
         const content = fs.readFileSync(sonnerPath, 'utf-8')
-        expect(content).toContain('mobileOffset={{ top: "calc(var(--safe-area-top) + 16px)" }}')
+        expect(content).toContain('mobileOffset="calc(var(--safe-area-bottom) + 16px)"')
         expect(content).toContain('offset={32}')
     })
 
