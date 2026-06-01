@@ -59,6 +59,7 @@ export default function MessengerLayout() {
 
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in navigator && (navigator as any).standalone)
         const heightValue = isStandalone ? '100vh' : '100dvh'
 
