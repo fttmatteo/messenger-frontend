@@ -177,6 +177,15 @@ class ServiceDeliveryService {
         const response = await apiClient.put(`/services/reassign/${uuid}`, { messengerId })
         return ServiceDeliverySchema.parse(response.data)
     }
+
+    /**
+     * Editar origen y/o destino de un servicio - Solo Admin
+     * Solo se permite cuando el servicio está en estado CANCELED
+     */
+    async editRoute(uuid: string, data: { dealershipId?: number; originDealershipId?: number }): Promise<ServiceDelivery> {
+        const response = await apiClient.put(`/services/editRoute/${uuid}`, data)
+        return ServiceDeliverySchema.parse(response.data)
+    }
 }
 
 export const serviceDeliveryService = new ServiceDeliveryService()

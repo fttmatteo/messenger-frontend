@@ -25,9 +25,12 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                 {service.history && service.history.length > 0 ? (
                     <div className="py-2 pl-2">
                         <Timeline className="w-full">
-                            {[...(service.history || [])].reverse().map((entry, index) => {
-                                const config = getStatusIconConfig(entry.newStatus)
-                                return (
+                            {(() => {
+                                const reversedHistory = [...(service.history || [])].reverse();
+                                return reversedHistory.map((entry, index) => {
+                                    const config = getStatusIconConfig(entry.newStatus);
+                                    const previousEntry = reversedHistory[index + 1];
+                                    return (
                                     <TimelineItem
                                         key={entry.idStatusHistory}
                                         isLast={index === (service.history?.length || 0) - 1}
@@ -45,14 +48,16 @@ export function ServiceHistoryTimeline({ service, onImageClick, className }: Ser
                                         <TimelineContent>
                                             <HistoryEntryCard
                                                 entry={entry}
+                                                previousEntry={previousEntry}
                                                 getImageUrl={getImageUrl}
                                                 onImageClick={onImageClick}
                                                 scheduledAt={service.scheduledAt}
                                             />
                                         </TimelineContent>
                                     </TimelineItem>
-                                )
-                            })}
+                                    )
+                                })
+                            })()}
                         </Timeline>
                     </div>
                 ) : (

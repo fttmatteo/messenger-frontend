@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react"
-import { Loader2, Save, UserPlus } from "lucide-react"
+import { Loader2, Save } from "lucide-react"
 import { useAdminUI } from "@/shared/context/AdminUIContext"
 import { useAuth } from "@/features/auth/context/AuthContext"
-import { employeeService } from "@/features/employee/services/employee.service"
 import { serviceDeliveryService } from "@/features/delivery/services/service.service"
-import type { Employee } from "@/features/employee/types/employee.types"
 import type { ServiceDelivery, ServiceStatus } from "@/features/delivery/types/service.types"
 import { getAvailableStatusesForUser, getStatusIconConfig } from "@/shared/lib/status-utils"
 import { getErrorMessage } from "@/shared/lib/error-utils"
@@ -37,30 +35,13 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
     const [newStatus, setNewStatus] = useState<ServiceStatus>(service.currentStatus)
     const [observation, setObservation] = useState('')
     const [updating, setUpdating] = useState(false)
-    const [messengers, setMessengers] = useState<Employee[]>([])
-    const [selectedMessenger, setSelectedMessenger] = useState<string>('')
-    const [reassigning, setReassigning] = useState(false)
-    const [loadingMessengers, setLoadingMessengers] = useState(false)
-
-    const showReassign = service.currentStatus === 'CANCELED' && user?.role === 'ADMIN'
 
     useEffect(() => {
         if (open) {
             setNewStatus(service.currentStatus)
             setObservation('')
-            setSelectedMessenger('')
-
-            if (showReassign) {
-                setLoadingMessengers(true)
-                employeeService.getAll()
-                    .then(employees => {
-                        setMessengers(employees)
-                    })
-                    .catch(() => { })
-                    .finally(() => setLoadingMessengers(false))
-            }
         }
-    }, [open, service.currentStatus, showReassign])
+    }, [open, service.currentStatus])
 
     const handleUpdateStatus = async () => {
         try {
@@ -96,25 +77,7 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
         }
     }
 
-    const handleReassign = async () => {
-        if (!selectedMessenger) return
 
-        try {
-            setReassigning(true)
-            await serviceDeliveryService.reassign(
-                service.uuid,
-                Number(selectedMessenger)
-            )
-
-            setSuccess(`Servicio ${service.plate.plateNumber} reasignado al mensajero`)
-            onOpenChange(false)
-            onSuccess()
-        } catch (error) {
-            setError(getErrorMessage(error))
-        } finally {
-            setReassigning(false)
-        }
-    }
 
     const role = user?.role as 'ADMIN' | 'MESSENGER' | undefined
     const availableStatuses = role ? getAvailableStatusesForUser(role) : []
@@ -138,58 +101,6 @@ export function UpdateStatusDialog({ open, onOpenChange, service, onSuccess }: U
 
                 <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-
-                    {showReassign && messengers.length > 0 && (
-                        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-3">
-                            <div className="flex items-start gap-3">
-                                <UserPlus className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                                <div className="flex-1">
-                                    <p className="font-semibold text-sm text-red-900 dark:text-red-100">Servicio cancelado</p>
-                                    <p className="text-xs text-red-800 dark:text-red-200 mt-0.5">
-                                        Puedes reasignarlo a otro mensajero para reintentar la entrega
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <Select value={selectedMessenger} onValueChange={setSelectedMessenger} disabled={loadingMessengers}>
-                                    <SelectTrigger className="!h-[44px] !min-h-[44px] !max-h-[44px] box-border flex-1 bg-white dark:bg-gray-800">
-                                        <SelectValue placeholder={loadingMessengers ? "Cargando..." : "Selecciona un mensajero"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel className="text-muted-foreground">Mensajeros disponibles</SelectLabel>
-                                            {messengers.map((messenger) => (
-                                                <SelectItem
-                                                    key={messenger.idEmployee}
-                                                    value={String(messenger.idEmployee)}
-                                                >
-                                                    {messenger.fullName}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    onClick={handleReassign}
-                                    disabled={!selectedMessenger || reassigning}
-                                    size="sm"
-                                    className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border m-0 bg-red-600 hover:bg-red-700"
-                                >
-                                    {reassigning ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Reasignando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UserPlus className="mr-2 h-4 w-4" />
-                                            Reasignar
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
 
 
                     <div className="flex flex-col space-y-0 gap-2">

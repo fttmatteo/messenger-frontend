@@ -1,11 +1,12 @@
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Clock, User, Expand, Calendar } from "lucide-react"
+import { Clock, User, Expand, Calendar, MapPin } from "lucide-react"
 import type { StatusHistoryInfo } from "@/features/delivery/types/service.types"
 import { formatDisplayName } from "@/shared/lib/format-utils"
 
 interface HistoryEntryCardProps {
     entry: StatusHistoryInfo
+    previousEntry?: StatusHistoryInfo
     getImageUrl: (url: string) => string
     className?: string
     onImageClick?: (urls: string[], index: number) => void
@@ -18,6 +19,7 @@ interface HistoryEntryCardProps {
  */
 export function HistoryEntryCard({
     entry,
+    previousEntry,
     getImageUrl,
     className = "",
     onImageClick,
@@ -63,6 +65,63 @@ export function HistoryEntryCard({
                     </div>
                 </div>
             )}
+
+            {/* Mostrar detalles de edición de ruta */
+            (() => {
+                const isRouteEdit = entry.observation === "Edición de ruta por administrador";
+                
+                if (!isRouteEdit) return null;
+
+                const hasPreviousOrigin = previousEntry?.snapshotOriginDealershipName != null;
+                const hasPreviousDest = previousEntry?.snapshotDestinationDealershipName != null;
+                
+                const changedOrigin = previousEntry?.snapshotOriginDealershipId !== entry.snapshotOriginDealershipId;
+                const changedDest = previousEntry?.snapshotDestinationDealershipId !== entry.snapshotDestinationDealershipId;
+
+                return (
+                    <div className="mt-2 p-2.5 bg-muted/50 border border-border/50 rounded-md flex flex-col gap-2 shadow-sm">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <MapPin className="h-3 w-3" />
+                            <span>Ruta tras la edición</span>
+                        </div>
+                        <div className="flex flex-col gap-1.5 text-xs text-foreground">
+                            
+                            {/* Origen */}
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-muted-foreground text-[10px] font-semibold uppercase">Origen:</span>
+                                <div className="flex items-center gap-2">
+                                    {hasPreviousOrigin && changedOrigin && (
+                                        <>
+                                            <span className="line-through text-muted-foreground max-w-[120px] truncate">{previousEntry.snapshotOriginDealershipName}</span>
+                                            <span className="text-muted-foreground">➔</span>
+                                        </>
+                                    )}
+                                    <span className="font-medium text-foreground max-w-[120px] truncate">
+                                        {entry.snapshotOriginDealershipName || 'N/A'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Destino */}
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-muted-foreground text-[10px] font-semibold uppercase">Destino:</span>
+                                <div className="flex items-center gap-2">
+                                    {hasPreviousDest && changedDest && (
+                                        <>
+                                            <span className="line-through text-muted-foreground max-w-[120px] truncate">{previousEntry.snapshotDestinationDealershipName}</span>
+                                            <span className="text-muted-foreground">➔</span>
+                                        </>
+                                    )}
+                                    <span className="font-medium text-foreground max-w-[120px] truncate">
+                                        {entry.snapshotDestinationDealershipName || 'N/A'}
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                );
+            })()}
 
             {(((entry.newStatus === 'DELIVERED') && entry.signature?.signaturePath) || (entry.photos && entry.photos.length > 0)) && (
                 <div className="pt-1.5 border-t border-border/50 flex flex-row gap-2 justify-center">

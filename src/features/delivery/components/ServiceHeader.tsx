@@ -1,5 +1,5 @@
 import { Button } from "@/shared/components/ui/button"
-import { Edit, Trash2 } from "lucide-react"
+import { Edit, Trash2, UserPlus } from "lucide-react"
 import { canUserEditService } from "@/shared/lib/status-utils"
 import type { ServiceDelivery } from "@/features/delivery/types/service.types"
 import { useAuth } from "@/features/auth/context/AuthContext"
@@ -8,6 +8,8 @@ interface ServiceHeaderProps {
     service: ServiceDelivery
     onDelete?: () => void
     onUpdate?: () => void
+    onEditRoute?: () => void
+    onReassign?: () => void
     deleting?: boolean
 }
 
@@ -15,7 +17,7 @@ interface ServiceHeaderProps {
  * Cabecera detallada para la vista individual de un servicio.
  * Incluye migas de pan, indicador de estado prominente y acciones de gestión.
  */
-export function ServiceHeader({ onDelete, onUpdate, deleting }: ServiceHeaderProps) {
+export function ServiceHeader({ service, onDelete, onUpdate, onEditRoute, onReassign, deleting }: ServiceHeaderProps) {
     const { user } = useAuth()
     const isAdmin = user?.role === 'ADMIN'
 
@@ -44,6 +46,30 @@ export function ServiceHeader({ onDelete, onUpdate, deleting }: ServiceHeaderPro
                     >
                         <Edit className="mr-2 h-4 w-4" />
                         Actualizar
+                    </Button>
+                )}
+
+                {isAdmin && service.currentStatus === 'CANCELED' && onReassign && (
+                    <Button
+                        variant="outline"
+                        onClick={onReassign}
+                        size="sm"
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium text-xs m-0"
+                    >
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Reasignar
+                    </Button>
+                )}
+
+                {isAdmin && service.currentStatus === 'CANCELED' && onEditRoute && (
+                    <Button
+                        variant="outline"
+                        onClick={onEditRoute}
+                        size="sm"
+                        className="!h-[32px] !min-h-[32px] !max-h-[32px] box-border px-4 border-primary/20 hover:bg-primary/5 text-primary hover:text-primary transition-colors flex-1 md:flex-none font-medium text-xs m-0"
+                    >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar ruta
                     </Button>
                 )}
 
