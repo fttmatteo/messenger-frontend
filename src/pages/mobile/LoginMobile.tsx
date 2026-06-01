@@ -157,11 +157,30 @@ export default function LoginMobile() {
         }
     }
 
+    useEffect(() => {
+        const updateHeight = () => {
+            const heightValue = `${window.innerHeight}px`
+            document.documentElement.style.height = heightValue
+            document.body.style.height = heightValue
+            document.body.style.overflow = 'hidden'
+        }
+
+        updateHeight()
+        window.addEventListener('resize', updateHeight)
+
+        return () => {
+            window.removeEventListener('resize', updateHeight)
+            document.documentElement.style.height = ''
+            document.body.style.height = ''
+            document.body.style.overflow = ''
+        }
+    }, [])
+
     return (
         <>
             {isSubmitting && <FullScreenLoader />}
             <AnimatedLogoBackground />
-            <div className="flex flex-col items-center min-h-[100vh] @supports(min-height:100dvh):min-h-[100dvh] bg-transparent p-3 overflow-y-auto">
+            <div className="flex flex-col items-center h-full w-full bg-transparent p-3 overflow-y-auto overscroll-none custom-scrollbar">
                 <div className="w-full max-w-[380px] my-auto flex flex-col items-center py-6">
                     <Card className="w-full relative shadow-lg border-border/50">
                     <div className="absolute top-2 left-2 z-10">

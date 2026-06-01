@@ -263,7 +263,7 @@ export const SignatureCanvas = forwardRef<SignatureCanvasRef, SignatureCanvasPro
                     setIsOpen(open)
                 }}>
                     <DialogContent
-                        className="max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] p-4 pt-[max(1rem,var(--safe-area-top,0px))] pb-[max(1rem,var(--safe-area-bottom,0px))] flex flex-col gap-3 sm:gap-4 rounded-none border-none"
+                        className="max-w-[100vw] w-screen h-full max-h-full p-4 pt-[max(1rem,var(--safe-area-top,0px))] pb-[max(1rem,var(--safe-area-bottom,0px))] flex flex-col gap-3 sm:gap-4 rounded-none border-none"
                         aria-describedby={undefined}
                     >
                         <DialogHeader className="flex-shrink-0">
