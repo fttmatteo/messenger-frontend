@@ -7,8 +7,8 @@ interface PlacaBadgeProps {
 }
 
 /**
- * Insignia visual que representa una placa de vehículo según el estándar colombiano.
- * Soporta diferentes tamaños, tipos de vehículo (carro/moto) y modo oscuro.
+ * Insignia visual que representa un chasis de vehículo.
+ * Soporta diferentes tamaños y modo oscuro.
  */
 export function PlacaBadge({
     plateNumber,
@@ -43,8 +43,8 @@ export function PlacaBadge({
             title={`Chasis ${plateNumber}`}
         >
             <span className="font-sans font-black break-all flex items-baseline leading-none">
-                {firstPart && <span>{firstPart}</span>}
-                <span className="text-[1.25em] ml-0.5">
+                {firstPart && <span className="opacity-60 font-semibold">{firstPart}</span>}
+                <span className="ml-0.5">
                     {lastFour}
                 </span>
             </span>
