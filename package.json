@@ -1,7 +1,7 @@
 {
   "name": "plak-frontend",
   "private": true,
-  "version": "3.3.4",
+  "version": "3.3.5",
   "description": "Frontend de PLAK Messenger",
   "author": "Mateo Valencia Ardila",
   "license": "Proprietary",

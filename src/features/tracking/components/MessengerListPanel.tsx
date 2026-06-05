@@ -54,7 +54,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                 {!isCollapsed && (
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">Mensajeros</span>
+                        <span className="text-sm font-medium">Transportistas</span>
                     </div>
                 )}
             </div>
@@ -64,7 +64,7 @@ export const MessengerListPanel = memo(function MessengerListPanel({
                 <ScrollArea className="flex-1">
                     {messengers.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground text-sm">
-                            No hay mensajeros disponibles
+                            No hay transportistas disponibles
                         </div>
                     ) : (
                         <div className="divide-y">
