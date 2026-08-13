@@ -1,48 +1,48 @@
-# version: 2
-# updates:
-#   # npm dependencies
-#   - package-ecosystem: "npm"
-#     directory: "/"
-#     target-branch: "develop"
-#     schedule:
-#       interval: "daily"
-#       time: "09:00"
-#       timezone: "America/Bogota"
-#     commit-message:
-#       prefix: "deps"
-#     labels:
-#       - "dependencies"
-#       - "npm"
-#     groups:
-#       npm-patch-updates:
-#         update-types:
-#           - "patch"
-#     ignore:
-#       # Ignore major and minor version updates for all dependencies
-#       - dependency-name: "*"
-#         update-types: 
-#           - "version-update:semver-major"
-#           - "version-update:semver-minor"
-# 
-#   # GitHub Actions
-#   - package-ecosystem: "github-actions"
-#     directory: "/"
-#     target-branch: "develop"
-#     schedule:
-#       interval: "daily"
-#       time: "09:00"
-#       timezone: "America/Bogota"
-#     commit-message:
-#       prefix: "ci"
-#     labels:
-#       - "dependencies"
-#       - "github-actions"
-#     groups:
-#       actions-patch-updates:
-#         update-types:
-#           - "patch"
-#     ignore:
-#       - dependency-name: "*"
-#         update-types: 
-#           - "version-update:semver-major"
-#           - "version-update:semver-minor"
+version: 2
+updates:
+  # npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "America/Bogota"
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      npm-patch-updates:
+        update-types:
+          - "patch"
+    ignore:
+      # Ignore major and minor version updates for all dependencies
+      - dependency-name: "*"
+        update-types: 
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "America/Bogota"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions-patch-updates:
+        update-types:
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: 
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
